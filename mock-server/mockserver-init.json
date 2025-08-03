@@ -1,0 +1,376 @@
+[
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/health"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "status": "healthy",
+        "timestamp": "2024-01-01T00:00:00Z",
+        "service": "pro-mata-api"
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/auth/login"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "user": {
+          "id": "1",
+          "email": "admin@promata.org",
+          "name": "Admin Pro-Mata",
+          "role": "ADMIN"
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-token",
+        "expiresIn": 86400
+      },
+      "delay": {
+        "timeUnit": "MILLISECONDS",
+        "value": 500
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/accommodations"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": [
+        {
+          "id": "1",
+          "name": "Quarto Individual Standard",
+          "description": "Quarto aconchegante para uma pessoa com vista para a natureza.",
+          "type": "INDIVIDUAL",
+          "capacity": 1,
+          "price": 120.00,
+          "amenities": ["Wi-Fi", "Ar condicionado", "TV", "Frigobar"],
+          "images": [
+            "/images/accommodations/individual-1.jpg",
+            "/images/accommodations/individual-2.jpg"
+          ],
+          "available": true
+        },
+        {
+          "id": "2",
+          "name": "Quarto Duplo Deluxe",
+          "description": "Quarto espaçoso para duas pessoas com varanda privativa.",
+          "type": "DOUBLE",
+          "capacity": 2,
+          "price": 180.00,
+          "amenities": ["Wi-Fi", "Ar condicionado", "TV", "Frigobar", "Varanda"],
+          "images": [
+            "/images/accommodations/double-1.jpg",
+            "/images/accommodations/double-2.jpg"
+          ],
+          "available": true
+        },
+        {
+          "id": "3",
+          "name": "Dormitório Coletivo",
+          "description": "Dormitório compartilhado ideal para grupos e estudantes.",
+          "type": "SHARED",
+          "capacity": 8,
+          "price": 45.00,
+          "amenities": ["Wi-Fi", "Armários individuais", "Banheiro compartilhado"],
+          "images": [
+            "/images/accommodations/shared-1.jpg"
+          ],
+          "available": true
+        }
+      ]
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/accommodations/.*"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "id": "1",
+        "name": "Quarto Individual Standard",
+        "description": "Quarto aconchegante para uma pessoa com vista para a natureza. Localizado no andar térreo com fácil acesso às áreas comuns do centro.",
+        "type": "INDIVIDUAL",
+        "capacity": 1,
+        "price": 120.00,
+        "amenities": ["Wi-Fi", "Ar condicionado", "TV", "Frigobar", "Mesa de estudos"],
+        "images": [
+          "/images/accommodations/individual-1.jpg",
+          "/images/accommodations/individual-2.jpg",
+          "/images/accommodations/individual-3.jpg"
+        ],
+        "available": true,
+        "rules": [
+          "Check-in: 14:00",
+          "Check-out: 12:00",
+          "Não é permitido fumar",
+          "Animais não são permitidos"
+        ],
+        "location": {
+          "building": "Bloco A",
+          "floor": 1,
+          "room": "101"
+        }
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/activities"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": [
+        {
+          "id": "1",
+          "title": "Trilha Interpretativa da Mata Atlântica",
+          "description": "Caminhada guiada pela mata preservada com explicações sobre flora e fauna local.",
+          "duration": 120,
+          "maxParticipants": 15,
+          "price": 35.00,
+          "difficulty": "EASY",
+          "category": "NATURE",
+          "images": ["/images/activities/trilha-1.jpg"],
+          "schedule": [
+            {"time": "08:00", "available": true},
+            {"time": "14:00", "available": true}
+          ]
+        },
+        {
+          "id": "2",
+          "title": "Observação de Aves",
+          "description": "Atividade de birdwatching com equipamentos profissionais e guia especializado.",
+          "duration": 180,
+          "maxParticipants": 10,
+          "price": 50.00,
+          "difficulty": "MEDIUM",
+          "category": "NATURE",
+          "images": ["/images/activities/birds-1.jpg"],
+          "schedule": [
+            {"time": "06:00", "available": true},
+            {"time": "16:00", "available": false}
+          ]
+        },
+        {
+          "id": "3",
+          "title": "Workshop de Educação Ambiental",
+          "description": "Workshop educativo sobre conservação e sustentabilidade ambiental.",
+          "duration": 240,
+          "maxParticipants": 25,
+          "price": 25.00,
+          "difficulty": "EASY",
+          "category": "EDUCATION",
+          "images": ["/images/activities/workshop-1.jpg"],
+          "schedule": [
+            {"time": "09:00", "available": true},
+            {"time": "13:30", "available": true}
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/reservations"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"],
+        "Authorization": ["Bearer .*"]
+      },
+      "body": [
+        {
+          "id": "1",
+          "userId": "1",
+          "type": "ACCOMMODATION",
+          "accommodationId": "1",
+          "checkIn": "2024-02-15T14:00:00Z",
+          "checkOut": "2024-02-17T12:00:00Z",
+          "guests": 1,
+          "totalAmount": 240.00,
+          "status": "CONFIRMED",
+          "paymentStatus": "PAID",
+          "createdAt": "2024-01-15T10:30:00Z"
+        },
+        {
+          "id": "2",
+          "userId": "1",
+          "type": "ACTIVITY",
+          "activityId": "1",
+          "date": "2024-02-16T08:00:00Z",
+          "participants": 2,
+          "totalAmount": 70.00,
+          "status": "CONFIRMED",
+          "paymentStatus": "PENDING",
+          "createdAt": "2024-01-16T15:45:00Z"
+        }
+      ]
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/reservations"
+    },
+    "httpResponse": {
+      "statusCode": 201,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "id": "3",
+        "userId": "1",
+        "type": "ACCOMMODATION",
+        "accommodationId": "2",
+        "checkIn": "2024-03-01T14:00:00Z",
+        "checkOut": "2024-03-03T12:00:00Z",
+        "guests": 2,
+        "totalAmount": 360.00,
+        "status": "PENDING",
+        "paymentStatus": "PENDING",
+        "createdAt": "2024-01-20T09:15:00Z"
+      },
+      "delay": {
+        "timeUnit": "MILLISECONDS",
+        "value": 1000
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/users/profile"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"],
+        "Authorization": ["Bearer .*"]
+      },
+      "body": {
+        "id": "1",
+        "email": "usuario@example.com",
+        "name": "João Silva",
+        "phone": "(51) 99999-9999",
+        "document": "123.456.789-00",
+        "userType": "PUCRS_STUDENT",
+        "address": {
+          "street": "Rua das Flores, 123",
+          "city": "Porto Alegre",
+          "state": "RS",
+          "zipCode": "90000-000"
+        },
+        "preferences": {
+          "newsletter": true,
+          "notifications": true
+        },
+        "createdAt": "2023-06-01T10:00:00Z"
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/admin/dashboard"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "stats": {
+          "totalReservations": 156,
+          "activeReservations": 23,
+          "revenue": 15420.50,
+          "occupancyRate": 78.5
+        },
+        "recentReservations": [
+          {
+            "id": "101",
+            "guestName": "Maria Santos",
+            "accommodation": "Quarto Duplo Deluxe",
+            "checkIn": "2024-01-25T14:00:00Z",
+            "status": "CONFIRMED"
+          },
+          {
+            "id": "102",
+            "guestName": "Pedro Oliveira",
+            "accommodation": "Quarto Individual",
+            "checkIn": "2024-01-26T14:00:00Z",
+            "status": "PENDING"
+          }
+        ],
+        "monthlyRevenue": [
+          {"month": "Jan", "revenue": 12500},
+          {"month": "Feb", "revenue": 15420},
+          {"month": "Mar", "revenue": 18900}
+        ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/availability"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": ["application/json"]
+      },
+      "body": {
+        "accommodations": {
+          "1": {
+            "2024-02-15": false,
+            "2024-02-16": false,
+            "2024-02-17": true,
+            "2024-02-18": true,
+            "2024-02-19": true
+          },
+          "2": {
+            "2024-02-15": true,
+            "2024-02-16": true,
+            "2024-02-17": true,
+            "2024-02-18": false,
+            "2024-02-19": true
+          }
+        },
+        "activities": {
+          "1": {
+            "2024-02-15": {"08:00": true, "14:00": false},
+            "2024-02-16": {"08:00": false, "14:00": true},
+            "2024-02-17": {"08:00": true, "14:00": true}
+          }
+        }
+      }
+    }
+  }
+]

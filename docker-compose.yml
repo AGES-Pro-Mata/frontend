@@ -1,0 +1,154 @@
+version: '3.8'
+
+services:
+  # Development Frontend
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: promata-frontend-dev
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8080/api
+      - VITE_APP_ENV=development
+      - VITE_APP_VERSION=dev
+      - CHOKIDAR_USEPOLLING=true  # For file watching in containers
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - frontend_node_modules:/app/node_modules
+      - frontend_cache:/app/.cache
+    networks:
+      - promata_dev
+    restart: unless-stopped
+    depends_on:
+      - backend-mock
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Production Frontend (for testing)
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      args:
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
+        VCS_REF: ${VCS_REF:-local}
+        VERSION: ${VERSION:-local}
+    container_name: promata-frontend-prod
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=http://localhost:8080/api
+      - VITE_APP_ENV=production
+      - VITE_APP_VERSION=local
+      - NGINX_WORKER_PROCESSES=1
+      - NGINX_WORKER_CONNECTIONS=512
+    ports:
+      - "3001:3000"
+    networks:
+      - promata_dev
+    restart: unless-stopped
+    depends_on:
+      - backend-mock
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    profiles: ["prod-test"]
+
+  # Mock Backend for Frontend Development
+  backend-mock:
+    image: mockserver/mockserver:5.15.0
+    container_name: promata-backend-mock
+    environment:
+      MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/mockserver-init.json
+    ports:
+      - "8080:1080"
+    volumes:
+      - ./mock-server:/config
+    networks:
+      - promata_dev
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles: ["mock"]
+
+  # Storybook for Component Development
+  storybook:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: promata-storybook
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "6006:6006"
+    volumes:
+      - .:/app
+      - frontend_node_modules:/app/node_modules
+    networks:
+      - promata_dev
+    command: ["npm", "run", "storybook", "--", "--host", "0.0.0.0"]
+    restart: unless-stopped
+    profiles: ["storybook"]
+
+  # Testing Container
+  frontend-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: promata-frontend-test
+    environment:
+      - NODE_ENV=test
+      - CI=true
+    volumes:
+      - .:/app
+      - frontend_node_modules:/app/node_modules
+      - test_results:/app/test-results
+      - coverage:/app/coverage
+    networks:
+      - promata_dev
+    command: ["npm", "run", "test:ci"]
+    profiles: ["test"]
+
+  # Nginx for serving static files (testing production build)
+  nginx-static:
+    image: nginx:alpine
+    container_name: promata-nginx-static
+    ports:
+      - "8081:80"
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+      - ./nginx-static.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - promata_dev
+    restart: unless-stopped
+    profiles: ["static"]
+
+networks:
+  promata_dev:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  frontend_node_modules:
+    driver: local
+  frontend_cache:
+    driver: local
+  test_results:
+    driver: local
+  coverage:
+    driver: local

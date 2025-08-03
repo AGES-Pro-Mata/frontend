@@ -1,0 +1,291 @@
+name: Frontend CI/CD Pipeline
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+env:
+  DOCKER_REGISTRY: docker.io
+  IMAGE_NAME: norohim/pro-mata-frontend
+  NODE_VERSION: '18'
+  
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          npm ci --prefer-offline --no-audit
+
+      - name: Type Check
+        run: npm run type-check
+
+      - name: Lint Code
+        run: |
+          npm run lint
+          npm run lint:css
+
+      - name: Run Unit Tests
+        run: |
+          npm run test:unit -- --coverage --watchAll=false
+
+      - name: Run E2E Tests
+        run: |
+          npm run build
+          npm run test:e2e
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            coverage/
+            test-results/
+            playwright-report/
+
+      - name: Upload Coverage to Codecov
+        if: github.event_name == 'push'
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage
+          flags: frontend
+          name: frontend-coverage
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        env:
+          VITE_API_URL: https://api.promata-dev.duckdns.org
+        run: npm run build
+
+      - name: Serve Build
+        run: |
+          npm install -g serve
+          serve -s dist -l 3000 &
+          sleep 5
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: './lighthouse.config.js'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Security Audit
+        run: |
+          npm audit --audit-level=high
+          npm run security-check
+
+      - name: Run Trivy Security Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy Results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  build-and-push:
+    needs: [test, security-scan]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+      image_digest: ${{ steps.build.outputs.digest }}
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Set Environment Variables
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "VITE_API_URL=https://api.promata-dev.duckdns.org" >> $GITHUB_ENV
+            echo "VITE_APP_ENV=development" >> $GITHUB_ENV
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "VITE_API_URL=https://api.promata.duckdns.org" >> $GITHUB_ENV
+            echo "VITE_APP_ENV=production" >> $GITHUB_ENV
+          fi
+
+      - name: Build Application
+        env:
+          VITE_API_URL: ${{ env.VITE_API_URL }}
+          VITE_APP_ENV: ${{ env.VITE_APP_ENV }}
+          VITE_APP_VERSION: ${{ github.sha }}
+        run: |
+          npm run build
+          
+      - name: Optimize Build
+        run: |
+          # Compress assets
+          find dist -name "*.js" -exec gzip -k {} \;
+          find dist -name "*.css" -exec gzip -k {} \;
+          find dist -name "*.html" -exec gzip -k {} \;
+          
+          # Generate build report
+          npm run build:analyze
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and Push Image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.prod
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            VCS_REF=${{ github.sha }}
+            VERSION=${{ steps.meta.outputs.version }}
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v3
+        with:
+          name: sbom
+          path: sbom.spdx.json
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            dist/
+            build-report.html
+
+  trigger-deployment:
+    needs: build-and-push
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Determine Environment
+        id: env
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
+            echo "environment=dev" >> $GITHUB_OUTPUT
+            echo "event_type=deploy-dev" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "environment=prod" >> $GITHUB_OUTPUT
+            echo "event_type=deploy-prod" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get Backend Image Tag
+        id: backend
+        run: |
+          # Query Docker Hub API for latest backend image
+          BACKEND_TAG=$(curl -s "https://hub.docker.com/v2/repositories/norohim/pro-mata-backend/tags/?page_size=1" | jq -r '.results[0].name')
+          echo "tag=$BACKEND_TAG" >> $GITHUB_OUTPUT
+
+      - name: Trigger Infrastructure Deployment
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.INFRA_TRIGGER_TOKEN }}
+          repository: pro-mata/pro-mata-infra
+          event-type: ${{ steps.env.outputs.event_type }}
+          client-payload: |
+            {
+              "frontend_tag": "${{ needs.build-and-push.outputs.image_tag }}",
+              "backend_tag": "${{ steps.backend.outputs.tag }}",
+              "environment": "${{ steps.env.outputs.environment }}",
+              "triggered_by": "frontend",
+              "commit_sha": "${{ github.sha }}",
+              "ref": "${{ github.ref }}"
+            }
+
+      - name: Notify Teams
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ Frontend deployment triggered successfully for ${{ steps.env.outputs.environment }}"
+            # Add Slack/Discord notification here
+          else
+            echo "❌ Failed to trigger frontend deployment"
+            # Add failure notification here
+          fi

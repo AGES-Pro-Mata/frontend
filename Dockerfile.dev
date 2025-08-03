@@ -1,0 +1,42 @@
+# Development Dockerfile for React Frontend
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache \
+    git \
+    curl \
+    && rm -rf /var/cache/apk/*
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S reactjs -u 1001
+
+# Copy package files
+COPY --chown=reactjs:nodejs package*.json ./
+
+# Install dependencies
+RUN npm ci --prefer-offline --no-audit
+
+# Copy source code
+COPY --chown=reactjs:nodejs . .
+
+# Switch to non-root user
+USER reactjs
+
+# Expose development port
+EXPOSE 3000
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:3000 || exit 1
+
+# Set environment variables
+ENV NODE_ENV=development
+ENV VITE_API_URL=http://localhost:8080/api
+ENV VITE_APP_ENV=development
+
+# Start development server with hot reload
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

@@ -1,0 +1,493 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Variables for theming */
+@layer base {
+  :root {
+    /* Default theme (light) */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 210 40% 95%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 142 71% 45%;
+    --radius: 0.5rem;
+
+    /* Pro-Mata specific variables */
+    --pro-mata-green: 142 71% 45%;
+    --pro-mata-green-light: 142 71% 55%;
+    --pro-mata-green-dark: 142 71% 35%;
+    --pro-mata-brown: 25 28% 45%;
+    --pro-mata-blue: 213 94% 68%;
+    
+    /* Spacing */
+    --header-height: 4rem;
+    --sidebar-width: 16rem;
+    --footer-height: 3rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 142 71% 45%;
+  }
+}
+
+/* Base styles */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    @apply scroll-smooth;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl lg:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl lg:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl lg:text-2xl;
+  }
+
+  h5 {
+    @apply text-lg lg:text-xl;
+  }
+
+  h6 {
+    @apply text-base lg:text-lg;
+  }
+
+  p {
+    @apply leading-7;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  /* Selection styles */
+  ::selection {
+    @apply bg-primary/20 text-primary-foreground;
+  }
+
+  /* Scrollbar styles */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  /* Print styles */
+  @media print {
+    .no-print {
+      @apply hidden;
+    }
+    
+    * {
+      @apply text-black bg-white;
+    }
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Loading spinner */
+  .spinner {
+    @apply inline-block w-4 h-4 border-2 border-current border-r-transparent rounded-full animate-spin;
+  }
+
+  /* Button variants */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-sm {
+    @apply h-9 rounded-md px-3;
+  }
+
+  .btn-md {
+    @apply h-10 px-4 py-2;
+  }
+
+  .btn-lg {
+    @apply h-11 rounded-md px-8;
+  }
+
+  .btn-icon {
+    @apply h-10 w-10;
+  }
+
+  /* Input styles */
+  .input-field {
+    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Card styles */
+  .card {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+  }
+
+  .card-header {
+    @apply flex flex-col space-y-1.5 p-6;
+  }
+
+  .card-title {
+    @apply text-2xl font-semibold leading-none tracking-tight;
+  }
+
+  .card-description {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .card-content {
+    @apply p-6 pt-0;
+  }
+
+  .card-footer {
+    @apply flex items-center p-6 pt-0;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  .badge-default {
+    @apply border-transparent bg-primary text-primary-foreground hover:bg-primary/80;
+  }
+
+  .badge-secondary {
+    @apply border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+
+  .badge-destructive {
+    @apply border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80;
+  }
+
+  .badge-outline {
+    @apply text-foreground;
+  }
+
+  /* Alert styles */
+  .alert {
+    @apply relative w-full rounded-lg border p-4;
+  }
+
+  .alert-destructive {
+    @apply border-destructive/50 text-destructive dark:border-destructive;
+  }
+
+  /* Navigation styles */
+  .nav-link {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .nav-link-active {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  /* Form styles */
+  .form-label {
+    @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  }
+
+  .form-description {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .form-message {
+    @apply text-sm font-medium text-destructive;
+  }
+
+  /* Layout styles */
+  .container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section {
+    @apply py-12 lg:py-16;
+  }
+
+  .section-sm {
+    @apply py-8 lg:py-12;
+  }
+
+  .section-lg {
+    @apply py-16 lg:py-24;
+  }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    @apply animate-in fade-in duration-300;
+  }
+
+  .animate-slide-up {
+    @apply animate-in slide-in-from-bottom duration-300;
+  }
+
+  .animate-slide-down {
+    @apply animate-in slide-in-from-top duration-300;
+  }
+
+  .animate-slide-left {
+    @apply animate-in slide-in-from-right duration-300;
+  }
+
+  .animate-slide-right {
+    @apply animate-in slide-in-from-left duration-300;
+  }
+
+  /* Accessibility helpers */
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary;
+  }
+
+  /* Pro-Mata specific styles */
+  .pro-mata-gradient {
+    background: linear-gradient(135deg, hsl(var(--pro-mata-green)) 0%, hsl(var(--pro-mata-blue)) 100%);
+  }
+
+  .pro-mata-text-gradient {
+    background: linear-gradient(135deg, hsl(var(--pro-mata-green)) 0%, hsl(var(--pro-mata-blue)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Nature-themed decorations */
+  .leaf-decoration::before {
+    content: '🌿';
+    @apply mr-2 opacity-70;
+  }
+
+  .tree-decoration::before {
+    content: '🌳';
+    @apply mr-2 opacity-70;
+  }
+
+  .mountain-decoration::before {
+    content: '🏔️';
+    @apply mr-2 opacity-70;
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Layout utilities */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Animation utilities */
+  .animate-none {
+    animation: none !important;
+  }
+
+  /* Interactive utilities */
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Content utilities */
+  .content-auto {
+    content-visibility: auto;
+  }
+
+  .content-hidden {
+    content-visibility: hidden;
+  }
+
+  .content-visible {
+    content-visibility: visible;
+  }
+
+  /* Backdrop utilities */
+  .backdrop-blur-xs {
+    backdrop-filter: blur(2px);
+  }
+
+  /* Transform utilities */
+  .transform-gpu {
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* Performance utilities */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  .will-change-scroll {
+    will-change: scroll-position;
+  }
+}
+
+/* Third-party component overrides */
+@layer components {
+  /* React Hot Toast customization */
+  .Toaster {
+    --toaster-font-family: var(--font-sans);
+  }
+
+  /* Radix UI customization */
+  [data-radix-popper-content-wrapper] {
+    z-index: 50 !important;
+  }
+
+  /* React Router customization */
+  .pending {
+    @apply opacity-50 pointer-events-none;
+  }
+
+  .transitioning {
+    @apply transition-opacity duration-200;
+  }
+}
+
+/* Print styles */
+@media print {
+  @page {
+    margin: 1in;
+  }
+
+  body {
+    @apply text-black bg-white;
+    print-color-adjust: exact;
+  }
+
+  .print-hidden {
+    @apply hidden;
+  }
+
+  .print-visible {
+    @apply block;
+  }
+
+  /* Hide interactive elements */
+  button,
+  input,
+  select,
+  textarea,
+  .btn,
+  .nav-link {
+    @apply print-hidden;
+  }
+
+  /* Ensure readability */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  blockquote, pre, img, table, figure {
+    page-break-inside: avoid;
+  }
+
+  p, li {
+    orphans: 2;
+    widows: 2;
+  }
+
+  /* Show URLs for links */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    @apply text-sm text-gray-600;
+  }
+
+  a[href^="#"]:after,
+  a[href^="javascript:"]:after {
+    content: "";
+  }
+}

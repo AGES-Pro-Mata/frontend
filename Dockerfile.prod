@@ -1,0 +1,111 @@
+# Multi-stage build for React Frontend Production
+ARG NODE_VERSION=18
+ARG NGINX_VERSION=1.25-alpine
+
+# Build stage
+FROM node:${NODE_VERSION}-alpine AS builder
+
+# Build arguments
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+
+# Labels for image metadata
+LABEL maintainer="Pro-Mata Team" \
+      org.opencontainers.image.title="Pro-Mata Frontend" \
+      org.opencontainers.image.description="React frontend for Pro-Mata reservation platform" \
+      org.opencontainers.image.version=${VERSION} \
+      org.opencontainers.image.created=${BUILD_DATE} \
+      org.opencontainers.image.revision=${VCS_REF} \
+      org.opencontainers.image.source="https://github.com/pro-mata/pro-mata-frontend"
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for building
+RUN apk add --no-cache \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/cache/apk/*
+
+# Copy package files for dependency resolution
+COPY package*.json ./
+
+# Install dependencies with cache optimization
+RUN npm ci --only=production --prefer-offline --no-audit && \
+    npm cache clean --force
+
+# Copy source code
+COPY . .
+
+# Set build environment variables
+ENV NODE_ENV=production
+ENV GENERATE_SOURCEMAP=false
+ENV DISABLE_ESLINT_PLUGIN=true
+
+# Build application
+RUN npm run build && \
+    npm run build:analyze
+
+# Optimize build output
+RUN find dist -name "*.js" -exec gzip -k {} \; && \
+    find dist -name "*.css" -exec gzip -k {} \; && \
+    find dist -name "*.html" -exec gzip -k {} \; && \
+    find dist -name "*.svg" -exec gzip -k {} \;
+
+# Production stage
+FROM nginx:${NGINX_VERSION} AS production
+
+# Install security updates
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache \
+    curl \
+    tzdata \
+    && rm -rf /var/cache/apk/*
+
+# Create nginx user and group
+RUN addgroup -g 101 -S nginx && \
+    adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
+
+# Copy built application from builder stage
+COPY --from=builder --chown=nginx:nginx /app/dist /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY --chown=nginx:nginx nginx.conf /etc/nginx/nginx.conf
+COPY --chown=nginx:nginx nginx-default.conf /etc/nginx/conf.d/default.conf
+
+# Copy startup script
+COPY --chown=nginx:nginx scripts/start-nginx.sh /usr/local/bin/start-nginx.sh
+RUN chmod +x /usr/local/bin/start-nginx.sh
+
+# Create necessary directories
+RUN mkdir -p /var/cache/nginx/client_temp \
+             /var/cache/nginx/proxy_temp \
+             /var/cache/nginx/fastcgi_temp \
+             /var/cache/nginx/uwsgi_temp \
+             /var/cache/nginx/scgi_temp && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /usr/share/nginx/html && \
+    chown -R nginx:nginx /etc/nginx
+
+# Switch to non-root user
+USER nginx
+
+# Expose port
+EXPOSE 3000
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV NGINX_WORKER_PROCESSES=auto
+ENV NGINX_WORKER_CONNECTIONS=1024
+
+# Start nginx
+ENTRYPOINT ["/usr/local/bin/start-nginx.sh"]
+CMD ["nginx", "-g", "daemon off;"]
