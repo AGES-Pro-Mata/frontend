@@ -86,16 +86,24 @@ export function Header() {
       </SheetTrigger>
       <SheetContent side="left" className="w-80">
         <SheetHeader>
-          <SheetTitle className="flex items-center space-x-2">
+          <SheetTitle className="flex items-center space-x-3">
             <img
-              src="/images/pro-mata-logo.png"
+              src="/icons/icon-96x96.png"
               alt="Pro-Mata"
-              className="h-8 w-8"
+              className="h-10 w-10 rounded-lg"
+              onError={(e) => {
+                e.currentTarget.src = "/images/pro-mata-logo.png"
+              }}
             />
-            <span>Pro-Mata</span>
+            <div className="text-left">
+              <span className="text-lg font-bold text-primary">Pro-Mata</span>
+              <p className="text-xs text-muted-foreground font-normal">
+                Centro de Pesquisas
+              </p>
+            </div>
           </SheetTitle>
           <SheetDescription>
-            Centro de Pesquisas e Proteção da Natureza
+            Sistema de reservas e hospedagem em uma das mais importantes reservas ambientais do Brasil
           </SheetDescription>
         </SheetHeader>
 
@@ -180,44 +188,57 @@ export function Header() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10">
+          <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:ring-2 hover:ring-primary/20 transition-all">
+            <Avatar className="h-10 w-10 border-2 border-background shadow-md">
               <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="bg-primary text-primary-foreground">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-semibold">
                 {stringUtils.getInitials(user.name)}
               </AvatarFallback>
             </Avatar>
+            {/* Online status indicator */}
+            <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-background rounded-full" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{user.name}</p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {user.email}
-              </p>
+        <DropdownMenuContent className="w-64" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal p-4">
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                  {stringUtils.getInitials(user.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user.name}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user.email}
+                </p>
+                <Badge variant="secondary" className="text-xs w-fit">
+                  {user.userType || 'Usuário'}
+                </Badge>
+              </div>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           
           <Link to="/dashboard">
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
+            <DropdownMenuItem className="cursor-pointer">
+              <User className="mr-3 h-4 w-4" />
               <span>Dashboard</span>
             </DropdownMenuItem>
           </Link>
           
           <Link to="/profile">
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
+            <DropdownMenuItem className="cursor-pointer">
+              <Settings className="mr-3 h-4 w-4" />
               <span>Perfil</span>
             </DropdownMenuItem>
           </Link>
 
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
+          <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+            <LogOut className="mr-3 h-4 w-4" />
             <span>Sair</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -226,62 +247,77 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+      <div className="container mx-auto px-4 lg:px-6">
+        <div className="flex h-16 lg:h-18 items-center justify-between">
           {/* Logo and Mobile Menu */}
           <div className="flex items-center space-x-4">
             <MobileNavigation />
             
-            <Link to="/" className="flex items-center space-x-2">
-              <img
-                src="/images/pro-mata-logo.png"
-                alt="Pro-Mata"
-                className="h-8 w-8"
-              />
-              <span className="font-bold text-lg text-primary">Pro-Mata</span>
+            <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity group">
+              <div className="relative">
+                <img
+                  src="/icons/icon-128x128.png"
+                  alt="Pro-Mata - Centro de Pesquisas"
+                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg shadow-sm group-hover:shadow-md transition-shadow"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/pro-mata-logo.png"
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <div className="hidden sm:block">
+                <h1 className="font-bold text-xl text-primary leading-tight">
+                  Pro-Mata
+                </h1>
+                <p className="text-xs text-muted-foreground -mt-1">
+                  Centro de Pesquisas
+                </p>
+              </div>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-8">
             {NAVIGATION_ITEMS.map((item) => {
               const isActive = location.pathname === item.href
+              const Icon = item.icon
               
               return (
                 <Link
                   key={item.href}
                   to={item.href}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                  className={`flex items-center space-x-2 text-sm font-medium transition-all hover:text-primary hover:scale-105 ${
                     isActive
-                      ? 'text-primary'
+                      ? 'text-primary border-b-2 border-primary pb-1'
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {item.label}
+                  <Icon className="h-4 w-4" />
+                  <span>{item.label}</span>
                 </Link>
               )
             })}
           </nav>
 
           {/* Search Bar (Desktop) */}
-          <div className="hidden lg:flex flex-1 max-w-sm mx-8">
+          <div className="hidden lg:flex flex-1 max-w-md mx-8">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar acomodações, atividades..."
-                className="pl-9 pr-4"
+                className="pl-9 pr-4 bg-muted/50 border-muted focus:bg-background transition-colors"
               />
             </div>
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {/* Search button (mobile) */}
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden hover:bg-accent"
               aria-label="Buscar"
             >
               <Search className="h-5 w-5" />
@@ -293,13 +329,13 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="relative"
+                  className="relative hover:bg-accent"
                   aria-label="Notificações"
                 >
                   <Bell className="h-5 w-5" />
                   <Badge 
                     variant="destructive" 
-                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0"
+                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0 animate-pulse"
                   >
                     3
                   </Badge>
@@ -310,12 +346,16 @@ export function Header() {
               </>
             ) : (
               /* Auth buttons */
-              <div className="hidden md:flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-3">
                 <Link to="/login">
-                  <Button variant="ghost">Entrar</Button>
+                  <Button variant="ghost" className="hover:bg-accent">
+                    Entrar
+                  </Button>
                 </Link>
                 <Link to="/register">
-                  <Button>Criar Conta</Button>
+                  <Button className="bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg transition-shadow">
+                    Criar Conta
+                  </Button>
                 </Link>
               </div>
             )}

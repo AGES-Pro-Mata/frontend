@@ -1,0 +1,6 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="#16a34a" rx="24"/>
+  <text x="96" y="105" font-family="Arial, sans-serif" font-size="48" fill="white" text-anchor="middle" font-weight="bold">PM</text>
+  <circle cx="96" cy="70" r="20" fill="white" opacity="0.3"/>
+  <rect x="76" y="130" width="40" height="20" fill="white" opacity="0.3" rx="4"/>
+</svg>

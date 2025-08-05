@@ -1,218 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Title and Description -->
-    <title>Pro-Mata - Centro de Pesquisas e Proteção da Natureza</title>
-    <meta name="description" content="Sistema de reservas e hospedagem do Centro de Pesquisas e Proteção da Natureza Pró-Mata - PUCRS. Reserve acomodações e atividades em plena Mata Atlântica." />
-    <meta name="keywords" content="pro-mata, pucrs, mata atlântica, hospedagem, pesquisa, natureza, conservação, ecoturismo" />
-    <meta name="author" content="PUCRS - Pontifícia Universidade Católica do Rio Grande do Sul" />
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Pro-Mata - Centro de Pesquisas e Proteção da Natureza" />
-    <meta property="og:description" content="Sistema de reservas e hospedagem do Centro de Pesquisas e Proteção da Natureza Pró-Mata - PUCRS" />
-    <meta property="og:image" content="/images/og-image.jpg" />
-    <meta property="og:url" content="https://promata.duckdns.org" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Pro-Mata" />
-    <meta property="og:locale" content="pt_BR" />
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Pro-Mata - Centro de Pesquisas e Proteção da Natureza" />
-    <meta name="twitter:description" content="Sistema de reservas e hospedagem em plena Mata Atlântica" />
-    <meta name="twitter:image" content="/images/twitter-card.jpg" />
-    
-    <!-- Theme and Color -->
-    <meta name="theme-color" content="#16a34a" />
-    <meta name="msapplication-TileColor" content="#16a34a" />
-    <meta name="color-scheme" content="light dark" />
-    
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Robots and Indexing -->
-    <meta name="robots" content="index,follow" />
-    <meta name="googlebot" content="index,follow" />
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://promata.duckdns.org" />
-    
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    
-    <!-- DNS Prefetch for external resources -->
-    <link rel="dns-prefetch" href="//api.promata.duckdns.org" />
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
-    
-    <!-- Security Headers -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
-    
-    <!-- Performance hints -->
-    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
-    
-    <!-- Critical CSS (if you have any) -->
-    <style>
-      /* Critical above-the-fold styles */
-      html {
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        line-height: 1.5;
-        -webkit-text-size-adjust: 100%;
-        tab-size: 4;
-      }
-      
-      body {
-        margin: 0;
-        font-family: inherit;
-        line-height: inherit;
-      }
-      
-      /* Loading state */
-      #root:empty::before {
-        content: '';
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: 32px;
-        height: 32px;
-        margin: -16px 0 0 -16px;
-        border: 2px solid #e5e7eb;
-        border-top-color: #16a34a;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-      
-      /* Prevent flash of unstyled content */
-      .loading {
-        visibility: hidden;
-      }
-      
-      /* Focus visible polyfill */
-      .js-focus-visible :focus:not(.focus-visible) {
-        outline: none;
-      }
-    </style>
-    
-    <!-- Environment variables for client -->
-    <script>
-      window.__PRO_MATA_ENV__ = {
-        NODE_ENV: '%VITE_NODE_ENV%',
-        API_URL: '%VITE_API_URL%',
-        APP_VERSION: '%VITE_APP_VERSION%',
-        APP_ENV: '%VITE_APP_ENV%'
-      };
-    </script>
-    
-    <!-- Analytics (Google Analytics 4) -->
-    <!-- Replace GA_MEASUREMENT_ID with your actual measurement ID -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID', {
-        page_title: document.title,
-        page_location: window.location.href
-      });
-    </script>
-    
-    <!-- Microsoft Clarity (optional) -->
-    <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "CLARITY_PROJECT_ID");
-    </script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <body class="loading">
-    <!-- App container -->
-    <div id="root"></div>
-    
-    <!-- Fallback for no JavaScript -->
-    <noscript>
-      <div style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        font-family: system-ui, sans-serif;
-        text-align: center;
-        padding: 2rem;
-      ">
-        <img src="/images/pro-mata-logo.png" alt="Pro-Mata" style="width: 64px; height: 64px; margin-bottom: 1rem;" />
-        <h1 style="color: #16a34a; margin-bottom: 1rem;">JavaScript necessário</h1>
-        <p style="color: #6b7280; margin-bottom: 1rem; max-width: 400px;">
-          Para utilizar o sistema Pro-Mata, é necessário habilitar o JavaScript em seu navegador.
-        </p>
-        <p style="color: #6b7280; font-size: 0.875rem;">
-          Para mais informações, entre em contato: 
-          <a href="mailto:promata@pucrs.br" style="color: #16a34a;">promata@pucrs.br</a>
-        </p>
-      </div>
-    </noscript>
-    
-    <!-- Module script for modern browsers -->
-    <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Service Worker registration -->
-    <script>
-      if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-              console.log('SW registered: ', registration);
-            })
-            .catch(function(registrationError) {
-              console.log('SW registration failed: ', registrationError);
-            });
-        });
-      }
-    </script>
-    
-    <!-- Remove loading class after DOM is ready -->
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        document.body.classList.remove('loading');
-      });
-    </script>
-    
-    <!-- Error tracking (Sentry example) -->
-    <script>
-      window.addEventListener('error', function(event) {
-        console.error('Global error:', event.error);
-        // You can send errors to a tracking service here
-      });
-      
-      window.addEventListener('unhandledrejection', function(event) {
-        console.error('Unhandled promise rejection:', event.reason);
-        // You can send promise rejections to a tracking service here
-      });
-    </script>
-  </body>
+  <!-- SEO Básico -->
+  <title>Pro-Mata - Reserva Natural</title>
+  <meta name="description" content="Sistema de reservas do Centro de Pesquisas Pro-Mata. Reserve acomodações em uma das mais importantes reservas ambientais do Brasil." />
+  <meta name="keywords" content="pro-mata, reserva, acomodações, pesquisa, natureza, brasil" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://promata.duckdns.org/" />
+  <meta property="og:title" content="Pro-Mata - Reserva Natural" />
+  <meta property="og:description" content="Sistema de reservas do Centro de Pesquisas Pro-Mata" />
+  <meta property="og:image" content="/images/pro-mata-logo.png" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:title" content="Pro-Mata - Reserva Natural" />
+  <meta property="twitter:description" content="Sistema de reservas do Centro de Pesquisas Pro-Mata" />
+  <meta property="twitter:image" content="/images/pro-mata-logo.png" />
+  
+  <!-- Favicon e Icons - usando os ícones otimizados -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#16a34a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  
+  <!-- Preconnect para performance -->
+  <link rel="preconnect" href="https://api.promata.duckdns.org" />
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+  
+  <!-- Fallback para JavaScript desabilitado -->
+  <noscript>
+    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+      <img src="/images/pro-mata-logo.png" alt="Pro-Mata" style="max-width: 200px; margin-bottom: 20px;" />
+      <h1>JavaScript Necessário</h1>
+      <p>Este aplicativo requer JavaScript para funcionar corretamente.</p>
+      <p>Por favor, habilite JavaScript em seu navegador.</p>
+    </div>
+  </noscript>
+</body>
 </html>

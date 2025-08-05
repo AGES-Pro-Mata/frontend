@@ -62,13 +62,13 @@
   ],
   "shortcuts": [
     {
-      "name": "Fazer Reserva",
+      "name": "Reservar",
       "short_name": "Reservar",
-      "description": "Fazer uma nova reserva de acomodação",
+      "description": "Fazer uma nova reserva",
       "url": "/accommodations",
       "icons": [
         {
-          "src": "/icons/shortcut-reservation.png",
+          "src": "/icons/icon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -78,23 +78,10 @@
       "name": "Minhas Reservas",
       "short_name": "Reservas",
       "description": "Ver minhas reservas",
-      "url": "/dashboard/reservations",
+      "url": "/dashboard",
       "icons": [
         {
-          "src": "/icons/shortcut-my-reservations.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Atividades",
-      "short_name": "Atividades",
-      "description": "Explorar atividades disponíveis",
-      "url": "/activities",
-      "icons": [
-        {
-          "src": "/icons/shortcut-activities.png",
+          "src": "/icons/icon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -103,18 +90,18 @@
   ],
   "screenshots": [
     {
-      "src": "/screenshots/desktop-home.png",
-      "type": "image/png",
+      "src": "/images/pro-mata-logo.png",
       "sizes": "1280x720",
+      "type": "image/png",
       "form_factor": "wide",
-      "label": "Página inicial do Pro-Mata"
+      "label": "Tela principal do Pro-Mata no desktop"
     },
     {
-      "src": "/screenshots/mobile-accommodations.png",
+      "src": "/images/pro-mata-logo.png",
+      "sizes": "750x1334",
       "type": "image/png",
-      "sizes": "390x844",
       "form_factor": "narrow",
-      "label": "Lista de acomodações no mobile"
+      "label": "Tela principal do Pro-Mata no mobile"
     }
   ],
   "related_applications": [],

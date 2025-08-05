@@ -18,16 +18,15 @@ interface DashboardData {
   recentReservations: Array<{
     id: string
     guestName: string
-    accommodation: string
     checkIn: string
-    status: string
+    checkOut: string
+    status: 'confirmed' | 'pending' | 'cancelled'
   }>
-  featuredAccommodations: Array<{
+  upcomingCheckIns: Array<{
     id: string
-    name: string
-    price: number
-    images: string[]
-    occupancyRate: number
+    guestName: string
+    checkIn: string
+    accommodationName: string
   }>
   userProfile: {
     name: string
@@ -49,7 +48,7 @@ export const Route = createFileRoute('/dashboard')({
       throw redirect({
         to: '/login',
         search: {
-          redirect: location.href,
+          // redirect: location.href, // TODO: fix redirect
         },
       })
     }
@@ -65,63 +64,66 @@ export const Route = createFileRoute('/dashboard')({
       // Determine what data to load based on user role
       if (auth.hasRole('ADMIN') || auth.hasRole('STAFF')) {
         // Admin dashboard data
-        const [stats, recentReservations, featuredAccommodations] = await Promise.all([
-          userService.getDashboardStats(),
-          reservationService.getRecent({ limit: 5 }),
-          accommodationService.getFeatured(),
+        const [reservationStats, recentReservations, upcomingCheckIns] = await Promise.all([
+          reservationService.getStats(),
+          reservationService.getRecentReservations(5),
+          reservationService.getUpcomingCheckIns(7),
         ])
 
         return {
-          stats,
-          recentReservations: recentReservations.data,
-          featuredAccommodations,
+          stats: reservationStats,
+          recentReservations,
+          upcomingCheckIns,
           userProfile: {
             name: auth.user?.name || '',
             email: auth.user?.email || '',
             memberSince: auth.user?.createdAt || '',
-            totalReservations: 0,
+            totalReservations: reservationStats.totalReservations,
             upcomingReservations: 0,
           },
         }
       } else {
         // Regular user dashboard data
-        const [userReservations, featuredAccommodations, userProfile] = await Promise.all([
-          reservationService.getUserReservations(),
-          accommodationService.getFeatured(),
-          userService.getProfile(),
+        const [userStats, userReservations] = await Promise.all([
+          userService.getDashboardStats(),
+          userService.getUserReservations(),
         ])
 
-        const activeReservations = userReservations.filter(r => 
-          ['CONFIRMED', 'CHECKED_IN'].includes(r.status)
-        )
-        
-        const upcomingReservations = userReservations.filter(r =>
-          r.status === 'CONFIRMED' && new Date(r.checkIn) > new Date()
-        )
+        const recentReservations = userReservations
+          .slice(0, 5)
+          .map(r => ({
+            id: r.id,
+            guestName: auth.user?.name || '',
+            checkIn: r.checkIn,
+            checkOut: r.checkOut,
+            status: r.status.toLowerCase() as 'confirmed' | 'pending' | 'cancelled',
+          }))
+
+        const upcomingCheckIns = userReservations
+          .filter(r => r.status === 'CONFIRMED' && new Date(r.checkIn) > new Date())
+          .slice(0, 5)
+          .map(r => ({
+            id: r.id,
+            guestName: auth.user?.name || '',
+            checkIn: r.checkIn,
+            accommodationName: r.accommodation?.name || '',
+          }))
 
         return {
           stats: {
-            totalReservations: userReservations.length,
-            activeReservations: activeReservations.length,
+            totalReservations: userStats.totalReservations,
+            activeReservations: userStats.upcomingReservations,
             totalRevenue: userReservations.reduce((sum, r) => sum + r.totalAmount, 0),
             occupancyRate: 0, // Not applicable for regular users
           },
-          recentReservations: userReservations
-            .slice(0, 5)
-            .map(r => ({
-              id: r.id,
-              guestName: userProfile.name,
-              accommodation: r.accommodationName || '',
-              checkIn: r.checkIn,
-              status: r.status,
-            })),
-          featuredAccommodations,
+          recentReservations,
+          upcomingCheckIns,
           userProfile: {
-            name: userProfile.name,
-            email: userProfile.email,
-            memberSince: userProfile.createdAt,
-            totalReservations: userReservations.length,
-            upcomingReservations: upcomingReservations.length,
+            name: auth.user?.name || '',
+            email: auth.user?.email || '',
+            memberSince: auth.user?.createdAt || '',
+            totalReservations: userStats.totalReservations,
+            upcomingReservations: userStats.upcomingReservations,
           },
         }
       }
@@ -166,14 +168,6 @@ export const Route = createFileRoute('/dashboard')({
       </div>
     </div>
   ),
-
-  // Meta information
-  meta: () => [
-    {
-      title: 'Dashboard - Pro-Mata',
-      description: 'Dashboard do sistema Pro-Mata',
-    },
-  ],
 })
 
 function DashboardComponent() {
@@ -188,8 +182,6 @@ function DashboardComponent() {
     }>
       <DashboardPage 
         data={dashboardData}
-        userRole={auth.user?.role || 'USER'}
-        isAdmin={auth.hasRole('ADMIN') || auth.hasRole('STAFF')}
       />
     </Suspense>
   )

@@ -80,7 +80,7 @@
     min-height: 100vh;
     min-height: 100dvh;
   }
-
+ 
   /* Typography */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
@@ -217,15 +217,15 @@
   }
 
   .badge-default {
-    @apply border-transparent bg-primary text-primary-foreground hover:bg-primary/80;
+    @apply border-transparent bg-primary text-primary-foreground hover:bg-primary/90p;
   }
 
   .badge-secondary {
-    @apply border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80;
+    @apply border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90p;
   }
 
   .badge-destructive {
-    @apply border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80;
+    @apply border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/90p;
   }
 
   .badge-outline {

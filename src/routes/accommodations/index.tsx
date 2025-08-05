@@ -233,7 +233,7 @@ function AccommodationsComponent() {
 
   const handleSearchUpdate = (newSearch: any) => {
     navigate({
-      search: (prev: any) => ({
+      search: (prev: any) => ({ ...(prev as any),
         ...prev,
         ...newSearch,
         page: 1, // Reset to first page on search
@@ -248,7 +248,7 @@ function AccommodationsComponent() {
       page={data.page}
       totalPages={data.totalPages}
       filters={data.filters}
-      search={search}
+      search={search as any}
       onSearchUpdate={handleSearchUpdate}
     />
   )

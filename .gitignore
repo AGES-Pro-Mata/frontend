@@ -2,18 +2,22 @@
 node_modules/
 /.pnp
 .pnp.js
+jspm_packages/
 
 # Production builds
 /dist
 /build
 /.next/
 /out/
+build/Release
 
 # Development
 .cache/
 .parcel-cache/
 .vite/
 .turbo/
+.temp/
+.tmp/
 
 # Testing
 /coverage
@@ -21,6 +25,7 @@ node_modules/
 /test-results/
 /playwright-report/
 /playwright/.cache/
+*.lcov
 
 # Environment variables
 .env
@@ -28,6 +33,8 @@ node_modules/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.test
+.env.production
 
 # Logs
 npm-debug.log*
@@ -35,6 +42,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+logs/
+*.log
 
 # Runtime data
 pids
@@ -42,39 +51,21 @@ pids
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+# Grunt intermediate storage
 .grunt
 
-# Bower dependency directory (https://bower.io/)
+# Bower dependency directory
 bower_components
 
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
-
-# Dependency directories
-node_modules/
-jspm_packages/
-
 # TypeScript cache
 *.tsbuildinfo
 
-# Optional npm cache directory
+# Optional caches
 .npm
-
-# Optional eslint cache
 .eslintcache
-
-# Optional stylelint cache
 .stylelintcache
 
 # Microbundle cache
@@ -88,29 +79,15 @@ jspm_packages/
 
 # Output of 'npm pack'
 *.tgz
+*.tar.gz
 
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-.env.test
-.env.production
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# Next.js build output
-.next
-out
-
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
-.cache/
 # Comment in the public line in if your project uses Gatsby and not Next.js
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
@@ -169,6 +146,7 @@ Thumbs.db
 
 # Auto-generated files
 src/routeTree.gen.ts
+routeTree.gen.ts
 *.gen.ts
 *.gen.js
 
@@ -182,6 +160,7 @@ size-limit-report.json
 
 # Docker
 Dockerfile.local
+.dockerignore
 
 # Backup files
 *.backup

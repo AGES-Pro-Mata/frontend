@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /accommodations
+Allow: /login
+Allow: /register
+
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api
+
+Sitemap: https://promata.duckdns.org/sitemap.xml

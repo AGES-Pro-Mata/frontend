@@ -56,7 +56,7 @@ export function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       clearError()
-      await login(data)
+      await login(data as any)
       
       // Redirect to intended page or dashboard
       const redirectTo = (searchParams as any)?.redirect || '/dashboard'
