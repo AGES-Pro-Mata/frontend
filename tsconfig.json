@@ -11,18 +11,21 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "strict": false,
+    "strict": true,
     "strictNullChecks": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": false,
+    "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["vite/client", "node"]
+    "types": ["vite/client", "node", "@testing-library/jest-dom"]
   },
-  "include": ["src", "src/vite-env.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "src/vite-env.d.ts"],
+  "exclude": ["node_modules", "dist", "build"]
 }

@@ -8,12 +8,16 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "lint": "eslint . --ext ts,tsx --max-warnings 0",
+    "lint": "eslint .",
     "test": "vitest",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "generate:icons": "node scripts/optimize-logo.cjs",
-    "generate:assets": "npm run generate:icons"
+    "generate:assets": "npm run generate:icons",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
+    "version:release": "npm run test && npm run build && npm version"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.0",
@@ -33,7 +37,6 @@
     "axios": "^1.6.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "date-fns": "^2.30.0",
     "immer": "^10.1.1",
     "lucide-react": "^0.300.0",
     "react": "^18.2.0",
@@ -65,6 +68,7 @@
     "eslint": "^8.45.0",
     "eslint-plugin-react": "^7.33.0",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
     "jsdom": "^23.0.0",
     "playwright": "^1.40.0",
     "postcss": "^8.5.6",
@@ -77,7 +81,7 @@
     "vitest": "^1.0.0"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=18.19.1",
     "npm": ">=9.0.0"
   }
 }

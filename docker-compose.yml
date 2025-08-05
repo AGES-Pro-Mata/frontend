@@ -49,14 +49,14 @@ services:
       - NGINX_WORKER_PROCESSES=1
       - NGINX_WORKER_CONNECTIONS=512
     ports:
-      - "3001:3000"
+      - "3001:8080"
     networks:
       - promata_dev
     restart: unless-stopped
     depends_on:
       - backend-mock
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3

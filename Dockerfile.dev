@@ -1,35 +1,39 @@
 # Development Dockerfile for React Frontend
-FROM node:18-alpine
+FROM node:22.12.0-alpine3.21
 
-# Set working directory
-WORKDIR /app
-
-# Install system dependencies
-RUN apk add --no-cache \
+# Install security updates first
+RUN apk upgrade --no-cache && \
+    apk add --no-cache \
     git \
     curl \
+    dumb-init \
+    ca-certificates \
     && rm -rf /var/cache/apk/*
 
-# Create non-root user
+# Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S reactjs -u 1001
+    adduser -S reactjs -u 1001 -G nodejs
 
-# Copy package files
+# Set working directory and ownership
+WORKDIR /app
+RUN chown reactjs:nodejs /app
+
+# Copy package files with proper ownership
 COPY --chown=reactjs:nodejs package*.json ./
 
-# Install dependencies
-RUN npm ci --prefer-offline --no-audit
-
-# Copy source code
-COPY --chown=reactjs:nodejs . .
-
-# Switch to non-root user
+# Switch to non-root user before installing dependencies
 USER reactjs
+
+# Install dependencies with security considerations
+RUN npm ci --prefer-offline --no-audit --no-fund
+
+# Copy source code with proper ownership
+COPY --chown=reactjs:nodejs . .
 
 # Expose development port
 EXPOSE 3000
 
-# Add health check
+# Add health check with proper timeout
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
 
@@ -39,4 +43,4 @@ ENV VITE_API_URL=http://localhost:8080/api
 ENV VITE_APP_ENV=development
 
 # Start development server with hot reload
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["dumb-init", "npm", "run", "dev", "--", "--host", "0.0.0.0"]

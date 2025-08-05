@@ -1,96 +1,93 @@
-# Multi-stage build for optimized production image
-FROM node:20-alpine AS builder
+# Ultra-secure multi-stage build with minimal attack surface
+# Stage 1: Build stage using minimal Alpine image
+FROM node:22.12.0-alpine3.21 AS builder
+
+# Update packages and install only essential build dependencies
+RUN apk update && \
+    apk upgrade --no-cache && \
+    apk add --no-cache \
+    ca-certificates \
+    dumb-init \
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/* \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create unprivileged user
+RUN addgroup -g 10001 -S nonroot && \
+    adduser -S -D -H -u 10001 -s /sbin/nologin -G nonroot nonroot
 
 # Set working directory
 WORKDIR /app
 
-# Add non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
-
 # Copy package files
-COPY package*.json ./
-COPY tsconfig.json ./
-COPY vite.config.ts ./
-COPY tailwind.config.js ./
-COPY postcss.config.js ./
+COPY --chown=nonroot:nonroot package*.json ./
+COPY --chown=nonroot:nonroot tsconfig.json ./
+COPY --chown=nonroot:nonroot vite.config.ts ./
+COPY --chown=nonroot:nonroot tailwind.config.js ./
+COPY --chown=nonroot:nonroot postcss.config.js ./
 
-# Install dependencies
-RUN npm ci --only=production --no-audit --prefer-offline && \
-    npm cache clean --force
+# Switch to nonroot user
+USER nonroot
+
+# Install dependencies with security flags
+RUN npm ci \
+    --prefer-offline \
+    --no-audit \
+    --no-fund \
+    --ignore-scripts \
+    --production=false
 
 # Copy source code
-COPY public ./public
-COPY src ./src
-COPY index.html ./
+COPY --chown=nonroot:nonroot public ./public
+COPY --chown=nonroot:nonroot src ./src
+COPY --chown=nonroot:nonroot index.html ./
 
-# Set build arguments
+# Build arguments
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
 
-# Set environment variables for build
-ENV NODE_ENV=production
-ENV VITE_BUILD_DATE=$BUILD_DATE
-ENV VITE_VCS_REF=$VCS_REF
-ENV VITE_VERSION=$VERSION
+# Set build environment
+ENV NODE_ENV=production \
+    VITE_BUILD_DATE=$BUILD_DATE \
+    VITE_VCS_REF=$VCS_REF \
+    VITE_VERSION=$VERSION
 
-# Build application
+# Build the application
 RUN npm run build
 
-# Production stage
-FROM nginx:1.27-alpine AS production
+# Stage 2: Production stage using distroless nginx
+FROM cgr.dev/chainguard/nginx:latest AS production
 
-# Add labels for metadata
-LABEL maintainer="pro-mata-team"
-LABEL version=$VERSION
-LABEL build-date=$BUILD_DATE
-LABEL vcs-ref=$VCS_REF
+# Copy built application
+COPY --from=builder --chown=nginx:nginx /app/dist /usr/share/nginx/html
 
-# Install security updates
-RUN apk upgrade --no-cache && \
-    apk add --no-cache \
-    ca-certificates \
-    tzdata && \
-    rm -rf /var/cache/apk/*
+# Copy secure nginx configuration
+COPY --chown=nginx:nginx nginx-secure.conf /etc/nginx/nginx.conf
 
-# Create nginx user and group
-RUN addgroup -g 1001 -S nginx-app && \
-    adduser -S nginx-app -u 1001 -G nginx-app
+# Build arguments for labels
+ARG BUILD_DATE
+ARG VCS_REF  
+ARG VERSION
 
-# Copy custom nginx configuration
-COPY --chown=nginx-app:nginx-app nginx.conf /etc/nginx/nginx.conf
-
-# Copy built application from builder stage
-COPY --from=builder --chown=nginx-app:nginx-app /app/dist /usr/share/nginx/html
-
-# Copy additional nginx configs
-COPY --chown=nginx-app:nginx-app nginx/ /etc/nginx/conf.d/
-
-# Set proper permissions
-RUN chown -R nginx-app:nginx-app /usr/share/nginx/html && \
-    chown -R nginx-app:nginx-app /etc/nginx && \
-    chown -R nginx-app:nginx-app /var/cache/nginx && \
-    chown -R nginx-app:nginx-app /var/log/nginx && \
-    chmod -R 755 /usr/share/nginx/html
-
-# Create nginx runtime directories
-RUN mkdir -p /var/cache/nginx/client_temp && \
-    mkdir -p /var/cache/nginx/proxy_temp && \
-    mkdir -p /var/cache/nginx/fastcgi_temp && \
-    mkdir -p /var/cache/nginx/uwsgi_temp && \
-    mkdir -p /var/cache/nginx/scgi_temp && \
-    chown -R nginx-app:nginx-app /var/cache/nginx
-
-# Switch to non-root user
-USER nginx-app
+# Add security-focused labels
+LABEL org.opencontainers.image.title="Pro-Mata Frontend" \
+      org.opencontainers.image.description="Ultra-secure production frontend" \
+      org.opencontainers.image.version=${VERSION} \
+      org.opencontainers.image.created=${BUILD_DATE} \
+      org.opencontainers.image.revision=${VCS_REF} \
+      org.opencontainers.image.vendor="Pro-Mata Team" \
+      org.opencontainers.image.licenses="MIT" \
+      security.scan="enabled" \
+      security.distroless="true"
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
 # Expose port
-EXPOSE 3000
+EXPOSE 8080
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Use distroless entrypoint (nginx user is already configured)
+ENTRYPOINT ["/usr/sbin/nginx"]
+CMD ["-g", "daemon off;"]

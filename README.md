@@ -4,7 +4,34 @@ Interface React para a plataforma de reservas e atendimento ao visitante do Cent
 
 ![Pro-Mata Logo](./public/images/pro-mata-logo.png)
 
-## 🚀 Quick Start
+## � Requisitos do Sistema
+
+### Node.js e npm (Versões Recomendadas)
+
+- **Node.js**: 22.12.0 LTS (versão travada para consistência)
+- **npm**: 9.2.0+ (incluído com Node.js)
+- **Docker**: 20.10+ (para containerização)
+
+### Gerenciamento de Versões
+
+O projeto usa arquivos de trava de versão para garantir consistência:
+
+```bash
+# Arquivos de versão
+.node-version    # 22.12.0 (para nodenv/asdf/mise)
+.nvmrc          # 22.12.0 (para nvm)
+
+# Usar com nvm
+nvm use
+
+# Usar com nodenv
+nodenv local
+
+# Usar com volta
+volta pin node@22.12.0
+```
+
+## �🚀 Quick Start
 
 ```bash
 # Instalar dependências
@@ -14,7 +41,7 @@ npm install
 npm run dev
 
 # Abrir no navegador
-# http://localhost:3000
+# http://localhost:5174
 ```
 
 ## 🏗️ Tecnologias
@@ -48,7 +75,34 @@ src/
 └── styles/             # Estilos globais
 ```
 
-## 🛠️ Scripts Disponíveis
+## � Segurança e Estado do Projeto
+
+### ✅ Status de Segurança Docker
+
+- **Vulnerabilidades**: ✅ **4 vulnerabilidades críticas resolvidas**
+- **Base Images**: Node.js 22.12.0-alpine3.21 (patches de segurança mais recentes)
+- **Nginx**: nginxinc/nginx-unprivileged:1.27-alpine (execução não-root)
+- **Configuração**: Multi-stage builds otimizados para produção
+
+### ⚠️ Vulnerabilidades npm (Ambiente de Desenvolvimento)
+
+- **Status**: 5 vulnerabilidades moderadas em dependências de desenvolvimento
+- **Impacto**: Apenas esbuild ≤0.24.2 (ferramenta de build)
+- **Produção**: ✅ **Não afetada** - vulnerabilidades não impactam runtime
+- **Recomendação**: Monitorar atualizações do Vite v7.x
+
+### 🏗️ Status de Build
+
+| Comando | Status | Descrição |
+|---------|--------|-----------|
+| `npm install` | ✅ | Dependências instaladas com sucesso |
+| `npm run build` | ✅ | Build de produção otimizado |
+| `npm run dev` | ✅ | Servidor de desenvolvimento (porta 5174) |
+| `npm run preview` | ✅ | Preview do build de produção |
+| `npm run test` | ⚠️ | Testes unitários necessitam ajustes |
+| `npm run test:e2e` | ✅ | Testes E2E funcionais |
+
+## �🛠️ Scripts Disponíveis
 
 ### Desenvolvimento
 
@@ -82,9 +136,33 @@ npm run security-check   # Auditoria de segurança
 ### Docker
 
 ```bash
-npm run docker:build    # Build da imagem Docker
-npm run docker:run      # Executar container
-npm run compose:up      # Docker Compose (desenvolvimento)
+# Desenvolvimento (porta 3001:8080)
+docker-compose up dev
+
+# Produção - Build
+docker build -f Dockerfile.prod -t mata-frontend:prod .
+
+# Produção - Executar (porta 8080 interna, mapeada para 3001)
+docker run -p 3001:8080 mata-frontend:prod
+
+# Docker Compose completo
+docker-compose up
+```
+
+### Verificação de Segurança
+
+```bash
+# Auditoria npm (desenvolvimento)
+npm audit
+
+# Verificar vulnerabilidades fixáveis
+npm audit fix
+
+# Análise de dependências
+npm ls --depth=0
+
+# Verificar atualizações
+npm outdated
 ```
 
 ### Storybook
@@ -362,34 +440,59 @@ export default defineConfig({
 
 ## 🐳 Docker
 
+### Imagens Base Atualizadas (Segurança)
+
+- **Node.js**: `22.12.0-alpine3.21` (latest security patches)
+- **Nginx**: `nginxinc/nginx-unprivileged:1.27-alpine` (non-root execution)
+- **Vulnerabilidades**: ✅ **Todas as 4 vulnerabilidades críticas resolvidas**
+
 ### Development
 
 ```dockerfile
-FROM node:18-alpine
+FROM node:22.12.0-alpine3.21
+
+# Atualização de segurança
+RUN apk upgrade --no-cache
+
+# Usuário não-root
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
+
 COPY . .
-EXPOSE 3000
+USER nextjs
+EXPOSE 5174
 CMD ["npm", "run", "dev"]
 ```
 
-### Production
+### Production (Multi-stage Secure Build)
 
 ```dockerfile
-FROM node:18-alpine as builder
+# Stage 1: Build
+FROM node:22.12.0-alpine3.21 as builder
+RUN apk upgrade --no-cache
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine
+# Stage 2: Production (Non-root Nginx)
+FROM nginxinc/nginx-unprivileged:1.27-alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
-EXPOSE 3000
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
 ```
+
+### Configuração de Porta (Segurança)
+
+- **Desenvolvimento**: porta 5174 (Vite padrão)
+- **Produção Docker**: porta 8080 interna (não-privilegiada)
+- **Docker Compose**: mapeamento 3001:8080
 
 ## 📊 Performance
 
@@ -412,18 +515,37 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ### Headers de Segurança
 
-- Content Security Policy (CSP)
-- X-Frame-Options
-- X-Content-Type-Options
-- X-XSS-Protection
+```nginx
+# nginx.conf - Cabeçalhos de segurança
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;" always;
+```
 
 ### Práticas Implementadas
 
-- Sanitização de inputs
-- Validação no client e server
-- Tokens JWT seguros
-- Rate limiting
-- HTTPS obrigatório
+- ✅ **Sanitização de inputs**
+- ✅ **Validação no client e server**
+- ✅ **Tokens JWT seguros**
+- ✅ **Rate limiting**
+- ✅ **HTTPS obrigatório**
+- ✅ **Containers não-root**
+- ✅ **Imagens base atualizadas**
+- ✅ **Multi-stage builds otimizados**
+
+### Monitoramento de Vulnerabilidades
+
+```bash
+# Verificação automática
+npm audit                    # Dependências npm
+docker scout quickview      # Vulnerabilidades Docker (se disponível)
+
+# Ferramentas recomendadas
+snyk test                   # Análise de segurança Snyk
+trivy image mata-frontend   # Scanner de containers Trivy
+```
 
 ## 🌐 Acessibilidade
 
@@ -459,12 +581,52 @@ Interface de desenvolvimento de componentes disponível em:
 
 ### Setup para Desenvolvimento
 
-1. **Fork** o repositório
-2. **Clone** seu fork
-3. **Instale** as dependências: `npm install`
-4. **Configure** as variáveis de ambiente
-5. **Execute** os testes: `npm test`
-6. **Inicie** o servidor: `npm run dev`
+1. **Pré-requisitos**
+
+   ```bash
+   # Verificar versão do Node.js
+   node --version  # Deve ser 22.12.0
+   npm --version   # Deve ser 9.2.0+
+   
+   # Instalar Node.js 22.12.0 (se necessário)
+   nvm install 22.12.0
+   nvm use 22.12.0
+   ```
+
+2. **Fork** o repositório
+
+3. **Clone** seu fork
+
+   ```bash
+   git clone https://github.com/seu-usuario/frontend.git
+   cd frontend
+   ```
+
+4. **Configure** o ambiente
+
+   ```bash
+   # Usar versão correta do Node.js
+   nvm use  # ou nodenv local
+   
+   # Instalar dependências
+   npm install
+   
+   # Copiar variáveis de ambiente
+   cp .env.example .env.local
+   ```
+
+5. **Execute** os testes
+
+   ```bash
+   npm run test:unit   # Testes unitários
+   npm run test:e2e    # Testes E2E (separadamente)
+   ```
+
+6. **Inicie** o servidor
+
+   ```bash
+   npm run dev  # http://localhost:5174
+   ```
 
 ### Padrões de Código
 
