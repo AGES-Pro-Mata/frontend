@@ -6,10 +6,9 @@ on:
   pull_request:
     branches: [dev, main]
 
-# Add this section
 permissions:
   contents: read
-  security-events: write  # Required for SARIF upload
+  security-events: write
   actions: read           
 
 env:
@@ -139,6 +138,7 @@ jobs:
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
+        continue-on-error: true
         with:
           sarif_file: 'trivy-results.sarif'
 
@@ -173,7 +173,8 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set Docker Configuration
