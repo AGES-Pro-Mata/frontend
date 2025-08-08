@@ -70,6 +70,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "jsdom": "^23.0.0",
+    "lint-staged": "^16.1.5",
     "playwright": "^1.40.0",
     "postcss": "^8.5.6",
     "prettier": "^3.0.0",
@@ -83,5 +84,18 @@
   "engines": {
     "node": ">=18.19.1",
     "npm": ">=9.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,scss}": [
+      "prettier --write"
+    ]
   }
 }
