@@ -2,9 +2,15 @@ name: Frontend CI/CD Pipeline
 
 on:
   push:
-    branches: [develop, main]
+    branches: [dev, main]
   pull_request:
-    branches: [develop, main]
+    branches: [dev, main]
+
+# Add this section
+permissions:
+  contents: read
+  security-events: write  # Required for SARIF upload
+  actions: read           
 
 env:
   DOCKER_REGISTRY: docker.io
@@ -85,7 +91,7 @@ jobs:
 
       - name: Build Application
         env:
-          VITE_API_URL: https://api.promata-dev.duckdns.org
+          VITE_API_URL: ${{ github.ref == 'refs/heads/main' && 'https://api.promata.duckdns.org' || 'https://api.promata-dev.duckdns.org' }}
         run: npm run build
 
       - name: Serve Build
@@ -138,7 +144,7 @@ jobs:
 
   build-and-push:
     needs: [test, security-scan]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     
     steps:
