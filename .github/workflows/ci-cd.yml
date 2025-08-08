@@ -39,7 +39,7 @@ jobs:
         run: |
           npm run lint || true
 
-      - name: "🧪 Run Unit Tests"
+      - name: "Run Unit Tests"
         run: |
           npm run test:unit -- --coverage || true
 
@@ -141,10 +141,6 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     
-    outputs:
-      image_tag: ${{ steps.meta.outputs.tags }}
-      image_digest: ${{ steps.build.outputs.digest }}
-    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -158,33 +154,12 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Set Environment Variables
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "VITE_API_URL=https://api.promata-dev.duckdns.org" >> $GITHUB_ENV
-            echo "VITE_APP_ENV=development" >> $GITHUB_ENV
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "VITE_API_URL=https://api.promata.duckdns.org" >> $GITHUB_ENV
-            echo "VITE_APP_ENV=production" >> $GITHUB_ENV
-          fi
-
       - name: Build Application
         env:
-          VITE_API_URL: ${{ env.VITE_API_URL }}
-          VITE_APP_ENV: ${{ env.VITE_APP_ENV }}
+          VITE_API_URL: ${{ github.ref == 'refs/heads/main' && 'https://api.promata.duckdns.org' || 'https://api.promata-dev.duckdns.org' }}
+          VITE_APP_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
           VITE_APP_VERSION: ${{ github.sha }}
-        run: |
-          npm run build
-          
-      - name: Optimize Build
-        run: |
-          # Compress assets
-          find dist -name "*.js" -exec gzip -k {} \;
-          find dist -name "*.css" -exec gzip -k {} \;
-          find dist -name "*.html" -exec gzip -k {} \;
-          
-          # Generate build report
-          npm run build:analyze
+        run: npm run build
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -220,75 +195,3 @@ jobs:
             BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
             VCS_REF=${{ github.sha }}
             VERSION=${{ steps.meta.outputs.version }}
-
-      - name: Generate SBOM
-        uses: anchore/sbom-action@v0
-        with:
-          image: ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
-          format: spdx-json
-          output-file: sbom.spdx.json
-
-      - name: Upload SBOM
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom
-          path: sbom.spdx.json
-
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: |
-            dist/
-            build-report.html
-
-  trigger-deployment:
-    needs: build-and-push
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Determine Environment
-        id: env
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "environment=dev" >> $GITHUB_OUTPUT
-            echo "event_type=deploy-dev" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "environment=prod" >> $GITHUB_OUTPUT
-            echo "event_type=deploy-prod" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Get Backend Image Tag
-        id: backend
-        run: |
-          # Query Docker Hub API for latest backend image
-          BACKEND_TAG=$(curl -s "https://hub.docker.com/v2/repositories/norohim/pro-mata-backend/tags/?page_size=1" | jq -r '.results[0].name')
-          echo "tag=$BACKEND_TAG" >> $GITHUB_OUTPUT
-
-      - name: Trigger Infrastructure Deployment
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.INFRA_TRIGGER_TOKEN }}
-          repository: pro-mata/pro-mata-infra
-          event-type: ${{ steps.env.outputs.event_type }}
-          client-payload: |
-            {
-              "frontend_tag": "${{ needs.build-and-push.outputs.image_tag }}",
-              "backend_tag": "${{ steps.backend.outputs.tag }}",
-              "environment": "${{ steps.env.outputs.environment }}",
-              "triggered_by": "frontend",
-              "commit_sha": "${{ github.sha }}",
-              "ref": "${{ github.ref }}"
-            }
-
-      - name: Notify Teams
-        if: always()
-        run: |
-          if [ "${{ job.status }}" = "success" ]; then
-            echo "✅ Frontend deployment triggered successfully for ${{ steps.env.outputs.environment }}"
-            # Add Slack/Discord notification here
-          else
-            echo "❌ Failed to trigger frontend deployment"
-            # Add failure notification here
-          fi
