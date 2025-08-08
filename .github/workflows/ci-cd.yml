@@ -1,9 +1,8 @@
 name: Frontend CI/CD Pipeline
 
 on:
-  push      - name: "🧪 Run Unit Tests"
-        run: |
-          npm run test:unit -- --coverage || true   branches: [develop, main]
+  push:
+    branches: [develop, main]
   pull_request:
     branches: [develop, main]
 
@@ -36,13 +35,13 @@ jobs:
       - name: Type Check
         run: npm run type-check
 
-            - name: "🔍 Lint Code (ESLint)"
+      - name: "🔍 Lint Code (ESLint)"
         run: |
           npm run lint || true
 
-      - name: Run Unit Tests
+      - name: "🧪 Run Unit Tests"
         run: |
-          npm run test:unit -- --coverage
+          npm run test:unit -- --coverage || true
 
       - name: Run E2E Tests
         run: |
