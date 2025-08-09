@@ -15,18 +15,18 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           payload=$(jq -n \
-            --arg content ":tada: **PR aberto em \($REPO)**" \
+            --arg repo "$REPO" \
             --arg title "$PR_TITLE" \
             --arg url "$PR_URL" \
             --arg author "$PR_AUTHOR" \
             '{
-              "content": $content,
-              "embeds": [
+              content: ":tada: **PR aberto em \($repo)**",
+              embeds: [
                 {
-                  "title": $title,
-                  "url": $url,
-                  "description": "Autor: " + $author
+                  title: $title,
+                  url: $url,
+                  description: "Autor: \($author)"
                 }
               ]
             }')
-          curl -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK"
+          curl -sS -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK"
