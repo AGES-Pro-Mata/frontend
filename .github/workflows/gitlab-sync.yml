@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     
     # Só executa se a sincronização estiver habilitada
-    if: ${{ secrets.GITLAB_TOKEN != '' && secrets.GITLAB_PROJECT_ID != '' }}
+    if: ${{ secrets.GITLAB_TOKEN != '' && vars.GITLAB_PROJECT_ID != '' }}
     
     steps:
     - name: 📥 Checkout do Repositório
