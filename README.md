@@ -669,4 +669,4 @@ Este projeto está sob licença MIT. Veja [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
-**Pro-Mata Frontend** - Uma interface moderna e acessível para o Centro de Pesquisas e Proteção da Natureza - PUCRS
+**Pro-Mata Frontend** - Uma interface moderna e acessível para o Centro de Pesquisas e Proteção da Natureza - PUCRS.
