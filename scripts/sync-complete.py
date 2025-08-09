@@ -29,12 +29,85 @@ class ProMataCompleteSyncer:
         
         # Clientes API
         self.gl = gitlab.Gitlab(self.gitlab_url, private_token=self.gitlab_token)
-        self.project = self.gl.projects.get(self.gitlab_project_id)
+        
+        # Validar acesso ao GitLab antes de buscar o projeto
+        try:
+            self.gl.auth()
+            self.log(f"✅ Conectado ao GitLab: {self.gitlab_url}")
+        except Exception as e:
+            raise ValueError(f"❌ Erro de autenticação GitLab: {str(e)}")
+        
+        # Determinar nome do projeto baseado no repositório
+        repo_path = self.repo_name.split('/')[-1]
+        repo_mapping = {
+            'frontend': 'frontend',
+            'backend': 'backend', 
+            'infrastructure': 'infra',
+            'database': 'database'
+        }
+        self.gitlab_repo_name = repo_mapping.get(repo_path, repo_path)
+        
+        # Tentar acessar o projeto ou criar se não existir
+        try:
+            # Se GITLAB_PROJECT_ID for fornecido, tentar usar
+            if self.gitlab_project_id and self.gitlab_project_id != '1735':
+                try:
+                    self.project = self.gl.projects.get(self.gitlab_project_id)
+                    self.log(f"✅ Projeto encontrado: {self.project.name}")
+                except gitlab.exceptions.GitlabGetError:
+                    self.log(f"⚠️ Projeto ID {self.gitlab_project_id} não encontrado, tentando buscar por nome...")
+                    self.project = None
+            else:
+                self.project = None
+            
+            # Se não encontrou projeto, buscar por nome no grupo
+            if not self.project:
+                group = self.gl.groups.get(1735)  # Group ID do Pró-Mata
+                projects = group.projects.list(search=self.gitlab_repo_name)
+                
+                if projects:
+                    self.project = self.gl.projects.get(projects[0].id)
+                    self.log(f"✅ Projeto encontrado por nome: {self.project.name} (ID: {self.project.id})")
+                else:
+                    # Criar projeto automaticamente
+                    self.log(f"📝 Criando projeto '{self.gitlab_repo_name}' no grupo Pró-Mata...")
+                    self.project = self._create_project_in_group(group)
+                    
+        except Exception as e:
+            raise ValueError(f"❌ Erro ao acessar/criar projeto GitLab: {str(e)}")
         
         self.github_headers = {
             'Authorization': f'token {self.git_token}',
             'Accept': 'application/vnd.github.v3+json'
         }
+
+    def _create_project_in_group(self, group):
+        """Cria um novo projeto no grupo GitLab"""
+        try:
+            project_data = {
+                'name': self.gitlab_repo_name,
+                'path': self.gitlab_repo_name,
+                'namespace_id': group.id,
+                'description': f'Repositório {self.gitlab_repo_name} do projeto Pro-Mata AGES - Sincronizado automaticamente do GitHub',
+                'visibility': 'private',
+                'issues_enabled': True,
+                'merge_requests_enabled': True,
+                'wiki_enabled': True,
+                'snippets_enabled': False,
+                'container_registry_enabled': False,
+                'shared_runners_enabled': True,
+                'initialize_with_readme': False,  # Será espelhado do GitHub
+            }
+            
+            project = self.gl.projects.create(project_data)
+            self.log(f"✅ Projeto criado com sucesso: {project.name} (ID: {project.id})")
+            self.log(f"🔗 URL: {project.web_url}")
+            
+            return project
+            
+        except Exception as e:
+            self.log(f"❌ Erro ao criar projeto: {str(e)}", "ERROR")
+            raise
 
     def log(self, message: str, level: str = "INFO"):
         """Log com timestamp"""
@@ -46,16 +119,8 @@ class ProMataCompleteSyncer:
         self.log("🔄 Iniciando espelhamento do repositório...")
         
         try:
-            # Configurar remote do GitLab
-            repo_path = self.repo_name.split('/')[-1]
-            repo_mapping = {
-                'frontend': 'frontend',
-                'backend': 'backend', 
-                'infrastructure': 'infra',
-                'database': 'database'
-            }
-            gitlab_repo_name = repo_mapping.get(repo_path, repo_path)
-            gitlab_remote_url = f"https://oauth2:{self.gitlab_token}@{self.gitlab_url.replace('https://', '')}/pro-mata/{gitlab_repo_name}.git"
+            # Usar o projeto GitLab correto já identificado/criado
+            gitlab_remote_url = f"https://oauth2:{self.gitlab_token}@{self.gitlab_url.replace('https://', '')}/pro-mata/{self.gitlab_repo_name}.git"
                                 
             # Remover remote se existir
             subprocess.run(['git', 'remote', 'remove', 'gitlab'], capture_output=True, check=False)
@@ -66,6 +131,8 @@ class ProMataCompleteSyncer:
             
             if result.returncode != 0:
                 self.log(f"Aviso ao adicionar remote: {result.stderr}")
+            
+            self.log(f"🔗 Remote GitLab configurado: {self.project.web_url}")
             
             # Push de todas as branches
             result = subprocess.run(['git', 'push', 'gitlab', '--all', '--force'], 
