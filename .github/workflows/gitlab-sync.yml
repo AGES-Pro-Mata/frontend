@@ -1,7 +1,6 @@
 name: 🔄 Sincronização GitHub → GitLab AGES
 
 on:
-  # Triggers automáticos
   push:
     branches: ['**']
   pull_request:
@@ -10,8 +9,6 @@ on:
     types: [opened, edited, closed, reopened, labeled, unlabeled]
   create:
   delete:
-
-  # Trigger manual
   workflow_dispatch:
     inputs:
       force_sync:
@@ -19,8 +16,6 @@ on:
         required: false
         default: 'false'
         type: boolean
-        
-  # Sincronização periódica (a cada 30 minutos)
   schedule:
     - cron: '*/30 * * * *'
 
@@ -35,14 +30,13 @@ jobs:
     name: 🦊 Sincronizar com GitLab AGES
     runs-on: ubuntu-latest
     
-    # Só executa se a sincronização estiver habilitada
-    if: ${{ secrets.GITLAB_TOKEN != '' && vars.GITLAB_PROJECT_ID != '' }}
+    if: ${{ env.GITLAB_TOKEN != '' && env.GITLAB_PROJECT_ID != '' }}
     
     steps:
     - name: 📥 Checkout do Repositório
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Histórico completo para mirror
+        fetch-depth: 0
         token: ${{ secrets.GIT_TOKEN }}
 
     - name: ⚙️ Configurar Git
@@ -72,3 +66,11 @@ jobs:
 
     - name: 🔄 Executar Sincronização Completa
       run: python3 .github/scripts/sync-complete.py
+
+    - name: 📤 Upload do Relatório de Sincronização
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: sync-report-${{ github.run_number }}
+        path: sync-report.md
+        retention-days: 30
