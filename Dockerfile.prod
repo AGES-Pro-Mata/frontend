@@ -19,6 +19,11 @@ RUN addgroup -g 10001 -S nonroot && \
 # Set working directory
 WORKDIR /app
 
+# Set ownership of /app
+RUN chown -R nonroot:nonroot /app
+
+USER nonroot
+
 # Copy package files
 COPY --chown=nonroot:nonroot package*.json ./
 COPY --chown=nonroot:nonroot tsconfig.json ./
@@ -26,21 +31,21 @@ COPY --chown=nonroot:nonroot vite.config.ts ./
 COPY --chown=nonroot:nonroot tailwind.config.js ./
 COPY --chown=nonroot:nonroot postcss.config.js ./
 
-# Switch to nonroot user
-USER nonroot
-
-# Install dependencies with security flags
+# Install dependencies as root, then switch user
+USER root
 RUN npm ci \
     --prefer-offline \
     --no-audit \
     --no-fund \
-    --ignore-scripts \
-    --production=false
+    --ignore-scripts
 
 # Copy source code
 COPY --chown=nonroot:nonroot public ./public
 COPY --chown=nonroot:nonroot src ./src
 COPY --chown=nonroot:nonroot index.html ./
+
+# Switch to nonroot for build
+USER nonroot
 
 # Build arguments
 ARG BUILD_DATE
@@ -54,6 +59,7 @@ ENV NODE_ENV=production \
     VITE_VERSION=$VERSION
 
 # Build the application
+RUN npm run generate:routes
 RUN npm run build
 
 # Stage 2: Production stage using distroless nginx
