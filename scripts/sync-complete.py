@@ -89,7 +89,7 @@ class ProMataCompleteSyncer:
                 'path': self.gitlab_repo_name,
                 'namespace_id': group.id,
                 'description': f'Repositório {self.gitlab_repo_name} do projeto Pro-Mata AGES - Sincronizado automaticamente do GitHub',
-                'visibility': 'private',
+                'visibility': 'public',
                 'issues_enabled': True,
                 'merge_requests_enabled': True,
                 'wiki_enabled': True,
