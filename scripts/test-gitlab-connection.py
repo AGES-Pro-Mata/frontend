@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """
-Script para testar e debuggar conexão com GitLab AGES
+Script para test            for proj in projects:
+                # Obter projeto completo para acessar todos os atributos
+                full_proj = gl.projects.get(proj.id)
+                print(f"  - ID: {full_proj.id}, Nome: {full_proj.name}")
+                print(f"    Path: {full_proj.path_with_namespace}")
+                print(f"    Visibility: {full_proj.visibility}")
+                print(f"    URL: {full_proj.web_url}")
+                print()ebuggar conexão com GitLab AGES
 """
 
 import os

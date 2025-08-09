@@ -193,7 +193,7 @@ class ProMataCompleteSyncer:
         try:
             result = subprocess.run([
                 sys.executable, 
-                '.github/scripts/sync-issues.py'
+                'scripts/sync-issues.py'
             ], capture_output=True, text=True)
             
             if result.returncode == 0:
@@ -218,7 +218,7 @@ class ProMataCompleteSyncer:
         try:
             result = subprocess.run([
                 sys.executable, 
-                '.github/scripts/sync-prs.py'
+                'scripts/sync-prs.py'
             ], capture_output=True, text=True)
             
             if result.returncode == 0:
@@ -370,7 +370,7 @@ class ProMataCompleteSyncer:
         self.log("🚀 Iniciando sincronização completa GitHub → GitLab AGES")
         
         success_count = 0
-        total_steps = 5
+        total_steps = 5  # Todas as 5 etapas
         
         try:
             # 1. Configurar labels
