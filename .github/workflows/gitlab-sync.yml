@@ -70,7 +70,7 @@ jobs:
         echo "Trigger: ${{ github.event_name }}"
 
     - name: 🔄 Executar Sincronização Completa
-      run: python3 .github/scripts/sync-complete.py
+      run: python3 scripts/sync-complete.py
 
     - name: 📤 Upload do Relatório de Sincronização
       uses: actions/upload-artifact@v4
