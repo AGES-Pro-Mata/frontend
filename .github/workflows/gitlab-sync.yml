@@ -1,0 +1,74 @@
+name: 🔄 Sincronização GitHub → GitLab AGES
+
+on:
+  # Triggers automáticos
+  push:
+    branches: ['**']
+  pull_request:
+    types: [opened, closed, merged, synchronize, reopened]
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled]
+  create:
+  delete:
+
+  # Trigger manual
+  workflow_dispatch:
+    inputs:
+      force_sync:
+        description: 'Forçar sincronização completa'
+        required: false
+        default: 'false'
+        type: boolean
+        
+  # Sincronização periódica (a cada 30 minutos)
+  schedule:
+    - cron: '*/30 * * * *'
+
+env:
+  GITLAB_URL: ${{ vars.GITLAB_URL || 'https://tools.ages.pucrs.br' }}
+  GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+  GITLAB_PROJECT_ID: ${{ vars.GITLAB_PROJECT_ID }}
+  GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+
+jobs:
+  sync-to-gitlab:
+    name: 🦊 Sincronizar com GitLab AGES
+    runs-on: ubuntu-latest
+    
+    # Só executa se a sincronização estiver habilitada
+    if: ${{ secrets.GITLAB_TOKEN != '' && secrets.GITLAB_PROJECT_ID != '' }}
+    
+    steps:
+    - name: 📥 Checkout do Repositório
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Histórico completo para mirror
+        token: ${{ secrets.GIT_TOKEN }}
+
+    - name: ⚙️ Configurar Git
+      run: |
+        git config --global user.name "GitHub Actions Sync"
+        git config --global user.email "sync@promata.ages.pucrs.br"
+        git config --global init.defaultBranch main
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: 📦 Instalar Dependências
+      run: |
+        pip install --upgrade pip
+        pip install requests python-gitlab python-dateutil pytz
+
+    - name: 📋 Verificar Configuração
+      run: |
+        echo "🔍 Verificando configuração..."
+        echo "Repositório: ${{ github.repository }}"
+        echo "GitLab URL: $GITLAB_URL"
+        echo "Project ID: $GITLAB_PROJECT_ID"
+        echo "Trigger: ${{ github.event_name }}"
+
+    - name: 🔄 Executar Sincronização Completa
+      run: python3 .github/scripts/sync-complete.py
