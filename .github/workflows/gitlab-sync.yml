@@ -30,6 +30,16 @@ jobs:
     name: 🦊 Sincronizar com GitLab AGES
     runs-on: ubuntu-latest
     steps:
+
+    - name: 🔍 Verificar Pré-requisitos
+      run: |
+        if [ -z "$GITLAB_TOKEN" ] || [ -z "$GITLAB_PROJECT_ID" ]; then
+          echo "❌ GITLAB_TOKEN ou GITLAB_PROJECT_ID não configurados"
+          echo "Configure os secrets e variables necessários no repositório"
+          exit 1
+        fi
+        echo "✅ Todos os pré-requisitos atendidos"
+
     - name: 📥 Checkout do Repositório
       uses: actions/checkout@v4
       with:
@@ -43,7 +53,7 @@ jobs:
         git config --global init.defaultBranch main
 
     - name: 🐍 Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
         cache: 'pip'
@@ -65,7 +75,7 @@ jobs:
       run: python3 .github/scripts/sync-complete.py
 
     - name: 📤 Upload do Relatório de Sincronização
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: sync-report-${{ github.run_number }}
