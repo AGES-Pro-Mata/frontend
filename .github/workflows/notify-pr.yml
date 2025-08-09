@@ -20,7 +20,7 @@ jobs:
             --arg url "$PR_URL" \
             --arg author "$PR_AUTHOR" \
             '{
-              content: "**\($repo)**",
+              content: "<@&1399565960922402929><@&1399580242636701726> **\($repo)**",
               embeds: [
                 {
                   title: $title,
