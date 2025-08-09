@@ -20,7 +20,7 @@ jobs:
             --arg url "$PR_URL" \
             --arg author "$PR_AUTHOR" \
             '{
-              content: ":tada: **PR aberto em \($repo)**",
+              content: "**\($repo)**",
               embeds: [
                 {
                   title: $title,
