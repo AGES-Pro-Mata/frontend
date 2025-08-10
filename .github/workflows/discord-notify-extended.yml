@@ -1,0 +1,368 @@
+name: Discord Extended Notifications
+# COMPLEMENTA o notify-pr.yml existente
+# Foca em: Reviews, Issues, Deploys, CI/CD Status
+
+on:
+  # Reviews em PRs 
+  pull_request_review:
+    types: [submitted]
+  
+  # PR merged/closed 
+  pull_request:
+    types: [closed]  
+    
+  # Status de Issues  
+  issues:
+    types: [opened, closed]
+    
+  # Deploys e CI/CD completados
+  workflow_run:
+    workflows: [
+      "Frontend CI/CD Pipeline"      
+    ]  
+    types: [completed]
+
+jobs:
+  notify-pr-status:
+    # status opened já é tratado pelo notify-pr.yml)
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post PR Status to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPO: ${{ github.repository }}
+          IS_MERGED: ${{ github.event.pull_request.merged }}
+        run: |
+          # Determinar se foi merged ou apenas fechado
+          if [[ "$IS_MERGED" == "true" ]]; then
+            emoji="✅"
+            color=65280
+            action_text="PR Merged com Sucesso!"
+            description="PR foi aprovado e integrado por $PR_AUTHOR"
+          else
+            emoji="❌"
+            color=16711680
+            action_text="PR Fechado sem Merge"
+            description="PR foi fechado sem integração por $PR_AUTHOR"
+          fi
+          
+          payload=$(jq -n \
+            --arg repo "$REPO" \
+            --arg title "$PR_TITLE" \
+            --arg url "$PR_URL" \
+            --arg author "$PR_AUTHOR" \
+            --arg action "$action_text" \
+            --arg description "$description" \
+            --arg emoji "$emoji" \
+            --argjson color "$color" \
+            '{
+              embeds: [
+                {
+                  title: (\($emoji) + " " + $title),
+                  url: $url,
+                  description: $description,
+                  color: $color,
+                  fields: [
+                    {
+                      name: "Repositório",
+                      value: $repo,
+                      inline: true
+                    },
+                    {
+                      name: "Status",
+                      value: $action,
+                      inline: true
+                    },
+                    {
+                      name: "Branch",
+                      value: "${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}",
+                      inline: false
+                    }
+                  ],
+                  timestamp: (now | strftime("%Y-%m-%dT%H:%M:%SZ"))
+                }
+              ]
+            }')
+          curl -sS -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK"
+
+  notify-reviews:
+    if: github.event_name == 'pull_request_review'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post Review to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          REVIEWER: ${{ github.event.review.user.login }}
+          REVIEW_STATE: ${{ github.event.review.state }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Determinar emoji e cor baseado no tipo de review
+          case "$REVIEW_STATE" in
+            "approved")
+              emoji="✅"
+              color=65280
+              action="aprovou"
+              ;;
+            "changes_requested")
+              emoji="🔄"
+              color=16776960
+              action="solicitou alterações em"
+              ;;
+            "commented")
+              emoji="💬"
+              color=3447003
+              action="comentou em"
+              ;;
+            *)
+              emoji="📝"
+              color=3447003
+              action="revisou"
+              ;;
+          esac
+          
+          payload=$(jq -n \
+            --arg repo "$REPO" \
+            --arg title "$PR_TITLE" \
+            --arg url "$PR_URL" \
+            --arg reviewer "$REVIEWER" \
+            --arg action "$action" \
+            --arg emoji "$emoji" \
+            --argjson color "$color" \
+            '{
+              embeds: [
+                {
+                  title: (\($emoji) + " Review: " + $title),
+                  url: $url,
+                  description: (\($reviewer) + " " + $action + " este PR"),
+                  color: $color,
+                  fields: [
+                    {
+                      name: "Repositório",
+                      value: $repo,
+                      inline: true
+                    },
+                    {
+                      name: "Reviewer",
+                      value: $reviewer,
+                      inline: true
+                    },
+                    {
+                      name: "Tipo",
+                      value: "${{ github.event.review.state }}",
+                      inline: true
+                    }
+                  ],
+                  timestamp: (now | strftime("%Y-%m-%dT%H:%M:%SZ"))
+                }
+              ]
+            }')
+          curl -sS -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK"
+
+  notify-issues:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post Issue to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          REPO: ${{ github.repository }}
+          ACTION: ${{ github.event.action }}
+        run: |
+          # Determinar emoji e cor baseado na ação
+          case "$ACTION" in
+            "opened")
+              emoji="🐛"
+              color=16776960
+              action_text="Nova issue criada"
+              ;;
+            "closed")
+              emoji="✅"
+              color=65280
+              action_text="Issue resolvida"
+              ;;
+            *)
+              emoji="📋"
+              color=3447003
+              action_text="Issue atualizada"
+              ;;
+          esac
+          
+          payload=$(jq -n \
+            --arg repo "$REPO" \
+            --arg title "$ISSUE_TITLE" \
+            --arg url "$ISSUE_URL" \
+            --arg author "$ISSUE_AUTHOR" \
+            --arg action "$action_text" \
+            --arg emoji "$emoji" \
+            --argjson color "$color" \
+            '{
+              embeds: [
+                {
+                  title: (\($emoji) + " " + $title),
+                  url: $url,
+                  description: (\($action) + " por " + $author),
+                  color: $color,
+                  fields: [
+                    {
+                      name: "Repositório",
+                      value: $repo,
+                      inline: true
+                    },
+                    {
+                      name: "Autor",
+                      value: $author,
+                      inline: true
+                    },
+                    {
+                      name: "Número",
+                      value: "#${{ github.event.issue.number }}",
+                      inline: true
+                    }
+                  ],
+                  timestamp: (now | strftime("%Y-%m-%dT%H:%M:%SZ"))
+                }
+              ]
+            }')
+          curl -sS -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK"
+
+  notify-workflow-status:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post Workflow Status to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          ACTOR: ${{ github.event.workflow_run.actor.login }}
+        run: |
+          # Determinar tipo de notificação baseado no workflow
+          is_deployment=false
+          case "$WORKFLOW_NAME" in
+            *"Deploy"*|*"CI/CD"*)
+              is_deployment=true
+              ;;
+          esac
+          
+          # Determinar ambiente baseado na branch
+          environment=""
+          env_url=""
+          if [[ "$BRANCH" == "develop" ]]; then
+            environment="Development (Azure)"
+            env_url="https://promata-dev.duckdns.org"
+          elif [[ "$BRANCH" == "main" ]]; then
+            environment="Production (AWS)"
+            env_url="https://promata.duckdns.org"
+          fi
+          
+          # Determinar status e cor
+          mention=""
+          if [[ "$CONCLUSION" == "success" ]]; then
+            if [[ "$is_deployment" == "true" ]]; then
+              emoji="🚀"
+              title="Deploy Realizado com Sucesso!"
+              color=65280
+            else
+              emoji="✅"
+              title="Workflow Concluído"
+              color=65280
+            fi
+          elif [[ "$CONCLUSION" == "failure" ]]; then
+            if [[ "$is_deployment" == "true" ]]; then
+              emoji="🚨"
+              title="Deploy Falhou!"
+              color=16711680
+              # Mencionar roles em caso de falha crítica de deploy
+              mention="<@&1399565960922402929><@&1399580242636701726>"
+            else
+              emoji="❌"
+              title="Workflow Falhou"
+              color=16711680
+            fi
+          else
+            emoji="⚠️"
+            title="Workflow Cancelado/Timeout"
+            color=16776960
+          fi
+          
+          # Construir campos do embed
+          fields='[
+            {
+              "name": "Workflow",
+              "value": "'"$WORKFLOW_NAME"'",
+              "inline": true
+            },
+            {
+              "name": "Branch",
+              "value": "'"$BRANCH"'",
+              "inline": true
+            },
+            {
+              "name": "Status",
+              "value": "'"$CONCLUSION"'",
+              "inline": true
+            },
+            {
+              "name": "Executado por",
+              "value": "'"$ACTOR"'",
+              "inline": true
+            }
+          ]'
+          
+          # Adicionar ambiente se for deploy
+          if [[ -n "$environment" ]]; then
+            fields=$(echo "$fields" | jq '. += [
+              {
+                "name": "Ambiente",
+                "value": "'"$environment"'",
+                "inline": true
+              }
+            ]')
+            
+            if [[ "$CONCLUSION" == "success" && -n "$env_url" ]]; then
+              fields=$(echo "$fields" | jq '. += [
+                {
+                  "name": "URL",
+                  "value": "[🌐 Acessar aplicação]('"$env_url"')",
+                  "inline": false
+                }
+              ]')
+            fi
+          fi
+          
+          # Montar payload
+          payload=$(jq -n \
+            --arg repo "$REPO" \
+            --arg title "$title" \
+            --arg emoji "$emoji" \
+            --argjson color "$color" \
+            --arg url "$RUN_URL" \
+            --argjson fields "$fields" \
+            --arg mention "${mention}" \
+            '{
+              content: (if $mention != "" then $mention + " **" + $repo + "**" else null end),
+              embeds: [
+                {
+                  title: (\($emoji) + " " + $title),
+                  url: $url,
+                  description: ("**" + $repo + "** - " + (if $title | contains("Sucesso") then "executado com sucesso" elif $title | contains("Falhou") then "falhou durante execução" else "status atualizado" end)),
+                  color: $color,
+                  fields: $fields,
+                  timestamp: (now | strftime("%Y-%m-%dT%H:%M:%SZ"))
+                }
+              ]
+            }')
+          
+          curl -sS -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK"
