@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: Post to Discord
         env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_PR }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}

@@ -11,12 +11,12 @@ on:
     
   # Deploys e CI/CD completados
   workflow_run:
-    workflows: ["Frontend CI/CD Pipeline", "CI/CD Pipeline", "Deploy Development", "Deploy Production"]
+    workflows: ["Frontend CI/CD Pipeline", "CI/CD Pipeline", "Push to Dev Branch", "Push to Main branch"]
     types: [completed]
     
   # Push para branches principais
   push:
-    branches: [main, develop]
+    branches: [main, dev]
 
 jobs:
   notify-reviews:
@@ -145,11 +145,11 @@ jobs:
           
           curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
 
-  notify-deployment:
+  notify-build:
     if: github.event_name == 'workflow_run'
     runs-on: ubuntu-latest
     steps:
-      - name: Post Deployment Status to Discord
+      - name: Post CI/CD Status to Discord
         env:
           WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
           REPO: ${{ github.repository }}
@@ -158,66 +158,71 @@ jobs:
           BRANCH: ${{ github.event.workflow_run.head_branch }}
           RUN_URL: ${{ github.event.workflow_run.html_url }}
         run: |
-          # Determinar ambiente e URLs baseado na branch
-          ENVIRONMENT=""
-          ENV_URL=""
-          if [[ "$BRANCH" == "develop" ]]; then
-            ENVIRONMENT="Development (Azure)"
-            ENV_URL="https://promata-dev.duckdns.org"
+          # Determinar tipo de build baseado na branch
+          BUILD_TYPE=""
+          DOCKER_IMAGE=""
+          if [[ "$BRANCH" == "dev" ]]; then
+            BUILD_TYPE="Development Build"
+            DOCKER_IMAGE="norohim/pro-mata-frontend:dev"
           elif [[ "$BRANCH" == "main" ]]; then
-            ENVIRONMENT="Production (AWS)"
-            ENV_URL="https://promata.duckdns.org"
+            BUILD_TYPE="Production Build"
+            DOCKER_IMAGE="norohim/pro-mata-frontend:latest"
           fi
           
-          # Determinar se é deployment baseado no nome do workflow
-          IS_DEPLOYMENT=false
-          if echo "$WORKFLOW_NAME" | grep -i "deploy\|ci.*cd"; then
-            IS_DEPLOYMENT=true
+          # Determinar se é build/CI baseado no nome do workflow
+          IS_BUILD=false
+          if echo "$WORKFLOW_NAME" | grep -i "ci.*cd\|build\|pipeline"; then
+            IS_BUILD=true
           fi
           
           # Configurar emoji, título e cor baseado no resultado
           MENTION=""
           if [[ "$CONCLUSION" == "success" ]]; then
-            if [[ "$IS_DEPLOYMENT" == "true" ]]; then
-              EMOJI="🚀"
-              TITLE="Deploy Realizado com Sucesso!"
+            if [[ "$IS_BUILD" == "true" ]]; then
+              EMOJI="�"
+              TITLE="Build & Push Docker Realizado com Sucesso!"
             else
               EMOJI="✅"
-              TITLE="CI/CD Pipeline Concluído"
+              TITLE="CI Pipeline Concluído"
             fi
             COLOR=65280
           elif [[ "$CONCLUSION" == "failure" ]]; then
-            if [[ "$IS_DEPLOYMENT" == "true" ]]; then
+            if [[ "$IS_BUILD" == "true" ]]; then
               EMOJI="🚨"
-              TITLE="Deploy Falhou!"
+              TITLE="Build Docker Falhou!"
               # Mencionar roles em falhas críticas
               MENTION="<@&1399565960922402929><@&1399580242636701726>"
             else
               EMOJI="❌"
-              TITLE="CI/CD Pipeline Falhou"
+              TITLE="CI Pipeline Falhou"
             fi
             COLOR=16711680
           else
             EMOJI="⚠️"
-            TITLE="Workflow Cancelado/Timeout"
+            TITLE="Pipeline Cancelado/Timeout"
             COLOR=16776960
           fi
           
           # Construir campos adicionais
           ADDITIONAL_FIELDS=""
-          if [[ -n "$ENVIRONMENT" ]]; then
+          if [[ -n "$BUILD_TYPE" ]]; then
             ADDITIONAL_FIELDS="
             ,{
-              \"name\": \"Ambiente\",
-              \"value\": \"$ENVIRONMENT\",
+              \"name\": \"Tipo de Build\",
+              \"value\": \"$BUILD_TYPE\",
               \"inline\": true
             }"
             
-            if [[ "$CONCLUSION" == "success" && -n "$ENV_URL" ]]; then
+            if [[ "$CONCLUSION" == "success" && -n "$DOCKER_IMAGE" ]]; then
               ADDITIONAL_FIELDS="$ADDITIONAL_FIELDS
               ,{
-                \"name\": \"URL\",
-                \"value\": \"[Acessar aplicação]($ENV_URL)\",
+                \"name\": \"Imagem Docker\",
+                \"value\": \"\`$DOCKER_IMAGE\`\",
+                \"inline\": false
+              },
+              {
+                \"name\": \"DockerHub\",
+                \"value\": \"[Ver no DockerHub](https://hub.docker.com/r/norohim/pro-mata-frontend)\",
                 \"inline\": false
               }"
             fi
@@ -226,7 +231,7 @@ jobs:
           # Criar payload
           CONTENT_FIELD=""
           if [[ -n "$MENTION" ]]; then
-            CONTENT_FIELD="\"content\": \"$MENTION **$REPO**\","
+            CONTENT_FIELD="\"content\": \"$MENTION **Frontend Build Falhou**\","
           fi
           
           cat > payload.json << EOF
@@ -236,7 +241,7 @@ jobs:
               {
                 "title": "$EMOJI $TITLE",
                 "url": "$RUN_URL",
-                "description": "Workflow **$REPO** $(if [[ "$CONCLUSION" == "success" ]]; then echo "executado com sucesso"; else echo "falhou"; fi)",
+                "description": "Build do **frontend** $(if [[ "$CONCLUSION" == "success" ]]; then echo "executado com sucesso e enviado para DockerHub"; else echo "falhou"; fi)",
                 "color": $COLOR,
                 "fields": [
                   {
@@ -277,7 +282,7 @@ jobs:
           COMMIT_URL: ${{ github.event.head_commit.url }}
         run: |
           # Só notificar pushes para branches principais
-          if [[ "$BRANCH" != "main" && "$BRANCH" != "develop" ]]; then
+          if [[ "$BRANCH" != "main" && "$BRANCH" != "dev" ]]; then
             echo "Branch $BRANCH não é principal, pulando notificação"
             exit 0
           fi
