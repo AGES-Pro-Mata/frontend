@@ -22,7 +22,7 @@ on:
 env:
   GITLAB_URL: ${{ vars.GITLAB_URL || 'https://tools.ages.pucrs.br' }}
   GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
-  GITLAB_PROJECT_ID: ${{ secrets.GITLAB_PROJECT_ID }}
+  GITLAB_PROJECT_ID: ${{ vars.GITLAB_PROJECT_ID }}
   GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
 
 jobs:
