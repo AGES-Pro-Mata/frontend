@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet, useRouter } from '@tanstack/react-router'
+import { Outlet, createRootRoute, useRouter } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { Suspense } from 'react'
 import { Toaster } from 'react-hot-toast'
@@ -121,7 +121,7 @@ function RootComponent() {
       />
 
       {/* Development tools */}
-      {process.env.NODE_ENV === 'development' && (
+      {import.meta.env.MODE === 'development' && (
         <TanStackRouterDevtools 
           router={router} 
           position="bottom-left"

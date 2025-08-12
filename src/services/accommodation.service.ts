@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Create axios instance
 const api = axios.create({
-  baseURL: process.env.VITE_API_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -12,19 +12,21 @@ const api = axios.create({
 // Add request interceptor for auth token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('authToken')
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
   return config
 })
 
 import type {
   Accommodation,
-  AccommodationFilters,
   AccommodationAvailability,
+  AccommodationFilters,
   CreateAccommodationDTO,
-  UpdateAccommodationDTO,
   PaginatedResponse,
+  UpdateAccommodationDTO,
 } from '@/types/accommodation.types'
 import { AccommodationType } from '@/types/accommodation.types'
 
@@ -79,6 +81,7 @@ export class AccommodationService {
    */
   async getById(id: string): Promise<Accommodation> {
     const response = await api.get<Accommodation>(`${this.baseUrl}/${id}`)
+
     return response.data
   }
 
@@ -87,6 +90,7 @@ export class AccommodationService {
    */
   async search(query: string, filters?: AccommodationFilters): Promise<Accommodation[]> {
     const searchParams = new URLSearchParams()
+
     searchParams.set('q', query)
 
     if (filters) {
@@ -95,7 +99,9 @@ export class AccommodationService {
           if (Array.isArray(value)) {
             searchParams.set(key, value.join(','))
           } else {
-            searchParams.set(key, value.toString())
+            if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+              searchParams.set(key, value.toString())
+            }
           }
         }
       })
@@ -151,6 +157,7 @@ export class AccommodationService {
    */
   async getFeatured(): Promise<Accommodation[]> {
     const response = await api.get<Accommodation[]>(`${this.baseUrl}/featured`)
+
     return response.data
   }
 
@@ -159,6 +166,7 @@ export class AccommodationService {
    */
   async getByType(type: string): Promise<Accommodation[]> {
     const response = await api.get<Accommodation[]>(`${this.baseUrl}/type/${type}`)
+
     return response.data
   }
 
@@ -179,6 +187,7 @@ export class AccommodationService {
    */
   async create(data: CreateAccommodationDTO): Promise<Accommodation> {
     const response = await api.post<Accommodation>(this.baseUrl, data)
+
     return response.data
   }
 
@@ -187,6 +196,7 @@ export class AccommodationService {
    */
   async update(id: string, data: UpdateAccommodationDTO): Promise<Accommodation> {
     const response = await api.put<Accommodation>(`${this.baseUrl}/${id}`, data)
+
     return response.data
   }
 
@@ -202,6 +212,7 @@ export class AccommodationService {
    */
   async uploadImages(id: string, files: File[]): Promise<string[]> {
     const formData = new FormData()
+
     files.forEach((file, index) => {
       formData.append(`images`, file)
     })
@@ -238,7 +249,13 @@ export class AccommodationService {
     averageRating: number
     reviewCount: number
   }> {
-    const response = await api.get(`${this.baseUrl}/${id}/statistics`, {
+    const response = await api.get<{
+      totalReservations: number
+      occupancyRate: number
+      revenue: number
+      averageRating: number
+      reviewCount: number
+    }>(`${this.baseUrl}/${id}/statistics`, {
       params: { period }
     })
     
@@ -256,7 +273,14 @@ export class AccommodationService {
     comment: string
     createdAt: string
   }>> {
-    const response = await api.get(`${this.baseUrl}/${id}/reviews`, {
+    const response = await api.get<PaginatedResponse<{
+      id: string
+      userId: string
+      userName: string
+      rating: number
+      comment: string
+      createdAt: string
+    }>>(`${this.baseUrl}/${id}/reviews`, {
       params: { page, limit }
     })
     
@@ -294,7 +318,13 @@ export class AccommodationService {
     minStay?: number
     maxStay?: number
   }[]> {
-    const response = await api.get(`${this.baseUrl}/${id}/calendar`, {
+    const response = await api.get<Array<{
+      date: string
+      available: boolean
+      price: number
+      minStay?: number
+      maxStay?: number
+    }>>(`${this.baseUrl}/${id}/calendar`, {
       params: { year, month }
     })
     
@@ -337,7 +367,7 @@ export class AccommodationService {
    * Export accommodations data
    */
   async exportData(format: 'csv' | 'xlsx' | 'json' = 'csv'): Promise<Blob> {
-    const response = await api.get(`${this.baseUrl}/export`, {
+    const response = await api.get<Blob>(`${this.baseUrl}/export`, {
       params: { format },
       responseType: 'blob'
     })
@@ -353,9 +383,13 @@ export class AccommodationService {
     errors: Array<{ row: number; error: string }>
   }> {
     const formData = new FormData()
+
     formData.append('file', file)
 
-    const response = await api.post(`${this.baseUrl}/import`, formData, {
+    const response = await api.post<{
+      imported: number
+      errors: Array<{ row: number; error: string }>
+    }>(`${this.baseUrl}/import`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -409,6 +443,7 @@ export const accommodationHelpers = {
     const start = new Date(startDate)
     const end = new Date(endDate)
     const diffTime = Math.abs(end.getTime() - start.getTime())
+
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   },
 
@@ -450,6 +485,7 @@ export const accommodationHelpers = {
       const hasAllAmenities = requiredAmenities.every(amenity =>
         accommodation.amenities.includes(amenity)
       )
+
       if (!hasAllAmenities) return false
     }
     

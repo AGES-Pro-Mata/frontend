@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Eye, EyeOff, Lock, Mail } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +14,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
 
 import { useAuthStore } from '@/store/auth.store'
-import type { LoginCredentials } from '@/types/auth.types'
 
 // Validation schema
 const loginSchema = z.object({
@@ -60,7 +59,8 @@ export function LoginPage() {
       
       // Redirect to intended page or dashboard
       const redirectTo = (searchParams as any)?.redirect || '/dashboard'
-      navigate({ to: redirectTo })
+
+      await navigate({ to: redirectTo })
     } catch (error) {
       // Error is handled by the auth store
       console.error('Login failed:', error)
@@ -77,7 +77,7 @@ export function LoginPage() {
         password: 'demo123',
         rememberMe: false,
       })
-      navigate({ to: '/dashboard' })
+      await navigate({ to: '/dashboard' })
     } catch (error) {
       console.error('Demo login failed:', error)
     }
@@ -214,7 +214,7 @@ export function LoginPage() {
 
                 <Button
                   variant="outline"
-                  onClick={handleDemoLogin}
+                  onClick={() => { void handleDemoLogin() }}
                   className="w-full"
                   disabled={isLoading || isSubmitting}
                 >

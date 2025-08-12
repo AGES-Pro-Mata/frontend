@@ -3,7 +3,7 @@ import type { User } from '@/types/auth.types'
 
 // Create axios instance
 const api = axios.create({
-  baseURL: process.env.VITE_API_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -13,9 +13,11 @@ const api = axios.create({
 // Add request interceptor for auth token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('authToken')
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
   return config
 })
 
@@ -23,7 +25,8 @@ export const userService = {
   // Get current user profile
   async getCurrentUser(): Promise<User> {
     try {
-      const response = await api.get('/users/profile')
+      const response = await api.get<User>('/users/profile')
+
       return response.data
     } catch (error) {
       console.error('Error fetching current user:', error)
@@ -34,7 +37,8 @@ export const userService = {
   // Update user profile
   async updateProfile(data: Partial<User>): Promise<User> {
     try {
-      const response = await api.put('/users/profile', data)
+      const response = await api.put<User>('/users/profile', data)
+
       return response.data
     } catch (error) {
       console.error('Error updating profile:', error)
@@ -58,7 +62,8 @@ export const userService = {
   // Get user by ID
   async getUser(id: string): Promise<User> {
     try {
-      const response = await api.get(`/users/${id}`)
+      const response = await api.get<User>(`/users/${id}`)
+
       return response.data
     } catch (error) {
       console.error('Error fetching user:', error)
@@ -69,7 +74,8 @@ export const userService = {
   // Get all users (admin only)
   async getUsers(): Promise<User[]> {
     try {
-      const response = await api.get('/users')
+      const response = await api.get<User[]>('/users')
+
       return response.data
     } catch (error) {
       console.error('Error fetching users:', error)
@@ -80,7 +86,8 @@ export const userService = {
   // Update user (admin only)
   async updateUser(id: string, data: Partial<User>): Promise<User> {
     try {
-      const response = await api.put(`/users/${id}`, data)
+      const response = await api.put<User>(`/users/${id}`, data)
+
       return response.data
     } catch (error) {
       console.error('Error updating user:', error)
@@ -102,13 +109,15 @@ export const userService = {
   async uploadProfilePicture(file: File): Promise<{ url: string }> {
     try {
       const formData = new FormData()
+
       formData.append('file', file)
       
-      const response = await api.post('/users/profile/picture', formData, {
+      const response = await api.post<{ url: string }>('/users/profile/picture', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
+
       return response.data
     } catch (error) {
       console.error('Error uploading profile picture:', error)
@@ -124,7 +133,13 @@ export const userService = {
     cancelledReservations: number
   }> {
     try {
-      const response = await api.get('/users/dashboard-stats')
+      const response = await api.get<{
+        totalReservations: number
+        upcomingReservations: number
+        completedReservations: number
+        cancelledReservations: number
+      }>('/users/dashboard-stats')
+
       return response.data
     } catch (error) {
       console.error('Error fetching dashboard stats:', error)
@@ -133,10 +148,11 @@ export const userService = {
   },
 
   // Get user reservations
-  async getUserReservations(): Promise<any[]> {
+  async getUserReservations(): Promise<Array<{ id: string; [key: string]: unknown }>> {
     try {
-      const response = await api.get('/users/reservations')
-      return response.data
+      const response = await api.get<Array<{ id: string; [key: string]: unknown }>>('/users/reservations')
+
+      return response.data as Array<{ id: string; [key: string]: unknown }>
     } catch (error) {
       console.error('Error fetching user reservations:', error)
       throw error

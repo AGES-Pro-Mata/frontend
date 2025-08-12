@@ -13,6 +13,7 @@ export const dateUtils = {
    */
   formatDate: (date: string | Date, options?: Intl.DateTimeFormatOptions): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date
+    
     return dateObj.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
@@ -26,6 +27,7 @@ export const dateUtils = {
    */
   formatDateTime: (date: string | Date): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date
+
     return dateObj.toLocaleString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
@@ -48,6 +50,7 @@ export const dateUtils = {
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h atrás`
     if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} dias atrás`
     if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} meses atrás`
+
     return `${Math.floor(diffInSeconds / 31536000)} anos atrás`
   },
 
@@ -57,6 +60,7 @@ export const dateUtils = {
   isToday: (date: string | Date): boolean => {
     const dateObj = typeof date === 'string' ? new Date(date) : date
     const today = new Date()
+
     return dateObj.toDateString() === today.toDateString()
   },
 
@@ -65,7 +69,9 @@ export const dateUtils = {
    */
   addDays: (date: string | Date, days: number): Date => {
     const dateObj = typeof date === 'string' ? new Date(date) : new Date(date)
+
     dateObj.setDate(dateObj.getDate() + days)
+
     return dateObj
   },
 
@@ -76,6 +82,7 @@ export const dateUtils = {
     const startObj = typeof start === 'string' ? new Date(start) : start
     const endObj = typeof end === 'string' ? new Date(end) : end
     const diffTime = Math.abs(endObj.getTime() - startObj.getTime())
+
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   },
 
@@ -91,6 +98,7 @@ export const dateUtils = {
    */
   formatForInput: (date: string | Date): string => {
     const dateObj = typeof date === 'string' ? new Date(date) : date
+
     return dateObj.toISOString().split('T')[0]
   },
 }
@@ -162,6 +170,7 @@ export const stringUtils = {
    */
   truncate: (str: string, length: number, suffix = '...'): string => {
     if (str.length <= length) return str
+
     return str.substring(0, length - suffix.length) + suffix
   },
 
@@ -189,12 +198,14 @@ export const stringUtils = {
    */
   maskPhone: (phone: string): string => {
     const cleaned = phone.replace(/\D/g, '')
+
     if (cleaned.length === 11) {
       return cleaned.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
     }
     if (cleaned.length === 10) {
       return cleaned.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
     }
+
     return phone
   },
 
@@ -203,6 +214,7 @@ export const stringUtils = {
    */
   isValidEmail: (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
     return emailRegex.test(email)
   },
 
@@ -211,13 +223,16 @@ export const stringUtils = {
    */
   isValidCPF: (cpf: string): boolean => {
     const cleaned = cpf.replace(/\D/g, '')
+
     if (cleaned.length !== 11 || /^(\d)\1{10}$/.test(cleaned)) return false
 
     let sum = 0
+
     for (let i = 0; i < 9; i++) {
       sum += parseInt(cleaned.charAt(i)) * (10 - i)
     }
     let checkDigit = 11 - (sum % 11)
+
     if (checkDigit === 10 || checkDigit === 11) checkDigit = 0
     if (checkDigit !== parseInt(cleaned.charAt(9))) return false
 
@@ -227,6 +242,7 @@ export const stringUtils = {
     }
     checkDigit = 11 - (sum % 11)
     if (checkDigit === 10 || checkDigit === 11) checkDigit = 0
+
     return checkDigit === parseInt(cleaned.charAt(10))
   },
 }
@@ -246,8 +262,10 @@ export const arrayUtils = {
   groupBy: <T, K extends keyof T>(array: T[], key: K): Record<string, T[]> => {
     return array.reduce((groups, item) => {
       const group = String(item[key])
+
       groups[group] = groups[group] || []
       groups[group].push(item)
+
       return groups
     }, {} as Record<string, T[]>)
   },
@@ -257,9 +275,11 @@ export const arrayUtils = {
    */
   chunk: <T>(array: T[], size: number): T[][] => {
     const chunks: T[][] = []
+
     for (let i = 0; i < array.length; i += size) {
       chunks.push(array.slice(i, i + size))
     }
+
     return chunks
   },
 
@@ -272,6 +292,7 @@ export const arrayUtils = {
         if (a[key] < b[key]) return -1
         if (a[key] > b[key]) return 1
       }
+
       return 0
     })
   },
@@ -294,7 +315,8 @@ export const fileUtils = {
     const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
   },
 
   /**
@@ -324,6 +346,7 @@ export const fileUtils = {
   readAsDataURL: (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
+
       reader.onload = () => resolve(reader.result as string)
       reader.onerror = reject
       reader.readAsDataURL(file)
@@ -342,6 +365,7 @@ export const fileUtils = {
    */
   validateSize: (file: File, maxSizeInMB: number): boolean => {
     const maxSize = maxSizeInMB * 1024 * 1024
+
     return file.size <= maxSize
   },
 }
@@ -354,9 +378,11 @@ export const urlUtils = {
   getParams: (url?: string): Record<string, string> => {
     const searchParams = new URLSearchParams(url || window.location.search)
     const params: Record<string, string> = {}
+
     for (const [key, value] of searchParams) {
       params[key] = value
     }
+
     return params
   },
 
@@ -365,11 +391,13 @@ export const urlUtils = {
    */
   buildUrl: (baseUrl: string, params: Record<string, any>): string => {
     const url = new URL(baseUrl, window.location.origin)
+
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         url.searchParams.set(key, String(value))
       }
     })
+
     return url.toString()
   },
 
@@ -379,6 +407,7 @@ export const urlUtils = {
   isExternal: (url: string): boolean => {
     try {
       const urlObj = new URL(url, window.location.origin)
+
       return urlObj.hostname !== window.location.hostname
     } catch {
       return false
@@ -394,9 +423,11 @@ export const storageUtils = {
   setItem: (key: string, value: any): boolean => {
     try {
       localStorage.setItem(key, JSON.stringify(value))
+
       return true
     } catch (error) {
       console.error('Failed to set localStorage item:', error)
+
       return false
     }
   },
@@ -407,9 +438,11 @@ export const storageUtils = {
   getItem: <T>(key: string, defaultValue: T): T => {
     try {
       const item = localStorage.getItem(key)
-      return item ? JSON.parse(item) : defaultValue
+
+      return item ? (JSON.parse(item) as T) : defaultValue
     } catch (error) {
       console.error('Failed to get localStorage item:', error)
+
       return defaultValue
     }
   },
@@ -420,9 +453,11 @@ export const storageUtils = {
   removeItem: (key: string): boolean => {
     try {
       localStorage.removeItem(key)
+
       return true
     } catch (error) {
       console.error('Failed to remove localStorage item:', error)
+
       return false
     }
   },
@@ -433,9 +468,11 @@ export const storageUtils = {
   clear: (): boolean => {
     try {
       localStorage.clear()
+
       return true
     } catch (error) {
       console.error('Failed to clear localStorage:', error)
+
       return false
     }
   },
@@ -446,11 +483,11 @@ export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
+  let timeout: ReturnType<typeof setTimeout> | null = null
   
   return (...args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout)
-    timeout = setTimeout(() => func(...args), wait)
+    timeout = setTimeout((): void => { func(...args) }, wait)
   }
 }
 
@@ -474,9 +511,11 @@ export function throttle<T extends (...args: any[]) => any>(
 export const copyToClipboard = async (text: string): Promise<boolean> => {
   try {
     await navigator.clipboard.writeText(text)
+
     return true
   } catch (error) {
     console.error('Failed to copy to clipboard:', error)
+
     return false
   }
 }
@@ -510,6 +549,6 @@ export const envUtils = {
   isDev: import.meta.env.DEV,
   isProd: import.meta.env.PROD,
   getEnv: (key: string, defaultValue?: string): string => {
-    return import.meta.env[key] || defaultValue || ''
+    return String(import.meta.env[key] ?? defaultValue ?? '')
   },
 }

@@ -218,6 +218,7 @@ function sortResults(
 
     if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1
     if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1
+
     return 0
   })
 }
@@ -231,9 +232,9 @@ function AccommodationsComponent() {
     return <div>Loading...</div>
   }
 
-  const handleSearchUpdate = (newSearch: any) => {
-    navigate({
-      search: (prev: any) => ({ ...(prev as any),
+  const handleSearchUpdate = (newSearch: Partial<AccommodationsSearch>) => {
+    void navigate({
+      search: (prev: AccommodationsSearch) => ({
         ...prev,
         ...newSearch,
         page: 1, // Reset to first page on search
@@ -248,7 +249,10 @@ function AccommodationsComponent() {
       page={data.page}
       totalPages={data.totalPages}
       filters={data.filters}
-      search={search as any}
+      search={{
+        ...search,
+        type: search.type as AccommodationType | undefined,
+      }}
       onSearchUpdate={handleSearchUpdate}
     />
   )

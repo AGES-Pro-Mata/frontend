@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { Search, Filter, Grid, List, MapPin, Star, Users, Wifi, Car, Coffee } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Car, Coffee, Filter, Grid, List, MapPin, Search, Star, Users, Wifi } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/input'
@@ -8,11 +8,10 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Separator } from '@/components/ui/separator'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { PaginationWrapper } from '@/components/ui/pagination-wrapper'
 
-import { accommodationHelpers, ACCOMMODATION_TYPES } from '@/services/accommodation.service'
+import { ACCOMMODATION_TYPES, accommodationHelpers } from '@/services/accommodation.service'
 import type { 
   Accommodation, 
   AccommodationFilters,
@@ -67,7 +66,6 @@ export function AccommodationsPage({
   total,
   page,
   totalPages,
-  filters,
   search,
   onSearchUpdate,
 }: AccommodationsPageProps) {
@@ -85,6 +83,7 @@ export function AccommodationsPage({
   // Current sort option
   const currentSort = useMemo(() => {
     const sortKey = `${search.sortBy}-${search.sortOrder}`
+
     return SORT_OPTIONS.find(option => option.value === sortKey) || SORT_OPTIONS[0]
   }, [search.sortBy, search.sortOrder])
 
@@ -128,6 +127,7 @@ export function AccommodationsPage({
   // Handle sort change
   const handleSortChange = (sortValue: string) => {
     const option = SORT_OPTIONS.find(o => o.value === sortValue)
+
     if (option) {
       onSearchUpdate({
         sortBy: option.sortBy,
@@ -219,6 +219,7 @@ export function AccommodationsPage({
         <div className="space-y-2">
           {AMENITY_OPTIONS.map((amenity) => {
             const Icon = amenity.icon
+
             return (
               <div key={amenity.value} className="flex items-center space-x-2">
                 <Checkbox

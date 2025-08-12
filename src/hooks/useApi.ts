@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
 // Types
@@ -47,15 +47,18 @@ export function clearApiCache(key?: string) {
 
 function getCachedData<T>(key: string): T | null {
   const cached = apiCache.get(key)
+
   if (!cached) return null
   
   const now = Date.now()
+
   if (now - cached.timestamp > cached.ttl) {
     apiCache.delete(key)
+
     return null
   }
   
-  return cached.data
+  return cached.data as T
 }
 
 function setCachedData<T>(key: string, data: T, ttl: number = DEFAULT_CACHE_TTL) {
@@ -97,8 +100,8 @@ export function useApi<T, P extends any[] = []>(
 
   // Refs
   const abortControllerRef = useRef<AbortController | null>(null)
-  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastParamsRef = useRef<P | null>(null)
   const mountedRef = useRef(true)
 
@@ -143,6 +146,7 @@ export function useApi<T, P extends any[] = []>(
         // Check cache first
         if (cache && cacheKey) {
           const cached = getCachedData<T>(cacheKey)
+
           if (cached) {
             if (!mountedRef.current) return null
             
@@ -156,6 +160,7 @@ export function useApi<T, P extends any[] = []>(
             }))
             
             onSuccess?.(cached)
+
             return cached
           }
         }
@@ -198,6 +203,7 @@ export function useApi<T, P extends any[] = []>(
           const message = typeof showSuccessToast === 'string' 
             ? showSuccessToast 
             : successMessage || 'Operação realizada com sucesso!'
+            
           toast.success(message)
         }
 
@@ -220,7 +226,7 @@ export function useApi<T, P extends any[] = []>(
 
           retryTimeoutRef.current = setTimeout(() => {
             if (mountedRef.current) {
-              executeWithRetry(params, currentRetry + 1)
+              void executeWithRetry(params, currentRetry + 1)
             }
           }, retryDelay * Math.pow(2, currentRetry)) // Exponential backoff
 
@@ -272,9 +278,14 @@ export function useApi<T, P extends any[] = []>(
             clearTimeout(debounceTimeoutRef.current)
           }
 
-          debounceTimeoutRef.current = setTimeout(async () => {
-            const result = await executeWithRetry(params)
-            resolve(result)
+          debounceTimeoutRef.current = setTimeout(() => {
+            executeWithRetry(params)
+              .then((result) => {
+                resolve(result)
+              })
+              .catch((_error) => {
+                resolve(null)
+              })
           }, debounceDelay)
         })
       }
@@ -287,7 +298,7 @@ export function useApi<T, P extends any[] = []>(
   // Retry function
   const retry = useCallback(() => {
     if (lastParamsRef.current) {
-      execute(...lastParamsRef.current)
+      void execute(...lastParamsRef.current)
     }
   }, [execute])
 
@@ -313,9 +324,9 @@ export function useApi<T, P extends any[] = []>(
   useEffect(() => {
     if (immediate) {
       // TypeScript workaround for empty params
-      execute(...([] as unknown as P))
+      void execute(...([] as unknown as P))
     }
-  }, [immediate]) // Only run on mount
+  }, [execute, immediate]) // Only run on mount
 
   return {
     ...state,
@@ -362,7 +373,7 @@ export function useApiPagination<T extends { data: any[]; total: number; page: n
   options: UseApiOptions<T> = {}
 ) {
   const [page, setPage] = useState(1)
-  const [allData, setAllData] = useState<any[]>([])
+  const [allData, setAllData] = useState<T['data']>([])
 
   const api = useApi(
     (pageNum: number) => apiFunction(pageNum, limit),
@@ -372,7 +383,7 @@ export function useApiPagination<T extends { data: any[]; total: number; page: n
         if (page === 1) {
           setAllData(data.data)
         } else {
-          setAllData(prev => [...prev, ...data.data])
+          setAllData(prev => [...prev, ...(data.data as T['data'] || [])])
         }
         options.onSuccess?.(data)
       },
@@ -381,14 +392,15 @@ export function useApiPagination<T extends { data: any[]; total: number; page: n
 
   const loadMore = useCallback(() => {
     const nextPage = page + 1
+
     setPage(nextPage)
-    api.execute(nextPage)
+    void api.execute(nextPage)
   }, [page, api])
 
   const refresh = useCallback(() => {
     setPage(1)
     setAllData([])
-    api.execute(1)
+    void api.execute(1)
   }, [api])
 
   const hasMore = api.data ? page * limit < api.data.total : false
@@ -420,7 +432,7 @@ export function useApiSearch<T>(
     (searchQuery: string) => {
       setQuery(searchQuery)
       if (searchQuery.trim()) {
-        api.execute(searchQuery)
+        void api.execute(searchQuery)
       } else {
         api.reset()
       }

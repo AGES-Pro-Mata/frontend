@@ -1,11 +1,10 @@
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import { subscribeWithSelector } from 'zustand/middleware'
+import { createJSONStorage, persist, subscribeWithSelector } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { toast } from 'react-hot-toast'
 
 import { authService } from '@/services/auth.service'
-import type { User, LoginCredentials, RegisterData, AuthResponse } from '@/types/auth.types'
+import type { LoginCredentials, Permission, RegisterData, User } from '@/types/auth.types'
 
 // Types
 export interface AuthState {
@@ -33,7 +32,7 @@ export interface AuthState {
 
   // Getters
   hasRole: (role: string) => boolean
-  hasPermission: (permission: string) => boolean
+  hasPermission: (permission: Permission) => boolean
   isTokenExpired: () => boolean
   getTimeUntilExpiry: () => number | null
 }
@@ -48,8 +47,9 @@ const isTokenExpired = (token: string | null): boolean => {
   if (!token) return true
   
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
+    const payload = JSON.parse(atob(token.split('.')[1])) as { exp: number}
     const currentTime = Date.now() / 1000
+
     return payload.exp < currentTime
   } catch {
     return true
@@ -60,7 +60,8 @@ const getTokenExpiry = (token: string | null): number | null => {
   if (!token) return null
   
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
+    const payload = JSON.parse(atob(token.split('.')[1])) as { exp: number }
+
     return payload.exp * 1000 // Convert to milliseconds
   } catch {
     return null
@@ -69,9 +70,11 @@ const getTokenExpiry = (token: string | null): number | null => {
 
 const shouldRefreshToken = (token: string | null): boolean => {
   const expiry = getTokenExpiry(token)
+
   if (!expiry) return false
   
   const timeUntilExpiry = expiry - Date.now()
+
   return timeUntilExpiry <= TOKEN_REFRESH_THRESHOLD
 }
 
@@ -101,9 +104,11 @@ export const useAuthStore = create<AuthState>()(
             Date.now() - state.lastLoginAttempt < LOGIN_ATTEMPT_WINDOW
           ) {
             const timeLeft = Math.ceil((LOGIN_ATTEMPT_WINDOW - (Date.now() - state.lastLoginAttempt)) / 60000)
+
             set((state) => {
               state.error = `Muitas tentativas de login. Tente novamente em ${timeLeft} minutos.`
             })
+
             return
           }
 
@@ -113,12 +118,12 @@ export const useAuthStore = create<AuthState>()(
           })
 
           try {
-            const response: any = await authService.login(credentials)
+            const response: { user: User; token: string; refreshToken?: string } = await authService.login(credentials)
             
             set((state) => {
               state.user = response.user
               state.token = response.token
-              state.refreshToken = response.refreshToken
+              state.refreshToken = response.refreshToken ?? null
               state.isAuthenticated = true
               state.isLoading = false
               state.error = null
@@ -149,12 +154,12 @@ export const useAuthStore = create<AuthState>()(
           })
 
           try {
-            const response: any = await authService.register(data)
+            const response: { user: User; token: string; refreshToken?: string } = await authService.register(data)
             
             set((state) => {
               state.user = response.user
               state.token = response.token
-              state.refreshToken = response.refreshToken
+              state.refreshToken = response.refreshToken ?? null
               state.isAuthenticated = true
               state.isLoading = false
               state.error = null
@@ -178,6 +183,7 @@ export const useAuthStore = create<AuthState>()(
           try {
             // Call logout API if user is authenticated
             const { token } = get()
+
             if (token && !isTokenExpired(token)) {
               authService.logout().catch(console.error)
             }
@@ -206,15 +212,16 @@ export const useAuthStore = create<AuthState>()(
           
           if (!state.refreshToken) {
             get().logout(false)
+
             return
           }
 
           try {
-            const response: any = await authService.refreshToken()
+            const response: { user: User; token: string; refreshToken?: string } = await authService.refreshToken()
             
             set((state) => {
               state.token = response.token
-              state.refreshToken = response.refreshToken
+              state.refreshToken = response.refreshToken ?? null
               state.user = response.user
               state.isAuthenticated = true
               state.error = null
@@ -228,6 +235,7 @@ export const useAuthStore = create<AuthState>()(
 
         updateProfile: async (data: Partial<User>) => {
           const state = get()
+
           if (!state.user) throw new Error('Usuário não autenticado')
 
           set((state) => {
@@ -292,7 +300,7 @@ export const useAuthStore = create<AuthState>()(
           })
 
           try {
-            await // authService.forgotPassword(email) // TODO: implement
+            //await authService.forgotPassword(email) // TODO: implement
             
             set((state) => {
               state.isLoading = false
@@ -355,22 +363,26 @@ export const useAuthStore = create<AuthState>()(
         // Getters
         hasRole: (role: string) => {
           const { user } = get()
-          return user?.role === role || false // user?.roles?.includes(role) // TODO: fix || false
+
+          return user?.role === role
         },
 
-        hasPermission: (permission: string) => {
+        hasPermission: (permission: Permission) => {
           const { user } = get()
-          return false // user?.permissions?.includes(permission) // TODO: fix || false
+
+          return user?.permissions?.includes(permission) || false
         },
 
         isTokenExpired: () => {
           const { token } = get()
+
           return isTokenExpired(token)
         },
 
         getTimeUntilExpiry: () => {
           const { token } = get()
           const expiry = getTokenExpiry(token)
+
           return expiry ? expiry - Date.now() : null
         },
       })),
@@ -405,7 +417,7 @@ export const useAuthActions = () => useAuthStore((state) => ({
 }))
 
 // Auto token refresh setup
-let refreshTimer: NodeJS.Timeout | null = null
+let refreshTimer: ReturnType<typeof setTimeout> | null = null
 
 const setupTokenRefresh = () => {
   const state = useAuthStore.getState()
@@ -418,21 +430,25 @@ const setupTokenRefresh = () => {
   if (!state.token || !state.isAuthenticated) return
 
   const timeUntilExpiry = state.getTimeUntilExpiry()
+
   if (!timeUntilExpiry || timeUntilExpiry <= 0) {
     state.logout(false)
+
     return
   }
 
   // Set refresh timer for 5 minutes before expiry
   const refreshIn = Math.max(0, timeUntilExpiry - TOKEN_REFRESH_THRESHOLD)
   
-  refreshTimer = setTimeout(async () => {
-    try {
-      await state.refreshAuth()
-      setupTokenRefresh() // Setup next refresh
-    } catch (error) {
-      console.error('Auto refresh failed:', error)
-    }
+  refreshTimer = setTimeout(() => {
+    state
+      .refreshAuth()
+      .then(() => {
+        setupTokenRefresh() // Setup next refresh
+      })
+      .catch(() => {
+        // Optionally handle error (e.g., logout or silent fail)
+      })
   }, refreshIn)
 }
 
@@ -451,6 +467,7 @@ useAuthStore.subscribe(
 
 // Initialize token refresh on app start
 const initialState = useAuthStore.getState()
+
 if (initialState.isAuthenticated && initialState.token) {
   if (isTokenExpired(initialState.token)) {
     initialState.logout(false)

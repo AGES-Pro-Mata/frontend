@@ -22,11 +22,18 @@ const queryClient = new QueryClient({
       retry: (failureCount, error) => {
         // Don't retry on 4xx errors (except 408, 429)
         if (error instanceof Error) {
-          const status = (error as any).response?.status
-          if (status >= 400 && status < 500 && status !== 408 && status !== 429) {
+          type ErrorWithResponse = Error & { response?: { status?: number } }
+          let status: number | undefined = undefined
+
+          if ('response' in error && typeof (error as ErrorWithResponse).response?.status === 'number') {
+            status = (error as ErrorWithResponse).response!.status
+          }
+
+          if (status !== undefined && status >= 400 && status < 500 && status !== 408 && status !== 429) {
             return false
           }
         }
+
         return failureCount < 3
       },
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
@@ -74,7 +81,7 @@ function App() {
         {import.meta.env.DEV && (
           <ReactQueryDevtools 
             initialIsOpen={false} 
-            position={"bottom-right" as any}
+            position="bottom"
           />
         )}
       </QueryClientProvider>

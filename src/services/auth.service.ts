@@ -1,9 +1,9 @@
 import axios from 'axios'
-import type { User, LoginCredentials, RegisterData } from '@/types/auth.types'
+import type { LoginCredentials, RegisterData, User } from '@/types/auth.types'
 
 // Create axios instance
 const api = axios.create({
-  baseURL: process.env.VITE_API_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -20,7 +20,8 @@ export const authService = {
   // Login user
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      const response = await api.post('/auth/login', credentials)
+      const response = await api.post<AuthResponse>('/auth/login', credentials)
+
       return response.data
     } catch (error) {
       console.error('Login error:', error)
@@ -31,7 +32,8 @@ export const authService = {
   // Register user
   async register(userData: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await api.post('/auth/register', userData)
+      const response = await api.post<AuthResponse>('/auth/register', userData)
+
       return response.data
     } catch (error) {
       console.error('Registration error:', error)
@@ -43,6 +45,7 @@ export const authService = {
   async logout(): Promise<void> {
     try {
       const token = localStorage.getItem('authToken')
+
       if (token) {
         await api.post('/auth/logout', {}, {
           headers: { Authorization: `Bearer ${token}` }
@@ -61,13 +64,15 @@ export const authService = {
   async refreshToken(): Promise<AuthResponse> {
     try {
       const refreshToken = localStorage.getItem('refreshToken')
+
       if (!refreshToken) {
         throw new Error('No refresh token available')
       }
       
-      const response = await api.post('/auth/refresh', {
+      const response = await api.post<AuthResponse>('/auth/refresh', {
         refreshToken
       })
+
       return response.data
     } catch (error) {
       console.error('Token refresh error:', error)
@@ -81,13 +86,15 @@ export const authService = {
   async getCurrentUser(): Promise<User> {
     try {
       const token = localStorage.getItem('authToken')
+
       if (!token) {
         throw new Error('No auth token')
       }
       
-      const response = await api.get('/auth/me', {
+      const response = await api.get<User>('/auth/me', {
         headers: { Authorization: `Bearer ${token}` }
       })
+
       return response.data
     } catch (error) {
       console.error('Get current user error:', error)
@@ -132,6 +139,7 @@ export const authService = {
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
     try {
       const token = localStorage.getItem('authToken')
+
       if (!token) {
         throw new Error('No auth token')
       }
@@ -154,6 +162,7 @@ export const authService = {
       await api.get('/auth/validate', {
         headers: { Authorization: `Bearer ${token}` }
       })
+
       return true
     } catch (error) {
       return false

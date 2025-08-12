@@ -26,7 +26,7 @@ function App() {
     
     // Add app version to window for debugging
     if (import.meta.env.DEV) {
-      ;(window as any).__PRO_MATA_CONFIG__ = APP_CONFIG
+      (window as Window & { __PRO_MATA_CONFIG__?: typeof APP_CONFIG }).__PRO_MATA_CONFIG__ = APP_CONFIG
     }
 
     // Initialize auth state
@@ -41,7 +41,7 @@ function App() {
         }
       }
       
-      initAuth()
+      void initAuth()
     }
   }, [isAuthenticated, token, refreshAuth, logout])
 
@@ -68,6 +68,7 @@ function App() {
       if (event.key === 'Escape') {
         // Handle escape key globally
         const activeElement = document.activeElement as HTMLElement
+
         if (activeElement && activeElement.blur) {
           activeElement.blur()
         }
@@ -75,6 +76,7 @@ function App() {
     }
 
     document.addEventListener('keydown', handleKeyDown)
+
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [])
 

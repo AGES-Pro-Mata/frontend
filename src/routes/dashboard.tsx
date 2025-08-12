@@ -3,7 +3,6 @@ import { Suspense } from 'react'
 
 import { DashboardPage } from '@/pages/DashboardPage'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
-import { accommodationService } from '@/services/accommodation.service'
 import { reservationService } from '@/services/reservation.service'
 import { userService } from '@/services/user.service'
 
@@ -84,36 +83,43 @@ export const Route = createFileRoute('/dashboard')({
         }
       } else {
         // Regular user dashboard data
-        const [userStats, userReservations] = await Promise.all([
+        const [userStats, userReservationsRaw] = await Promise.all([
           userService.getDashboardStats(),
           userService.getUserReservations(),
         ])
+        const userReservations = userReservationsRaw
 
         const recentReservations = userReservations
           .slice(0, 5)
           .map(r => ({
             id: r.id,
             guestName: auth.user?.name || '',
-            checkIn: r.checkIn,
-            checkOut: r.checkOut,
-            status: r.status.toLowerCase() as 'confirmed' | 'pending' | 'cancelled',
+            checkIn: typeof r.checkIn === 'string' ? r.checkIn : String(r.checkIn ?? ''),
+            checkOut: typeof r.checkOut === 'string' ? r.checkOut : String(r.checkOut ?? ''),
+            status: (typeof r.status === 'string' ? r.status.toLowerCase() : 'pending') as 'confirmed' | 'pending' | 'cancelled',
           }))
 
         const upcomingCheckIns = userReservations
-          .filter(r => r.status === 'CONFIRMED' && new Date(r.checkIn) > new Date())
+          .filter(r => r.status === 'CONFIRMED' && typeof r.checkIn === 'string' && new Date(r.checkIn) > new Date())
           .slice(0, 5)
           .map(r => ({
             id: r.id,
             guestName: auth.user?.name || '',
-            checkIn: r.checkIn,
-            accommodationName: r.accommodation?.name || '',
+            checkIn: typeof r.checkIn === 'string' ? r.checkIn : String(r.checkIn ?? ''),
+            accommodationName: r.accommodation && typeof r.accommodation === 'object' && 'name' in r.accommodation
+              ? String(r.accommodation.name)
+              : '',
           }))
 
         return {
           stats: {
             totalReservations: userStats.totalReservations,
             activeReservations: userStats.upcomingReservations,
-            totalRevenue: userReservations.reduce((sum, r) => sum + r.totalAmount, 0),
+            totalRevenue: userReservations.reduce((sum, r) => {
+              const amount = typeof r.totalAmount === 'number' ? r.totalAmount : 0
+
+              return sum + amount
+            }, 0),
             occupancyRate: 0, // Not applicable for regular users
           },
           recentReservations,

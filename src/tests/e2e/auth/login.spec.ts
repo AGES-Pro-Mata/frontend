@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { type Page, expect, test } from '@playwright/test'
 
 // Test data
 const VALID_USER = {
@@ -82,6 +82,7 @@ test.describe('Login Flow', () => {
 
       // Check button accessibility
       const submitButton = page.getByTestId('login-submit')
+
       await expect(submitButton).toHaveAttribute('type', 'submit')
 
       // Check input types
@@ -292,6 +293,7 @@ test.describe('Login Flow', () => {
       // Check that form is properly sized for mobile
       const form = page.getByRole('form')
       const boundingBox = await form.boundingBox()
+
       expect(boundingBox?.width).toBeLessThan(400)
     })
   })
