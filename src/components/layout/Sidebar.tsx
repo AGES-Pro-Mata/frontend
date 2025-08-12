@@ -1,27 +1,27 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import { 
-  LayoutDashboard,
+  BarChart3,
+  BookOpen,
   Building,
   Calendar,
-  Users,
-  CreditCard,
-  BarChart3,
-  Settings,
-  FileText,
-  MessageSquare,
-  BookOpen,
-  Shield,
-  HelpCircle,
-  Zap,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  CreditCard,
+  FileText,
+  HelpCircle,
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  Shield,
+  Users
 } from 'lucide-react'
-import { useState } from 'react'
-
+import React, { useState } from 'react'
 import { useAuthStore } from '@/store/auth.store'
 import { cn } from '@/utils'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Badge } from '@/components/ui/badge'
+
+import type { Permission } from '@/types/auth.types'
 
 interface SidebarItem {
   label: string
@@ -30,7 +30,7 @@ interface SidebarItem {
   badge?: string | number
   children?: SidebarItem[]
   roles?: string[]
-  permissions?: string[]
+  permissions?: Permission[]
 }
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
@@ -185,11 +185,13 @@ function SidebarItemComponent({ item, level = 0 }: SidebarItemComponentProps) {
   // Check if user has required permissions
   const hasAccess = () => {
     if (item.roles && !item.roles.some(role => hasRole(role))) {
-      return false
-    }
     if (item.permissions && !item.permissions.some(permission => hasPermission(permission))) {
       return false
     }
+
+      return false
+    }
+
     return true
   }
 
@@ -249,7 +251,7 @@ function SidebarItemComponent({ item, level = 0 }: SidebarItemComponentProps) {
   // Regular item with link
   return (
     <Link
-      to={item.href!}
+      to={item.href}
       className={cn(
         'flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-md transition-colors',
         level > 0 && 'ml-4',

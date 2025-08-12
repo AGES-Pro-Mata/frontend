@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import { type VariantProps, cva } from "class-variance-authority"
 import { cn } from "@/utils"
 
 const alertVariants = cva(
@@ -29,6 +29,7 @@ const Alert = React.forwardRef<
     {...props}
   />
 ))
+
 Alert.displayName = "Alert"
 
 const AlertTitle = React.forwardRef<
@@ -41,6 +42,7 @@ const AlertTitle = React.forwardRef<
     {...props}
   />
 ))
+
 AlertTitle.displayName = "AlertTitle"
 
 const AlertDescription = React.forwardRef<
@@ -53,6 +55,7 @@ const AlertDescription = React.forwardRef<
     {...props}
   />
 ))
+
 AlertDescription.displayName = "AlertDescription"
 
 export { Alert, AlertTitle, AlertDescription }

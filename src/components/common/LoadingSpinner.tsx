@@ -1,5 +1,6 @@
 import { cn } from '@/utils'
-import { Loader2, Leaf } from 'lucide-react'
+import { Leaf, Loader2 } from 'lucide-react'
+import React from 'react'
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'

@@ -1,13 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import { 
+  ExternalLink,
+  Facebook,
+  Instagram, 
+  Mail,
   MapPin, 
   Phone, 
-  Mail, 
-  Facebook, 
-  Instagram, 
-  Youtube,
   Twitter,
-  ExternalLink
+  Youtube,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
@@ -111,6 +111,7 @@ export function Footer() {
             <div className="flex space-x-2">
               {SOCIAL_LINKS.map((social) => {
                 const Icon = social.icon
+                
                 return (
                   <Button
                     key={social.name}

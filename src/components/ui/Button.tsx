@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
-import { cva, type VariantProps } from 'class-variance-authority'
+import { type VariantProps, cva } from 'class-variance-authority'
 import { Loader2 } from 'lucide-react'
 
 import { cn } from '@/utils'
@@ -168,19 +168,20 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
         role="group"
         {...props}
       >
-        {React.Children.map(childrenArray, (child, index) => {
+        {React.Children.map(childrenArray, (child) => {
           if (React.isValidElement(child) && child.type === Button) {
             return React.cloneElement(child as React.ReactElement<ButtonProps>, {
-              size: child.props.size || size,
-              variant: child.props.variant || variant,
+              size: (child as React.ReactElement<ButtonProps>).props.size || size,
+              variant: (child as React.ReactElement<ButtonProps>).props.variant || variant,
               ...(attached && {
                 className: cn(
-                  child.props.className,
+                  (child as React.ReactElement<ButtonProps>).props.className,
                   'relative z-0 focus:z-10'
                 )
               })
             })
           }
+
           return child
         })}
       </div>
@@ -233,7 +234,7 @@ export const AsyncButton = React.forwardRef<HTMLButtonElement, AsyncButtonProps>
       <Button
         ref={ref}
         loading={loading}
-        onClick={handleClick}
+        onClick={() => { void handleClick(); }}
         {...props}
       />
     )
