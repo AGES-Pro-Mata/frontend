@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Development Frontend
   frontend-dev:
@@ -82,7 +80,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    profiles: ["mock"]
 
   # Storybook for Component Development
   storybook:
@@ -136,6 +133,17 @@ services:
     restart: unless-stopped
     profiles: ["static"]
 
+  frontend-watcher:
+    image: node:18-alpine
+    container_name: promata-frontend-watcher
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install -g nodemon && nodemon --watch src --exec 'docker-compose restart frontend-dev'"
+    networks:
+      - promata_dev
+    profiles: ["dev-helper"]
+
 networks:
   promata_dev:
     driver: bridge
@@ -152,3 +160,5 @@ volumes:
     driver: local
   coverage:
     driver: local
+
+  
