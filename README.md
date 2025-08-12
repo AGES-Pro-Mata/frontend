@@ -4,9 +4,9 @@ Interface React para a plataforma de reservas e atendimento ao visitante do Cent
 
 ![Pro-Mata Logo](./public/images/pro-mata-logo.png)
 
-## � Requisitos do Sistema
+## Requisitos do Sistema
 
-### Node.js e npm (Versões Recomendadas)
+### Node.js, npm e Docker (Versões Recomendadas)
 
 - **Node.js**: 22.12.0 LTS (versão travada para consistência)
 - **npm**: 9.2.0+ (incluído com Node.js)
@@ -19,7 +19,7 @@ O projeto usa arquivos de trava de versão para garantir consistência:
 ```bash
 # Arquivos de versão
 .node-version    # 22.12.0 (para nodenv/asdf/mise)
-.nvmrc          # 22.12.0 (para nvm)
+.nvmrc           # 22.12.0 (para nvm)
 
 # Usar com nvm
 nvm use
@@ -31,7 +31,7 @@ nodenv local
 volta pin node@22.12.0
 ```
 
-## �🚀 Quick Start
+## Quick Start
 
 ```bash
 # Instalar dependências
@@ -41,7 +41,7 @@ npm install
 npm run dev
 
 # Abrir no navegador
-# http://localhost:5174
+# http://localhost:3000
 ```
 
 ## 🏗️ Tecnologias
@@ -75,34 +75,7 @@ src/
 └── styles/             # Estilos globais
 ```
 
-## � Segurança e Estado do Projeto
-
-### ✅ Status de Segurança Docker
-
-- **Vulnerabilidades**: ✅ **4 vulnerabilidades críticas resolvidas**
-- **Base Images**: Node.js 22.12.0-alpine3.21 (patches de segurança mais recentes)
-- **Nginx**: nginxinc/nginx-unprivileged:1.27-alpine (execução não-root)
-- **Configuração**: Multi-stage builds otimizados para produção
-
-### ⚠️ Vulnerabilidades npm (Ambiente de Desenvolvimento)
-
-- **Status**: 5 vulnerabilidades moderadas em dependências de desenvolvimento
-- **Impacto**: Apenas esbuild ≤0.24.2 (ferramenta de build)
-- **Produção**: ✅ **Não afetada** - vulnerabilidades não impactam runtime
-- **Recomendação**: Monitorar atualizações do Vite v7.x
-
-### 🏗️ Status de Build
-
-| Comando | Status | Descrição |
-|---------|--------|-----------|
-| `npm install` | ✅ | Dependências instaladas com sucesso |
-| `npm run build` | ✅ | Build de produção otimizado |
-| `npm run dev` | ✅ | Servidor de desenvolvimento (porta 5174) |
-| `npm run preview` | ✅ | Preview do build de produção |
-| `npm run test` | ⚠️ | Testes unitários necessitam ajustes |
-| `npm run test:e2e` | ✅ | Testes E2E funcionais |
-
-## �🛠️ Scripts Disponíveis
+## Scripts Disponíveis
 
 ### Desenvolvimento
 
@@ -137,16 +110,16 @@ npm run security-check   # Auditoria de segurança
 
 ```bash
 # Desenvolvimento (porta 3001:8080)
-docker-compose up dev
+docker compose up
 
 # Produção - Build
 docker build -f Dockerfile.prod -t mata-frontend:prod .
 
-# Produção - Executar (porta 8080 interna, mapeada para 3001)
-docker run -p 3001:8080 mata-frontend:prod
+# Produção - Executar (porta 8080 interna, mapeada para 3000)
+docker run -p 3000:8080 mata-frontend:prod
 
 # Docker Compose completo
-docker-compose up
+docker compose up
 ```
 
 ### Verificação de Segurança
@@ -172,7 +145,7 @@ npm run storybook        # Iniciar Storybook
 npm run storybook:build  # Build do Storybook
 ```
 
-## 🎨 Componentes
+## Componentes
 
 ### Componentes Base (Shadcn/ui)
 
@@ -253,7 +226,7 @@ function ProfileComponent() {
 }
 ```
 
-## 🛣️ Roteamento
+## Roteamento
 
 ### Tanstack Router
 
@@ -285,7 +258,7 @@ function NavigationExample() {
 }
 ```
 
-## 📡 API Integration
+## API Integration
 
 ### Service Layer
 
@@ -326,7 +299,7 @@ export function useAccommodations() {
 }
 ```
 
-## 🧪 Testes
+## Testes
 
 ### Testes Unitários (Vitest)
 
@@ -370,7 +343,7 @@ test('should login successfully', async ({ page }) => {
 })
 ```
 
-## 🎯 Funcionalidades
+## Funcionalidades
 
 ### Módulo de Autenticação
 
@@ -406,7 +379,7 @@ test('should login successfully', async ({ page }) => {
 - Relatórios
 - Configurações do sistema
 
-## 🔧 Configuração
+## Configuração
 
 ### Variáveis de Ambiente
 
@@ -438,13 +411,7 @@ export default defineConfig({
 })
 ```
 
-## 🐳 Docker
-
-### Imagens Base Atualizadas (Segurança)
-
-- **Node.js**: `22.12.0-alpine3.21` (latest security patches)
-- **Nginx**: `nginxinc/nginx-unprivileged:1.27-alpine` (non-root execution)
-- **Vulnerabilidades**: ✅ **Todas as 4 vulnerabilidades críticas resolvidas**
+## Docker
 
 ### Development
 
@@ -494,7 +461,7 @@ CMD ["nginx", "-g", "daemon off;"]
 - **Produção Docker**: porta 8080 interna (não-privilegiada)
 - **Docker Compose**: mapeamento 3001:8080
 
-## 📊 Performance
+## 📊Performance
 
 ### Lighthouse Scores (Objetivo)
 
@@ -511,7 +478,7 @@ CMD ["nginx", "-g", "daemon off;"]
 - Cache de recursos estáticos
 - Otimização de imagens
 
-## 🔒 Segurança
+## Segurança
 
 ### Headers de Segurança
 
@@ -526,14 +493,14 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
 
 ### Práticas Implementadas
 
-- ✅ **Sanitização de inputs**
-- ✅ **Validação no client e server**
-- ✅ **Tokens JWT seguros**
-- ✅ **Rate limiting**
-- ✅ **HTTPS obrigatório**
-- ✅ **Containers não-root**
-- ✅ **Imagens base atualizadas**
-- ✅ **Multi-stage builds otimizados**
+- **Sanitização de inputs**
+- **Validação no client e server**
+- **Tokens JWT seguros**
+- **Rate limiting**
+- **HTTPS obrigatório**
+- **Containers não-root**
+- **Imagens base atualizadas**
+- **Multi-stage builds otimizados**
 
 ### Monitoramento de Vulnerabilidades
 
@@ -547,7 +514,7 @@ snyk test                   # Análise de segurança Snyk
 trivy image mata-frontend   # Scanner de containers Trivy
 ```
 
-## 🌐 Acessibilidade
+## Acessibilidade
 
 ### Padrões Seguidos
 
@@ -563,7 +530,7 @@ trivy image mata-frontend   # Scanner de containers Trivy
 - Lighthouse accessibility audit
 - Manual testing
 
-## 📚 Documentação
+## Documentação
 
 ### Storybooks
 
