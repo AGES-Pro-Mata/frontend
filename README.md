@@ -384,10 +384,28 @@ test('should login successfully', async ({ page }) => {
 ### Variáveis de Ambiente
 
 ```bash
-# .env.local
+#.env
+
+# Portas Frontend
+FRONTEND_DEV_PORT_MAPPING=3000:3000
+FRONTEND_PROD_PORT_MAPPING=3001:8080
+# Backend Mockserver
+MOCKSERVER_PROPERTY_FILE=/config/mockserver.properties
+MOCKSERVER_INITIALIZATION_JSON_PATH=/config/mockserver-init.json
+MOCKSERVER_CONFIG_VOLUME=./mock-server:/config
+# Nginx Static
+NGINX_DIST_VOLUME=./dist:/usr/share/nginx/html:ro
+NGINX_CONF_VOLUME=./nginx-static.conf:/etc/nginx/conf.d/default.conf:ro
+# URLs de healthchecks
+FRONTEND_DEV_HEALTHCHECK_URL=http://localhost:3000
+FRONTEND_PROD_HEALTHCHECK_URL=http://localhost:8080/health
+BACKEND_MOCK_HEALTHCHECK_URL=http://localhost:1080/health
+# Frontend Environment Variables
 VITE_API_URL=http://localhost:8080/api
 VITE_APP_ENV=development
 VITE_APP_VERSION=dev
+NGINX_WORKER_PROCESSES=1
+NGINX_WORKER_CONNECTIONS=512
 ```
 
 ### Configuração do Vite
