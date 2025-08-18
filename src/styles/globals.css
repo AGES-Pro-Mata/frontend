@@ -13,6 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 142 71% 45%;
+    --banner-color: #D4CBC0;
     --primary-foreground: 0 0% 98%;
     --secondary: 210 40% 95%;
     --secondary-foreground: 222.2 84% 4.9%;
@@ -27,13 +28,17 @@
     --ring: 142 71% 45%;
     --radius: 0.5rem;
 
-    /* Pro-Mata specific variables */
-    --pro-mata-green: 142 71% 45%;
-    --pro-mata-green-light: 142 71% 55%;
-    --pro-mata-green-dark: 142 71% 35%;
-    --pro-mata-brown: 25 28% 45%;
-    --pro-mata-blue: 213 94% 68%;
-    
+  /* Pro-Mata specific variables */
+  --pro-mata-green: #2E361D; /* Main dark green */
+  --pro-mata-green-contrast: #4C9613; /* Contrast green */
+  --pro-mata-selected: #D4CBC099; /* Selected, 60% opacity */
+  --pro-mata-selected-banner: #FFF2C9; /* Selected banner */
+  --pro-mata-dark-gray: #6C6C6C; /* Dark gray */
+  --pro-mata-green-light: #4B5B3A;
+  --pro-mata-green-dark: #1B2A12;
+  --pro-mata-brown: #4B3D31;
+  --pro-mata-blue: #2A4B7C;
+
     /* Spacing */
     --header-height: 4rem;
     --sidebar-width: 16rem;
@@ -79,6 +84,10 @@
     font-feature-settings: 'rlig' 1, 'calt' 1;
     min-height: 100vh;
     min-height: 100dvh;
+  }
+
+  header {
+    background-color: var(--banner-color) !important;
   }
  
   /* Typography */

@@ -2,12 +2,11 @@ import { useState } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import {
   Bell,
-  Building,
-  Calendar,
-  Home,
+  Building2,
+  CalendarDays,
   LogOut,
   Menu,
-  Phone,
+  Mountain,
   Search,
   Settings,
   User
@@ -32,7 +31,6 @@ import {
 } from '@/components/ui/sheet'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
 
 import { useAuthStore } from '@/store/auth.store'
 import { stringUtils } from '@/utils'
@@ -41,22 +39,17 @@ const NAVIGATION_ITEMS = [
   {
     label: 'Início',
     href: '/',
-    icon: Home,
+    icon: Mountain,
   },
   {
-    label: 'Acomodações',
-    href: '/accommodations',
-    icon: Building,
+    label: 'Reservar',
+    href: '/reserve',
+    icon: Building2,
   },
   {
-    label: 'Atividades',
-    href: '/activities',
-    icon: Calendar,
-  },
-  {
-    label: 'Contato',
-    href: '/contact',
-    icon: Phone,
+    label: 'Minhas Reservas',
+    href: '/my-reservations',
+    icon: CalendarDays,
   },
 ]
 
@@ -87,19 +80,12 @@ export function Header() {
         <SheetHeader>
           <SheetTitle className='flex items-center space-x-3'>
             <img
-              src='/icons/icon-96x96.png'
+              src='/images/pro-mata-logo.svg'
               alt='Pro-Mata'
-              className='h-10 w-10 rounded-lg'
               onError={e => {
-                e.currentTarget.src = '/images/pro-mata-logo.png'
+                e.currentTarget.src = '/images/pro-mata-logo.svg'
               }}
             />
-            <div className='text-left'>
-              <span className='text-lg font-bold text-primary'>Pro-Mata</span>
-              <p className='text-xs text-muted-foreground font-normal'>
-                Centro de Pesquisas
-              </p>
-            </div>
           </SheetTitle>
           <SheetDescription>
             Sistema de reservas e hospedagem em uma das mais importantes
@@ -253,33 +239,25 @@ export function Header() {
   return (
     <header className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm'>
       <div className='container mx-auto px-4 lg:px-6'>
-        <div className='flex h-16 lg:h-18 items-center justify-between'>
+  <div className='flex items-center justify-between' style={{ height: '99px' }}>
           {/* Logo and Mobile Menu */}
           <div className='flex items-center space-x-4'>
             <MobileNavigation />
 
             <Link
               to='/'
-              className='flex items-center space-x-3 hover:opacity-80 transition-opacity group'
+              className='flex items-center space-x-3 transition-opacity'
             >
-              <div className='relative'>
+              <div className='relative flex items-center' style={{ height: '99px' }}>
                 <img
-                  src='/icons/icon-128x128.png'
+                  src='/images/pro-mata-logo.svg'
                   alt='Pro-Mata - Centro de Pesquisas'
-                  className='h-10 w-10 sm:h-12 sm:w-12 rounded-lg shadow-sm group-hover:shadow-md transition-shadow'
+                  className='object-contain block'
+                  style={{ height: '100%', maxHeight: '99px', width: 'auto', display: 'block' }}
                   onError={e => {
-                    e.currentTarget.src = '/images/pro-mata-logo.png'
+                    e.currentTarget.src = '/images/pro-mata-logo.svg'
                   }}
                 />
-                <div className='absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity' />
-              </div>
-              <div className='hidden sm:block'>
-                <h1 className='font-bold text-xl text-primary leading-tight'>
-                  Pro-Mata
-                </h1>
-                <p className='text-xs text-muted-foreground -mt-1'>
-                  Centro de Pesquisas
-                </p>
               </div>
             </Link>
           </div>
@@ -306,17 +284,6 @@ export function Header() {
               )
             })}
           </nav>
-
-          {/* Search Bar (Desktop) */}
-          <div className='hidden lg:flex flex-1 max-w-md mx-8'>
-            <div className='relative w-full'>
-              <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
-              <Input
-                placeholder='Buscar acomodações, atividades...'
-                className='pl-9 pr-4 bg-muted/50 border-muted focus:bg-background transition-colors'
-              />
-            </div>
-          </div>
 
           {/* Right side actions */}
           <div className='flex items-center space-x-3'>

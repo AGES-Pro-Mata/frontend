@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Allow: /accommodations
 Allow: /login
 Allow: /register
 

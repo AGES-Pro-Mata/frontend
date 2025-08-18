@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+import { tanstackRouter, TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import path from 'path'
 
 export default defineConfig({
@@ -9,7 +9,11 @@ export default defineConfig({
     TanStackRouterVite({
       routesDirectory: './src/routes',
       generatedRouteTree: './src/routeTree.gen.ts',
-    })
+    }),
+    tanstackRouter({
+      target: 'react',
+      virtualRouteConfig: './src/routes/route-config.ts',
+    }),
   ],
   resolve: {
     alias: {
