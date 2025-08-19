@@ -1,10 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/my-reservations')({
+export const Route = createFileRoute('/admin/requests')({
   component: RouteComponent,
 })
+
 function RouteComponent() {
-  return <div>
-    <h1>Minhas Reservas</h1>
-  </div>
+  return <div>Solicitações</div>
 }

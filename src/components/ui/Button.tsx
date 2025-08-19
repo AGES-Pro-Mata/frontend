@@ -10,7 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-pro-mata-green-constrast text-primary-foreground hover:bg-primary/90',
+        default: 'bg-greenConstrast text-primary-foreground hover:bg-primary/90',
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline:
@@ -19,10 +19,6 @@ const buttonVariants = cva(
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
-        // Pro-Mata specific variants
-        nature: 'bg-pro-mata-green-contrast text-white hover:bg-pro-mata-green-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200',
-        earth: 'bg-pro-mata-brown-600 text-white hover:bg-pro-mata-brown-700 shadow-md hover:shadow-lg',
-        sky: 'bg-pro-mata-blue-500 text-white hover:bg-pro-mata-blue-600 shadow-md hover:shadow-lg',
       },
       size: {
         default: 'h-10 px-4 py-2',
@@ -35,7 +31,7 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: {
-      variant: 'nature',
+      variant: 'default',
       size: 'default',
     },
   }

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/cookies')({
+export const Route = createFileRoute('/legal/cookies')({
   component: CookiesRoute,
 })
 

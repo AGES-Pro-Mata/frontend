@@ -8,8 +8,7 @@ import {
   Menu,
   Mountain,
   Search,
-  Settings,
-  User
+  Settings
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
@@ -80,10 +79,10 @@ export function Header() {
         <SheetHeader>
           <SheetTitle className='flex items-center space-x-3'>
             <img
-              src='/images/pro-mata-logo.svg'
+              src='/images/full-banner-pro-mata.svg'
               alt='Pro-Mata'
               onError={e => {
-                e.currentTarget.src = '/images/pro-mata-logo.svg'
+                e.currentTarget.src = '/images/full-banner-pro-mata.svg'
               }}
             />
           </SheetTitle>
@@ -119,15 +118,6 @@ export function Header() {
             <>
               <div className='border-t pt-4'>
                 <Link
-                  to='/dashboard'
-                  className='flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent'
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <User className='h-5 w-5' />
-                  <span>Dashboard</span>
-                </Link>
-
-                <Link
                   to='/profile'
                   className='flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent'
                   onClick={() => setMobileMenuOpen(false)}
@@ -152,11 +142,8 @@ export function Header() {
             <div className='border-t pt-4 space-y-2'>
               <Link to='/login' onClick={() => setMobileMenuOpen(false)}>
                 <Button variant='outline' className='w-full'>
-                  Entrar
+                  Entre/Registre-se
                 </Button>
-              </Link>
-              <Link to='/register' onClick={() => setMobileMenuOpen(false)}>
-                <Button className='w-full'>Criar Conta</Button>
               </Link>
             </div>
           )}
@@ -208,12 +195,6 @@ export function Header() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          <Link to='/dashboard'>
-            <DropdownMenuItem className='cursor-pointer'>
-              <User className='mr-3 h-4 w-4' />
-              <span>Dashboard</span>
-            </DropdownMenuItem>
-          </Link>
 
           <Link to='/profile'>
             <DropdownMenuItem className='cursor-pointer'>
@@ -237,9 +218,9 @@ export function Header() {
   }
 
   return (
-    <header className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm'>
+    <header className='sticky top-0 z-50 w-full border-b bg-banner shadow-sm'>
       <div className='container mx-auto px-4 lg:px-6'>
-  <div className='flex items-center justify-between' style={{ height: '99px' }}>
+        <div className='flex items-center justify-between' style={{ height: '99px' }}>
           {/* Logo and Mobile Menu */}
           <div className='flex items-center space-x-4'>
             <MobileNavigation />
@@ -250,12 +231,12 @@ export function Header() {
             >
               <div className='relative flex items-center' style={{ height: '99px' }}>
                 <img
-                  src='/images/pro-mata-logo.svg'
+                  src='/images/full-banner-pro-mata.svg'
                   alt='Pro-Mata - Centro de Pesquisas'
                   className='object-contain block'
                   style={{ height: '100%', maxHeight: '99px', width: 'auto', display: 'block' }}
                   onError={e => {
-                    e.currentTarget.src = '/images/pro-mata-logo.svg'
+                    e.currentTarget.src = '/images/full-banner-pro-mata.svg'
                   }}
                 />
               </div>
@@ -322,13 +303,8 @@ export function Header() {
               /* Auth buttons */
               <div className='hidden md:flex items-center space-x-3'>
                 <Link to='/login'>
-                  <Button variant='ghost' className='hover:bg-accent'>
-                    Entrar
-                  </Button>
-                </Link>
-                <Link to='/register'>
                   <Button className='bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg transition-shadow'>
-                    Criar Conta
+                    Entre/Registre-se
                   </Button>
                 </Link>
               </div>

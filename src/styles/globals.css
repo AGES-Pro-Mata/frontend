@@ -6,38 +6,41 @@
 @layer base {
   :root {
     /* Default theme (light) */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 142 71% 45%;
-    --banner-color: #D4CBC0;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 210 40% 95%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 142 71% 45%;
-    --radius: 0.5rem;
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 82 30% 16%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 210 40% 95%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 142 71% 45%;
+  --radius: 0.5rem;
 
-  /* Pro-Mata specific variables */
-  --pro-mata-green: #2E361D; /* Main dark green */
-  --pro-mata-green-contrast: #4C9613; /* Contrast green */
-  --pro-mata-selected: #D4CBC099; /* Selected, 60% opacity */
-  --pro-mata-selected-banner: #FFF2C9; /* Selected banner */
-  --pro-mata-dark-gray: #6C6C6C; /* Dark gray */
-  --pro-mata-green-light: #4B5B3A;
-  --pro-mata-green-dark: #1B2A12;
-  --pro-mata-brown: #4B3D31;
-  --pro-mata-blue: #2A4B7C;
+  --banner: 30 23% 80%;
+  --banner-selected: 45 100% 90%;
+
+    /* Pro-Mata specific variables */
+  --pro-mata-green: 82 30% 16%; /* Main dark green */
+  --constrast-green: 82 77% 33%; /* Contrast green */
+  --pro-mata-selected: 30 23% 80% / 0.6; /* Selected, 60% opacity */
+  --pro-mata-selected-banner: 45 100% 90%; /* Selected banner */
+  --dark-gray: 0 0% 42%; /* Dark gray */
+  --pro-mata-green-light: 82 22% 29%;
+  --pro-mata-green-dark: 97 38% 12%;
+  --pro-mata-brown: 26 22% 24%;
+  --pro-mata-blue: 216 49% 32%;
+  --pro-mata-text: 0 0% 28%;
 
     /* Spacing */
     --header-height: 4rem;
@@ -46,25 +49,25 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 142 71% 45%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 142 71% 45%;
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 82 30% 16%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 142 71% 45%;
   }
 }
 
@@ -73,25 +76,42 @@
   * {
     @apply border-border;
   }
-  
+
   html {
     @apply scroll-smooth;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
-  
+
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
     min-height: 100vh;
     min-height: 100dvh;
   }
 
-  header {
-    background-color: var(--banner-color) !important;
+  /* Default text color (light mode only) */
+  html:not(.dark) body {
+    color: var(--pro-mata-text);
   }
- 
+
+  header {
+    color: var(--banner) !important;
+  }
+
+  footer {
+    color: var(--pro-mata-green) !important;
+  }
+
   /* Typography */
-  h1, h2, h3, h4, h5, h6 {
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-tight;
   }
 
@@ -155,7 +175,7 @@
     .no-print {
       @apply hidden;
     }
-    
+
     * {
       @apply text-black bg-white;
     }
@@ -322,11 +342,19 @@
 
   /* Pro-Mata specific styles */
   .pro-mata-gradient {
-    background: linear-gradient(135deg, hsl(var(--pro-mata-green)) 0%, hsl(var(--pro-mata-blue)) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--pro-mata-green)) 0%,
+      hsl(var(--pro-mata-blue)) 100%
+    );
   }
 
   .pro-mata-text-gradient {
-    background: linear-gradient(135deg, hsl(var(--pro-mata-green)) 0%, hsl(var(--pro-mata-blue)) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--pro-mata-green)) 0%,
+      hsl(var(--pro-mata-blue)) 100%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -476,27 +504,37 @@
   }
 
   /* Ensure readability */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     page-break-after: avoid;
   }
 
-  blockquote, pre, img, table, figure {
+  blockquote,
+  pre,
+  img,
+  table,
+  figure {
     page-break-inside: avoid;
   }
 
-  p, li {
+  p,
+  li {
     orphans: 2;
     widows: 2;
   }
 
   /* Show URLs for links */
   a[href]:after {
-    content: " (" attr(href) ")";
+    content: ' (' attr(href) ')';
     @apply text-sm text-gray-600;
   }
 
-  a[href^="#"]:after,
-  a[href^="javascript:"]:after {
-    content: "";
+  a[href^='#']:after,
+  a[href^='javascript:']:after {
+    content: '';
   }
 }
