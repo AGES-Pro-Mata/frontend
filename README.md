@@ -65,7 +65,6 @@ src/
 │   ├── layout/         # Componentes de layout
 │   ├── forms/          # Componentes de formulário
 │   └── features/       # Componentes específicos por feature
-├── pages/              # Páginas da aplicação
 ├── routes/             # Configuração de rotas (Tanstack Router)
 ├── services/           # Serviços e API calls
 ├── store/              # Estado global (Zustand)
@@ -109,7 +108,7 @@ npm run security-check   # Auditoria de segurança
 ### Docker
 
 ```bash
-# Desenvolvimento (porta 3001:8080)
+# Desenvolvimento (porta 3000)
 docker compose up
 
 # Produção - Build
@@ -117,9 +116,6 @@ docker build -f Dockerfile.prod -t mata-frontend:prod .
 
 # Produção - Executar (porta 8080 interna, mapeada para 3000)
 docker run -p 3000:8080 mata-frontend:prod
-
-# Docker Compose completo
-docker compose up
 ```
 
 ### Verificação de Segurança
@@ -263,22 +259,22 @@ function NavigationExample() {
 ### Service Layer
 
 ```tsx
-// services/accommodation.service.ts
+// services/user.service.ts
 import { api } from './api'
 
-export const accommodationService = {
-  getAll: async (): Promise<Accommodation[]> => {
-    const response = await api.get('/accommodations')
+export const userService = {
+  getAll: async (): Promise<User[]> => {
+    const response = await api.get('/users')
     return response.data
   },
   
-  getById: async (id: string): Promise<Accommodation> => {
-    const response = await api.get(`/accommodations/${id}`)
+  getById: async (id: string): Promise<User> => {
+    const response = await api.get(`/users/${id}`)
     return response.data
   },
   
-  create: async (data: CreateAccommodationDTO): Promise<Accommodation> => {
-    const response = await api.post('/accommodations', data)
+  create: async (data: CreateUserDTO): Promise<User> => {
+    const response = await api.post('/users', data)
     return response.data
   }
 }
@@ -289,12 +285,12 @@ export const accommodationService = {
 ```tsx
 // hooks/useAccommodations.ts
 import { useQuery } from '@tanstack/react-query'
-import { accommodationService } from '@/services/accommodation.service'
+import { userService } from '@/services/user.service'
 
-export function useAccommodations() {
+export function useUsers() {
   return useQuery({
-    queryKey: ['accommodations'],
-    queryFn: accommodationService.getAll
+    queryKey: ['users'],
+    queryFn: userService.getAll
   })
 }
 ```

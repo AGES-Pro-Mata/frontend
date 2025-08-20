@@ -1,4 +1,7 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/Button'
+import { Label } from '@/components/ui/label'
 
 export const Route = createFileRoute('/register')({
   component: RegisterRoute,
@@ -17,10 +20,10 @@ function RegisterRoute() {
         
         <form className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-2">
+            <Label htmlFor="name" className="block text-sm font-medium mb-2">
               Nome
-            </label>
-            <input
+            </Label>
+            <Input
               id="name"
               type="text"
               className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -29,10 +32,10 @@ function RegisterRoute() {
           </div>
           
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
+            <Label htmlFor="email" className="block text-sm font-medium mb-2">
               Email
-            </label>
-            <input
+            </Label>
+            <Input
               id="email"
               type="email"
               className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -41,10 +44,10 @@ function RegisterRoute() {
           </div>
           
           <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2">
+            <Label htmlFor="password" className="block text-sm font-medium mb-2">
               Senha
-            </label>
-            <input
+            </Label>
+            <Input
               id="password"
               type="password"
               className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -53,10 +56,10 @@ function RegisterRoute() {
           </div>
           
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
+            <Label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
               Confirmar Senha
-            </label>
-            <input
+            </Label>
+            <Input
               id="confirmPassword"
               type="password"
               className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -64,12 +67,12 @@ function RegisterRoute() {
             />
           </div>
           
-          <button
+          <Button
             type="submit"
-            className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
+            className="w-full py-2 px-4 rounded-md transition-colors"
           >
             Criar Conta
-          </button>
+          </Button>
         </form>
         
         <div className="text-center space-y-2">

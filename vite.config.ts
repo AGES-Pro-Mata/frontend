@@ -10,10 +10,6 @@ export default defineConfig({
       routesDirectory: './src/routes',
       generatedRouteTree: './src/routeTree.gen.ts',
     }),
-    tanstackRouter({
-      target: 'react',
-      virtualRouteConfig: './src/routes/route-config.ts',
-    }),
   ],
   resolve: {
     alias: {

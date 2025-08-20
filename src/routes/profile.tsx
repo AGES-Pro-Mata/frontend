@@ -1,4 +1,7 @@
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { createFileRoute } from '@tanstack/react-router'
+import { Button } from '@/components/ui/Button'
 
 export const Route = createFileRoute('/profile')({
   component: ProfileRoute,
@@ -16,10 +19,10 @@ function ProfileRoute() {
             
             <form className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-2">
+                <Label htmlFor="name" className="block text-sm font-medium mb-2">
                   Nome
-                </label>
-                <input
+                </Label>
+                <Input
                   id="name"
                   type="text"
                   className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -28,10 +31,10 @@ function ProfileRoute() {
               </div>
               
               <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-2">
+                <Label htmlFor="email" className="block text-sm font-medium mb-2">
                   Email
-                </label>
-                <input
+                </Label>
+                <Input
                   id="email"
                   type="email"
                   className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -40,10 +43,10 @@ function ProfileRoute() {
               </div>
               
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium mb-2">
+                <Label htmlFor="phone" className="block text-sm font-medium mb-2">
                   Telefone
-                </label>
-                <input
+                </Label>
+                <Input
                   id="phone"
                   type="tel"
                   className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -51,12 +54,12 @@ function ProfileRoute() {
                 />
               </div>
               
-              <button
+              <Button
                 type="submit"
                 className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
               >
                 Salvar Alterações
-              </button>
+              </Button>
             </form>
           </div>
           
@@ -65,10 +68,10 @@ function ProfileRoute() {
             
             <form className="space-y-4">
               <div>
-                <label htmlFor="currentPassword" className="block text-sm font-medium mb-2">
+                <Label htmlFor="currentPassword" className="block text-sm font-medium mb-2">
                   Senha Atual
-                </label>
-                <input
+                </Label>
+                <Input
                   id="currentPassword"
                   type="password"
                   className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -77,10 +80,10 @@ function ProfileRoute() {
               </div>
               
               <div>
-                <label htmlFor="newPassword" className="block text-sm font-medium mb-2">
+                <Label htmlFor="newPassword" className="block text-sm font-medium mb-2">
                   Nova Senha
-                </label>
-                <input
+                </Label>
+                <Input
                   id="newPassword"
                   type="password"
                   className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -89,10 +92,10 @@ function ProfileRoute() {
               </div>
               
               <div>
-                <label htmlFor="confirmNewPassword" className="block text-sm font-medium mb-2">
+                <Label htmlFor="confirmNewPassword" className="block text-sm font-medium mb-2">
                   Confirmar Nova Senha
-                </label>
-                <input
+                </Label>
+                <Input
                   id="confirmNewPassword"
                   type="password"
                   className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -100,12 +103,12 @@ function ProfileRoute() {
                 />
               </div>
               
-              <button
+              <Button
                 type="submit"
-                className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
+                className="py-2 px-4 rounded-md transition-colors"
               >
                 Alterar Senha
-              </button>
+              </Button>
             </form>
           </div>
         </div>

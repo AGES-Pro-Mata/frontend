@@ -7,6 +7,7 @@ import { Layout } from '@/components/layout/Layout'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { ErrorBoundary } from '@/components/common/ErrorBoundary'
 import { useAuthStore } from '@/store/auth.store'
+import { Button } from '@/components/ui/Button'
 
 // Global loading component
 function GlobalLoading() {
@@ -25,12 +26,12 @@ function GlobalErrorFallback({ error, reset }: { error: Error; reset: () => void
         <h1 className="text-4xl font-bold text-destructive">Oops!</h1>
         <p className="text-xl text-muted-foreground">Algo deu errado</p>
         <p className="text-sm text-muted-foreground">{error.message}</p>
-        <button
+        <Button
           onClick={reset}
           className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
           Tentar novamente
-        </button>
+        </Button>
       </div>
     </div>
   )

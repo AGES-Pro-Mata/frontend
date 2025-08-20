@@ -14,11 +14,6 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const location = useLocation()
   const { isAuthenticated, hasRole } = useAuthStore()
-
-  // Determine layout configuration based on current route
-  const isAuthPage = ['/login', '/register', '/forgot-password', '/reset-password'].some(
-    path => location.pathname.startsWith(path)
-  )
   
   const isAdminPage = location.pathname.startsWith('/admin')
   const isDashboardPage = location.pathname.startsWith('/dashboard')
@@ -26,17 +21,6 @@ export function Layout({ children }: LayoutProps) {
   // Show sidebar for authenticated users on dashboard and admin pages
   const showSidebar = isAuthenticated && (isDashboardPage || isAdminPage)
   
-  // Full page layout for auth pages
-  if (isAuthPage) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pro-mata-green-50 to-pro-mata-blue-50">
-        <main className="min-h-screen flex items-center justify-center p-4">
-          {children}
-        </main>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}

@@ -1,4 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { Button } from '@/components/ui/Button'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 
 export const Route = createFileRoute('/forgot-password')({
   component: ForgotPasswordRoute,
@@ -17,10 +20,10 @@ function ForgotPasswordRoute() {
         
         <form className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
+            <Label htmlFor="email" className="block text-sm font-medium mb-2">
               Email
-            </label>
-            <input
+            </Label>
+            <Input
               id="email"
               type="email"
               className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -28,12 +31,13 @@ function ForgotPasswordRoute() {
             />
           </div>
           
-          <button
+          <Button
             type="submit"
-            className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
+            variant="default"
+            className="w-full py-2 px-4 rounded-md"
           >
             Enviar Instruções
-          </button>
+          </Button>
         </form>
         
         <div className="text-center space-y-2">

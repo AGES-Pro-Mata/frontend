@@ -55,11 +55,14 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        banner:{
+        banner: {
           DEFAULT: 'hsl(var(--banner))',
           selected: 'hsl(var--banner-selected))'
         },
-        constrastGreen: 'hsl(var--constrast-green))',
+        contrastGreen: {
+          DEFAULT: 'hsl(var(--constrast-green))',
+          hover: 'hsl(var(--constrast-green-hover))'
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

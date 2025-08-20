@@ -27,20 +27,15 @@
   --ring: 142 71% 45%;
   --radius: 0.5rem;
 
+    /* Pro-Mata specific variables */
+  --primary-green: 82 30% 16%; /* Main dark green */
+  --constrast-green: 108 58% 43%; /* Contrast green */
+  --constrast-green-hover: 108 58% 36%;
+  --selected: 30 23% 80% / 0.6; /* Selected, 60% opacity */
+  --dark-gray: 0 0% 42%; /* Dark gray */
+  --pro-mata-text: 0 0% 28%;
   --banner: 30 23% 80%;
   --banner-selected: 45 100% 90%;
-
-    /* Pro-Mata specific variables */
-  --pro-mata-green: 82 30% 16%; /* Main dark green */
-  --constrast-green: 82 77% 33%; /* Contrast green */
-  --pro-mata-selected: 30 23% 80% / 0.6; /* Selected, 60% opacity */
-  --pro-mata-selected-banner: 45 100% 90%; /* Selected banner */
-  --dark-gray: 0 0% 42%; /* Dark gray */
-  --pro-mata-green-light: 82 22% 29%;
-  --pro-mata-green-dark: 97 38% 12%;
-  --pro-mata-brown: 26 22% 24%;
-  --pro-mata-blue: 216 49% 32%;
-  --pro-mata-text: 0 0% 28%;
 
     /* Spacing */
     --header-height: 4rem;

@@ -402,7 +402,7 @@ export const useAuthStore = create<AuthState>()(
 
 // Selectors for performance optimization
 export const useUser = () => useAuthStore((state) => state.user)
-export const useIsAuthenticated = () => useAuthStore((state) => state.isAuthenticated)
+export const IsAuthenticated = () => useAuthStore((state) => state.isAuthenticated)
 export const useAuthLoading = () => useAuthStore((state) => state.isLoading)
 export const useAuthError = () => useAuthStore((state) => state.error)
 export const useAuthActions = () => useAuthStore((state) => ({

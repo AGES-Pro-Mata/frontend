@@ -303,7 +303,7 @@ export function Header() {
               /* Auth buttons */
               <div className='hidden md:flex items-center space-x-3'>
                 <Link to='/login'>
-                  <Button className='bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg transition-shadow'>
+                  <Button variant='default'>
                     Entre/Registre-se
                   </Button>
                 </Link>

@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/auth.store'
 import { Layout } from '@/components/layout/Layout'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { ErrorBoundary } from '@/components/common/ErrorBoundary'
+import { Button } from './components/ui/Button'
 
 // Global app configuration
 const APP_CONFIG = {
@@ -122,18 +123,18 @@ function App() {
         )}
         
         <div className="flex gap-2 justify-center">
-          <button
+          <Button
             onClick={reset}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Tentar novamente
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => window.location.href = '/'}
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
           >
             Voltar ao início
-          </button>
+          </Button>
         </div>
       </div>
     </div>
