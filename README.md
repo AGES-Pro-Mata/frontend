@@ -32,7 +32,7 @@ Observação: alguns pacotes podem não estar instalados por padrão neste momen
 1. Clone o repositório
 
    ```bash
-   git clone <URL_DO_REPO>
+   git clone https://github.com/AGES-Pro-Mata/frontend.git
    cd frontend
    ```
 
@@ -41,18 +41,6 @@ Observação: alguns pacotes podem não estar instalados por padrão neste momen
    ```bash
    npm ci
    ```
-
-3. (Opcional) Instale bibliotecas de dados/estado caso ainda não estejam no projeto
-
-   ```bash
-   npm i @tanstack/react-query axios zustand
-   ```
-
-4. (Opcional) Instale componentes do Shadcn
-   - Use sempre a CLI mais recente para adicionar componentes:
-     ```bash
-     pnpx shadcn@latest add button
-     ```
 
 ---
 
