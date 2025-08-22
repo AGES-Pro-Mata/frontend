@@ -1,299 +1,433 @@
-Welcome to your new TanStack app! 
+## PRÓ-MATA Frontend
 
-# Getting Started
+Aplicação React moderna com Vite, TanStack Router (file-based routing), Tailwind CSS e Shadcn/UI. Este README descreve a stack, pré-requisitos, como instalar/rodar e traz um guia de desenvolvimento focado em Roteamento e Dados.
 
-To run this application:
+---
+
+### Tecnologias
+
+- React 19 + Vite 6
+- TanStack Router (file-based routing com `@tanstack/router-plugin`)
+- Tailwind CSS 4
+- Shadcn/UI (design system de componentes)
+- TanStack Query (para dados de servidor)
+- Axios (cliente HTTP)
+- Zustand (estado global de UI)
+
+Observação: alguns pacotes podem não estar instalados por padrão neste momento do projeto. Veja a seção “Instalação” para comandos de instalação recomendados.
+
+---
+
+### Pré-requisitos
+
+- Node.js 22+ (recomendado 22.12)
+- npm 10+
+- Git
+- Opcional: Docker 24+ e Docker Compose (para rodar via contêiner)
+
+---
+
+### Instalação
+
+1. Clone o repositório
+
+   ```bash
+   git clone <URL_DO_REPO>
+   cd frontend
+   ```
+
+2. Instale as dependências
+
+   ```bash
+   npm ci
+   ```
+
+3. (Opcional) Instale bibliotecas de dados/estado caso ainda não estejam no projeto
+
+   ```bash
+   npm i @tanstack/react-query axios zustand
+   ```
+
+4. (Opcional) Instale componentes do Shadcn
+   - Use sempre a CLI mais recente para adicionar componentes:
+     ```bash
+     pnpx shadcn@latest add button
+     ```
+
+---
+
+### Variáveis de ambiente
+
+Crie um arquivo `.env` (ou use variáveis no ambiente de execução) com, por exemplo:
 
 ```bash
-npm install
-npm run start
+VITE_API_URL=https://api.exemplo.com
+VITE_APP_ENV=development
+VITE_APP_VERSION=local
 ```
 
-# Building For Production
+Obs.: Em build/execução via Docker, variáveis como `VITE_API_URL`, `VITE_APP_ENV` e `VITE_APP_VERSION` podem ser injetadas em tempo de execução.
 
-To build this application for production:
+---
 
-```bash
-npm run build
+### Como rodar
+
+- Desenvolvimento (Vite dev server):
+
+  ```bash
+  npm run dev
+  # Acesse http://localhost:3000
+  ```
+
+- Build de produção:
+
+  ```bash
+  npm run build
+  ```
+
+- Preview do build:
+  ```bash
+  npm run serve
+  ```
+
+---
+
+### Scripts úteis
+
+- `npm run dev` — inicia servidor de desenvolvimento
+- `npm run start` — alias para `dev`
+- `npm run build` — build de produção (Vite + TypeScript)
+- `npm run serve` — preview do build
+- `npm test` — executa testes com Vitest (se houver testes configurados)
+
+---
+
+### Estrutura do projeto (simplificada)
+
+```
+frontend/
+├─ src/
+│  ├─ components/
+│  │  └─ ui/               # Componentes Shadcn/UI
+│  ├─ lib/                 # Utilitários e configurações 
+│  ├─ routes/              # Rotas (file-based, Router)
+│  ├─ styles.css           # Tailwind base + tokens
+│  └─ main.tsx             # Bootstrap da aplicação
+├─ index.html              # Entrada Vite
+├─ tailwind.config.js
+├─ vite.config.ts          # Inclui o plugin tanstack
+└─ package.json
 ```
 
-## Testing
+---
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+### Docker (opcional)
 
-```bash
-npm run test
+- Ambiente de desenvolvimento:
+
+  ```bash
+  docker build -f Dockerfile.dev -t promata-frontend:dev .
+  docker run --rm -it -p 3000:3000 promata-frontend:dev
+  ```
+
+- Build de produção (image final com Nginx):
+  ```bash
+  docker build -f Dockerfile.prod -t promata-frontend:prod .
+  docker run --rm -it -p 8080:8080 promata-frontend:prod
+  ```
+
+---
+
+## Guia de Desenvolvimento: Roteamento e Dados
+
+Bem-vindo(a) ao PRÓ-MATA! Este documento é o guia central para entender a arquitetura de nossa aplicação, focando em como a navegação, o carregamento de dados e o gerenciamento de estado funcionam em conjunto.
+
+## Sumário
+
+1. Nossa Stack de Desenvolvimento
+2. Arquitetura de Roteamento e Dados
+
+   - **TanStack Router:** O Orquestrador
+   - **TanStack Query + Axios:** A Camada de Dados
+   - **Zustand:** O Estado Global da UI
+   - **Shadcn/UI + Tailwind CSS:** Nosso Design System
+
+3. **Fluxo Prático: Criando uma Nova Página com Dados**
+
+   - Passo 1: Definir a Lógica de Dados (Hook do TanStack Query)
+   - Passo 2: Criar o Arquivo da Rota (`/produtos`)
+   - Passo 3: Criar o Componente da Página com Shadcn/UI
+   - Passo 4: Repetir para a Rota Dinâmica (`/produtos/$produtoId`)
+
+4. Estrutura e Convenções de Arquivos
+5. Boas Práticas
+
+---
+
+## Nossa Stack de Desenvolvimento
+
+Para entender como construir na aplicação, primeiro conheça as ferramentas e seus papéis:
+
+| Ferramenta               | Responsabilidade                                                                                                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **TanStack Router**      | **Roteamento e navegação.** Define as páginas da aplicação com base na estrutura de arquivos e orquestra _quando_ os dados devem ser carregados (ao entrar em uma rota).              |
+| **TanStack Query**       | **Gerenciamento de dados do servidor.** Define _como_ buscar, armazenar em cache, invalidar e atualizar dados de APIs. É nosso "state manager para dados de servidor".                |
+| **Axios**                | **Cliente HTTP.** É a ferramenta que usamos dentro do TanStack Query para efetivamente fazer as chamadas de API (GET, POST, etc.).                                                    |
+| **Zustand**              | **Gerenciamento de estado global do cliente.** Usado para estados que **não** vêm do servidor, como estado de UI (ex: menu aberto/fechado), temas, ou dados de formulários complexos. |
+| **Shadcn/UI & Tailwind** | **Componentes e Estilização.** Nossa biblioteca de componentes de UI, construída sobre Tailwind CSS para estilização rápida e consistente.                                            |
+
+## Arquitetura de Roteamento e Dados
+
+### TanStack Router: O Orquestrador
+
+O Router controla a navegação. Sua principal função é mapear a URL para um componente e, mais importante, acionar o carregamento de dados _antes_ da página ser renderizada através de sua função `loader`.
+
+### TanStack Query + Axios: A Camada de Dados
+
+O `loader` do Router **não busca os dados diretamente**. Ele delega essa responsabilidade ao TanStack Query.
+
+- **TanStack Query** gerencia todo o ciclo de vida dos dados: faz a chamada com Axios, gerencia cache, revalida em segundo plano, trata estados de `loading` e `error`, etc.
+- **Hooks Separados:** Toda a lógica do TanStack Query (definições de `queryKey` e `queryFn`) vive em arquivos de hooks separados (ex: `src/features/produtos/hooks.ts`). Isso torna a lógica de dados reutilizável e desacoplada das rotas.
+
+### Zustand: O Estado Global da UI
+
+**Quando usar Zustand?** Use-o para estados que não pertencem ao servidor.
+
+- **Bom uso:** "O carrinho de compras está aberto?", "Qual o tema atual (dark/light)?".
+- **Mau uso:** Armazenar a lista de produtos. Isso é trabalho para o TanStack Query, que sabe como manter esses dados sincronizados com o servidor.
+
+### Shadcn/UI + Tailwind CSS: Nosso Design System
+
+Todos os componentes visuais devem vir de `@/components/ui` (o caminho padrão do Shadcn). A estilização é feita primariamente com as classes utilitárias do Tailwind CSS.
+
+---
+
+## **Fluxo Prático: Criando uma Nova Página com Dados**
+
+Vamos aplicar os conceitos criando a seção de "Produtos" (`/produtos` e `/produtos/:id`).
+
+### Passo 1: Definir a Lógica de Dados (Hook do TanStack Query)
+
+Primeiro, criamos os hooks que buscarão os dados. Isso é feito fora das rotas para ser reutilizável.
+
+**Estrutura de Arquivos:**
+
+```
+src/
+└── features/
+    └── produtos/
+        ├── api.ts          <-- Funções do Axios
+        └── hooks.ts        <-- Hooks do TanStack Query
 ```
 
-## Styling
+**Conteúdo de `src/features/produtos/api.ts`:**
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+TypeScript
 
+```ts
+import axios from "axios";
 
+// Supondo que você tenha tipos definidos em algum lugar
+import type { Produto } from "@/types/produto";
 
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpx shadcn@latest add button
-```
-
-
-
-## Routing
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add another a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from "@tanstack/react-router";
-
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
-  loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
+const apiClient = axios.create({
+  baseURL: "https://api.seusite.com",
 });
+
+export const getProdutos = async (): Promise<Produto[]> => {
+  const { data } = await apiClient.get("/produtos");
+  return data;
+};
+
+export const getProdutoById = async (id: string): Promise<Produto> => {
+  const { data } = await apiClient.get(`/produtos/${id}`);
+  return data;
+};
 ```
 
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
+**Conteúdo de `src/features/produtos/hooks.ts`:**
 
-### React-Query
+TypeScript
 
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
+```ts
+import { queryOptions } from "@tanstack/react-query";
+import { getProdutos, getProdutoById } from "./api";
 
-First add your dependencies:
+// Opções de query para a lista de produtos
+export const produtosQueryOptions = queryOptions({
+  queryKey: ["produtos", "lista"],
+  queryFn: getProdutos,
+});
 
-```bash
-npm install @tanstack/react-query @tanstack/react-query-devtools
+// Opções de query para um único produto (depende de um ID)
+export const produtoQueryOptions = (produtoId: string) =>
+  queryOptions({
+    queryKey: ["produtos", "detalhe", produtoId],
+    queryFn: () => getProdutoById(produtoId),
+  });
 ```
 
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
+_Usamos `queryOptions` para criar configurações de query reutilizáveis que podem ser usadas tanto nos loaders do Router quanto em componentes._
 
-```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+### Passo 2: Criar o Arquivo da Rota (`/produtos`)
 
-// ...
+Agora, conectamos essa lógica de dados à nossa rota.
+
+**Estrutura:**
+
+```
+src/
+└── routes/
+    └── produtos/
+        └── index.tsx
+```
+
+**Conteúdo de `src/routes/produtos/index.tsx`:**
+
+TypeScript
+
+```ts
+import { createFileRoute } from "@tanstack/react-router";
+import { produtosQueryOptions } from "@/features/produtos/hooks";
+import { useQuery, QueryClient } from "@tanstack/react-query";
+import { ProdutosListPage } from "@/features/produtos/components/ProdutosListPage"; // Componente separado
 
 const queryClient = new QueryClient();
 
-// ...
+export const Route = createFileRoute("/produtos/")({
+  // O loader agora garante que os dados sejam buscados ou recuperados do cache
+  loader: () => {
+    return queryClient.ensureQueryData(produtosQueryOptions);
+  },
+  component: ProdutosRouteComponent,
+});
 
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
+function ProdutosRouteComponent() {
+  // Os dados já foram pré-carregados pelo loader.
+  // useQuery aqui vai ler os dados do cache instantaneamente.
+  const { data: produtos } = useQuery(produtosQueryOptions);
 
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
+  return <ProdutosListPage produtos={produtos} />;
 }
 ```
 
-You can also add TanStack Query Devtools to the root route (optional).
+### Passo 3: Criar o Componente da Página com Shadcn/UI
 
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+Mantemos o componente de UI em um arquivo separado para organização.
 
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
+**Estrutura:**
+
+```
+src/
+└── features/
+    └── produtos/
+        └── components/
+            └── ProdutosListPage.tsx
 ```
 
-Now you can use `useQuery` to fetch your data.
+**Conteúdo de `src/features/produtos/components/ProdutosListPage.tsx`:**
 
-```tsx
-import { useQuery } from "@tanstack/react-query";
+TypeScript
 
-import "./App.css";
+```ts
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import type { Produto } from "@/types/produto";
 
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  });
+interface ProdutosListPageProps {
+  produtos?: Produto[];
+}
 
+export function ProdutosListPage({ produtos }: ProdutosListPageProps) {
   return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">Nossos Produtos</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {produtos?.map((produto) => (
+          <Card key={produto.id}>
+            <CardHeader>
+              <CardTitle>{produto.nome}</CardTitle>
+              <CardDescription>ID: {produto.id}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild>
+                <Link
+                  to="/produtos/$produtoId"
+                  params={{ produtoId: produto.id }}
+                >
+                  Ver Detalhes
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
-
-export default App;
 ```
 
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
+### Passo 4: Repetir para a Rota Dinâmica (`/produtos/$produtoId`)
 
-## State Management
+O processo é idêntico para a página de detalhes.
 
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
+**Arquivo da rota `src/routes/produtos/$produtoId.tsx`:**
 
-First you need to add TanStack Store as a dependency:
+TypeScript
 
-```bash
-npm install @tanstack/store
-```
+```ts
+import { createFileRoute } from "@tanstack/react-router";
+import { produtoQueryOptions } from "@/features/produtos/hooks";
+import { useQuery, QueryClient } from "@tanstack/react-query";
+import { DetalheProdutoPage } from "@/features/produtos/components/DetalheProdutoPage";
 
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
+const queryClient = new QueryClient();
 
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
-
-export default App;
-```
-
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
-
-Let's check this out by doubling the count using derived state.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
+export const Route = createFileRoute("/produtos/$produtoId")({
+  loader: ({ params }) => {
+    return queryClient.ensureQueryData(produtoQueryOptions(params.produtoId));
+  },
+  component: DetalheProdutoRouteComponent,
 });
-doubledStore.mount();
 
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
+function DetalheProdutoRouteComponent() {
+  const { produtoId } = Route.useParams();
+  const { data: produto } = useQuery(produtoQueryOptions(produtoId));
 
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
+  return <DetalheProdutoPage produto={produto} />;
 }
-
-export default App;
 ```
 
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
+O componente `DetalheProdutoPage` seria criado de forma similar, recebendo o `produto` como prop e usando os componentes Shadcn para exibi-lo.
 
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
+---
 
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
+## Estrutura e Convenções de Arquivos
 
-# Demo files
+| Arquivo/Pasta                     | Descrição                                                                                                                                           |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/`                     | **Definição das rotas.** A estrutura de pastas aqui mapeia 1:1 com as URLs.                                                                         |
+| `src/features/[nome-da-feature]/` | **Lógica de negócio.** Cada feature (produtos, usuários, etc.) tem sua própria pasta contendo a lógica de API, hooks de dados, componentes e tipos. |
+| `src/components/ui/`              | **Componentes Shadcn.** Componentes de UI genéricos e reutilizáveis.                                                                                |
+| `src/lib/`                        | **Configurações.** Local para instâncias de clientes, como `axios` e `queryClient`.                                                                 |
+| `src/stores/`                     | **Stores do Zustand.** Lógica de estado global do cliente.                                                                                          |
 
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
+## Boas Práticas
 
-# Learn More
+1. **Separação de Responsabilidades:**
 
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+   - `src/routes/**`: Orquestra a navegação e o carregamento de dados.
+   - `src/features/**/hooks.ts`: Define a lógica de busca e cache de dados.
+   - `src/features/**/api.ts`: Realiza as chamadas HTTP.
+   - `src/features/**/components/**`: Apresenta a UI.
+
+2. **Loader Delega para o Query:** O `loader` do Router deve apenas chamar `queryClient.ensureQueryData` para acionar o TanStack Query. Toda a lógica complexa (caching, etc.) fica no Query.
+3. **Estado do Servidor vs. Estado do Cliente:** Antes de usar Zustand, pergunte: "Esta informação vem da nossa API?". Se sim, use TanStack Query. Se não (ex: estado de um modal), Zustand é a escolha certa.
+4. **Componentes Dumb:** Prefira componentes de apresentação (nos arquivos de componentes) que apenas recebem dados via props e não têm lógica de busca própria. Os componentes nos arquivos de rota servem como "containers" que conectam os dados aos componentes de UI.
