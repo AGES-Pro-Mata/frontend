@@ -130,6 +130,10 @@ frontend/
 
 Bem-vindo(a) ao PRÓ-MATA! Este documento é o guia central para entender a arquitetura de nossa aplicação, focando em como a navegação, o carregamento de dados e o gerenciamento de estado funcionam em conjunto.
 
+## IMPORTANTE
+
+- Sempre rode o projeto com o comando `npm run dev` enquanto estiver desenvolvendo. Isso é importante para que as rotas do projeto sejam atualizadas automaticamente.
+
 ## Sumário
 
 1. Nossa Stack de Desenvolvimento
