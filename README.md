@@ -1,653 +1,299 @@
-# Pro-Mata Frontend
+Welcome to your new TanStack app! 
 
-Interface React para a plataforma de reservas e atendimento ao visitante do Centro Pró-Mata - PUCRS.
+# Getting Started
 
-![Pro-Mata Logo](./public/images/pro-mata-logo.png)
-
-## Requisitos do Sistema
-
-### Node.js, npm e Docker (Versões Recomendadas)
-
-- **Node.js**: 22.12.0 LTS (versão travada para consistência)
-- **npm**: 9.2.0+ (incluído com Node.js)
-- **Docker**: 20.10+ (para containerização)
-
-### Gerenciamento de Versões
-
-O projeto usa arquivos de trava de versão para garantir consistência:
+To run this application:
 
 ```bash
-# Arquivos de versão
-.node-version    # 22.12.0 (para nodenv/asdf/mise)
-.nvmrc           # 22.12.0 (para nvm)
-
-# Usar com nvm
-nvm use
-
-# Usar com nodenv
-nodenv local
-
-# Usar com volta
-volta pin node@22.12.0
-```
-
-## Quick Start
-
-```bash
-# Instalar dependências
 npm install
-
-# Iniciar servidor de desenvolvimento
-npm run dev
-
-# Abrir no navegador
-# http://localhost:3000
+npm run start
 ```
 
-## 🏗️ Tecnologias
+# Building For Production
 
-- **Framework**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Routing**: Tanstack Router
-- **Styling**: Tailwind CSS + Shadcn/ui
-- **State Management**: Zustand
-- **Forms**: React Hook Form + Zod
-- **HTTP Client**: Axios
-- **Testing**: Vitest + Playwright + Testing Library
-- **Linting**: ESLint + Prettier + Stylelint
-
-## 📁 Estrutura do Projeto
-
-```plaintext
-src/
-├── components/          # Componentes reutilizáveis
-│   ├── ui/             # Componentes base (Shadcn)
-│   ├── layout/         # Componentes de layout
-│   ├── forms/          # Componentes de formulário
-│   └── features/       # Componentes específicos por feature
-├── routes/             # Configuração de rotas (Tanstack Router)
-├── services/           # Serviços e API calls
-├── store/              # Estado global (Zustand)
-├── hooks/              # Custom hooks
-├── utils/              # Utilitários e helpers
-├── types/              # Definições de tipos TypeScript
-└── styles/             # Estilos globais
-```
-
-## Scripts Disponíveis
-
-### Desenvolvimento
+To build this application for production:
 
 ```bash
-npm run dev              # Servidor de desenvolvimento
-npm run build            # Build para produção
-npm run preview          # Preview do build de produção
-npm run type-check       # Verificação de tipos TypeScript
+npm run build
 ```
 
-### Testes
+## Testing
+
+This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
 
 ```bash
-npm run test             # Executar todos os testes
-npm run test:unit        # Testes unitários
-npm run test:e2e         # Testes E2E com Playwright
-npm run test:coverage    # Testes com coverage
-npm run test:watch       # Testes em modo watch
+npm run test
 ```
 
-### Qualidade de Código
+## Styling
+
+This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+
+
+
+## Shadcn
+
+Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
 
 ```bash
-npm run lint             # ESLint
-npm run lint:fix         # ESLint com correção automática
-npm run lint:css         # Stylelint para CSS
-npm run format           # Prettier
-npm run security-check   # Auditoria de segurança
+pnpx shadcn@latest add button
 ```
 
-### Docker
 
-```bash
-# Desenvolvimento (porta 3000)
-docker compose up
 
-# Produção - Build
-docker build -f Dockerfile.prod -t mata-frontend:prod .
+## Routing
+This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
 
-# Produção - Executar (porta 8080 interna, mapeada para 3000)
-docker run -p 3000:8080 mata-frontend:prod
-```
+### Adding A Route
 
-### Verificação de Segurança
+To add a new route to your application just add another a new file in the `./src/routes` directory.
 
-```bash
-# Auditoria npm (desenvolvimento)
-npm audit
+TanStack will automatically generate the content of the route file for you.
 
-# Verificar vulnerabilidades fixáveis
-npm audit fix
+Now that you have two routes you can use a `Link` component to navigate between them.
 
-# Análise de dependências
-npm ls --depth=0
+### Adding Links
 
-# Verificar atualizações
-npm outdated
-```
-
-### Storybook
-
-```bash
-npm run storybook        # Iniciar Storybook
-npm run storybook:build  # Build do Storybook
-```
-
-## Componentes
-
-### Componentes Base (Shadcn/ui)
+To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
 
 ```tsx
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card } from '@/components/ui/card'
+import { Link } from "@tanstack/react-router";
+```
 
-function ExampleComponent() {
-  return (
-    <Card>
-      <Input placeholder="Digite algo..." />
-      <Button>Clique aqui</Button>
-    </Card>
-  )
+Then anywhere in your JSX you can use it like so:
+
+```tsx
+<Link to="/about">About</Link>
+```
+
+This will create a link that will navigate to the `/about` route.
+
+More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
+
+### Using A Layout
+
+In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
+
+Here is an example layout that includes a header:
+
+```tsx
+import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+
+import { Link } from "@tanstack/react-router";
+
+export const Route = createRootRoute({
+  component: () => (
+    <>
+      <header>
+        <nav>
+          <Link to="/">Home</Link>
+          <Link to="/about">About</Link>
+        </nav>
+      </header>
+      <Outlet />
+      <TanStackRouterDevtools />
+    </>
+  ),
+})
+```
+
+The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
+
+More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
+
+
+## Data Fetching
+
+There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
+
+For example:
+
+```tsx
+const peopleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/people",
+  loader: async () => {
+    const response = await fetch("https://swapi.dev/api/people");
+    return response.json() as Promise<{
+      results: {
+        name: string;
+      }[];
+    }>;
+  },
+  component: () => {
+    const data = peopleRoute.useLoaderData();
+    return (
+      <ul>
+        {data.results.map((person) => (
+          <li key={person.name}>{person.name}</li>
+        ))}
+      </ul>
+    );
+  },
+});
+```
+
+Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
+
+### React-Query
+
+React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
+
+First add your dependencies:
+
+```bash
+npm install @tanstack/react-query @tanstack/react-query-devtools
+```
+
+Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
+
+```tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// ...
+
+const queryClient = new QueryClient();
+
+// ...
+
+if (!rootElement.innerHTML) {
+  const root = ReactDOM.createRoot(rootElement);
+
+  root.render(
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
 }
 ```
 
-### Componentes de Layout
+You can also add TanStack Query Devtools to the root route (optional).
 
 ```tsx
-import { Header } from '@/components/layout/Header'
-import { Layout } from '@/components/layout/Layout'
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+const rootRoute = createRootRoute({
+  component: () => (
+    <>
+      <Outlet />
+      <ReactQueryDevtools buttonPosition="top-right" />
+      <TanStackRouterDevtools />
+    </>
+  ),
+});
+```
+
+Now you can use `useQuery` to fetch your data.
+
+```tsx
+import { useQuery } from "@tanstack/react-query";
+
+import "./App.css";
 
 function App() {
-  return (
-    <Layout>
-      <Header />
-      {/* Conteúdo da página */}
-    </Layout>
-  )
-}
-```
+  const { data } = useQuery({
+    queryKey: ["people"],
+    queryFn: () =>
+      fetch("https://swapi.dev/api/people")
+        .then((res) => res.json())
+        .then((data) => data.results as { name: string }[]),
+    initialData: [],
+  });
 
-## 🔄 Estado Global
-
-### Zustand Store
-
-```tsx
-// store/auth.store.ts
-import { create } from 'zustand'
-
-interface AuthState {
-  user: User | null
-  login: (credentials: LoginCredentials) => Promise<void>
-  logout: () => void
-}
-
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  login: async (credentials) => {
-    // Implementar login
-  },
-  logout: () => set({ user: null })
-}))
-```
-
-### Uso nos Componentes
-
-```tsx
-import { useAuthStore } from '@/store/auth.store'
-
-function ProfileComponent() {
-  const { user, logout } = useAuthStore()
-  
   return (
     <div>
-      {user ? (
-        <>
-          <span>Olá, {user.name}</span>
-          <button onClick={logout}>Sair</button>
-        </>
-      ) : (
-        <span>Não logado</span>
-      )}
+      <ul>
+        {data.map((person) => (
+          <li key={person.name}>{person.name}</li>
+        ))}
+      </ul>
     </div>
-  )
+  );
 }
+
+export default App;
 ```
 
-## Roteamento
+You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
 
-### Tanstack Router
+## State Management
 
-```tsx
-// routes/accommodations/$id.tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { AccommodationDetails } from '@/pages/AccommodationDetails'
+Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
 
-export const Route = createFileRoute('/accommodations/$id')({
-  component: AccommodationDetails,
-  loader: ({ params }) => 
-    accommodationService.getById(params.id)
-})
-```
-
-### Navegação Programática
-
-```tsx
-import { useNavigate } from '@tanstack/react-router'
-
-function NavigationExample() {
-  const navigate = useNavigate()
-  
-  const handleClick = () => {
-    navigate({ to: '/accommodations/$id', params: { id: '123' } })
-  }
-  
-  return <button onClick={handleClick}>Ver Acomodação</button>
-}
-```
-
-## API Integration
-
-### Service Layer
-
-```tsx
-// services/user.service.ts
-import { api } from './api'
-
-export const userService = {
-  getAll: async (): Promise<User[]> => {
-    const response = await api.get('/users')
-    return response.data
-  },
-  
-  getById: async (id: string): Promise<User> => {
-    const response = await api.get(`/users/${id}`)
-    return response.data
-  },
-  
-  create: async (data: CreateUserDTO): Promise<User> => {
-    const response = await api.post('/users', data)
-    return response.data
-  }
-}
-```
-
-### Custom Hooks
-
-```tsx
-// hooks/useAccommodations.ts
-import { useQuery } from '@tanstack/react-query'
-import { userService } from '@/services/user.service'
-
-export function useUsers() {
-  return useQuery({
-    queryKey: ['users'],
-    queryFn: userService.getAll
-  })
-}
-```
-
-## Testes
-
-### Testes Unitários (Vitest)
-
-```tsx
-// components/Button.test.tsx
-import { render, screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Button } from './Button'
-
-describe('Button', () => {
-  it('should render correctly', () => {
-    render(<Button>Click me</Button>)
-    expect(screen.getByRole('button')).toBeInTheDocument()
-  })
-  
-  it('should handle click events', async () => {
-    const handleClick = vi.fn()
-    render(<Button onClick={handleClick}>Click me</Button>)
-    
-    await userEvent.click(screen.getByRole('button'))
-    expect(handleClick).toHaveBeenCalledTimes(1)
-  })
-})
-```
-
-### Testes E2E (Playwright)
-
-```typescript
-// tests/e2e/login.spec.ts
-import { test, expect } from '@playwright/test'
-
-test('should login successfully', async ({ page }) => {
-  await page.goto('/login')
-  
-  await page.fill('[data-testid="email"]', 'user@example.com')
-  await page.fill('[data-testid="password"]', 'password123')
-  await page.click('[data-testid="login-button"]')
-  
-  await expect(page).toHaveURL('/dashboard')
-  await expect(page.locator('[data-testid="user-menu"]')).toBeVisible()
-})
-```
-
-## Funcionalidades
-
-### Módulo de Autenticação
-
-- Login/Logout
-- Registro de usuário
-- Recuperação de senha
-- Proteção de rotas
-
-### Módulo de Acomodações
-
-- Listagem de acomodações
-- Detalhes de acomodações
-- Busca e filtros
-- Visualização de disponibilidade
-
-### Módulo de Reservas
-
-- Criação de reservas
-- Gerenciamento de reservas
-- Histórico de reservas
-- Cancelamento de reservas
-
-### Módulo de Atividades
-
-- Listagem de atividades
-- Agendamento de atividades
-- Informações detalhadas
-
-### Módulo Administrativo
-
-- Dashboard administrativo
-- Gerenciamento de usuários
-- Relatórios
-- Configurações do sistema
-
-## Configuração
-
-### Variáveis de Ambiente
+First you need to add TanStack Store as a dependency:
 
 ```bash
-#.env
-
-# Portas Frontend
-FRONTEND_DEV_PORT_MAPPING=3000:3000
-FRONTEND_PROD_PORT_MAPPING=3001:8080
-# Backend Mockserver
-MOCKSERVER_PROPERTY_FILE=/config/mockserver.properties
-MOCKSERVER_INITIALIZATION_JSON_PATH=/config/mockserver-init.json
-MOCKSERVER_CONFIG_VOLUME=./mock-server:/config
-# Nginx Static
-NGINX_DIST_VOLUME=./dist:/usr/share/nginx/html:ro
-NGINX_CONF_VOLUME=./nginx-static.conf:/etc/nginx/conf.d/default.conf:ro
-# URLs de healthchecks
-FRONTEND_DEV_HEALTHCHECK_URL=http://localhost:3000
-FRONTEND_PROD_HEALTHCHECK_URL=http://localhost:8080/health
-BACKEND_MOCK_HEALTHCHECK_URL=http://localhost:1080/health
-# Frontend Environment Variables
-VITE_API_URL=http://localhost:8080/api
-VITE_APP_ENV=development
-VITE_APP_VERSION=dev
-NGINX_WORKER_PROCESSES=1
-NGINX_WORKER_CONNECTIONS=512
+npm install @tanstack/store
 ```
 
-### Configuração do Vite
+Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
 
-```typescript
-// vite.config.ts
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+```tsx
+import { useStore } from "@tanstack/react-store";
+import { Store } from "@tanstack/store";
+import "./App.css";
 
-export default defineConfig({
-  plugins: [
-    react(),
-    TanStackRouterVite()
-  ],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  }
-})
+const countStore = new Store(0);
+
+function App() {
+  const count = useStore(countStore);
+  return (
+    <div>
+      <button onClick={() => countStore.setState((n) => n + 1)}>
+        Increment - {count}
+      </button>
+    </div>
+  );
+}
+
+export default App;
 ```
 
-## Docker
+One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
 
-### Development
+Let's check this out by doubling the count using derived state.
 
-```dockerfile
-FROM node:22.12.0-alpine3.21
+```tsx
+import { useStore } from "@tanstack/react-store";
+import { Store, Derived } from "@tanstack/store";
+import "./App.css";
 
-# Atualização de segurança
-RUN apk upgrade --no-cache
+const countStore = new Store(0);
 
-# Usuário não-root
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
+const doubledStore = new Derived({
+  fn: () => countStore.state * 2,
+  deps: [countStore],
+});
+doubledStore.mount();
 
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
+function App() {
+  const count = useStore(countStore);
+  const doubledCount = useStore(doubledStore);
 
-COPY . .
-USER nextjs
-EXPOSE 5174
-CMD ["npm", "run", "dev"]
+  return (
+    <div>
+      <button onClick={() => countStore.setState((n) => n + 1)}>
+        Increment - {count}
+      </button>
+      <div>Doubled - {doubledCount}</div>
+    </div>
+  );
+}
+
+export default App;
 ```
 
-### Production (Multi-stage Secure Build)
+We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
 
-```dockerfile
-# Stage 1: Build
-FROM node:22.12.0-alpine3.21 as builder
-RUN apk upgrade --no-cache
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
+Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
 
-# Stage 2: Production (Non-root Nginx)
-FROM nginxinc/nginx-unprivileged:1.27-alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
-EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
-```
+You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
 
-### Configuração de Porta (Segurança)
+# Demo files
 
-- **Desenvolvimento**: porta 5174 (Vite padrão)
-- **Produção Docker**: porta 8080 interna (não-privilegiada)
-- **Docker Compose**: mapeamento 3001:8080
+Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
 
-## 📊Performance
+# Learn More
 
-### Lighthouse Scores (Objetivo)
-
-- **Performance**: 90+
-- **Accessibility**: 95+
-- **Best Practices**: 90+
-- **SEO**: 90+
-
-### Otimizações Implementadas
-
-- Code splitting automático
-- Lazy loading de componentes
-- Compressão de assets (Gzip/Brotli)
-- Cache de recursos estáticos
-- Otimização de imagens
-
-## Segurança
-
-### Headers de Segurança
-
-```nginx
-# nginx.conf - Cabeçalhos de segurança
-add_header X-Frame-Options "SAMEORIGIN" always;
-add_header X-Content-Type-Options "nosniff" always;
-add_header X-XSS-Protection "1; mode=block" always;
-add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;" always;
-```
-
-### Práticas Implementadas
-
-- **Sanitização de inputs**
-- **Validação no client e server**
-- **Tokens JWT seguros**
-- **Rate limiting**
-- **HTTPS obrigatório**
-- **Containers não-root**
-- **Imagens base atualizadas**
-- **Multi-stage builds otimizados**
-
-### Monitoramento de Vulnerabilidades
-
-```bash
-# Verificação automática
-npm audit                    # Dependências npm
-docker scout quickview      # Vulnerabilidades Docker (se disponível)
-
-# Ferramentas recomendadas
-snyk test                   # Análise de segurança Snyk
-trivy image mata-frontend   # Scanner de containers Trivy
-```
-
-## Acessibilidade
-
-### Padrões Seguidos
-
-- WCAG 2.1 AA
-- Navegação por teclado
-- Screen reader support
-- Alto contraste
-- Texto alternativo para imagens
-
-### Ferramentas de Teste
-
-- axe-core
-- Lighthouse accessibility audit
-- Manual testing
-
-## Documentação
-
-### Storybooks
-
-Interface de desenvolvimento de componentes disponível em:
-
-- **Development**: <http://localhost:6006>
-- **Production**: <https://storybook.promata.duckdns.org>
-
-### Documentação da API
-
-- **Swagger UI**: <https://api.promata.duckdns.org/docs>
-- **Redoc**: <https://api.promata.duckdns.org/redoc>
-
-## 🤝 Contribuindo
-
-### Setup para Desenvolvimento
-
-1. **Pré-requisitos**
-
-   ```bash
-   # Verificar versão do Node.js
-   node --version  # Deve ser 22.12.0
-   npm --version   # Deve ser 9.2.0+
-   
-   # Instalar Node.js 22.12.0 (se necessário)
-   nvm install 22.12.0
-   nvm use 22.12.0
-   ```
-
-2. **Fork** o repositório
-
-3. **Clone** seu fork
-
-   ```bash
-   git clone https://github.com/seu-usuario/frontend.git
-   cd frontend
-   ```
-
-4. **Configure** o ambiente
-
-   ```bash
-   # Usar versão correta do Node.js
-   nvm use  # ou nodenv local
-   
-   # Instalar dependências
-   npm install
-   
-   # Copiar variáveis de ambiente
-   cp .env.example .env.local
-   ```
-
-5. **Execute** os testes
-
-   ```bash
-   npm run test:unit   # Testes unitários
-   npm run test:e2e    # Testes E2E (separadamente)
-   ```
-
-6. **Inicie** o servidor
-
-   ```bash
-   npm run dev  # http://localhost:5174
-   ```
-
-### Padrões de Código
-
-- **ESLint**: Configuração rigorosa
-- **Prettier**: Formatação automática
-- **Husky**: Git hooks para qualidade
-- **Conventional Commits**: Padrão de commit
-
-### Pull Request
-
-1. Crie uma branch: `git checkout -b feature/nova-feature`
-2. Faça commits: `git commit -m 'feat: adiciona nova feature'`
-3. Execute testes: `npm test`
-4. Faça push: `git push origin feature/nova-feature`
-5. Abra um Pull Request
-
-## 📈 Monitoramento
-
-### Analytics
-
-- **Google Analytics**: Comportamento do usuário
-- **Hotjar**: Heatmaps e sessões
-- **Sentry**: Monitoramento de erros
-
-### Performance
-
-- **Web Vitals**: Core Web Vitals tracking
-- **Lighthouse CI**: Performance automatizado
-- **Bundle Analyzer**: Análise de bundle
-
-## 📄 Licença
-
-Este projeto está sob licença MIT. Veja [LICENSE](LICENSE) para mais detalhes.
-
-## 👥 Time
-
-- **Frontend Lead**: [Nome]
-- **UI/UX Designer**: [Nome]
-- **QA Engineer**: [Nome]
-
----
-
-**Pro-Mata Frontend** - Uma interface moderna e acessível para o Centro de Pesquisas e Proteção da Natureza - PUCRS
+You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).

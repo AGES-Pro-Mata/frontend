@@ -1,10 +1,10 @@
 services:
   # Development Frontend
-  frontend-dev:
+  frontend:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: promata-frontend-dev
+    container_name: promata-frontend
     environment:
       - NODE_ENV=development
       - VITE_API_URL=${VITE_API_URL}
@@ -20,8 +20,6 @@ services:
     networks:
       - promata_dev
     restart: unless-stopped
-    depends_on:
-      - backend-mock
     healthcheck:
       test: ["CMD", "curl", "-f", "${FRONTEND_DEV_HEALTHCHECK_URL}"]
       interval: 30s
@@ -60,45 +58,6 @@ services:
       retries: 3
       start_period: 10s
     profiles: ["prod-test"]
-
-  # Mock Backend for Frontend Development
-  backend-mock:
-    image: mockserver/mockserver:5.15.0
-    container_name: promata-backend-mock
-    environment:
-      MOCKSERVER_PROPERTY_FILE: ${MOCKSERVER_PROPERTY_FILE}
-      MOCKSERVER_INITIALIZATION_JSON_PATH: ${MOCKSERVER_INITIALIZATION_JSON_PATH}
-    ports:
-      - "8080:1080"
-    volumes:
-      - ${MOCKSERVER_CONFIG_VOLUME}
-    networks:
-      - promata_dev
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "${BACKEND_MOCK_HEALTHCHECK_URL}"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Storybook for Component Development
-  storybook:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: promata-storybook
-    environment:
-      - NODE_ENV=development
-    ports:
-      - "6006:6006"
-    volumes:
-      - .:/app
-      - frontend_node_modules:/app/node_modules
-    networks:
-      - promata_dev
-    command: ["npm", "run", "storybook", "--", "--host", "0.0.0.0"]
-    restart: unless-stopped
-    profiles: ["storybook"]
 
   # Testing Container
   frontend-test:
