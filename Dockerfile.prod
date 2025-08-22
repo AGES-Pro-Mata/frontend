@@ -29,7 +29,6 @@ COPY --chown=nonroot:nonroot package*.json ./
 COPY --chown=nonroot:nonroot tsconfig.json ./
 COPY --chown=nonroot:nonroot vite.config.ts ./
 COPY --chown=nonroot:nonroot tailwind.config.js ./
-COPY --chown=nonroot:nonroot postcss.config.js ./
 
 # Install dependencies as root, then switch user
 USER root
@@ -59,7 +58,6 @@ ENV NODE_ENV=production \
     VITE_VERSION=$VERSION
 
 # Build the application
-RUN npm run generate:routes
 RUN npm run build
 
 # Stage 2: Production stage using distroless nginx
@@ -68,8 +66,24 @@ FROM cgr.dev/chainguard/nginx:latest AS production
 # Copy built application
 COPY --from=builder --chown=nginx:nginx /app/dist /usr/share/nginx/html
 
-# Copy secure nginx configuration
-COPY --chown=nginx:nginx nginx-secure.conf /etc/nginx/nginx.conf
+# Create a simple nginx configuration for serving the app
+RUN echo 'events { worker_connections 1024; } \
+http { \
+  include /etc/nginx/mime.types; \
+  default_type application/octet-stream; \
+  sendfile on; \
+  keepalive_timeout 65; \
+  server { \
+    listen 8080; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    try_files $uri $uri/ /index.html; \
+    location /health { \
+      return 200 "healthy"; \
+      add_header Content-Type text/plain; \
+    } \
+  } \
+}' > /etc/nginx/nginx.conf
 
 # Build arguments for labels
 ARG BUILD_DATE

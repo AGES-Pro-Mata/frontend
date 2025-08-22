@@ -4,6 +4,6 @@
 
 ## Como testar
 
-## Acceptance Criteria 
+## Acceptance Criteria
 
 - [ ] Coloque aqui os critérios de aceitação

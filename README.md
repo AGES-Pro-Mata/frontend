@@ -97,7 +97,7 @@ frontend/
 ├─ src/
 │  ├─ components/
 │  │  └─ ui/               # Componentes Shadcn/UI
-│  ├─ lib/                 # Utilitários e configurações 
+│  ├─ lib/                 # Utilitários e configurações
 │  ├─ routes/              # Rotas (file-based, Router)
 │  ├─ styles.css           # Tailwind base + tokens
 │  └─ main.tsx             # Bootstrap da aplicação
@@ -138,14 +138,12 @@ Bem-vindo(a) ao PRÓ-MATA! Este documento é o guia central para entender a arqu
 
 1. Nossa Stack de Desenvolvimento
 2. Arquitetura de Roteamento e Dados
-
    - **TanStack Router:** O Orquestrador
    - **TanStack Query + Axios:** A Camada de Dados
    - **Zustand:** O Estado Global da UI
    - **Shadcn/UI + Tailwind CSS:** Nosso Design System
 
 3. **Fluxo Prático: Criando uma Nova Página com Dados**
-
    - Passo 1: Definir a Lógica de Dados (Hook do TanStack Query)
    - Passo 2: Criar o Arquivo da Rota (`/produtos`)
    - Passo 3: Criar o Componente da Página com Shadcn/UI
@@ -414,7 +412,6 @@ O componente `DetalheProdutoPage` seria criado de forma similar, recebendo o `pr
 ## Boas Práticas
 
 1. **Separação de Responsabilidades:**
-
    - `src/routes/**`: Orquestra a navegação e o carregamento de dados.
    - `src/features/**/hooks.ts`: Define a lógica de busca e cache de dados.
    - `src/features/**/api.ts`: Realiza as chamadas HTTP.

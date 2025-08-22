@@ -10,7 +10,7 @@ services:
       - VITE_API_URL=${VITE_API_URL}
       - VITE_APP_ENV=${VITE_APP_ENV}
       - VITE_APP_VERSION=${VITE_APP_VERSION}
-      - CHOKIDAR_USEPOLLING=true  # For file watching in containers
+      - CHOKIDAR_USEPOLLING=true # For file watching in containers
     ports:
       - "${FRONTEND_DEV_PORT_MAPPING}"
     volumes:
@@ -119,5 +119,3 @@ volumes:
     driver: local
   coverage:
     driver: local
-
-  

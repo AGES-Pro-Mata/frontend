@@ -4,16 +4,22 @@ on:
   # Reviews em PRs
   pull_request_review:
     types: [submitted]
-  
-  # Status de Issues  
+
+  # Status de Issues
   issues:
     types: [opened, closed]
-    
+
   # Deploys e CI/CD completados
   workflow_run:
-    workflows: ["Frontend CI/CD Pipeline", "CI/CD Pipeline", "Push to Dev Branch", "Push to Main branch"]
+    workflows:
+      [
+        "Frontend CI/CD Pipeline",
+        "CI/CD Pipeline",
+        "Push to Dev Branch",
+        "Push to Main branch",
+      ]
     types: [completed]
-    
+
   # Push para branches principais
   push:
     branches: [main, dev]
@@ -55,7 +61,7 @@ jobs:
               ACTION="revisou"
               ;;
           esac
-          
+
           # Criar payload JSON sem interpolação complexa
           cat > payload.json << EOF
           {
@@ -82,7 +88,7 @@ jobs:
             ]
           }
           EOF
-          
+
           curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
 
   notify-issues:
@@ -116,7 +122,7 @@ jobs:
               ACTION_TEXT="Issue atualizada"
               ;;
           esac
-          
+
           cat > payload.json << EOF
           {
             "embeds": [
@@ -142,7 +148,7 @@ jobs:
             ]
           }
           EOF
-          
+
           curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
 
   notify-build:
@@ -163,18 +169,18 @@ jobs:
           DOCKER_IMAGE=""
           if [[ "$BRANCH" == "dev" ]]; then
             BUILD_TYPE="Development Build"
-            DOCKER_IMAGE="norohim/pro-mata-frontend:dev"
+            DOCKER_IMAGE="ages-pro-mata/frontend:dev"
           elif [[ "$BRANCH" == "main" ]]; then
             BUILD_TYPE="Production Build"
-            DOCKER_IMAGE="norohim/pro-mata-frontend:latest"
+            DOCKER_IMAGE="ages-pro-mata/frontend:latest"
           fi
-          
+
           # Determinar se é build/CI baseado no nome do workflow
           IS_BUILD=false
           if echo "$WORKFLOW_NAME" | grep -i "ci.*cd\|build\|pipeline"; then
             IS_BUILD=true
           fi
-          
+
           # Configurar emoji, título e cor baseado no resultado
           MENTION=""
           if [[ "$CONCLUSION" == "success" ]]; then
@@ -202,7 +208,7 @@ jobs:
             TITLE="Pipeline Cancelado/Timeout"
             COLOR=16776960
           fi
-          
+
           # Construir campos adicionais
           ADDITIONAL_FIELDS=""
           if [[ -n "$BUILD_TYPE" ]]; then
@@ -222,18 +228,18 @@ jobs:
               },
               {
                 \"name\": \"DockerHub\",
-                \"value\": \"[Ver no DockerHub](https://hub.docker.com/r/norohim/pro-mata-frontend)\",
+                \"value\": \"[Ver no DockerHub](https://hub.docker.com/r/ages-pro-mata/frontend)\",
                 \"inline\": false
               }"
             fi
           fi
-          
+
           # Criar payload
           CONTENT_FIELD=""
           if [[ -n "$MENTION" ]]; then
             CONTENT_FIELD="\"content\": \"$MENTION **Frontend Build Falhou**\","
           fi
-          
+
           cat > payload.json << EOF
           {
             $CONTENT_FIELD
@@ -265,7 +271,7 @@ jobs:
             ]
           }
           EOF
-          
+
           curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
 
   notify-push:
@@ -286,7 +292,7 @@ jobs:
             echo "Branch $BRANCH não é principal, pulando notificação"
             exit 0
           fi
-          
+
           # Configurar emoji e cor baseado na branch
           if [[ "$BRANCH" == "main" ]]; then
             EMOJI="🔥"
@@ -297,13 +303,13 @@ jobs:
             COLOR=3447003
             BRANCH_DESC="branch de desenvolvimento"
           fi
-          
+
           # Truncar mensagem se muito longa
           COMMIT_SHORT=$(echo "$COMMIT_MESSAGE" | head -c 100)
           if [[ ${#COMMIT_MESSAGE} -gt 100 ]]; then
             COMMIT_SHORT="$COMMIT_SHORT..."
           fi
-          
+
           cat > payload.json << EOF
           {
             "embeds": [
@@ -334,5 +340,5 @@ jobs:
             ]
           }
           EOF
-          
+
           curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
