@@ -1,5 +1,5 @@
 services:
-  # Development Frontend
+  # Development Frontend - Updated for React 19
   frontend:
     build:
       context: .
@@ -7,27 +7,28 @@ services:
     container_name: promata-frontend
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=${VITE_API_URL}
-      - VITE_APP_ENV=${VITE_APP_ENV}
-      - VITE_APP_VERSION=${VITE_APP_VERSION}
-      - CHOKIDAR_USEPOLLING=true # For file watching in containers
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8080/api}
+      - VITE_APP_ENV=${VITE_APP_ENV:-development}
+      - VITE_APP_VERSION=${VITE_APP_VERSION:-local}
+      - CHOKIDAR_USEPOLLING=true
     ports:
-      - "${FRONTEND_DEV_PORT_MAPPING}"
+      - "${FRONTEND_DEV_PORT_MAPPING:-3000:3000}"
     volumes:
       - .:/app
       - frontend_node_modules:/app/node_modules
+      - frontend_vite_cache:/app/.vite
       - frontend_cache:/app/.cache
     networks:
       - promata_dev
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "${FRONTEND_DEV_HEALTHCHECK_URL}"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
 
-  # Production Frontend (for testing)
+  # Production Frontend - Updated for React 19 + Vite 6
   frontend-prod:
     build:
       context: .
@@ -36,86 +37,32 @@ services:
         BUILD_DATE: ${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
         VCS_REF: ${VCS_REF:-local}
         VERSION: ${VERSION:-local}
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api}
+        VITE_APP_ENV: ${VITE_APP_ENV:-production}
+        VITE_APP_VERSION: ${VITE_APP_VERSION:-local}
     container_name: promata-frontend-prod
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=${VITE_API_URL}
-      - VITE_APP_ENV=${VITE_APP_ENV}
-      - VITE_APP_VERSION=${VITE_APP_VERSION}
-      - NGINX_WORKER_PROCESSES=${NGINX_WORKER_PROCESSES}
-      - NGINX_WORKER_CONNECTIONS=${NGINX_WORKER_CONNECTIONS}
     ports:
-      - "${FRONTEND_PROD_PORT_MAPPING}"
+      - "${FRONTEND_PROD_PORT_MAPPING:-8080:8080}"
     networks:
-      - promata_dev
+      - promata_prod
     restart: unless-stopped
-    depends_on:
-      - backend-mock
     healthcheck:
-      test: ["CMD", "curl", "-f", "${FRONTEND_PROD_HEALTHCHECK_URL}"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
     profiles: ["prod-test"]
 
-  # Testing Container
-  frontend-test:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: promata-frontend-test
-    environment:
-      - NODE_ENV=test
-      - CI=true
-    volumes:
-      - .:/app
-      - frontend_node_modules:/app/node_modules
-      - test_results:/app/test-results
-      - coverage:/app/coverage
-    networks:
-      - promata_dev
-    command: ["npm", "run", "test:ci"]
-    profiles: ["test"]
-
-  # Nginx for serving static files (testing production build)
-  nginx-static:
-    image: nginx:alpine
-    container_name: promata-nginx-static
-    ports:
-      - "8081:80"
-    volumes:
-      - ${NGINX_DIST_VOLUME}
-      - ${NGINX_CONF_VOLUME}
-    networks:
-      - promata_dev
-    restart: unless-stopped
-    profiles: ["static"]
-
-  frontend-watcher:
-    image: node:18-alpine
-    container_name: promata-frontend-watcher
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: sh -c "npm install -g nodemon && nodemon --watch src --exec 'docker-compose restart frontend-dev'"
-    networks:
-      - promata_dev
-    profiles: ["dev-helper"]
+volumes:
+  frontend_node_modules:
+  frontend_vite_cache:
+  frontend_cache:
 
 networks:
   promata_dev:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
-
-volumes:
-  frontend_node_modules:
-    driver: local
-  frontend_cache:
-    driver: local
-  test_results:
-    driver: local
-  coverage:
-    driver: local
+  promata_prod:
+    driver: bridge
