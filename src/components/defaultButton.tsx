@@ -24,7 +24,6 @@ export function DefaultButton({
 
   return (
     <Button
-      // usamos uma variante do shadcn, mas “anulamos” o hover com classes !
       variant="ghost"
       className={`${base} ${styles[variant]}`}
       onClick={onClick}
