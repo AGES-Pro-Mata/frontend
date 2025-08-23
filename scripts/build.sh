@@ -178,8 +178,12 @@ main() {
     type_check
     build_app
     optimize_assets
-    build_docker
     
+    # Build Docker if requested
+    if [[ "$DOCKER_BUILD" == "true" ]]; then
+        build_docker
+    fi
+
     print_success "🎉 Build process completed successfully!"
     
     # Summary
