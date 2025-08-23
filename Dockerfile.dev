@@ -1,7 +1,7 @@
-# Development Dockerfile for React Frontend
+# Use consistent Node 22
 FROM node:22-alpine
 
-# Install security updates first
+# Install dependencies for React 19 + modern tooling
 RUN apk update && \
     apk upgrade --no-cache && \
     apk add --no-cache \
@@ -9,39 +9,38 @@ RUN apk update && \
     curl \
     dumb-init \
     ca-certificates \
+    python3 \
+    make \
+    gcc \
+    g++ \
+    libc6-compat \
     && rm -rf /var/cache/apk/*
 
-# Create non-root user for security
+# Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S reactjs -u 1001 -G nodejs
 
-# Set working directory and ownership
 WORKDIR /app
 RUN chown reactjs:nodejs /app
 
-# Copy package files with proper ownership
+# Copy package files
 COPY --chown=reactjs:nodejs package*.json ./
 
-# Switch to non-root user before installing dependencies
 USER reactjs
 
-# Install dependencies with security considerations
-RUN npm ci --prefer-offline --no-audit --no-fund
+# Install with exact versions for React 19 stability
+RUN npm ci --prefer-offline --no-audit --no-fund --legacy-peer-deps
 
-# Copy source code with proper ownership
 COPY --chown=reactjs:nodejs . .
 
-# Expose development port
 EXPOSE 3000
 
-# Add health check with proper timeout
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
 
-# Set environment variables
 ENV NODE_ENV=development
 ENV VITE_API_URL=http://localhost:8080/api
 ENV VITE_APP_ENV=development
 
-# Start development server with hot reload
+# Use Vite dev server
 CMD ["dumb-init", "npm", "run", "dev", "--", "--host", "0.0.0.0"]
