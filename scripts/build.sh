@@ -144,30 +144,79 @@ build_docker() {
     
     print_status "Building Docker image..."
     
-    IMAGE_NAME="ages-pro-mata/frontend"
+    BASE_IMAGE_NAME="norohim/pro-mata-frontend"
     IMAGE_TAG="${ENVIRONMENT}-$(date +%Y%m%d-%H%M%S)"
     
     if [ "$ENVIRONMENT" = "production" ]; then
         DOCKERFILE="Dockerfile.prod"
-        FULL_IMAGE_NAME="$IMAGE_NAME:latest"
+        FULL_IMAGE_NAME="$BASE_IMAGE_NAME"
     else
         DOCKERFILE="Dockerfile.dev"
-        FULL_IMAGE_NAME="$IMAGE_NAME:dev"
+        FULL_IMAGE_NAME="$BASE_IMAGE_NAME-dev"
     fi
-    
+
     docker build \
         --build-arg BUILD_DATE="$VITE_BUILD_DATE" \
         --build-arg VCS_REF="$(git rev-parse HEAD 2>/dev/null || echo 'unknown')" \
         --build-arg VERSION="$VITE_APP_VERSION" \
-        --build-arg VITE_API_URL="$VITE_API_URL" \
-        --build-arg VITE_APP_ENV="$VITE_APP_ENV" \
-        --build-arg VITE_APP_VERSION="$VITE_APP_VERSION" \
-        -t "$IMAGE_NAME:$IMAGE_TAG" \
-        -t "$FULL_IMAGE_NAME" \
+        -t "$FULL_IMAGE_NAME:$IMAGE_TAG" \
+        -t "$FULL_IMAGE_NAME:$ENVIRONMENT" \
         -f "$DOCKERFILE" \
         .
     
-    print_success "Docker image built: $FULL_IMAGE_NAME"
+    print_success "Docker image built: $FULL_IMAGE_NAME:$IMAGE_TAG"
+    
+    if [[ "$DOCKER_PUSH" == "true" ]]; then
+        print_status "Pushing Docker image..."
+        docker push "$FULL_IMAGE_NAME:$IMAGE_TAG"
+        docker push "$FULL_IMAGE_NAME:$ENVIRONMENT"
+        print_success "Docker image pushed to registry"
+    fi
+}
+
+# Generate build report
+generate_report() {
+    print_status "Generating build report..."
+    
+    BUILD_SIZE=$(du -sh dist/ | cut -f1)
+    JS_FILES=$(find dist -name "*.js" | wc -l)
+    CSS_FILES=$(find dist -name "*.css" | wc -l)
+    IMAGE_FILES=$(find dist -name "*.png" -o -name "*.jpg" -o -name "*.svg" | wc -l)
+    
+    cat > build-report.txt << EOF
+Pro-Mata Frontend Build Report
+==============================
+Environment: $ENVIRONMENT
+Build Type: $BUILD_TYPE
+Build Date: $(date)
+Version: $VITE_APP_VERSION
+
+Statistics:
+-----------
+Total Size: $BUILD_SIZE
+JavaScript Files: $JS_FILES
+CSS Files: $CSS_FILES
+Image Files: $IMAGE_FILES
+
+Configuration:
+--------------
+API URL: $VITE_API_URL
+App Environment: $VITE_APP_ENV
+Skip Tests: $SKIP_TESTS
+Skip Lint: $SKIP_LINT
+Analyze: $ANALYZE
+Docker Build: $DOCKER_BUILD
+Docker Push: $DOCKER_PUSH
+EOF
+    
+    print_success "Build report generated: build-report.txt"
+}
+
+# Cleanup function
+cleanup() {
+    print_status "Cleaning up..."
+    # Add any cleanup tasks here
+    print_success "Cleanup completed"
 }
 
 # Main execution
