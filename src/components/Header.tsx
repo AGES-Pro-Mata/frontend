@@ -8,6 +8,16 @@ export default function Header() {
           <Link to="/">Home</Link>
         </div>
       </nav>
+      <nav className="flex flex-row gap-4">
+        <div className="px-2">
+          <Link 
+            to="/login" 
+            className="text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Login
+          </Link>
+        </div>
+      </nav>
     </header>
   );
 }
