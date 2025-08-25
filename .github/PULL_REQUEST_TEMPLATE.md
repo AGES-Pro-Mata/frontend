@@ -5,3 +5,5 @@
 ## Acceptance Criteria
 
 - [ ] Coloque aqui os critérios de aceitação
+
+## Observações
