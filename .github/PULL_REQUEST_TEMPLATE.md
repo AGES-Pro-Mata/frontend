@@ -1,7 +1,5 @@
 # Mudanças
 
-## User Story
-
 ## Como testar
 
 ## Acceptance Criteria
