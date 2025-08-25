@@ -100,7 +100,7 @@ frontend/
 │  │  └─ ui/               # Componentes Shadcn/UI
 │  ├─ lib/                 # Utilitários e configurações
 │  ├─ routes/              # Rotas (file-based, Router)
-│  ├─ styles.css           # Tailwind base + tokens
+│  ├─ styles/globals.css           # Tailwind base + tokens
 │  └─ main.tsx             # Bootstrap da aplicação
 ├─ index.html              # Entrada Vite
 ├─ tailwind.config.js
