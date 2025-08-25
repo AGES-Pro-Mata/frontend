@@ -4,8 +4,7 @@
 
 body {
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    "Montserrat" sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -18,8 +17,14 @@ code {
 @theme {
   --main-dark-green: #2E361D;
   --banner-color: #D4CBC0;
-  --contrast-green: #48AE2E;
+  --contrast-green: #4C9613;
   --separator-color: #484848;
+  --selected-banner: #FFF2C9;
+  --dark-gray: #6C6C6C;
+  --warning: #A18900;
+  --default-red: #CD5252;
+  --muted-foreground: #64748B;
+
 }
 
 
