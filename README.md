@@ -1,10 +1,10 @@
-## PRÓ-MATA Frontend
+# PRÓ-MATA Frontend
 
 Aplicação React moderna com Vite, TanStack Router (file-based routing), Tailwind CSS e Shadcn/UI. Este README descreve a stack, pré-requisitos, como instalar/rodar e traz um guia de desenvolvimento focado em Roteamento e Dados.
 
 ---
 
-### Tecnologias
+## Tecnologias
 
 - React 19 + Vite 6
 - TanStack Router (file-based routing com `@tanstack/router-plugin`)
@@ -18,7 +18,7 @@ Observação: alguns pacotes podem não estar instalados por padrão neste momen
 
 ---
 
-### Pré-requisitos
+## Pré-requisitos
 
 - Node.js 22+ (recomendado 22.12)
 - npm 10+
@@ -27,7 +27,7 @@ Observação: alguns pacotes podem não estar instalados por padrão neste momen
 
 ---
 
-### Instalação
+## Instalação
 
 1. Clone o repositório
 
@@ -44,7 +44,7 @@ Observação: alguns pacotes podem não estar instalados por padrão neste momen
 
 ---
 
-### Variáveis de ambiente
+## Variáveis de ambiente
 
 Crie um arquivo `.env` (ou use variáveis no ambiente de execução) com, por exemplo:
 
@@ -58,7 +58,7 @@ Obs.: Em build/execução via Docker, variáveis como `VITE_API_URL`, `VITE_APP_
 
 ---
 
-### Como rodar
+## Como rodar
 
 - Desenvolvimento (Vite dev server):
 
@@ -74,13 +74,14 @@ Obs.: Em build/execução via Docker, variáveis como `VITE_API_URL`, `VITE_APP_
   ```
 
 - Preview do build:
+
   ```bash
   npm run serve
   ```
 
 ---
 
-### Scripts úteis
+## Scripts úteis
 
 - `npm run dev` — inicia servidor de desenvolvimento
 - `npm run start` — alias para `dev`
@@ -90,16 +91,16 @@ Obs.: Em build/execução via Docker, variáveis como `VITE_API_URL`, `VITE_APP_
 
 ---
 
-### Estrutura do projeto (simplificada)
+## Estrutura do projeto (simplificada)
 
-```
+```plain
 frontend/
 ├─ src/
 │  ├─ components/
 │  │  └─ ui/               # Componentes Shadcn/UI
 │  ├─ lib/                 # Utilitários e configurações
 │  ├─ routes/              # Rotas (file-based, Router)
-│  ├─ styles.css           # Tailwind base + tokens
+│  ├─ styles/globals.css           # Tailwind base + tokens
 │  └─ main.tsx             # Bootstrap da aplicação
 ├─ index.html              # Entrada Vite
 ├─ tailwind.config.js
@@ -109,7 +110,7 @@ frontend/
 
 ---
 
-### Docker (opcional)
+## Docker (opcional)
 
 - Ambiente de desenvolvimento:
 
@@ -119,6 +120,7 @@ frontend/
   ```
 
 - Build de produção (image final com Nginx):
+
   ```bash
   docker build -f Dockerfile.prod -t promata-frontend:prod .
   docker run --rm -it -p 8080:8080 promata-frontend:prod
@@ -202,7 +204,7 @@ Primeiro, criamos os hooks que buscarão os dados. Isso é feito fora das rotas 
 
 **Estrutura de Arquivos:**
 
-```
+```plain
 src/
 └── features/
     └── produtos/
@@ -265,7 +267,7 @@ Agora, conectamos essa lógica de dados à nossa rota.
 
 **Estrutura:**
 
-```
+```plain
 src/
 └── routes/
     └── produtos/
@@ -307,7 +309,7 @@ Mantemos o componente de UI em um arquivo separado para organização.
 
 **Estrutura:**
 
-```
+```plain
 src/
 └── features/
     └── produtos/

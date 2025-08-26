@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@import "tw-animate-css";
+
+body {
+  font-family:
+    "Montserrat" sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+@theme {
+  --main-dark-green: #2E361D;
+  --banner-color: #D4CBC0;
+  --contrast-green: #4C9613;
+  --separator-color: #484848;
+  --selected-banner: #FFF2C9;
+  --dark-gray: #6C6C6C;
+  --warning: #A18900;
+  --default-red: #CD5252;
+  --muted-foreground: #64748B;
+
+}
+
+
