@@ -10,7 +10,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
   return (
     <div
       className={cn(
-        "flex sticky top-0 !w-full h-20 !py-4 !px-6 bg-[var(--banner-color)] drop-shadow-md items-center justify-between gap-4",
+        "flex sticky top-0 !w-full h-20 !py-4 !px-6 bg-banner drop-shadow-md items-center justify-between gap-4",
         className
       )}
     >
