@@ -2,16 +2,30 @@ import * as React from "react";
 
 import { Input } from "@/components/ui/input"
 
-interface textInputProps {
+import { cn } from "@/lib/utils"
+
+interface textInputProps extends React.ComponentProps<typeof Input> {
     children?: React.ReactNode;
-    label: string;
+    labelClassName: string;
+    wrapperClassName?: string;  
 }
 
-export function textInput({children, label}: textInputProps) {
+export function textInput({
+    children,
+    placeholder,
+    wrapperClassName,
+    labelClassName,
+    className,
+    ...Props
+    }: textInputProps) {
     return (
-        <div className="flex flex-col gap-2">
-            {children && <label>{children}</label>}
-                <Input type="text" placeholder={label}/>
+        <div className={cn("flex flex-col gap-2", wrapperClassName)}>
+            {children && <label className={cn("text-sm font--medium", labelClassName)}>{children}</label>}
+                <Input 
+                placeholder={placeholder}
+                className={cn("", className)} 
+                {...Props}
+                />
         </div>
     )
 }
