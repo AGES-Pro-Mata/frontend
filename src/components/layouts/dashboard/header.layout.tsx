@@ -15,7 +15,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
       )}
     >
       <img
-        src="logo-pro-mata-png.png "
+        src="logo-pro-mata-png.png"
         alt="Logo Pro Mata"
         className="w-40 object-fit"
       />
