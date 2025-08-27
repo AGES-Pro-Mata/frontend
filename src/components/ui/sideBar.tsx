@@ -734,9 +734,7 @@ export {
 }
 
 export function SideBar() {
-  // 3. Hook para verificar a rota ativa
   const matchRoute = useMatchRoute();
-
   return (
     <SidebarProvider>
       <Sidebar>
