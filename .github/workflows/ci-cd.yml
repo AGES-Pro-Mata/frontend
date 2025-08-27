@@ -5,6 +5,7 @@ on:
     branches: [dev, main]
   pull_request:
     branches: [dev, main]
+    types: [opened, synchronize, reopened, closed]
 
 permissions:
   contents: read
@@ -13,7 +14,7 @@ permissions:
 
 env:
   DOCKER_REGISTRY: docker.io
-  IMAGE_NAME: norohim/pro-mata-frontend
+  IMAGE_NAME_BASE: norohim/pro-mata-frontend
   NODE_VERSION: "22.12.0"
   
 jobs:
@@ -113,7 +114,9 @@ jobs:
 
   build-and-push:
     needs: [test, security-scan]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
+    if: |
+      (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')) ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -130,8 +133,8 @@ jobs:
 
       - name: Build Application
         env:
-          VITE_API_URL: ${{ github.ref == 'refs/heads/main' && 'https://api.promata.duckdns.org' || 'https://api.promata-dev.duckdns.org' }}
-          VITE_APP_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+          VITE_API_URL: ${{ (github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main')) && 'https://api.promata.duckdns.org' || 'https://api.promata-dev.duckdns.org' }}
+          VITE_APP_ENV: ${{ (github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main')) && 'production' || 'development' }}
           VITE_APP_VERSION: ${{ github.sha }}
         run: npm run build
 
@@ -148,14 +151,23 @@ jobs:
       - name: Set Docker Configuration
         id: docker-config
         run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          # Determinar a branch de destino para PRs mergeados ou branch atual para push
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+          else
+            TARGET_BRANCH="${{ github.ref_name }}"
+          fi
+          
+          echo "target_branch=${TARGET_BRANCH}" >> $GITHUB_OUTPUT
+          
+          if [ "${TARGET_BRANCH}" = "main" ]; then
             echo "dockerfile=Dockerfile.prod" >> $GITHUB_OUTPUT
-            echo "image_name=${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
-            echo "tag_suffix=" >> $GITHUB_OUTPUT
+            echo "image_name=${{ env.IMAGE_NAME_BASE }}" >> $GITHUB_OUTPUT
+            echo "environment=production" >> $GITHUB_OUTPUT
           else
             echo "dockerfile=Dockerfile.dev" >> $GITHUB_OUTPUT
-            echo "image_name=${{ env.IMAGE_NAME }}-dev" >> $GITHUB_OUTPUT
-            echo "tag_suffix=-dev" >> $GITHUB_OUTPUT
+            echo "image_name=${{ env.IMAGE_NAME_BASE }}-dev" >> $GITHUB_OUTPUT
+            echo "environment=development" >> $GITHUB_OUTPUT
           fi
 
       - name: Extract Metadata
@@ -164,9 +176,7 @@ jobs:
         with:
           images: ${{ steps.docker-config.outputs.image_name }}
           tags: |
-            type=ref,event=branch,suffix=${{ steps.docker-config.outputs.tag_suffix }}
-            type=sha,prefix=sha-,suffix=${{ steps.docker-config.outputs.tag_suffix }}
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest
 
       - name: Build and Push Image
         uses: docker/build-push-action@v6
@@ -182,6 +192,18 @@ jobs:
             BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
             VCS_REF=${{ github.sha }}
             VERSION=${{ steps.meta.outputs.version }}
-            VITE_API_URL=${{ github.ref == 'refs/heads/main' && 'https://api.promata.duckdns.org' || 'https://api.promata-dev.duckdns.org' }}
-            VITE_APP_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+            VITE_API_URL=${{ steps.docker-config.outputs.target_branch == 'main' && 'https://api.promata.duckdns.org' || 'https://api.promata-dev.duckdns.org' }}
+            VITE_APP_ENV=${{ steps.docker-config.outputs.environment }}
             VITE_APP_VERSION=${{ github.sha }}
+
+      - name: Build Summary
+        run: |
+          echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Target Branch** | ${{ steps.docker-config.outputs.target_branch }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Image Name** | ${{ steps.docker-config.outputs.image_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Environment** | ${{ steps.docker-config.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Dockerfile** | ${{ steps.docker-config.outputs.dockerfile }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Event Type** | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Tags** | ${{ steps.meta.outputs.tags }} |" >> $GITHUB_STEP_SUMMARY
