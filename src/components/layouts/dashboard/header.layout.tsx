@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 import { HeaderDrawerMobile } from "./components/header-drawer-mobile";
+import CartButton from "@/components/ui/cartButton";
+import { useCartStore } from "@/store/cartStore";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -15,7 +17,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
       )}
     >
       <img
-        src="logo-pro-mata-png.png "
+        src="logo-pro-mata.svg "
         alt="Logo Pro Mata"
         className="w-40 object-fit"
       />
@@ -24,9 +26,9 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         <div>Reservar</div>
         <div>Minhas reservas</div>
       </div>
-      <div className="hidden md:flex w-auto justify-end items-center">
+      <div className="hidden md:flex w-auto justify-end items-center gap-6">
         <div>User</div>
-        <div>Carrinho</div>
+        <CartButton itemCount={useCartStore((state) => state.itemCount)} />
         <div>PT / EN</div>
       </div>
 
