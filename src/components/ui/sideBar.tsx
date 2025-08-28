@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
-import { PanelLeftIcon } from "lucide-react";
+import { Building2, LayoutDashboard, PanelLeftIcon, Presentation } from "lucide-react";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Home, FileText, Inbox, UserPlus, Star, Table } from "lucide-react";
+import { FileText, Inbox, UserPlus } from "lucide-react";
 import { Typography } from "./typography";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
@@ -574,7 +574,7 @@ function SidebarMenuAction({
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
+        "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
         className
       )}
       {...props}
@@ -737,7 +737,7 @@ export function AdminSideBar() {
         <SidebarGroup>
           <SidebarMenu>
             <SidebarButton
-              icon={<Home className="h-5 w-5" />}
+              icon={<LayoutDashboard className="h-5 w-5" />}
               label="Home"
               to="/admin/home"
             />
@@ -757,12 +757,12 @@ export function AdminSideBar() {
               to="/admin/users"
             />
             <SidebarButton
-              icon={<Star className="h-5 w-5" />}
+              icon={<Presentation className="h-5 w-5" />}
               label="Destaques"
-              to="/admin/highlight"
+              to="/admin/highlights"
             />
             <SidebarButton
-              icon={<Table className="h-5 w-5" />}
+              icon={<Building2 className="h-5 w-5" />}
               label="Experiências"
               to="/admin/experiences"
             />
