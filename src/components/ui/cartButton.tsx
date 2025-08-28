@@ -1,56 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ShoppingCart } from 'lucide-react';
 
 interface CartButtonProps {
   itemCount: number;
+  handleClick?: () => void;
+  size?: number;
+  className?: string;
 }
 
-const CartButton: React.FC<CartButtonProps> = ({ itemCount }) => {
-    const handleClick = () => {
-    console.log("Botão Pressionado!");
+const CartButton: React.FC<CartButtonProps> = ({ itemCount, handleClick, size = 36, className }) => {
+  const [clicked, setClicked] = useState(false);
+  const computedIconSize = size * 0.6;
+
+  const handleButtonClick = () => {
+    setClicked(true);
+    if (handleClick) handleClick();
+  setTimeout(() => setClicked(false), 90);
   };
 
   return ( 
     <button 
-      onClick={handleClick}
+      onClick={handleButtonClick}
+      style={{ width: size, height: size }}
       className={`
         relative flex items-center justify-center 
-        w-16 h-16
-        bg-primary text-primary-foreground
+        bg-main-dark-green
         rounded-full 
         cursor-pointer 
         border-none
-        transition-colors duration-300 hover:bg-primary/90
+        transition-transform [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] duration-150
+        ${clicked ? 'scale-105' : ''}
+        ${className ?? ''}
       `}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-8 h-8"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="9" cy="21" r="1"></circle>
-        <circle cx="20" cy="21" r="1"></circle>
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-      </svg>
+  <ShoppingCart className={`text-banner`} style={{ width: computedIconSize, height: computedIconSize }} />
+
       {itemCount > 0 && (
-        <span 
-          className={`
-            absolute -top-1 -right-1
-            flex items-center justify-center
-            w-7 h-7
-            bg-accent text-accent-foreground
-            text-sm font-bold
-            rounded-full
-            border-2 border-background
-          `}
+        <span
+          style={{
+            position: 'absolute',
+            top: size * -0.12,
+            right: size * -0.12,
+            width: itemCount > 99 ? size * 0.62 : size * 0.45,
+            height: size * 0.45,
+            fontSize: Math.max(size * 0.3),
+            background: 'var(--selected-banner, #FFF2C9)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '50%',
+            paddingLeft: itemCount > 99 ? size * 0.08 : 0,
+            paddingRight: itemCount > 99 ? size * 0.08 : 0,
+          }}
         >
-          {itemCount}
+          {itemCount > 99 ? '99+' : itemCount}
         </span>
       )}
     </button>
