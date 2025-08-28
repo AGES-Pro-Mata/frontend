@@ -35,7 +35,7 @@ export function TextInput({
         placeholder={placeholder}
         className={cn(
           "h-[6vh] max-w-[25vw] border-dark-gray px-5 py-3 text-foreground placeholder:text-muted-foreground",
-          isInvalid ? "border-default-red placeholder:text-default-red" : "",
+          isInvalid ? "border-default-red placeholder:text-default-red focus-visible:ring-default-red" : "",
           className
         )}
         aria-invalid={isInvalid}
