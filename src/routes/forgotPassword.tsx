@@ -50,14 +50,14 @@ export default function ForgotPasswordPage() {
       <HeaderLayout />
       <div className="flex-grow flex items-center justify-center">
         <CanvasCard className="w-full max-w-lg p-8 flex flex-col gap-8">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <h2
-              className="text-xl font-semibold pt-2"
-              style={{ color: "#484848" }}
-            >
+          <div className="space-y-4 ">
+            <h2 className="text-xl font-semibold text-left -ml-8" style={{ color: "#484848" }}>
               Esqueci a senha
             </h2>
-            <div className="h-px bg-gray-500 w-full mb-4" />
+            <div className="h-[1.5px] bg-gray-600 -mx-8 w-auto" />
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col gap-2">
               <label
                 htmlFor="email"
