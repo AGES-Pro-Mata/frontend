@@ -7,7 +7,7 @@ export const FooterLayout = () => {
       <div className="md:flex-row md:gap-10 md:h-4/5 flex flex-col h-auto w-full">
         <div className="md:w-1/3 flex justify-center">
           <img
-            src="logo-pro-mata-png-invertida.png "
+            src="logo-pro-mata-invertida.svg "
             alt="Logo Pro Mata"
             className="w-96 h-36"
           />
