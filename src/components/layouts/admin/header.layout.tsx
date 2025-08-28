@@ -16,6 +16,11 @@ export function AdminLayoutHeader({ className, children }: HeaderLayoutProps) {
         className
       )}
     >
+      <img
+        src="/logo-pro-mata-png.png"
+        alt="Logo Pro Mata"
+        className="w-40 object-fit"
+      />
       <Typography variant="h3" className="text-black">
         Administrador
       </Typography>

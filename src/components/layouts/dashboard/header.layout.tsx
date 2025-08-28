@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 import { HeaderDrawerMobile } from "./components/header-drawer-mobile";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -15,7 +17,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
       )}
     >
       <img
-        src="logo-pro-mata-png.png"
+        src="/logo-pro-mata-png.png"
         alt="Logo Pro Mata"
         className="w-40 object-fit"
       />
@@ -23,6 +25,9 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         <div>Início</div>
         <div>Reservar</div>
         <div>Minhas reservas</div>
+        <Link to="/admin/home">
+          ADMIN
+        </Link>
       </div>
       <div className="hidden md:flex w-auto justify-end items-center">
         <div>User</div>
