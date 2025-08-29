@@ -1,0 +1,10 @@
+name: Status
+
+on:
+  pull_request:
+
+jobs:
+  always-pass:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This check always passes!"
