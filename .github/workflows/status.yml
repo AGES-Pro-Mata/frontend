@@ -1,5 +1,5 @@
 name: Status
-
+# This workflow only exists to be able to restrict non updated PRs to be able to be merged
 on:
   pull_request:
 
