@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { HeaderDrawerMobile } from "./components/header-drawer-mobile";
 import CartButton from "@/components/ui/cartButton";
 import { useCartStore } from "@/store/cartStore";
+import { Link } from "@tanstack/react-router";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -25,6 +26,9 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         <div>Início</div>
         <div>Reservar</div>
         <div>Minhas reservas</div>
+        <Link to="/admin/home">
+          ADMIN
+        </Link>
       </div>
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
         <div>User</div>

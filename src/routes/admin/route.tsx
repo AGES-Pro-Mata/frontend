@@ -1,21 +1,21 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import Layout from '@/components/layouts/admin-sidebar';
+import { Outlet, createFileRoute } from "@tanstack/react-router";
+import AdminLayout from "@/components/layouts/admin";
+import { AdminSideBar } from "@/components/ui/sideBar";
 
-export const Route = createFileRoute('/admin')({
-  beforeLoad: async () => {
-    //TODO: trocar por hook de verificação de admin
-    if(false){
-      throw redirect({
-        to: '/'
-      })
-    }
-  },
-  component: () => (
-    <Layout>
-      <Layout.Sidebar />
-      <Layout.Content>
+export const Route = createFileRoute("/admin")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  return (
+    <AdminLayout>
+      <AdminLayout.Header></AdminLayout.Header>
+      <AdminLayout.Sidebar>
+        <AdminSideBar />
+      </AdminLayout.Sidebar>
+      <AdminLayout.Content>
         <Outlet />
-      </Layout.Content>
-    </Layout>
-  ),
-})
+      </AdminLayout.Content>
+    </AdminLayout>
+  );
+}
