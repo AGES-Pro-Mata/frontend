@@ -8,8 +8,8 @@ type showInfoProps = {
 export const ShowInfo = ({header,label}: showInfoProps) => {
   return(
     <div className="flex flex-col gap-1 m-4">
-      <Typography className="text-lg font-medium text-black text-shadow-xl">{header}</Typography>
-      <Typography className="text-base font-semibold ml-2 text-black text-shadow-xl"><li>{label}</li></Typography>
+      <Typography className="text-md font-medium text-foreground text-shadow-xl">{header}</Typography>
+      <Typography className="text-sm font-semibold ml-2 text-foreground text-shadow-xl"><li>{label}</li></Typography>
     </div>
   )
 }
