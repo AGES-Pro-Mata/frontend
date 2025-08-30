@@ -1,32 +1,32 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Button as ShadButton } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 interface CustomButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   secondary?: boolean;
 }
 
-export const CustomButton = React.forwardRef<
+export const HeaderButton = React.forwardRef<
   HTMLButtonElement,
   CustomButtonProps
 >(({ className, secondary, children, ...props }, ref) => {
   return (
-    <ShadButton
+    <Button
       ref={ref}
       className={cn(
         "rounded-full px-6 py-2 font-semibold transition-all duration-300 shadow-sm",
         "hover:scale-105 hover:shadow-md",
         secondary
-          ? "bg-[#EDE9D5] text-black hover:bg-[#ddd7c4]"
-          : "bg-[#F6EEC9] text-black hover:bg-[#ebdfb8]",
+          ? "border border-[var(--button-border-secondary)] bg-transparent text-[var(--button-text-secondary)] hover:bg-[var(--button-bg-secondary-hover)]"
+          : "bg-[var(--button-bg-primary)] text-[var(--button-text-primary)] hover:bg-[var(--button-bg-primary-hover)]",
         className
       )}
       {...props}
     >
       {children}
-    </ShadButton>
+    </Button>
   );
 });
 
-CustomButton.displayName = "CustomButton";
+HeaderButton.displayName = "HeaderButton";
