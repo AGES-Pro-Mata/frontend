@@ -6,7 +6,9 @@
 
 body {
   @apply m-0;
-  font-family: Montserrat, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -17,18 +19,18 @@ code {
 }
 
 :root {
-  --background: oklch(100.00% 0.000 0);
+  --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(31.80% 0.043 123.29); /* #2E361D */
-  --primary-foreground: oklch(0.98 0.01 133.6);
+  --primary: oklch(0.21 0.006 285.885);
+  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.85 0.052 248.6);
-  --muted-foreground: oklch(0.494 0.052 248.6);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
@@ -50,12 +52,6 @@ code {
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.871 0.006 286.286);
-  --banner: oklch(84.63% 0.018 73.05); /* #D4CBC0 */
-  --selected-banner: oklch(96.12% 0.055 92.51); /* #FFF2C9 */
-  --contrast-green: oklch(60.16% 0.171 135.88); /* #4C9613 */
-  --dark-gray: oklch(53.13% 0.000 0); /* #6C6C6C */
-  --on-banner-text: oklch(40.17% 0.000 0); /* #484848 */
-  --warning: oklch(63.31% 0.130 96.66); /* #A18900 */
 }
 
 .dark {
@@ -130,12 +126,6 @@ code {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --color-banner: var(--banner);
-  --color-selected-banner: var(--selected-banner);
-  --color-contrast-green: var(--contrast-green);
-  --color-dark-gray: var(--dark-gray);
-  --color-on-banner-text: var(--on-banner-text);
-  --color-warning: var(--warning);
 }
 
 @layer base {
