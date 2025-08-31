@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [dev, main]
     types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -145,7 +146,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ vars.DOCKER_USERNAME }}
+          username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set Docker Configuration
@@ -196,6 +197,21 @@ jobs:
             VITE_APP_ENV=${{ steps.docker-config.outputs.environment }}
             VITE_APP_VERSION=${{ github.sha }}
 
+      - name: Trigger Infrastructure Deployment
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PAT_INFRASTRUCTURE_REPO }}
+          repository: AGES-Pro-Mata/infrastructure
+          event-type: ${{ github.ref == 'refs/heads/main' && 'deploy-prod-frontend' || 'deploy-dev-frontend' }}
+          client-payload: |
+            {
+              "image": "${{ steps.docker-config.outputs.image_name }}:latest",
+              "commit": "${{ github.sha }}",
+              "branch": "${{ github.ref_name }}",
+              "triggered_by": "frontend",
+              "timestamp": "${{ github.event.head_commit.timestamp }}"
+            }
+
       - name: Build Summary
         run: |
           echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
@@ -207,3 +223,4 @@ jobs:
           echo "| **Dockerfile** | ${{ steps.docker-config.outputs.dockerfile }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Event Type** | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Tags** | ${{ steps.meta.outputs.tags }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Deploy Event** | ${{ steps.docker-config.outputs.target_branch == 'main' && 'deploy-prod-frontend' || 'deploy-dev-frontend' }} |" >> $GITHUB_STEP_SUMMARY
