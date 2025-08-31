@@ -3,6 +3,8 @@ import { HeaderDrawerMobile } from "./components/header-drawer-mobile";
 import CartButton from "@/components/ui/cartButton";
 import { useCartStore } from "@/store/cartStore";
 import { Link } from "@tanstack/react-router";
+import LanguageSwitcher from "@/components/ui/languageSelector";
+
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -33,7 +35,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
         <div>User</div>
         <CartButton itemCount={useCartStore((state) => state.itemCount)} />
-        <div>PT / EN</div>
+        <LanguageSwitcher />
       </div>
 
       <HeaderDrawerMobile />
