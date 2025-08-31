@@ -2,7 +2,8 @@ import { cn } from "@/lib/utils";
 import { HeaderDrawerMobile } from "./components/header-drawer-mobile";
 import CartButton from "@/components/ui/cartButton";
 import { useCartStore } from "@/store/cartStore";
-import { Link } from "@tanstack/react-router";
+import { HeaderButton } from "@/components/HeaderButton";
+import { Building2, Calendar, CircleUserRound, LayoutDashboard, Mountain } from "lucide-react";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -23,21 +24,20 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         className="w-40 object-fit"
       />
       <div className="hidden md:flex justify-around gap-20 lg:gap-40 items-center w-auto">
-        <div>Início</div>
-        <div>Reservar</div>
-        <div>Minhas reservas</div>
-        <Link to="/admin/home">
-          ADMIN
-        </Link>
+        <HeaderButton label="Início" icon={<Mountain />} />
+        <HeaderButton label="Reservar" icon={<Building2 />} />
+        <HeaderButton label="Minhas reservas" icon={<Calendar />} />
+        <HeaderButton label="Administrador" to="/admin/home" icon={<LayoutDashboard />}>
+        </HeaderButton>
       </div>
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
-        <div>User</div>
+        <HeaderButton secondary label="João da Silva" icon={<CircleUserRound />} />
         <CartButton itemCount={useCartStore((state) => state.itemCount)} />
-        <div>PT / EN</div>
+        <HeaderButton secondary label="PT / EN" />
       </div>
 
       <HeaderDrawerMobile />
       {children}
-    </div>
+    </div >
   );
 };
