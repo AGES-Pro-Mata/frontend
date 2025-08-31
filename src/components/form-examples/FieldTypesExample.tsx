@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator";
 // Schema com todos os tipos de campos
 const formSchema = z.object({
   nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  email: z.string().email("E-mail inválido"),
+  email: z.email("E-mail inválido"),
   telefone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos"),
   idade: z.coerce
     .number()

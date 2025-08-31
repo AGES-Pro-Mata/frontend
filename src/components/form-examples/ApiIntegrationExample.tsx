@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator";
 // Schema para usuário com upload de arquivo
 const formSchema = z.object({
   nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  email: z.string().email("E-mail inválido"),
+  email: z.email("E-mail inválido"),
   bio: z.string().max(500, "Bio deve ter no máximo 500 caracteres").optional(),
   avatar: z.instanceof(File).optional(),
   website: z.string().url("URL inválida").optional().or(z.literal("")),

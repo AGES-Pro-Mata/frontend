@@ -20,7 +20,7 @@ import { Separator } from "@/components/ui/separator";
 const formSchema = z
   .object({
     nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-    email: z.string().email("E-mail inválido"),
+    email: z.email("E-mail inválido"),
     idade: z.coerce
       .number()
       .min(18, "Idade mínima é 18 anos")

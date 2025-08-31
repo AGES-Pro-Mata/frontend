@@ -18,7 +18,7 @@ const form = useForm<z.input<typeof schema>, any, z.output<typeof schema>>({
   defaultValues: {
     // ...
   },
-})
+});
 ```
 
 ### 🏗️ Estrutura Básica
@@ -40,7 +40,7 @@ import {
 // 1. Schema de validação
 const formSchema = z.object({
   nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  email: z.string().email("E-mail inválido"),
+  email: z.email("E-mail inválido"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -473,7 +473,7 @@ const onSubmit = async (data: FormData) => {
 
 ```typescript
 const loginSchema = z.object({
-  email: z.string().email("E-mail inválido"),
+  email: z.email("E-mail inválido"),
   senha: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   lembrar: z.boolean().default(false),
 });

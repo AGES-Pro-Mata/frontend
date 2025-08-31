@@ -17,7 +17,7 @@ import { Typography } from "@/components/ui/typography";
 // Schema de validação básico
 const formSchema = z.object({
   nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  email: z.string().email("E-mail inválido"),
+  email: z.email("E-mail inválido"),
 });
 
 type FormData = z.infer<typeof formSchema>;

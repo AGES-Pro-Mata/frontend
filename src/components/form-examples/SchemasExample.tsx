@@ -18,7 +18,7 @@ import { Separator } from "@/components/ui/separator";
 
 // Schema de Login
 const loginSchema = z.object({
-  email: z.string().email("E-mail inválido"),
+  email: z.email("E-mail inválido"),
   senha: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   lembrar: z.boolean().default(false),
 });
@@ -183,7 +183,7 @@ export function SchemasExample() {
             </Typography>
             <pre className="text-xs text-blue-700 overflow-auto">
               {`const loginSchema = z.object({
-  email: z.string().email("E-mail inválido"),
+  email: z.email("E-mail inválido"),
   senha: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   lembrar: z.boolean().default(false),
 });`}
