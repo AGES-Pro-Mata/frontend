@@ -17,10 +17,16 @@ export const HeaderButton = React.forwardRef<
   HTMLButtonElement,
   CustomButtonProps
 >(({ className, secondary, icon, label, to, selected, children, ...props }, ref) => {
-  const buttonContent = (
+  const buttonContent = secondary ? (
     <>
-      {icon && <Typography className="mr-2 text-black">{icon}</Typography>}
-      {<Typography className="mr-2 text-black">{label}</Typography>}
+      <Typography className="mr-0.5 text-main-dark-green">{label}</Typography>
+      {icon && <Typography className="text-main-dark-green">{icon}</Typography>}
+      {children}
+    </>
+  ) : (
+    <>
+      {icon && <Typography className="mr-2 text-on-banner-text">{icon}</Typography>}
+      <Typography className="mr-2 text-on-banner-text">{label}</Typography>
       {children}
     </>
   );
@@ -32,7 +38,7 @@ export const HeaderButton = React.forwardRef<
       ? "border border-main-dark-green bg-transparent text-main-dark-green hover:bg-main-dark-green/10"
       : selected
         ? "bg-selected-banner text-main-dark-green"
-        : "bg-transparent text-dark-gray hover:bg-selected-banner",
+        : "bg-transparent text-on-banner-text hover:bg-selected-banner",
     className
   );
 
