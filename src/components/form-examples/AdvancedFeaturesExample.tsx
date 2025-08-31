@@ -64,16 +64,6 @@ export function AdvancedFeaturesExample() {
     setCustomError(null);
 
     try {
-      // Simular validação customizada adicional
-      if (data.idade < 21) {
-        form.setError("idade", {
-          type: "manual",
-          message: "Idade mínima para este serviço é 21 anos",
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
       // Simular envio para API
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
