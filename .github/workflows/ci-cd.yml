@@ -197,21 +197,6 @@ jobs:
             VITE_APP_ENV=${{ steps.docker-config.outputs.environment }}
             VITE_APP_VERSION=${{ github.sha }}
 
-      - name: Trigger Infrastructure Deployment
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.PAT_INFRASTRUCTURE_REPO }}
-          repository: AGES-Pro-Mata/infrastructure
-          event-type: ${{ github.ref == 'refs/heads/main' && 'deploy-prod-frontend' || 'deploy-dev-frontend' }}
-          client-payload: |
-            {
-              "image": "${{ steps.docker-config.outputs.image_name }}:latest",
-              "commit": "${{ github.sha }}",
-              "branch": "${{ github.ref_name }}",
-              "triggered_by": "frontend",
-              "timestamp": "${{ github.event.head_commit.timestamp }}"
-            }
-
       - name: Build Summary
         run: |
           echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
@@ -224,3 +209,23 @@ jobs:
           echo "| **Event Type** | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Tags** | ${{ steps.meta.outputs.tags }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Deploy Event** | ${{ steps.docker-config.outputs.target_branch == 'main' && 'deploy-prod-frontend' || 'deploy-dev-frontend' }} |" >> $GITHUB_STEP_SUMMARY
+
+  trigger-deploy:
+    name: 🚀 Trigger Infrastructure Deployment
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
+    steps:
+      - name: Dispatch to Infrastructure Repository
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PAT_INFRASTRUCTURE_REPO }}
+          repository: AGES-Pro-Mata/infrastructure
+          event-type: ${{ github.ref == 'refs/heads/main' && 'deploy-prod-frontend' || 'deploy-dev-frontend' }}
+          client-payload: |
+            {
+              "image": "norohim/pro-mata-frontend${{ github.ref == 'refs/heads/dev' && '-dev' || '' }}:latest",
+              "commit": "${{ github.sha }}",
+              "branch": "${{ github.ref_name }}",
+              "triggered_by": "frontend"
+            }
