@@ -17,19 +17,24 @@ import { Typography } from "@/components/ui/typography";
 import { Separator } from "@/components/ui/separator";
 
 // Schema com validações customizadas
-const formSchema = z.object({
-  nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  email: z.string().email("E-mail inválido"),
-  idade: z.coerce.number().min(18, "Idade mínima é 18 anos").max(120, "Idade máxima é 120 anos"),
-  senha: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
-  confirmarSenha: z.string(),
-  termos: z.boolean().refine((val) => val === true, {
-    message: "Você deve aceitar os termos de uso",
-  }),
-}).refine((data) => data.senha === data.confirmarSenha, {
-  message: "As senhas não coincidem",
-  path: ["confirmarSenha"],
-});
+const formSchema = z
+  .object({
+    nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+    email: z.string().email("E-mail inválido"),
+    idade: z.coerce
+      .number()
+      .min(18, "Idade mínima é 18 anos")
+      .max(120, "Idade máxima é 120 anos"),
+    senha: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+    confirmarSenha: z.string(),
+    termos: z.boolean().refine((val) => val === true, {
+      message: "Você deve aceitar os termos de uso",
+    }),
+  })
+  .refine((data) => data.senha === data.confirmarSenha, {
+    message: "As senhas não coincidem",
+    path: ["confirmarSenha"],
+  });
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -38,7 +43,11 @@ export function AdvancedFeaturesExample() {
   const [submittedData, setSubmittedData] = useState<FormData | null>(null);
   const [customError, setCustomError] = useState<string | null>(null);
 
-  const form = useForm<FormData>({
+  const form = useForm<
+    z.input<typeof formSchema>,
+    any,
+    z.output<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nome: "",
@@ -59,7 +68,7 @@ export function AdvancedFeaturesExample() {
       if (data.idade < 21) {
         form.setError("idade", {
           type: "manual",
-          message: "Idade mínima para este serviço é 21 anos"
+          message: "Idade mínima para este serviço é 21 anos",
         });
         setIsSubmitting(false);
         return;
@@ -71,14 +80,15 @@ export function AdvancedFeaturesExample() {
       // Sucesso
       setSubmittedData(data);
       form.reset();
-
     } catch (error) {
       // Tratamento de erro global
       form.setError("root", {
         type: "manual",
-        message: "Erro ao enviar formulário. Tente novamente."
+        message: "Erro ao enviar formulário. Tente novamente.",
       });
-      setCustomError("Erro interno do servidor. Tente novamente em alguns minutos.");
+      setCustomError(
+        "Erro interno do servidor. Tente novamente em alguns minutos."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -91,11 +101,11 @@ export function AdvancedFeaturesExample() {
   };
 
   const handleCustomValidation = () => {
-    const idade = form.getValues("idade");
+    const idade = Number(form.getValues("idade"));
     if (idade < 25) {
       form.setError("idade", {
         type: "manual",
-        message: "Para esta funcionalidade, idade mínima é 25 anos"
+        message: "Para esta funcionalidade, idade mínima é 25 anos",
       });
     } else {
       form.clearErrors("idade");
@@ -171,12 +181,18 @@ export function AdvancedFeaturesExample() {
                       type="number"
                       placeholder="18"
                       {...field}
+                      value={field.value as number | undefined}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.currentTarget.value === ""
+                            ? undefined
+                            : Number(e.currentTarget.value)
+                        )
+                      }
                       className={fieldState.error ? "border-red-500" : ""}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Idade mínima: 18 anos
-                  </FormDescription>
+                  <FormDescription>Idade mínima: 18 anos</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -210,9 +226,7 @@ export function AdvancedFeaturesExample() {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Mínimo de 6 caracteres
-                  </FormDescription>
+                  <FormDescription>Mínimo de 6 caracteres</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -267,7 +281,10 @@ export function AdvancedFeaturesExample() {
           {/* Erro global */}
           {form.formState.errors.root && (
             <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-              <Typography variant="h4" className="text-sm font-medium text-red-800 mb-1">
+              <Typography
+                variant="h4"
+                className="text-sm font-medium text-red-800 mb-1"
+              >
                 Erro do Formulário
               </Typography>
               <p className="text-sm text-red-700">
@@ -279,22 +296,19 @@ export function AdvancedFeaturesExample() {
           {/* Erro customizado */}
           {customError && (
             <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-              <Typography variant="h4" className="text-sm font-medium text-red-800 mb-1">
+              <Typography
+                variant="h4"
+                className="text-sm font-medium text-red-800 mb-1"
+              >
                 Erro do Sistema
               </Typography>
-              <p className="text-sm text-red-700">
-                {customError}
-              </p>
+              <p className="text-sm text-red-700">{customError}</p>
             </div>
           )}
 
           {/* Botões */}
           <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
               {isSubmitting ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -322,7 +336,10 @@ export function AdvancedFeaturesExample() {
         <>
           <Separator />
           <div className="space-y-4">
-            <Typography variant="h3" className="text-lg font-semibold text-green-600">
+            <Typography
+              variant="h3"
+              className="text-lg font-semibold text-green-600"
+            >
               ✅ Formulário enviado com sucesso!
             </Typography>
 
@@ -345,14 +362,31 @@ export function AdvancedFeaturesExample() {
           🔧 Funcionalidades Demonstradas:
         </Typography>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 ml-4">
-          <li><strong>Estados de Loading:</strong> Botão desabilitado e spinner durante envio</li>
-          <li><strong>Validação Cross-field:</strong> Senha e confirmação devem ser iguais</li>
-          <strong>Validação Customizada:</strong> Botão para validar idade com regras específicas</li>
-        <li><strong>Tratamento de Erros:</strong> Erros globais e por campo</li>
-        <li><strong>Feedback Visual:</strong> Campos com erro destacados em vermelho</li>
-        <li><strong>Reset Inteligente:</strong> Limpa formulário e estados após sucesso</li>
-      </ul>
+          <li>
+            <strong>Estados de Loading:</strong> Botão desabilitado e spinner
+            durante envio
+          </li>
+          <li>
+            <strong>Validação Cross-field:</strong> Senha e confirmação devem
+            ser iguais
+          </li>
+          <li>
+            <strong>Validação Customizada:</strong> Botão para validar idade com
+            regras específicas
+          </li>
+          <li>
+            <strong>Tratamento de Erros:</strong> Erros globais e por campo
+          </li>
+          <li>
+            <strong>Feedback Visual:</strong> Campos com erro destacados em
+            vermelho
+          </li>
+          <li>
+            <strong>Reset Inteligente:</strong> Limpa formulário e estados após
+            sucesso
+          </li>
+        </ul>
+      </div>
     </div>
-    </div >
   );
 }

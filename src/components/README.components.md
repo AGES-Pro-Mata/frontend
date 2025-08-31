@@ -8,14 +8,17 @@ Este arquivo contém a documentação de uso dos componentes UI do projeto, base
 
 O componente `Form` do Shadcn/UI fornece uma interface consistente e acessível para formulários, integrando-se perfeitamente com React Hook Form e validação Zod.
 
-### 🚀 Instalação
+### 💡 Tipagem avançada do useForm com Zod
 
-```bash
-# Instalar o componente Form
-pnpx shadcn@latest add form
+Quando seu schema usa z.coerce ou transforms, alinhe os genéricos do React Hook Form para evitar valores "unknown" e melhorar a inferência:
 
-# Dependências necessárias
-npm install react-hook-form @hookform/resolvers zod
+```typescript
+const form = useForm<z.input<typeof schema>, any, z.output<typeof schema>>({
+  resolver: zodResolver(schema),
+  defaultValues: {
+    // ...
+  },
+})
 ```
 
 ### 🏗️ Estrutura Básica
@@ -143,6 +146,44 @@ const onSubmit = (data: FormData) => {
       <FormDescription>
         Idade mínima: 18 anos.
       </FormDescription>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+```
+
+Nota quando usar z.coerce.number(): converta a string do input para número no onChange para manter a tipagem consistente, e considere alinhar os genéricos do useForm com o Zod.
+
+```typescript
+// Schema com coerção numérica
+const schema = z.object({
+  idade: z.coerce.number().min(18),
+})
+
+// Tipagem alinhada entre input e output do Zod (opcional, recomendado)
+const form = useForm<z.input<typeof schema>, any, z.output<typeof schema>>({
+  resolver: zodResolver(schema),
+})
+
+// Campo numérico com conversão
+<FormField
+  control={form.control}
+  name="idade"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Idade *</FormLabel>
+      <FormControl>
+        <Input
+          type="number"
+          {...field}
+          value={field.value as number | undefined}
+          onChange={(e) =>
+            field.onChange(
+              e.currentTarget.value === "" ? undefined : Number(e.currentTarget.value)
+            )
+          }
+        />
+      </FormControl>
       <FormMessage />
     </FormItem>
   )}

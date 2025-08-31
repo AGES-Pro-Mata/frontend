@@ -31,13 +31,40 @@ const addressSchema = z.object({
   complemento: z.string().optional(),
   bairro: z.string().min(2, "Bairro deve ter pelo menos 2 caracteres"),
   cidade: z.string().min(2, "Cidade deve ter pelo menos 2 caracteres"),
-  estado: z.enum([
-    "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS",
-    "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR",
-    "SC", "SP", "SE", "TO"
-  ], {
-    required_error: "Selecione um estado",
-  }),
+  estado: z.enum(
+    [
+      "AC",
+      "AL",
+      "AP",
+      "AM",
+      "BA",
+      "CE",
+      "DF",
+      "ES",
+      "GO",
+      "MA",
+      "MT",
+      "MS",
+      "MG",
+      "PA",
+      "PB",
+      "PR",
+      "PE",
+      "PI",
+      "RJ",
+      "RN",
+      "RS",
+      "RO",
+      "RR",
+      "SC",
+      "SP",
+      "SE",
+      "TO",
+    ],
+    {
+      message: "Selecione um estado",
+    }
+  ),
 });
 
 type LoginData = z.infer<typeof loginSchema>;
@@ -48,7 +75,11 @@ export function SchemasExample() {
   const [loginData, setLoginData] = useState<LoginData | null>(null);
   const [addressData, setAddressData] = useState<AddressData | null>(null);
 
-  const loginForm = useForm<LoginData>({
+  const loginForm = useForm<
+    z.input<typeof loginSchema>,
+    any,
+    z.output<typeof loginSchema>
+  >({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -57,7 +88,11 @@ export function SchemasExample() {
     },
   });
 
-  const addressForm = useForm<AddressData>({
+  const addressForm = useForm<
+    z.input<typeof addressSchema>,
+    any,
+    z.output<typeof addressSchema>
+  >({
     resolver: zodResolver(addressSchema),
     defaultValues: {
       cep: "",
@@ -99,13 +134,24 @@ export function SchemasExample() {
           📚 Exemplos de Schemas
         </Typography>
         <p className="text-sm text-muted-foreground">
-          Este exemplo demonstra diferentes schemas de validação para casos de uso comuns:
+          Este exemplo demonstra diferentes schemas de validação para casos de
+          uso comuns:
         </p>
         <ul className="list-disc list-inside text-sm text-muted-foreground mt-2 ml-4">
-          <li><strong>Schema de Login:</strong> E-mail, senha e checkbox "lembrar"</li>
-          <li><strong>Schema de Endereço:</strong> CEP, logradouro, número, complemento, bairro, cidade e estado</li>
-          <li><strong>Validações Específicas:</strong> Regex para CEP, enum para estados</li>
-          <li><strong>Campos Opcionais:</strong> Complemento é opcional</li>
+          <li>
+            <strong>Schema de Login:</strong> E-mail, senha e checkbox "lembrar"
+          </li>
+          <li>
+            <strong>Schema de Endereço:</strong> CEP, logradouro, número,
+            complemento, bairro, cidade e estado
+          </li>
+          <li>
+            <strong>Validações Específicas:</strong> Regex para CEP, enum para
+            estados
+          </li>
+          <li>
+            <strong>Campos Opcionais:</strong> Complemento é opcional
+          </li>
         </ul>
       </div>
 
@@ -129,7 +175,10 @@ export function SchemasExample() {
       {activeForm === "login" && (
         <div className="space-y-6">
           <div className="rounded-lg border bg-blue-50 p-4">
-            <Typography variant="h4" className="text-sm font-medium text-blue-800 mb-2">
+            <Typography
+              variant="h4"
+              className="text-sm font-medium text-blue-800 mb-2"
+            >
               🔐 Schema de Login
             </Typography>
             <pre className="text-xs text-blue-700 overflow-auto">
@@ -142,7 +191,10 @@ export function SchemasExample() {
           </div>
 
           <Form {...loginForm}>
-            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
+            <form
+              onSubmit={loginForm.handleSubmit(onLoginSubmit)}
+              className="space-y-6"
+            >
               <FormField
                 control={loginForm.control}
                 name="email"
@@ -177,9 +229,7 @@ export function SchemasExample() {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Mínimo de 6 caracteres
-                    </FormDescription>
+                    <FormDescription>Mínimo de 6 caracteres</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -213,11 +263,7 @@ export function SchemasExample() {
                   Entrar
                 </Button>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleReset}
-                >
+                <Button type="button" variant="outline" onClick={handleReset}>
                   Limpar
                 </Button>
               </div>
@@ -229,7 +275,10 @@ export function SchemasExample() {
             <>
               <Separator />
               <div className="space-y-4">
-                <Typography variant="h3" className="text-lg font-semibold text-green-600">
+                <Typography
+                  variant="h3"
+                  className="text-lg font-semibold text-green-600"
+                >
                   ✅ Login realizado com sucesso!
                 </Typography>
 
@@ -251,7 +300,10 @@ export function SchemasExample() {
       {activeForm === "address" && (
         <div className="space-y-6">
           <div className="rounded-lg border bg-green-50 p-4">
-            <Typography variant="h4" className="text-sm font-medium text-green-800 mb-2">
+            <Typography
+              variant="h4"
+              className="text-sm font-medium text-green-800 mb-2"
+            >
               🏠 Schema de Endereço
             </Typography>
             <pre className="text-xs text-green-700 overflow-auto">
@@ -268,7 +320,10 @@ export function SchemasExample() {
           </div>
 
           <Form {...addressForm}>
-            <form onSubmit={addressForm.handleSubmit(onAddressSubmit)} className="space-y-6">
+            <form
+              onSubmit={addressForm.handleSubmit(onAddressSubmit)}
+              className="space-y-6"
+            >
               {/* CEP e Logradouro */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
@@ -278,10 +333,7 @@ export function SchemasExample() {
                     <FormItem>
                       <FormLabel>CEP *</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="12345-678"
-                          {...field}
-                        />
+                        <Input placeholder="12345-678" {...field} />
                       </FormControl>
                       <FormDescription>
                         Formato: 12345-678 ou 12345678
@@ -298,10 +350,7 @@ export function SchemasExample() {
                     <FormItem>
                       <FormLabel>Logradouro *</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Rua das Flores"
-                          {...field}
-                        />
+                        <Input placeholder="Rua das Flores" {...field} />
                       </FormControl>
                       <FormDescription>
                         Nome da rua, avenida, etc.
@@ -321,14 +370,9 @@ export function SchemasExample() {
                     <FormItem>
                       <FormLabel>Número *</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="123"
-                          {...field}
-                        />
+                        <Input placeholder="123" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Número do endereço
-                      </FormDescription>
+                      <FormDescription>Número do endereço</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -341,10 +385,7 @@ export function SchemasExample() {
                     <FormItem>
                       <FormLabel>Complemento</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Apto 45, Bloco B"
-                          {...field}
-                        />
+                        <Input placeholder="Apto 45, Bloco B" {...field} />
                       </FormControl>
                       <FormDescription>
                         Apartamento, bloco, etc. (opcional)
@@ -364,14 +405,9 @@ export function SchemasExample() {
                     <FormItem>
                       <FormLabel>Bairro *</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Centro"
-                          {...field}
-                        />
+                        <Input placeholder="Centro" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Nome do bairro
-                      </FormDescription>
+                      <FormDescription>Nome do bairro</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -384,14 +420,9 @@ export function SchemasExample() {
                     <FormItem>
                       <FormLabel>Cidade *</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="São Paulo"
-                          {...field}
-                        />
+                        <Input placeholder="São Paulo" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Nome da cidade
-                      </FormDescription>
+                      <FormDescription>Nome da cidade</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -440,9 +471,7 @@ export function SchemasExample() {
                         <option value="TO">Tocantins</option>
                       </select>
                     </FormControl>
-                    <FormDescription>
-                      Selecione o estado
-                    </FormDescription>
+                    <FormDescription>Selecione o estado</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -453,11 +482,7 @@ export function SchemasExample() {
                   Salvar Endereço
                 </Button>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleReset}
-                >
+                <Button type="button" variant="outline" onClick={handleReset}>
                   Limpar
                 </Button>
               </div>
@@ -469,7 +494,10 @@ export function SchemasExample() {
             <>
               <Separator />
               <div className="space-y-4">
-                <Typography variant="h3" className="text-lg font-semibold text-green-600">
+                <Typography
+                  variant="h3"
+                  className="text-lg font-semibold text-green-600"
+                >
                   ✅ Endereço salvo com sucesso!
                 </Typography>
 
@@ -494,26 +522,52 @@ export function SchemasExample() {
           📚 Características dos Schemas Demonstrados:
         </Typography>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 ml-4">
-          <li><strong>Validação de E-mail:</strong> Formato automático com Zod</li>
-          <li><strong>Validação de Senha:</strong> Comprimento mínimo configurável</li>
-          <li><strong>Regex para CEP:</strong> Aceita formatos com e sem hífen</li>
-          <li><strong>Enum para Estados:</strong> Lista predefinida de valores válidos</li>
-          <li><strong>Campos Opcionais:</strong> Complemento não é obrigatório</li>
-          <li><strong>Validações de Comprimento:</strong> Mínimo para campos obrigatórios</li>
+          <li>
+            <strong>Validação de E-mail:</strong> Formato automático com Zod
+          </li>
+          <li>
+            <strong>Validação de Senha:</strong> Comprimento mínimo configurável
+          </li>
+          <li>
+            <strong>Regex para CEP:</strong> Aceita formatos com e sem hífen
+          </li>
+          <li>
+            <strong>Enum para Estados:</strong> Lista predefinida de valores
+            válidos
+          </li>
+          <li>
+            <strong>Campos Opcionais:</strong> Complemento não é obrigatório
+          </li>
+          <li>
+            <strong>Validações de Comprimento:</strong> Mínimo para campos
+            obrigatórios
+          </li>
         </ul>
       </div>
 
       <div className="rounded-lg border bg-blue-50 p-4">
-        <Typography variant="h4" className="text-sm font-medium text-blue-800 mb-2">
+        <Typography
+          variant="h4"
+          className="text-sm font-medium text-blue-800 mb-2"
+        >
           💡 Como Criar Seus Próprios Schemas:
         </Typography>
         <ol className="list-decimal list-inside text-sm text-blue-700 space-y-1 ml-4">
           <li>Defina o tipo de dados esperado (string, number, boolean)</li>
           <li>Adicione validações específicas (min, max, regex, email)</li>
-          <li>Use <code>.optional()</code> para campos não obrigatórios</li>
-          <li>Use <code>.refine()</code> para validações customizadas</li>
-          <li>Use <code>.enum()</code> para valores predefinidos</li>
-          <li>Combine schemas com <code>.object()</code> para formulários complexos</li>
+          <li>
+            Use <code>.optional()</code> para campos não obrigatórios
+          </li>
+          <li>
+            Use <code>.refine()</code> para validações customizadas
+          </li>
+          <li>
+            Use <code>.enum()</code> para valores predefinidos
+          </li>
+          <li>
+            Combine schemas com <code>.object()</code> para formulários
+            complexos
+          </li>
         </ol>
       </div>
     </div>

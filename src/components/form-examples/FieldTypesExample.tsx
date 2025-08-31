@@ -21,11 +21,14 @@ const formSchema = z.object({
   nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("E-mail inválido"),
   telefone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos"),
-  idade: z.coerce.number().min(18, "Idade mínima é 18 anos").max(120, "Idade máxima é 120 anos"),
+  idade: z.coerce
+    .number()
+    .min(18, "Idade mínima é 18 anos")
+    .max(120, "Idade máxima é 120 anos"),
   bio: z.string().max(500, "Bio deve ter no máximo 500 caracteres").optional(),
   newsletter: z.boolean().default(false),
   categoria: z.enum(["pessoal", "trabalho", "estudo"], {
-    required_error: "Selecione uma categoria",
+    message: "Selecione uma categoria",
   }),
 });
 
@@ -34,7 +37,11 @@ type FormData = z.infer<typeof formSchema>;
 export function FieldTypesExample() {
   const [submittedData, setSubmittedData] = useState<FormData | null>(null);
 
-  const form = useForm<FormData>({
+  const form = useForm<
+    z.input<typeof formSchema>,
+    any,
+    z.output<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nome: "",
@@ -128,14 +135,9 @@ export function FieldTypesExample() {
                 <FormItem>
                   <FormLabel>Telefone *</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="(11) 99999-9999"
-                      {...field}
-                    />
+                    <Input placeholder="(11) 99999-9999" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Inclua o código da área.
-                  </FormDescription>
+                  <FormDescription>Inclua o código da área.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -153,11 +155,17 @@ export function FieldTypesExample() {
                       type="number"
                       placeholder="18"
                       {...field}
+                      value={field.value as number | undefined}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.currentTarget.value === ""
+                            ? undefined
+                            : Number(e.currentTarget.value)
+                        )
+                      }
                     />
                   </FormControl>
-                  <FormDescription>
-                    Idade mínima: 18 anos.
-                  </FormDescription>
+                  <FormDescription>Idade mínima: 18 anos.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -203,9 +211,7 @@ export function FieldTypesExample() {
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  Máximo de 500 caracteres.
-                </FormDescription>
+                <FormDescription>Máximo de 500 caracteres.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -241,11 +247,7 @@ export function FieldTypesExample() {
               Enviar Formulário
             </Button>
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleReset}
-            >
+            <Button type="button" variant="outline" onClick={handleReset}>
               Limpar
             </Button>
           </div>
@@ -257,7 +259,10 @@ export function FieldTypesExample() {
         <>
           <Separator />
           <div className="space-y-4">
-            <Typography variant="h3" className="text-lg font-semibold text-green-600">
+            <Typography
+              variant="h3"
+              className="text-lg font-semibold text-green-600"
+            >
               ✅ Formulário enviado com sucesso!
             </Typography>
 
@@ -280,11 +285,26 @@ export function FieldTypesExample() {
           🎨 Características dos Campos:
         </Typography>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 ml-4">
-          <li><strong>Grid Responsivo:</strong> Campos organizados em 2 colunas em telas médias</li>
-          <li><strong>Validação em Tempo Real:</strong> Erros aparecem conforme o usuário digita</li>
-          <li><strong>Descrições:</strong> Cada campo tem uma descrição explicativa</li>
-          <li><strong>Mensagens de Erro:</strong> Feedback claro sobre problemas de validação</li>
-          <li><strong>Layout Adaptativo:</strong> Campos de texto longo ocupam toda a largura</li>
+          <li>
+            <strong>Grid Responsivo:</strong> Campos organizados em 2 colunas em
+            telas médias
+          </li>
+          <li>
+            <strong>Validação em Tempo Real:</strong> Erros aparecem conforme o
+            usuário digita
+          </li>
+          <li>
+            <strong>Descrições:</strong> Cada campo tem uma descrição
+            explicativa
+          </li>
+          <li>
+            <strong>Mensagens de Erro:</strong> Feedback claro sobre problemas
+            de validação
+          </li>
+          <li>
+            <strong>Layout Adaptativo:</strong> Campos de texto longo ocupam
+            toda a largura
+          </li>
         </ul>
       </div>
     </div>
