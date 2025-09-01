@@ -43,12 +43,12 @@ export default function TeacherApproval() {
 
   return (
     <div 
-      className="flex flex-col border rounded-2xl p-4 shadow-sm bg-white"
+      className="flex flex-col border-2 border-black rounded-3xl p-8 bg-white"
       style={{ width: "514px", height: "482px" }}
     >
       {/* Toolbar */}
-      <div className="border rounded-md mb-4">
-        <div className="flex items-center gap-2 border-b p-2 bg-gray-50 rounded-t-md">
+      <div className="border rounded-md mb-4 border-gray-400">
+        <div className="flex items-center gap-2 border-b  border-gray-400 p-2 bg-white rounded-t-md">
           <button
             onClick={() => handleCommand("bold")}
             className={`p-1 rounded font-bold ${isActive("bold")}`}
@@ -76,7 +76,7 @@ export default function TeacherApproval() {
         </div>
 
         {/* Área editável aumentada */}
-        <div className="relative">
+        <div className="relative mt-1">
           {isEmpty && (
             <span className="absolute top-3 left-3 text-gray-400 pointer-events-none select-none">
               Digite alguma observação sobre essa solicitação
@@ -88,7 +88,7 @@ export default function TeacherApproval() {
             contentEditable
             onInput={handleInput}
             className="w-full p-3 rounded-b-md outline-none resize-none overflow-y-auto"
-            style={{ height: "280px" }}
+            style={{ height: "250px" }}
             suppressContentEditableWarning={true}
           ></div>
         </div>
@@ -96,17 +96,17 @@ export default function TeacherApproval() {
 
       {/* Botões de ação */}
       <div className="flex justify-center gap-4 mt-auto mb-4">
-        <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md text-sm">
+        <button className="bg-red-600 hover:bg-red-700 text-white px-13 py-2 rounded-md text-sm">
           Recusar professor
         </button>
-        <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm">
+        <button className="bg-green-600 hover:bg-green-700 text-white px-13 py-2 rounded-md text-sm">
           Aprovar professor
         </button>
       </div>
 
       {/* Botão desabilitado */}
       <button
-        className="bg-gray-300 text-gray-600 w-full py-3 rounded-md cursor-not-allowed text-sm"
+        className="bg-gray-300 text-white w-full py-2 rounded-md cursor-not-allowed text-sm"
         disabled
       >
         Visualizar comprovante
