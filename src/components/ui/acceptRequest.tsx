@@ -43,11 +43,11 @@ export default function TeacherApproval() {
 
   return (
     <div 
-      className="border rounded-2xl p-4 shadow-sm bg-white"
+      className="flex flex-col border rounded-2xl p-4 shadow-sm bg-white"
       style={{ width: "514px", height: "482px" }}
     >
       {/* Toolbar */}
-      <div className="border rounded-md">
+      <div className="border rounded-md mb-4">
         <div className="flex items-center gap-2 border-b p-2 bg-gray-50 rounded-t-md">
           <button
             onClick={() => handleCommand("bold")}
@@ -75,7 +75,7 @@ export default function TeacherApproval() {
           </button>
         </div>
 
-        {/* Área editável */}
+        {/* Área editável aumentada */}
         <div className="relative">
           {isEmpty && (
             <span className="absolute top-3 left-3 text-gray-400 pointer-events-none select-none">
@@ -87,14 +87,15 @@ export default function TeacherApproval() {
             ref={editorRef}
             contentEditable
             onInput={handleInput}
-            className="w-full h-32 p-3 rounded-md outline-none resize-none"
+            className="w-full p-3 rounded-b-md outline-none resize-none overflow-y-auto"
+            style={{ height: "280px" }}
             suppressContentEditableWarning={true}
           ></div>
         </div>
       </div>
 
       {/* Botões de ação */}
-      <div className="flex justify-center gap-4 mt-6">
+      <div className="flex justify-center gap-4 mt-auto mb-4">
         <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md text-sm">
           Recusar professor
         </button>
@@ -105,7 +106,7 @@ export default function TeacherApproval() {
 
       {/* Botão desabilitado */}
       <button
-        className="bg-gray-300 text-gray-600 w-full py-3 rounded-md mt-6 cursor-not-allowed text-sm"
+        className="bg-gray-300 text-gray-600 w-full py-3 rounded-md cursor-not-allowed text-sm"
         disabled
       >
         Visualizar comprovante
