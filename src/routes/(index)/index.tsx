@@ -1,3 +1,4 @@
+import { Carousel } from "@/components/ui/caroulsel";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(index)/")({
@@ -6,8 +7,9 @@ export const Route = createFileRoute("/(index)/")({
 
 function RouteComponent() {
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col items-center">
       página inicial
+      <Carousel/>
     </div>
   );
 }
