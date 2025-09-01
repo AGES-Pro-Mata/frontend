@@ -21,7 +21,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
       )}
     >
       <img
-        src="logo-pro-mata.svg "
+        src="/logo-pro-mata.svg "
         alt="Logo Pro Mata"
         className="w-40 object-fit"
       />

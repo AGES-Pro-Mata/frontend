@@ -6,6 +6,7 @@ import { Typography } from "./typography";
 interface textInputProps extends React.ComponentProps<typeof Input> {
   label?: React.ReactNode;
   required?: boolean | false;
+  type?: string;
   placeholder?: string;
   className?: string;
 }
@@ -13,6 +14,7 @@ interface textInputProps extends React.ComponentProps<typeof Input> {
 export function TextInput({
   label,
   required,
+  type,
   placeholder,
   className,
   ...Props
@@ -34,10 +36,11 @@ export function TextInput({
       <Input
         placeholder={placeholder}
         className={cn(
-          "h-[6vh] max-w-[25vw] border-dark-gray px-5 py-3 text-foreground placeholder:text-muted-foreground",
+          "h-[6vh] border-dark-gray px-5 py-3 text-foreground placeholder:text-muted-foreground",
           isInvalid ? "border-default-red placeholder:text-default-red focus-visible:ring-default-red" : "",
           className
         )}
+        type={type}
         aria-invalid={isInvalid}
         required={required}
         value={value}

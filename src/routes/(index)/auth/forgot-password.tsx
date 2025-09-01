@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import CanvasCard from "@/components/ui/CanvasCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { createFileRoute } from "@tanstack/react-router";
-import { FooterLayout } from "@/components/layouts/dashboard/footer.layout";
-import { HeaderLayout } from "@/components/layouts/dashboard/header.layout";
+import { TextInput } from "@/components/ui/textInput";
 
-export const Route = createFileRoute("/forgotPassword")({
+export const Route = createFileRoute("/(index)/auth/forgot-password")({
   component: ForgotPasswordPage,
 });
 
@@ -46,46 +44,40 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <HeaderLayout />
-      <div className="flex-grow flex items-center justify-center">
-        <CanvasCard className="w-full max-w-lg p-8 flex flex-col gap-8">
-          <div className="space-y-4 ">
-            <h2 className="text-xl font-semibold text-left -ml-8" style={{ color: "#484848" }}>
+    <div className="flex flex-col bg-background">
+  <div className="flex justify-center pt-16 pb-20">
+        <CanvasCard className="w-full max-w-lg p-8 flex flex-col gap-8 shadow-md">
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-left text-on-banner-text">
               Esqueci a senha
             </h2>
-            <div className="h-[1.5px] bg-gray-600 -mx-8 w-auto" />
+            <div className="h-[1.5px] bg-on-banner-text" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-800"
-              >
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="border-gray-400"
-              />
+            <div className="flex flex-col gap-2 items-center w-full">
+              <div className="w-full max-w-xs">
+                <TextInput
+                  type="email"
+                  label="Email"
+                  placeholder="seu@email.com"
+                  className="w-full"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <p className="text-xs text-on-banner-text w-full mt-2">
+                  Você receberá um email para redefinir sua senha caso haja uma conta cadastrada.
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-gray-500">
-              Você receberá um email para redefinir sua senha caso haja uma
-              conta cadastrada.
-            </p>
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">
+              <div className="text-sm text-default-red bg-default-red/4 border border-default-red rounded p-2">
                 {error}
               </div>
             )}
             {success && (
-              <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded p-2">
+              <div className="text-sm text-contrast-green bg-contrast-green/4 border border-contrast-green rounded p-2">
                 {success}
               </div>
             )}
@@ -93,15 +85,15 @@ export default function ForgotPasswordPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-56 h-11 text-base font-medium cursor-pointer bg-green-600 hover:bg-green-800 text-white"
+                className="w-56 h-11 text-base font-medium cursor-pointer bg-contrast-green hover:bg-contrast-green/80 text-white"
               >
                 {loading ? "Enviando..." : "Enviar"}
               </Button>
               <Button
                 type="button"
                 variant="ghost"
-                className="w-40 mt-2 text-gray-600 cursor-pointer "
-                onClick={() => window.history.back()}
+                className="w-40 mt-2 text-on-banner-text cursor-pointer "
+                onClick={() => window.location.assign('/auth/login')}
               >
                 Voltar
               </Button>
@@ -109,7 +101,6 @@ export default function ForgotPasswordPage() {
           </form>
         </CanvasCard>
       </div>
-      <FooterLayout />
     </div>
   );
 }
