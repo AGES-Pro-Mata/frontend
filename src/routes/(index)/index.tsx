@@ -1,4 +1,6 @@
 import { Carousel } from "@/components/ui/caroulsel";
+import { CardsInfoOnHover } from "@/components/ui/cards-info-onhover";
+
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(index)/")({
@@ -10,6 +12,7 @@ function RouteComponent() {
     <div className="h-full flex flex-col items-center">
       página inicial
       <Carousel/>
+      <CardsInfoOnHover/>
     </div>
   );
 }
