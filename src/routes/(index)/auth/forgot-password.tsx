@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import CanvasCard from "@/components/ui/CanvasCard";
+import CanvasCard from "@/components/ui/canvasCard";
 import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TextInput } from "@/components/ui/textInput";
@@ -93,9 +93,10 @@ export default function ForgotPasswordPage() {
               <Button
                 type="button"
                 variant="ghost"
-                className="w-40 mt-2 text-on-banner-text cursor-pointer "
+                className="w-40 mt-2 text-on-banner-text cursor-pointer"
+                onClick={() => <Link to="/auth/login">Voltar</Link>}
               >
-                <Link to="/auth/login">Voltar</Link>
+                Voltar
               </Button>
             </div>
           </form>
