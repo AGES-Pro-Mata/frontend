@@ -1,4 +1,3 @@
-import React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Typography } from "@/components/ui/typography";
 import { z } from "zod";
@@ -11,13 +10,10 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
+import { useForgotPasswordMutation } from "@/hooks/useForgotPasswordMutation";
 import { TextInput } from "@/components/ui/textInput";
 import { Button } from "@/components/ui/defaultButton";
 import CanvasCard from "@/components/ui/canvasCard";
-
-export const Route = createFileRoute("/(index)/auth/forgot-password")({
-  component: ForgotPasswordPage,
-});
 
 const formSchema = z.object({
   email: z.email("Digite um e-mail válido."),
@@ -25,38 +21,16 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function ForgotPasswordPage() {
-  const [success, setSuccess] = React.useState("");
-  const [error, setError] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-
+function ForgotPasswordPage() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "" },
   });
 
-  const onSubmit = async (data: FormData) => {
-    setError("");
-    setSuccess("");
-    setLoading(true);
-    try {
-      const response = await fetch("/api/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: data.email }),
-      });
-      if (response.ok) {
-        setSuccess(
-          "Email enviado com sucesso! Verifique sua caixa de entrada."
-        );
-      } else {
-        setError("Não foi possível enviar o email. Tente novamente.");
-      }
-    } catch {
-      setError("Erro de conexão. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
+  const mutation = useForgotPasswordMutation();
+
+  const onSubmit = (data: FormData) => {
+    mutation.mutate({ email: data.email });
   };
 
   return (
@@ -95,22 +69,24 @@ export default function ForgotPasswordPage() {
                   />
                 </div>
               </div>
-              {error && (
+              {mutation.isError && (
                 <div className="text-sm text-default-red bg-default-red/4 border border-default-red rounded p-2">
-                  {error}
+                  {mutation.error instanceof Error
+                    ? mutation.error.message
+                    : "Não foi possível enviar o email. Tente novamente."}
                 </div>
               )}
-              {success && (
+              {mutation.isSuccess && (
                 <div className="text-sm text-contrast-green bg-contrast-green/4 border border-contrast-green rounded p-2">
-                  {success}
+                  Email enviado com sucesso! Verifique sua caixa de entrada.
                 </div>
               )}
               <div className="flex flex-col items-center gap-2 mt-2">
                 <Button
                   type="submit"
-                  disabled={loading}
+                  disabled={mutation.isPending}
                   className="w-40"
-                  label={loading ? "Enviando..." : "Enviar"}
+                  label={mutation.isPending ? "Enviando..." : "Enviar"}
                   onClick={() => {}}
                 />
                 <Link
@@ -132,3 +108,9 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+
+export default ForgotPasswordPage;
+
+export const Route = createFileRoute("/(index)/auth/forgot-password")({
+  component: ForgotPasswordPage,
+});
