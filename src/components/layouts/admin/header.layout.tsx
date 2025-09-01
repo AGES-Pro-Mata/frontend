@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
 import { LogOutIcon } from "lucide-react";
 
 type HeaderLayoutProps = {
@@ -25,12 +26,14 @@ export function AdminLayoutHeader({ className, children }: HeaderLayoutProps) {
         Administrador
       </Typography>
       {children}
-      <Button variant="link" size="lg">
-        <Typography variant="h4" className="text-black">
-          Sair
-        </Typography>
-        <LogOutIcon className="!h-5 !w-5 text-black mt-0.5" />
-      </Button>
+      <Link to="/">
+        <Button variant="link" size="lg">
+          <Typography variant="h4" className="text-black">
+            Sair
+          </Typography>
+          <LogOutIcon className="!h-5 !w-5 text-black mt-0.5" />
+        </Button>
+      </Link>
     </div>
   );
 }

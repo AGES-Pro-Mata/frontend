@@ -5,6 +5,7 @@ import { useCartStore } from "@/store/cartStore";
 import { HeaderButton } from "@/components/ui/HeaderButton";
 import { Building2, CalendarDays, CircleUserRound, LayoutDashboard, Mountain } from "lucide-react";
 import { useRouterState } from "@tanstack/react-router";
+import { useIsAdmin } from "@/api/user";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -13,6 +14,7 @@ type HeaderLayoutProps = {
 
 export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
   const pathname = useRouterState().location.pathname;
+  const isAdmin = useIsAdmin();
   return (
     <div
       className={cn(
@@ -29,7 +31,9 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         <HeaderButton label="Início" to="/" icon={<Mountain />} selected={pathname === "/"} />
         <HeaderButton label="Reservar" to="/reserve" icon={<Building2 />} selected={pathname === "/reserve"} />
         <HeaderButton label="Minhas reservas" to="/my-reservations" icon={<CalendarDays />} selected={pathname === "/my-reservations"} />
-        <HeaderButton label="Administrador" to="/admin/home" icon={<LayoutDashboard />} selected={pathname === "/admin/home"} />
+        {isAdmin && (
+          <HeaderButton label="Administrador" to="/admin/home" icon={<LayoutDashboard />} selected={pathname === "/admin/home"} />
+        )}
       </div>
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
         <HeaderButton secondary label="João da Silva" to="/my-profile" icon={<CircleUserRound />} />
