@@ -58,9 +58,8 @@ type CardStatusProps = {
 
 const cardStatusIconClass = "h-5 w-5";
 
-  const { className, label, icon } =
-    RESERVATIONS_STATUS_STYLES[status] ??
-    RESERVATIONS_STATUS_STYLES[StatusEnum.DESCONHECIDO];
+function CardStatus({ status }: CardStatusProps): JSX.Element {
+  const { className, label, icon } = RESERVATIONS_STATUS_STYLES[status];
 
   return (
     <span
