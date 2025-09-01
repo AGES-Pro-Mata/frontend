@@ -117,7 +117,8 @@ jobs:
     needs: [test, security-scan]
     if: |
       (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')) ||
-      (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
+      (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true) ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -214,18 +215,39 @@ jobs:
     name: 🚀 Trigger Infrastructure Deployment
     needs: [build-and-push]
     runs-on: ubuntu-latest
-    if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
+    if: success() && (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     steps:
+      - name: Determine deployment configuration
+        id: deploy-config
+        run: |
+          # Determine target branch for deployment
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TARGET_BRANCH="${{ github.ref_name }}"
+          else
+            TARGET_BRANCH="${{ github.ref_name }}"
+          fi
+          
+          echo "target_branch=${TARGET_BRANCH}" >> $GITHUB_OUTPUT
+          
+          # Set deployment event type and image based on target branch
+          if [ "${TARGET_BRANCH}" = "main" ]; then
+            echo "event_type=deploy-prod-frontend" >> $GITHUB_OUTPUT
+            echo "image_name=norohim/pro-mata-frontend" >> $GITHUB_OUTPUT
+          else
+            echo "event_type=deploy-dev-frontend" >> $GITHUB_OUTPUT
+            echo "image_name=norohim/pro-mata-frontend-dev" >> $GITHUB_OUTPUT
+          fi
+
       - name: Dispatch to Infrastructure Repository
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.PAT_INFRASTRUCTURE_REPO }}
           repository: AGES-Pro-Mata/infrastructure
-          event-type: ${{ github.ref == 'refs/heads/main' && 'deploy-prod-frontend' || 'deploy-dev-frontend' }}
+          event-type: ${{ steps.deploy-config.outputs.event_type }}
           client-payload: |
             {
-              "image": "norohim/pro-mata-frontend${{ github.ref == 'refs/heads/dev' && '-dev' || '' }}:latest",
+              "image": "${{ steps.deploy-config.outputs.image_name }}:latest",
               "commit": "${{ github.sha }}",
-              "branch": "${{ github.ref_name }}",
+              "branch": "${{ steps.deploy-config.outputs.target_branch }}",
               "triggered_by": "frontend"
             }
