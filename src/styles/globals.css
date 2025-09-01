@@ -19,8 +19,9 @@ code {
 @theme {
   --color-main-dark-green: #2E361D;
   --color-banner: #D4CBC0;
+  --color-soft-white: #F5F5F5;
   --color-contrast-green: #4C9613;
-  --color-separator-color: #484848;
+  --color-on-banner-text: #484848;
   --color-selected-banner: #FFF2C9;
   --color-dark-gray: #6C6C6C;
   --color-warning: #A18900;
@@ -46,6 +47,7 @@ code {
     hsl(220 13% 91%);
   --sidebar-ring:
     hsl(217.2 91.2% 59.8%);
+  --color-foreground: #020617;
 }
 
 .dark {
