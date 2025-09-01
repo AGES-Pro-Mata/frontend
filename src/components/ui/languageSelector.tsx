@@ -12,7 +12,7 @@ export default function LanguageSelector() {
       <span
         onClick={() => handleChange("PT")}
         className={`cursor-pointer hover:opacity-70 ${
-          lang === "PT" ? "underline font-semibold" : "text-gray-500"
+          lang === "PT" ? "underline font-semibold" : "text-main-dark-green"
         }`}
       >
         PT
@@ -20,7 +20,7 @@ export default function LanguageSelector() {
       <span
         onClick={() => handleChange("EN")}
         className={`cursor-pointer hover:opacity-70 ${
-          lang === "EN" ? "underline font-semibold" : "text-gray-500"
+          lang === "EN" ? "underline font-semibold" : "text-main-dark-green"
         }`}
       >
         EN
