@@ -1,6 +1,4 @@
-import { Clock5, XCircle } from "lucide-react";
-
-import { CheckCircle2 } from "lucide-react";
+import { Clock5, XCircle, CheckCircle2 } from "lucide-react";
 import type { JSX } from "react";
 import React from "react";
 
