@@ -21,34 +21,30 @@ export default function TeacherApproval() {
     if (document.queryCommandState("bold")) formats.push("bold");
     if (document.queryCommandState("italic")) formats.push("italic");
     if (document.queryCommandState("underline")) formats.push("underline");
-    if (document.queryCommandState("strikeThrough"))
-      formats.push("strikeThrough");
-    if (document.queryCommandState("insertUnorderedList"))
-      formats.push("insertUnorderedList");
-    if (document.queryCommandState("insertOrderedList"))
-      formats.push("insertOrderedList");
+    if (document.queryCommandState("strikeThrough")) formats.push("strikeThrough");
+    if (document.queryCommandState("insertUnorderedList")) formats.push("insertUnorderedList");
+    if (document.queryCommandState("insertOrderedList")) formats.push("insertOrderedList");
     setActiveFormats(formats);
   };
 
   useEffect(() => {
     document.addEventListener("selectionchange", updateActiveFormats);
-    return () =>
-      document.removeEventListener("selectionchange", updateActiveFormats);
+    return () => document.removeEventListener("selectionchange", updateActiveFormats);
   }, []);
 
   const isActive = (cmd: string) =>
     activeFormats.includes(cmd)
-      ? "bg-gray-400 text-white"
-      : "hover:bg-gray-200";
+      ? "bg-[var(--color-main-dark-green)] text-white"
+      : "hover:bg-[var(--color-soft-white)]";
 
   return (
-    <div 
-      className="flex flex-col border-2 border-black rounded-3xl p-8 bg-white"
+    <div
+      className="flex flex-col border-2 rounded-3xl p-8 bg-white border-[var(--color-dark-gray)]"
       style={{ width: "514px", height: "482px" }}
     >
       {/* Toolbar */}
-      <div className="border rounded-md mb-4 border-gray-400">
-        <div className="flex items-center gap-2 border-b  border-gray-400 p-2 bg-white rounded-t-md">
+      <div className="border rounded-md mb-4 border-[var(--color-dark-gray)]">
+        <div className="flex items-center gap-2 border-b border-[var(--color-dark-gray)] p-2 bg-white rounded-t-md">
           <button
             onClick={() => handleCommand("bold")}
             className={`p-1 rounded font-bold ${isActive("bold")}`}
@@ -75,14 +71,13 @@ export default function TeacherApproval() {
           </button>
         </div>
 
-        {/* Área editável aumentada */}
+        {/* Área editável */}
         <div className="relative mt-1">
           {isEmpty && (
-            <span className="absolute top-3 left-3 text-gray-400 pointer-events-none select-none">
+            <span className="absolute top-3 left-3 text-[var(--color-dark-gray)] pointer-events-none select-none">
               Digite alguma observação sobre essa solicitação
             </span>
           )}
-
           <div
             ref={editorRef}
             contentEditable
@@ -96,17 +91,24 @@ export default function TeacherApproval() {
 
       {/* Botões de ação */}
       <div className="flex justify-center gap-4 mt-auto mb-4">
-        <button className="bg-red-600 hover:bg-red-700 text-white px-13 py-2 rounded-md text-sm">
+        <button
+          style={{ backgroundColor: "var(--color-default-red)" }}
+          className="hover:brightness-90 text-white px-13 py-2 rounded-md text-sm"
+        >
           Recusar professor
         </button>
-        <button className="bg-green-600 hover:bg-green-700 text-white px-13 py-2 rounded-md text-sm">
+        <button
+          style={{ backgroundColor: "var(--color-contrast-green)" }}
+          className="hover:brightness-90 text-white px-13 y-2 rounded-md text-sm"
+        >
           Aprovar professor
         </button>
       </div>
 
       {/* Botão desabilitado */}
       <button
-        className="bg-gray-300 text-white w-full py-2 rounded-md cursor-not-allowed text-sm"
+        style={{ backgroundColor: "var(--color-muted-foreground)" }}
+        className="text-white w-full py-2 rounded-md cursor-not-allowed text-sm"
         disabled
       >
         Visualizar comprovante
