@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CanvasCard from "@/components/ui/canvasCard";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/defaultButton";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TextInput } from "@/components/ui/textInput";
 import { Typography } from "@/components/ui/typography";
@@ -87,17 +87,14 @@ export default function ForgotPasswordPage() {
                 type="submit"
                 disabled={loading}
                 className="w-56 h-11 text-base font-medium cursor-pointer bg-contrast-green hover:bg-contrast-green/80 text-white"
-              >
-                {loading ? "Enviando..." : "Enviar"}
-              </Button>
+                label={loading ? "Enviando..." : "Enviar"}
+              />
               <Button
-                type="button"
                 variant="ghost"
                 className="w-40 mt-2 text-on-banner-text cursor-pointer"
                 onClick={() => <Link to="/auth/login">Voltar</Link>}
-              >
-                Voltar
-              </Button>
+                label="Voltar"
+              />
             </div>
           </form>
         </CanvasCard>
