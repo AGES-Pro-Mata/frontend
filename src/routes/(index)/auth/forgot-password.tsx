@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import CanvasCard from "@/components/ui/CanvasCard";
 import { Button } from "@/components/ui/button";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { TextInput } from "@/components/ui/textInput";
+import { Typography } from "@/components/ui/typography";
+
 
 export const Route = createFileRoute("/(index)/auth/forgot-password")({
   component: ForgotPasswordPage,
@@ -48,9 +50,9 @@ export default function ForgotPasswordPage() {
   <div className="flex justify-center pt-16 pb-20">
         <CanvasCard className="w-full max-w-lg p-8 flex flex-col gap-8 shadow-md">
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-left text-on-banner-text">
+            <Typography className="text-xl font-semibold text-left text-on-banner-text">
               Esqueci a senha
-            </h2>
+            </Typography>
             <div className="h-[1.5px] bg-on-banner-text" />
           </div>
 
@@ -61,14 +63,13 @@ export default function ForgotPasswordPage() {
                   type="email"
                   label="Email"
                   placeholder="seu@email.com"
-                  className="w-full"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <p className="text-xs text-on-banner-text w-full mt-2">
+                <Typography className="text-xs text-on-banner-text w-full mt-2">
                   Você receberá um email para redefinir sua senha caso haja uma conta cadastrada.
-                </p>
+                </Typography>
               </div>
             </div>
             {error && (
@@ -93,9 +94,8 @@ export default function ForgotPasswordPage() {
                 type="button"
                 variant="ghost"
                 className="w-40 mt-2 text-on-banner-text cursor-pointer "
-                onClick={() => window.location.assign('/auth/login')}
               >
-                Voltar
+                <Link to="/auth/login">Voltar</Link>
               </Button>
             </div>
           </form>
