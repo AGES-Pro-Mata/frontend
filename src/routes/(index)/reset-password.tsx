@@ -41,7 +41,6 @@ export default function ResetPasswordPage() {
 
     setLoading(true);
     try {
-      // Troque pela rota real de reset
       const response = await fetch("/api/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
