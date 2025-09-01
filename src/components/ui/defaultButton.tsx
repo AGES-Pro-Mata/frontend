@@ -6,6 +6,7 @@ interface DefaultButtonProps {
   variant?: "primary" | "secondary" | "ghost";
   onClick?: () => void;
   className?: string;
+  type?: "button" | "submit" | "reset";
 }
 
 export { DefaultButton as Button };
@@ -14,6 +15,7 @@ export function DefaultButton({
   variant = "primary",
   onClick,
   className,
+  type = "button",
   ...props
 }: DefaultButtonProps) {
   const base = "w-22 transition-colors duration-150 px-4 py-2 rounded-md";
@@ -29,6 +31,7 @@ export function DefaultButton({
 
   return (
     <Button
+      type={type}
       variant="ghost"
       className={`${base} ${styles[variant]} ${className}`}
       onClick={onClick}
