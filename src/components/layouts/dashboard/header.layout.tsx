@@ -24,14 +24,13 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         className="w-40 object-fit"
       />
       <div className="hidden md:flex justify-around gap-20 lg:gap-40 items-center w-auto">
-        <HeaderButton label="Início" icon={<Mountain />} />
-        <HeaderButton label="Reservar" icon={<Building2 />} />
-        <HeaderButton label="Minhas reservas" icon={<Calendar />} />
-        <HeaderButton label="Administrador" to="/admin/home" icon={<LayoutDashboard />}>
-        </HeaderButton>
+        <HeaderButton label="Início" icon={Mountain} />
+        <HeaderButton label="Reservar" icon={Building2} />
+        <HeaderButton label="Minhas reservas" icon={Calendar} />
+        <HeaderButton label="Administrador" to="/admin/home" icon={LayoutDashboard} />
       </div>
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
-        <HeaderButton secondary label="João da Silva" icon={<CircleUserRound />} />
+        <HeaderButton secondary label="João da Silva" icon={CircleUserRound} />
         <CartButton itemCount={useCartStore((state) => state.itemCount)} />
         <HeaderButton secondary label="PT / EN" />
       </div>
