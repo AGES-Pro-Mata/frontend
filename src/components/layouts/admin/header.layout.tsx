@@ -17,11 +17,17 @@ export function AdminLayoutHeader({ className, children }: HeaderLayoutProps) {
         className
       )}
     >
-      <img
-        src="/logo-pro-mata-png.png"
-        alt="Logo Pro Mata"
-        className="w-40 object-fit"
-      />
+      <a
+        href="https://www.pucrs.br/ima/pro-mata/"
+        target="_blank"
+        className="cursor-pointer"
+      >
+        <img
+          src="/logo-pro-mata-png.png"
+          alt="Logo Pro Mata"
+          className="w-40 object-fit"
+        />
+      </a>
       <Typography variant="h3" className="text-black">
         Administrador
       </Typography>

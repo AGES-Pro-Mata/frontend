@@ -28,11 +28,17 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         className
       )}
     >
-      <img
-        src="logo-pro-mata.svg "
-        alt="Logo Pro Mata"
-        className="w-40 object-fit"
-      />
+      <a
+        href="https://www.pucrs.br/ima/pro-mata/"
+        target="_blank"
+        className="cursor-pointer"
+      >
+        <img
+          src="logo-pro-mata.svg "
+          alt="Logo Pro Mata"
+          className="w-40 object-fit"
+        />
+      </a>
       <div className="hidden md:flex justify-around gap-6 lg:gap-10 items-center w-auto">
         <HeaderButton
           label="Início"
