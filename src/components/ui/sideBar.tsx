@@ -737,11 +737,6 @@ export function AdminSideBar() {
         <SidebarGroup>
           <SidebarMenu>
             <SidebarButton
-              icon={<LayoutDashboard className="h-5 w-5" />}
-              label="Home"
-              to="/admin/home"
-            />
-            <SidebarButton
               icon={<FileText className="h-5 w-5" />}
               label="Relatórios"
               to="/admin/reports"
