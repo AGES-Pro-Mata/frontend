@@ -18,7 +18,7 @@ export function DefaultButton({
   type = "button",
   ...props
 }: DefaultButtonProps) {
-  const base = "w-22 transition-colors duration-150 px-4 py-2 rounded-md";
+  const base = "transition-colors duration-150 px-4 py-2 rounded-md";
 
   const styles = {
     primary:
