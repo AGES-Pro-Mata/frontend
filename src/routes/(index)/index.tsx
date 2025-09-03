@@ -11,8 +11,8 @@ function RouteComponent() {
   return (
     <div className="h-full flex flex-col items-center">
       página inicial
-      <Carousel/>
       <CardsInfoOnHover/>
+      <Carousel/>
     </div>
   );
 }
