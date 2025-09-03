@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
 import { LogOutIcon } from "lucide-react";
 
 type HeaderLayoutProps = {
@@ -16,21 +17,29 @@ export function AdminLayoutHeader({ className, children }: HeaderLayoutProps) {
         className
       )}
     >
-      <img
-        src="/logo-pro-mata-png.png"
-        alt="Logo Pro Mata"
-        className="w-40 object-fit"
-      />
+      <a
+        href="https://www.pucrs.br/ima/pro-mata/"
+        target="_blank"
+        className="cursor-pointer"
+      >
+        <img
+          src="/logo-pro-mata-png.png"
+          alt="Logo Pro Mata"
+          className="w-40 object-fit"
+        />
+      </a>
       <Typography variant="h3" className="text-black">
         Administrador
       </Typography>
       {children}
-      <Button variant="link" size="lg">
-        <Typography variant="h4" className="text-black">
-          Sair
-        </Typography>
-        <LogOutIcon className="!h-5 !w-5 text-black mt-0.5" />
-      </Button>
+      <Link to="/">
+        <Button variant="link" size="lg">
+          <Typography variant="h4" className="text-black">
+            Sair
+          </Typography>
+          <LogOutIcon className="!h-5 !w-5 text-black mt-0.5" />
+        </Button>
+      </Link>
     </div>
   );
 }
