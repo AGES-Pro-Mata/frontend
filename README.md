@@ -46,15 +46,76 @@ Observação: alguns pacotes podem não estar instalados por padrão neste momen
 
 ## Variáveis de ambiente
 
-Crie um arquivo `.env` (ou use variáveis no ambiente de execução) com, por exemplo:
+Crie um arquivo `.env` com:
 
 ```bash
-VITE_API_URL=https://api.exemplo.com
-VITE_APP_ENV=development
-VITE_APP_VERSION=local
+APP_SECRET=APP_SECRET // Apenas para rodar o umami local
+VITE_UMAMI_WEBSITE_ID=VITE_UMAMI_WEBSITE_ID // Não precisa estar preenchida, apenas existir no .env
+VITE_UMAMI_SCRIPT_URL=VITE_UMAMI_SCRIPT_URL // Não precisa estar preenchida, apenas existir no .env
+VITE_API_URL=VITE_API_URL // URL do backend
 ```
 
-Obs.: Em build/execução via Docker, variáveis como `VITE_API_URL`, `VITE_APP_ENV` e `VITE_APP_VERSION` podem ser injetadas em tempo de execução.
+---
+
+## Analytics com Umami
+
+O PRÓ-MATA utiliza o [Umami](https://umami.is/) para analytics de privacidade. O Umami é uma alternativa open-source ao Google Analytics que respeita a privacidade dos usuários e não utiliza cookies de rastreamento.
+
+### Configuração Local (Desenvolvimento)
+
+Para testar o Umami localmente durante o desenvolvimento:
+
+1. **Iniciar o Umami com Docker Compose:**
+
+   ```bash
+   docker-compose -f docker-compose.umami.yml up -d
+   ```
+
+2. **Acessar o painel do Umami:**
+   - URL: http://localhost:3000
+   - Usuário padrão: `admin`
+   - Senha padrão: `umami`
+
+3. **Configurar o website:**
+   - Após fazer login, crie um novo website
+   - Copie o `Website ID` e `Script URL` gerados
+   - Atualize seu arquivo `.env` com esses valores
+
+4. **Parar o Umami:**
+
+   ```bash
+   docker-compose -f docker-compose.umami.yml down
+   ```
+
+### Configuração em Produção
+
+Em produção, o Umami será hospedado em um servidor dedicado. Para configurar:
+
+1. **Hospedar o Umami:**
+   - Use o mesmo `docker-compose.umami.yml` em seu servidor
+   - Ou instale diretamente seguindo a [documentação oficial](https://umami.is/docs/install)
+   - Configure um domínio (ex: `analytics.seusite.com`)
+
+2. **Atualizar as variáveis de ambiente:**
+   ```bash
+   VITE_UMAMI_WEBSITE_ID=seu_website_id_producao
+   VITE_UMAMI_SCRIPT_URL=https://analytics.seusite.com/umami.js
+   ```
+
+3. **Configurar o banco de dados:**
+   - Em produção, use um banco PostgreSQL externo
+   - Atualize a `DATABASE_URL` no docker-compose
+   - Configure backups automáticos
+
+### Como Funciona
+
+O script do Umami é injetado automaticamente no `index.html` e coleta métricas como:
+- Páginas visitadas
+- Tempo de permanência
+- Dispositivos e navegadores
+- Referrers (de onde vieram os usuários)
+
+**Importante:** O Umami não coleta dados pessoais identificáveis e é compatível com GDPR e outras regulamentações de privacidade.
 
 ---
 
