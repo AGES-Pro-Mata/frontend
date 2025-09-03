@@ -11,9 +11,14 @@ export const Route = createFileRoute("/(index)/reset-password")({
   component: ResetPasswordPage,
 });
 
-function validatePassword(password: string) {
-  // Pelo menos uma letra maiúscula e um número
-  return /[A-Z]/.test(password) && /\d/.test(password);
+function validatePasswordLenght(password: string) {
+  // Pelo menos 6 caracteres
+  return password.length >= 6 
+}
+
+function validatePasswordNumber(password: string) {
+  // Pelo menos um caracter maisculo e um numero
+  return  /[A-Z]/.test(password) && /\d/.test(password);
 }
 
 export default function ResetPasswordPage() {
@@ -36,9 +41,12 @@ export default function ResetPasswordPage() {
       setError("Preencha todos os campos.");
       return;
     }
-    if (!validatePassword(data.password)) {
-      setError("A senha deve conter ao menos uma letra maiúscula e um número.");
+    if (!validatePasswordLenght(data.password)) {
+      setError("A senha deve ter no mínimo 6 caracteres.");
       return;
+    }
+    if(!validatePasswordNumber(data.password)) {
+      setError("A senha deve conter no mínimo uma letra maiscúla e um numero")
     }
     if (data.password !== data.confirm) {
       setError("As senhas devem ser iguais.");
