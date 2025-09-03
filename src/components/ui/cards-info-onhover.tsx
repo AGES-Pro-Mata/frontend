@@ -43,8 +43,8 @@ export function CardsInfoOnHover() {
           <div
             key={i}
             onMouseEnter={() => setActive(i)}
-            className={`flex flex-col px-[30px] opacity-70 pt-[17px] pb-[25px] bg-[#E7DED4] transition  after:border-b-[#E7DED4] relative w-full h-[204px] rounded-[18px] justify-between after:transition-all after:content-[''] after:z-[999] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px]  after:border-l-[20px] after:border-r-[20px] after:border-r-transparent after:border-l-transparent after:border-b-[35px] after:bg-transparent
-              ${active === i ? "opacity-100 after:content-[''] after:border-b-[#E7DED4] after:z-[999] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px]  after:border-l-[20px] after:border-r-[20px] after:border-r-transparent after:border-l-transparent after:border-b-[35px]  after:bg-transparent" : "after:opacity-0"}`}
+            className={`flex flex-col px-[30px] opacity-70 pt-[17px] pb-[25px] bg-[#E7DED4] transition  after:border-b-[#E7DED4] relative w-full h-[204px] rounded-[18px] justify-between after:transition-all after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px]  after:border-l-[20px] after:border-r-[20px] after:border-r-transparent after:border-l-transparent after:border-b-[35px] after:bg-transparent
+              ${active === i ? "opacity-100 after:content-[''] after:border-b-[#E7DED4] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px]  after:border-l-[20px] after:border-r-[20px] after:border-r-transparent after:border-l-transparent after:border-b-[35px]  after:bg-transparent" : "after:opacity-0"}`}
           >
             <div>
               <h3 className="font-bold">{card.titulo}</h3>
