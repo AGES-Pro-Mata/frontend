@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { Button } from "./defaultButton";
 
 export default function TeacherApproval() {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -92,24 +93,25 @@ export default function TeacherApproval() {
     if (node) {
       let el = node as HTMLElement;
       // Check for bold
-      if (el.closest('b, strong')) formats.push('bold');
+      if (el.closest("b, strong")) formats.push("bold");
       // Check for italic
-      if (el.closest('i, em')) formats.push('italic');
+      if (el.closest("i, em")) formats.push("italic");
       // Check for underline
-      if (el.closest('u')) formats.push('underline');
+      if (el.closest("u")) formats.push("underline");
       // Check for strikethrough
-      if (el.closest('s, strike')) formats.push('strikeThrough');
+      if (el.closest("s, strike")) formats.push("strikeThrough");
       // Check for unordered list
-      if (el.closest('ul')) formats.push('insertUnorderedList');
+      if (el.closest("ul")) formats.push("insertUnorderedList");
       // Check for ordered list
-      if (el.closest('ol')) formats.push('insertOrderedList');
+      if (el.closest("ol")) formats.push("insertOrderedList");
     }
     setActiveFormats(formats);
   };
 
   useEffect(() => {
     document.addEventListener("selectionchange", updateActiveFormats);
-    return () => document.removeEventListener("selectionchange", updateActiveFormats);
+    return () =>
+      document.removeEventListener("selectionchange", updateActiveFormats);
   }, []);
 
   const isActive = (cmd: string) =>
@@ -118,13 +120,10 @@ export default function TeacherApproval() {
       : "hover:bg-soft-white";
 
   return (
-    <div
-      className="flex flex-col border-2 rounded-3xl p-8 bg-white border-dark-gray"
-      style={{ width: "514px", height: "482px" }}
-    >
+    <div className="flex flex-col border-2 rounded-3xl p-4 sm:p-6 md:p-8 bg-white border-dark-gray max-w-lg w-full mx-auto h-auto min-w-0">
       {/* Toolbar */}
       <div className="border rounded-md mb-4 border-dark-gray">
-        <div className="flex items-center gap-2 border-b border-dark-gray p-2 bg-white rounded-t-md">
+        <div className="flex items-center gap-2 border-b border-dark-gray p-2 bg-white rounded-t-md w-full">
           <button
             onClick={() => handleCommand("bold")}
             className={`p-1 rounded font-bold ${isActive("bold")}`}
@@ -154,7 +153,7 @@ export default function TeacherApproval() {
         {/* Área editável */}
         <div className="relative mt-1">
           {isEmpty && (
-            <span className="absolute top-3 left-3 text-dark-gray pointer-events-none select-none">
+            <span className="absolute top-2 left-2 text-dark-gray pointer-events-none select-none">
               Digite alguma observação sobre essa solicitação
             </span>
           )}
@@ -162,38 +161,36 @@ export default function TeacherApproval() {
             ref={editorRef}
             contentEditable
             onInput={handleInput}
-            className="w-full p-3 rounded-b-md outline-none resize-none overflow-y-auto"
-            style={{ height: "250px" }}
+               className="w-full min-h-[30vh] max-h-[40vh] p-[1vw] sm:p-[2vw] rounded-b-md outline-none resize-none overflow-y-auto"
             suppressContentEditableWarning={true}
           ></div>
         </div>
       </div>
-
+          
       {/* Botões de ação */}
-      <div className="flex justify-center gap-4 mt-auto mb-4">
-        
-        <button
-          style={{ backgroundColor: "" }}
-          className="hover:brightness-90 text-white px-13 py-2 rounded-md text-sm"
-        >
-          Recusar professor
-        </button>
-        <button
-          style={{ backgroundColor: "var(--color-contrast-green)" }}
-          className="hover:brightness-90 text-white px-13 y-2 rounded-md text-sm"
-        >
-          Aprovar professor
-        </button>
+      <div className="flex justify-center gap-4 mt-auto mb-4 px-29">
+        <Button
+          variant="destructive"
+          label="Recusar professor"
+          className="w-full"
+          onClick={() => {}}
+        />
+        <Button
+          variant="primary"
+          label="Aprovar professor"
+          className="w-full"
+          onClick={() => {}}
+        />
       </div>
 
       {/* Botão desabilitado */}
-      <button
-        style={{ backgroundColor: "var(--color-muted-foreground)" }}
-        className="text-white w-full py-2 rounded-md cursor-not-allowed text-sm"
+      <Button
+        variant="secondary"
+        label="Visualizar comprovante"
+        className="w-full mt-auto mb-4"
+        onClick={() => {}}
         disabled
-      >
-        Visualizar comprovante
-      </button>
+      />
     </div>
   );
 }
