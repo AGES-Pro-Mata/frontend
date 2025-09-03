@@ -12,15 +12,34 @@ import {
 } from "lucide-react";
 import { useRouterState } from "@tanstack/react-router";
 import { useIsAdmin } from "@/api/user";
+import { useTranslation } from "react-i18next";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
   className?: string;
 };
 
+const LanguageSwitcher = () => {
+  const { i18n } = useTranslation();
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === "en" ? "pt" : "en");
+  };
+
+  return (
+    <button
+      onClick={toggleLanguage}
+      className="px-2 py-1 rounded border bg-white shadow"
+    >
+      {i18n.language.toUpperCase()}
+    </button>
+  );
+};
+
 export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
+  const { t } = useTranslation();
   const pathname = useRouterState().location.pathname;
   const isAdmin = useIsAdmin();
+
   return (
     <div
       className={cn(
@@ -34,43 +53,45 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         className="cursor-pointer"
       >
         <img
-          src="logo-pro-mata.svg "
+          src="logo-pro-mata.svg"
           alt="Logo Pro Mata"
           className="w-40 object-fit"
         />
       </a>
+
       <div className="hidden md:flex justify-around gap-6 lg:gap-10 items-center w-auto">
         <HeaderButton
-          label="Início"
+          label={t("home")}
           to="/"
           icon={<Mountain />}
           selected={pathname === "/"}
         />
         <HeaderButton
-          label="Reservar"
+          label={t("reserve")}
           to="/reserve"
           icon={<Building2 />}
           selected={pathname === "/reserve"}
         />
         <HeaderButton
-          label="Minhas reservas"
+          label={t("myReservations")}
           to="/my-reservations"
           icon={<CalendarDays />}
           selected={pathname === "/my-reservations"}
         />
         {isAdmin && (
           <HeaderButton
-            label="Administrador"
+            label={t("admin")}
             to="/admin/reports"
             icon={<LayoutDashboard />}
             selected={pathname === "/admin/reports"}
           />
         )}
       </div>
+
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
         <HeaderButton
           secondary
-          label="João da Silva"
+          label={t("userName")}
           to="/my-profile"
           icon={<CircleUserRound />}
         />
