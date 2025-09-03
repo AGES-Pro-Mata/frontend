@@ -1,0 +1,35 @@
+{
+  "name": "Pró-Mata",
+  "short_name": "Pró-Mata",
+  "description": "Pró-Mata - Experiências na Serra Gaúcha",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo-pro-mata.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-pro-mata-png.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "tourism",
+    "nature",
+    "outdoor",
+    "adventure",
+    "hiking",
+    "camping",
+    "nature",
+    "outdoor"
+  ],
+  "lang": "pt-BR"
+}
