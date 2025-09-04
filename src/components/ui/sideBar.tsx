@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
-import { Building2, LayoutDashboard, PanelLeftIcon, Presentation } from "lucide-react";
+import { Building2, PanelLeftIcon, Presentation } from "lucide-react";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -736,11 +736,6 @@ export function AdminSideBar() {
       <SidebarContent className="p-0">
         <SidebarGroup>
           <SidebarMenu>
-            <SidebarButton
-              icon={<LayoutDashboard className="h-5 w-5" />}
-              label="Home"
-              to="/admin/home"
-            />
             <SidebarButton
               icon={<FileText className="h-5 w-5" />}
               label="Relatórios"
