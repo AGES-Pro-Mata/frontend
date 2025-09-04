@@ -28,6 +28,7 @@ code {
   --color-default-red: #CD5252;
   --color-muted-foreground: #64748B;
   --color-card: #E7DED445;
+  --color-card-background: #E7DED4;
 }
 
 :root {
