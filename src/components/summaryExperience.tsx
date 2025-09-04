@@ -3,6 +3,7 @@ import priceIcon from "../../public/price-icon.svg";
 import personIcon from "../../public/person-icon.svg";
 import xpImage from "../../public/xp-image.png";
 import { Typography } from "./ui/typography";
+import type { Locale } from "@/types/locale";
 
 type summaryXpProps = {
   experience: string;
@@ -10,11 +11,12 @@ type summaryXpProps = {
   endDate: string;
   price: number;
   capacity: number;
+  locale: Locale;
 };
 
 type infoItemProps = {
   img: string;
-  txt: string;
+  text: string;
 };
 
 export const SummaryExperience = ({
@@ -23,33 +25,39 @@ export const SummaryExperience = ({
   endDate,
   price,
   capacity,
+  locale,
 }: summaryXpProps) => {
+  const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: "short" });
+
+  const formattedStartDate = dateFormatter.format(new Date(startDate));
+  const formattedEndDate = dateFormatter.format(new Date(endDate));
+
   return (
-    <div className="flex gap-4 p-4 pr-16 bg-[#E7DED4] w-fit rounded-2xl items-center shadow-xl">
+    <div className="flex gap-4 p-4 pr-16 bg-card-background w-fit rounded-2xl items-center shadow-xl">
       <div>
         <img src={xpImage} alt="" className="rounded-2xl" />
       </div>
       <div className="flex flex-col gap-1">
-        <Typography variant="h4" className="text-[#2E361D] mb-2">
+        <Typography variant="h4" className="text-main-dark-green mb-2">
           {experience}
         </Typography>
         <InfoItem
           img={calendarIcon}
-          txt={`${startDate} a ${endDate}`}
+          text={`${formattedStartDate} a ${formattedEndDate}`}
         ></InfoItem>
-        <InfoItem img={priceIcon} txt={`R$ ${price}`}></InfoItem>
-        <InfoItem img={personIcon} txt={`${capacity} pessoas`}></InfoItem>
+        <InfoItem img={priceIcon} text={`R$ ${price}`}></InfoItem>
+        <InfoItem img={personIcon} text={`${capacity} pessoas`}></InfoItem>
       </div>
     </div>
   );
 };
 
-const InfoItem = ({ img, txt }: infoItemProps) => {
+const InfoItem = ({ img, text }: infoItemProps) => {
   return (
-    <div className="flex items-center gap-2 bg-[#F6EDE4] rounded-2xl shadow-[inset_0_0_0_2px_rgba(0,0,0,0.15)]">
+    <div className="flex items-center gap-2 bg-soft-white rounded-2xl shadow-[inset_0_0_0_2px_rgba(0,0,0,0.15)]">
       <img src={img} alt="" className="w-7" />
-      <Typography variant="h6" className="text-[#2E361D] pr-6">
-        {txt}
+      <Typography variant="h6" className="text-main-dark-green pr-6">
+        {text}
       </Typography>
     </div>
   );
