@@ -1,4 +1,5 @@
 import { CardsInfoOnHover } from "@/components/ui/cards-info-onhover";
+import TeacherApproval from "@/components/ui/acceptRequest";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(index)/")({
@@ -10,6 +11,8 @@ function RouteComponent() {
     <div className="h-full flex flex-col items-center">
       página inicial
       <CardsInfoOnHover/>
+      <TeacherApproval >
+</TeacherApproval>
     </div>
   );
 }
