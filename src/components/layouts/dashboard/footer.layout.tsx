@@ -8,7 +8,7 @@ export const FooterLayout = () => {
         <div className="md:w-1/3 flex justify-center">
           <a href="https://www.pucrs.br/ima/pro-mata/" target="_blank" rel="noopener noreferrer">
             <img
-              src="logo-pro-mata-invertida.svg "
+              src="/logo-pro-mata-invertida.svg"
               alt="Logo Pro Mata"
               className="w-96 h-36"
             />
