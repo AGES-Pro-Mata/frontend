@@ -36,7 +36,7 @@ export function TextInput({
       <Input
         placeholder={placeholder}
         className={cn(
-          "h-[6vh] border-dark-gray px-5 py-3 text-foreground placeholder:text-muted-foreground",
+          "h-12 border-dark-gray px-5 py-3 text-foreground placeholder:text-muted-foreground",
           isInvalid ? "border-default-red placeholder:text-default-red focus-visible:ring-default-red" : "",
           className
         )}
