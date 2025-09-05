@@ -6,13 +6,9 @@ export const FooterLayout = () => {
     <div className="md:h-80 flex flex-col !w-full h-auto !py-4 !px-6 bg-main-dark-green items-center text-white">
       <div className="md:flex-row md:gap-10 md:h-4/5 flex flex-col h-auto w-full">
         <div className="md:w-1/3 flex justify-center">
-          <a
-            href="https://www.pucrs.br/ima/pro-mata/"
-            target="_blank"
-            className="cursor-pointer"
-          >
+          <a href="https://www.pucrs.br/ima/pro-mata/" target="_blank" rel="noopener noreferrer">
             <img
-              src="/logo-pro-mata-invertida.svg "
+              src="logo-pro-mata-invertida.svg "
               alt="Logo Pro Mata"
               className="w-96 h-36"
             />

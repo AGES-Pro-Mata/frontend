@@ -10,7 +10,7 @@ import {
   LayoutDashboard,
   Mountain,
 } from "lucide-react";
-import { useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useIsAdmin } from "@/api/user";
 
 type HeaderLayoutProps = {
@@ -28,17 +28,13 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         className
       )}
     >
-      <a
-        href="https://www.pucrs.br/ima/pro-mata/"
-        target="_blank"
-        className="cursor-pointer"
-      >
+      <Link to="/">
         <img
-          src="/logo-pro-mata.svg "
+          src="logo-pro-mata.svg "
           alt="Logo Pro Mata"
           className="w-40 object-fit"
         />
-      </a>
+      </Link>
       <div className="hidden md:flex justify-around gap-6 lg:gap-10 items-center w-auto">
         <HeaderButton
           label="Início"
