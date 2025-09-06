@@ -37,9 +37,11 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
     mutation.mutate(
       { email: data.email },
       {
-        onSuccess: () => {
-          form.reset();
-          onSuccess?.();
+        onSuccess: (response) => {
+          if (response.statusCode >= 200 && response.statusCode < 300) {
+            form.reset();
+            onSuccess?.();
+          }
         },
       }
     );
@@ -79,16 +81,17 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
               />
             </div>
           </div>
-          {mutation.isError && (
-            <div className="text-sm text-default-red bg-default-red/4 border border-default-red rounded p-2">
-              {mutation.error instanceof Error
-                ? mutation.error.message
-                : "Não foi possível enviar o email. Tente novamente."}
-            </div>
-          )}
-          {mutation.isSuccess && (
-            <div className="text-sm text-contrast-green bg-contrast-green/4 border border-contrast-green rounded p-2">
-              Email enviado! Verifique sua caixa de entrada.
+          {mutation.isSuccess && mutation.data && (
+            <div
+              className={`text-sm rounded p-2 border ${
+                mutation.data.statusCode != 500
+                  ? "text-contrast-green bg-contrast-green/4 border-contrast-green"
+                  : "text-default-red bg-default-red/4 border-default-red"
+              }`}
+            >
+              {mutation.data.statusCode != 500
+                ? "Email enviado com sucesso. Verifique sua caixa de entrada."
+                : "Ocorreu um erro ao enviar o email. Tente novamente."}
             </div>
           )}
           <div className="flex flex-col items-center gap-2 mt-2">
