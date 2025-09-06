@@ -1,4 +1,4 @@
-import { Typography } from "@/components/ui/typography";
+import { Typography } from "@/components/typography/typography";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,10 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForgotPasswordMutation } from "@/hooks/useForgotPasswordMutation";
-import { TextInput } from "@/components/ui/textInput";
+import { TextInput } from "@/components/inputs/textInput";
 import { Link } from "@tanstack/react-router";
-import { AuthCard } from "./authcard";
-import { Button } from "./defaultButton";
+import { AuthCard } from "@/components/auth/authcard";
+import { Button } from "@/components/buttons/defaultButton";
 
 const formSchema = z.object({
   email: z.email("Digite um e-mail válido."),

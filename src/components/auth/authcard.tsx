@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import CanvasCard from "./canvasCard";
-
+import CanvasCard from "@/components/cards/canvasCard";
 
 interface AuthCardProps {
   children: ReactNode;

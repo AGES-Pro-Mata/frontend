@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Typography } from "@/components/ui/typography";
+import { Typography } from "@/components/typography/typography";
 import { Separator } from "@/components/ui/separator";
 
 // Schema para usuário com upload de arquivo
