@@ -1,196 +1,110 @@
-import { useRef, useState, useEffect } from "react";
-import { Button } from "./defaultButton";
+"use client";
+
+import React, { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function TeacherApproval() {
-  const editorRef = useRef<HTMLDivElement>(null);
-  const [isEmpty, setIsEmpty] = useState(true);
-  const [activeFormats, setActiveFormats] = useState<string[]>([]);
+  const [markdown, setMarkdown] = useState("");
 
-  const handleInput = () => {
-    const text = editorRef.current?.innerText.trim() || "";
-    setIsEmpty(text === "");
-  };
+  const insertMarkdown = (syntax: string) => {
+    const textarea = document.getElementById("markdown-editor") as HTMLTextAreaElement;
+    if (!textarea) return;
 
-  const handleCommand = (command: string, value?: string) => {
-    if (!editorRef.current) return;
-    editorRef.current.focus();
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-    const range = selection.getRangeAt(0);
-    let tag: string | undefined;
-    switch (command) {
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = markdown.substring(start, end);
+
+    let newText = "";
+    switch (syntax) {
       case "bold":
-        tag = "b";
+        newText = `**${selected || "texto em negrito"}**`;
         break;
       case "italic":
-        tag = "i";
+        newText = `_${selected || "texto em itálico"}_`;
         break;
       case "underline":
-        tag = "u";
+        newText = `<u>${selected || "texto sublinhado"}</u>`;
         break;
-      case "strikeThrough":
-        tag = "s";
+      case "strike":
+        newText = `~~${selected || "texto riscado"}~~`;
         break;
       default:
-        break;
+        newText = selected;
     }
-    if (tag) {
-      // Check if selection is already inside the tag
-      let node: Node | null = range.startContainer;
-      while (node && node.nodeType !== 1) {
-        if (node.parentNode) {
-          node = node.parentNode;
-        } else {
-          node = null;
-          break;
-        }
-      }
-      let el = node as HTMLElement | null;
-      if (el && el.closest(tag)) {
-        // Remove the tag by replacing it with its children
-        const parent = el.closest(tag);
-        if (parent) {
-          const fragment = document.createDocumentFragment();
-          while (parent.firstChild) {
-            fragment.appendChild(parent.firstChild);
-          }
-          parent.replaceWith(fragment);
-        }
-      } else {
-        // Add the tag
-        const selectedText = range.extractContents();
-        const newEl = document.createElement(tag);
-        newEl.appendChild(selectedText);
-        range.insertNode(newEl);
-        // Move selection after inserted node
-        range.setStartAfter(newEl);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
-    updateActiveFormats();
+
+    const updated =
+      markdown.substring(0, start) + newText + markdown.substring(end);
+    setMarkdown(updated);
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + newText.length;
+    }, 0);
   };
-
-  const updateActiveFormats = () => {
-    const formats: string[] = [];
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) {
-      setActiveFormats([]);
-      return;
-    }
-    const range = selection.getRangeAt(0);
-    let node: Node | null = range.startContainer;
-    // Traverse up to the parent element
-    while (node && node.nodeType !== 1) {
-      if (node.parentNode) {
-        node = node.parentNode;
-      } else {
-        node = null;
-        break;
-      }
-    }
-    if (node) {
-      let el = node as HTMLElement;
-      // Check for bold
-      if (el.closest("b, strong")) formats.push("bold");
-      // Check for italic
-      if (el.closest("i, em")) formats.push("italic");
-      // Check for underline
-      if (el.closest("u")) formats.push("underline");
-      // Check for strikethrough
-      if (el.closest("s, strike")) formats.push("strikeThrough");
-      // Check for unordered list
-      if (el.closest("ul")) formats.push("insertUnorderedList");
-      // Check for ordered list
-      if (el.closest("ol")) formats.push("insertOrderedList");
-    }
-    setActiveFormats(formats);
-  };
-
-  useEffect(() => {
-    document.addEventListener("selectionchange", updateActiveFormats);
-    return () =>
-      document.removeEventListener("selectionchange", updateActiveFormats);
-  }, []);
-
-  const isActive = (cmd: string) =>
-    activeFormats.includes(cmd)
-      ? "bg-main-dark-green text-white"
-      : "hover:bg-soft-white";
 
   return (
-    <div className="flex flex-col border-2 rounded-3xl p-4 sm:p-6 md:p-8 bg-white border-dark-gray max-w-lg w-full mx-auto h-auto min-w-0">
-      {/* Toolbar */}
-      <div className="border rounded-md mb-4 border-dark-gray">
-        <div className="flex items-center gap-2 border-b border-dark-gray p-2 bg-white rounded-t-md w-full">
-          <button
-            onClick={() => handleCommand("bold")}
-            className={`p-1 rounded font-bold ${isActive("bold")}`}
-          >
+    <div
+      className="flex flex-col border-2 rounded-3xl p-8 bg-white border-[var(--color-dark-gray)]"
+      style={{ width: "514px", height: "482px" }}
+    >
+      {/* Toolbar e Área Editável com altura limitada */}
+      <div className="flex flex-col border rounded-md mb-4 border-[var(--color-dark-gray)] flex-grow">
+        <div className="flex items-center gap-2 border-b border-[var(--color-dark-gray)] p-2 bg-white rounded-t-md">
+          <button onClick={() => insertMarkdown("bold")} className="p-1 rounded font-bold">
             B
           </button>
-          <button
-            onClick={() => handleCommand("italic")}
-            className={`p-1 rounded italic ${isActive("italic")}`}
-          >
+          <button onClick={() => insertMarkdown("italic")} className="p-1 rounded italic">
             I
           </button>
-          <button
-            onClick={() => handleCommand("underline")}
-            className={`p-1 rounded underline ${isActive("underline")}`}
-          >
+          <button onClick={() => insertMarkdown("underline")} className="p-1 rounded underline">
             U
           </button>
-          <button
-            onClick={() => handleCommand("strikeThrough")}
-            className={`p-1 rounded line-through ${isActive("strikeThrough")}`}
-          >
+          <button onClick={() => insertMarkdown("strike")} className="p-1 rounded line-through">
             S
           </button>
         </div>
 
-        {/* Área editável */}
-        <div className="relative mt-1">
-          {isEmpty && (
-            <span className="absolute top-2 left-2 text-dark-gray pointer-events-none select-none">
-              Digite alguma observação sobre essa solicitação
-            </span>
-          )}
-          <div
-            ref={editorRef}
-            contentEditable
-            onInput={handleInput}
-               className="w-full min-h-[30vh] max-h-[40vh] p-[1vw] sm:p-[2vw] rounded-b-md outline-none resize-none overflow-y-auto"
-            suppressContentEditableWarning={true}
-          ></div>
+        {/* Área editável com altura limitada e scroll */}
+        <div className="flex-grow overflow-hidden">
+          <Label htmlFor="markdown-editor" className="sr-only">
+            Editor
+          </Label>
+          <Textarea
+            id="markdown-editor"
+            value={markdown}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMarkdown(e.target.value)}
+            placeholder="Digite alguma observação sobre essa solicitação"
+            className="w-full h-full p-3 rounded-b-md resize-none overflow-y-auto focus-visible:ring-0 focus-visible:ring-offset-0 border-0 focus:border-0 focus:outline-none"
+            style={{ minHeight: "50px", maxHeight: "240px" }}
+          />
         </div>
       </div>
-          
+
       {/* Botões de ação */}
-      <div className="flex justify-center gap-4 mt-auto mb-4 px-29">
-        <Button
-          variant="destructive"
-          label="Recusar professor"
-          className="w-full"
-          onClick={() => {}}
-        />
-        <Button
-          variant="primary"
-          label="Aprovar professor"
-          className="w-full"
-          onClick={() => {}}
-        />
+      <div className="flex justify-center gap-4 mt-4">
+        <button
+          style={{ backgroundColor: "var(--color-default-red)" }}
+          className="hover:brightness-90 text-white px-13 py-2 rounded-md text-sm"
+        >
+          Recusar professor
+        </button>
+        <button
+          style={{ backgroundColor: "var(--color-contrast-green)" }}
+          className="hover:brightness-90 text-white px-13 py-2 rounded-md text-sm"
+        >
+          Aprovar professor
+        </button>
       </div>
 
       {/* Botão desabilitado */}
-      <Button
-        variant="secondary"
-        label="Visualizar comprovante"
-        className="w-full mt-auto mb-4"
-        onClick={() => {}}
+      <button
+        style={{ backgroundColor: "var(--color-muted-foreground)" }}
+        className="text-white w-full py-2 rounded-md cursor-not-allowed text-sm mt-4"
         disabled
-      />
+      >
+        Visualizar comprovante
+      </button>
     </div>
   );
 }
