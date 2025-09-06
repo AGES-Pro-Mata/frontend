@@ -3,6 +3,7 @@ import AdminLayout from "@/components/layouts/admin";
 import { AdminSideBar } from "@/components/navigation/sideBar";
 import { userQueryOptions } from "@/api/user";
 import type { QueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/admin")({
   component: RouteComponent,
@@ -26,14 +27,16 @@ export const Route = createFileRoute("/admin")({
 
 function RouteComponent() {
   return (
-    <AdminLayout>
-      <AdminLayout.Header></AdminLayout.Header>
-      <AdminLayout.Sidebar>
-        <AdminSideBar />
-      </AdminLayout.Sidebar>
-      <AdminLayout.Content>
-        <Outlet />
-      </AdminLayout.Content>
-    </AdminLayout>
+    <div className="admin-route">
+      <AdminLayout>
+        <AdminLayout.Header></AdminLayout.Header>
+        <AdminLayout.Sidebar>
+          <AdminSideBar />
+        </AdminLayout.Sidebar>
+        <AdminLayout.Content>
+          <Outlet />
+        </AdminLayout.Content>
+      </AdminLayout>
+    </div>
   );
 }
