@@ -43,14 +43,16 @@ export function CardsInfoOnHover() {
           <div
             key={i}
             onMouseEnter={() => setActive(i)}
-            className={`flex flex-col px-[30px] opacity-70 pt-[17px] pb-[25px] bg-[#E7DED4] transition  after:border-b-[#E7DED4] relative w-full h-[204px] rounded-[18px] justify-between after:transition-all after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px]  after:border-l-[20px] after:border-r-[20px] after:border-r-transparent after:border-l-transparent after:border-b-[35px] after:bg-transparent
-              ${active === i ? "opacity-100 after:content-[''] after:border-b-[#E7DED4] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px]  after:border-l-[20px] after:border-r-[20px] after:border-r-transparent after:border-l-transparent after:border-b-[35px]  after:bg-transparent" : "after:opacity-0"}`}
+            className={`flex flex-col px-[30px] opacity-70 pt-[17px] pb-[25px] bg-card transition  after:border-b-card relative w-full h-[204px] rounded-[18px] justify-between after:transition-all after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px]  after:border-l-[20px] after:border-r-[20px] after:border-r-transparent after:border-l-transparent after:border-b-[35px]  after:bg-transparent
+              ${active === i ? "opacity-100 after:content-[''] after:border-b-card after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px]  after:border-l-[20px] after:border-r-[20px] after:border-r-transparent after:border-l-transparent after:border-b-[35px]  after:bg-transparent" : "after:opacity-0"}`}
           >
             <div>
               <h3 className="font-bold">{card.titulo}</h3>
-              <p className="text-sm text-gray-600">{card.descricao}</p>
+              <p className="text-sm text-muted-foreground">{card.descricao}</p>
             </div>
-            <button className={`${active === i ? "opacity-100" : "opacity-0"} w-[100px] h-[40px] mt-4 px-3 py-1 rounded-full bg-[#4C9613] cursor-pointer text-white text-sm`}>
+            <button
+              className={`${active === i ? "opacity-100" : "opacity-0"} w-[100px] h-[40px] mt-4 px-3 py-1 rounded-full bg-[#4C9613] cursor-pointer text-white text-sm`}
+            >
               Ver mais
             </button>
           </div>
@@ -58,7 +60,7 @@ export function CardsInfoOnHover() {
       </div>
 
       {/* Retângulo de fotos */}
-      <div className="flex flex-row gap-[10px] box-border p-[35px] bg-[#E7DED4] rounded-[20px]">
+      <div className="flex flex-row gap-[10px] box-border p-[35px] bg-card rounded-[20px]">
         {cards[active].imagens.map((src, j) => (
           <div
             key={j}
@@ -66,7 +68,6 @@ export function CardsInfoOnHover() {
           >
             <img
               src={src}
-              alt=""
               className="h-full w-full object-cover object-center box-border"
             />
             <div className="absolute inset-0 box-border shadow-[inset_0_0_7px_6px_rgba(0,0,0,0.3)] pointer-events-none rounded-[20px]" />
