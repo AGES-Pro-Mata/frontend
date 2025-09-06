@@ -10,8 +10,8 @@ import {
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useIsAdmin } from "@/api/user";
-import CartButton from "@/components/ui/cartButton";
-import { HeaderButton } from "@/components/ui/headerButton";
+import CartButton from "@/components/buttons/cartButton";
+import { HeaderButton } from "@/components/buttons/headerButton";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;

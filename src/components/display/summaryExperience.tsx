@@ -2,7 +2,7 @@ const calendarIcon = "/calendar-icon.svg";
 const priceIcon = "/price-icon.svg";
 const personIcon = "/person-icon.svg";
 const xpImage = "/xp-image.png";
-import { Typography } from "./typography";
+import { Typography } from "@/components/typography/typography";
 import type { Locale } from "@/types/locale";
 
 type summaryXpProps = {

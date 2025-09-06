@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Typography } from "@/components/ui/typography";
+import { Typography } from "@/components/typography/typography";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/reports/")({

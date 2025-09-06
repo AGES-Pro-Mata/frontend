@@ -1,4 +1,4 @@
-import { ForgotPasswordForm } from "@/components/ui/forgotpasswordform";
+import { ForgotPasswordForm } from "@/components/forms/forgotpasswordform";
 import { createFileRoute } from "@tanstack/react-router";
 
 function ForgotPasswordPage() {

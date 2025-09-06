@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Typography } from "./typography";
+import { Typography } from "@/components/typography/typography";
 
 interface textInputProps extends React.ComponentProps<typeof Input> {
   label?: React.ReactNode;

@@ -9,32 +9,34 @@ import {
   FormMessage,
   FormDescription,
   FormLabel,
-} from "./form";
-import { TextInput } from "./textInput";
-import { Typography } from "./typography";
-import { Button } from "./defaultButton";
+} from "@/components/ui/form";
+import { TextInput } from "@/components/inputs/textInput";
+import { Typography } from "@/components/typography/typography";
+import { Button } from "@/components/buttons/defaultButton";
 import { useRegisterAdmin } from "@/hooks/useRegisterAdmin";
-import { Checkbox } from "./checkbox";
-import { Label } from "./label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./select";
-import { Switch } from "./switch";
-import { Separator } from "./separator";
-import { generateRandomPassword } from "@/utils/generateRandomPassword";
-import { digitsOnly, maskCep, maskCpf } from "@/utils/formatters";
-import {
-  isValidBrazilZip,
-  isValidForeignZip,
-  isValidCpf,
-} from "@/utils/validators";
-import { COUNTRIES } from "@/utils/countries";
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { COUNTRIES } from "@/lib/countries";
 import { fetchAddressByZip } from "@/api/cep";
 import { toast } from "sonner";
+import {
+  isValidBrazilZip,
+  isValidCpf,
+  digitsOnly,
+  isValidForeignZip,
+  generateRandomPassword,
+  maskCpf,
+  maskCep,
+} from "@/lib/utils";
 
 const formSchema = z
   .object({

@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { Typography } from "@/components/ui/typography";
+import { Typography } from "@/components/typography/typography";
 
 export const FooterLayout = () => {
   return (

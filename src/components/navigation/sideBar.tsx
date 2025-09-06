@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { FileText, Inbox, UserPlus } from "lucide-react";
-import { Typography } from "./typography";
+import { Typography } from "../typography";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

@@ -1,4 +1,4 @@
-import { RegisterUserAdmin } from "@/components/ui/registerUserAdmin";
+import { RegisterUserAdmin } from "@/components/forms/registerUserAdmin";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/users/create")({

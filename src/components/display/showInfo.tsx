@@ -1,4 +1,5 @@
-import { Typography } from "./typography"
+import { Typography } from "../typography";
+
 
 type showInfoProps = {
   header: string;
