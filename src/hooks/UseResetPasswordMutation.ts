@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 
 interface ResetPasswordPayload {
   password: string;
+  confirmPassword: string;
 }
 
 async function resetPasswordRequest(payload: ResetPasswordPayload) {
