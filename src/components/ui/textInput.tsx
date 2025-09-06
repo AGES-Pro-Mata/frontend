@@ -23,32 +23,35 @@ export function TextInput({
   const [touched, setTouched] = React.useState(false);
   const isInvalid = required && touched && !value;
 
+  // Keep local state in sync with external value updates (e.g., programmatic form.setValue)
+  React.useEffect(() => {
+    setValue((Props.value as string) ?? "");
+  }, [Props.value]);
+
   return (
     <div className={cn("flex flex-col gap-0.7", className)}>
-      <Typography
-        className={cn(
-          "text-foreground font-medium mb-1",
-        )}
-      >
+      <Typography className={cn("text-foreground font-medium mb-1")}>
         {label}
-        {required && <span>*</span>}
+        {required && <span> *</span>}
       </Typography>
       <Input
         placeholder={placeholder}
         className={cn(
-          "h-12 border-dark-gray px-5 py-3 text-foreground placeholder:text-muted-foreground",
-          isInvalid ? "border-default-red placeholder:text-default-red focus-visible:ring-default-red" : "",
+          "h-12 px-5 py-3 text-foreground placeholder:text-muted-foreground",
+          isInvalid
+            ? "border-default-red placeholder:text-default-red focus-visible:ring-default-red"
+            : "",
           className
         )}
         type={type}
         aria-invalid={isInvalid}
         required={required}
         value={value}
-        onChange={e => {
+        onChange={(e) => {
           setValue(e.target.value);
           Props.onChange?.(e);
         }}
-        onBlur={e => {
+        onBlur={(e) => {
           setTouched(true);
           Props.onBlur?.(e);
         }}
