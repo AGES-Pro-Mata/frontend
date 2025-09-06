@@ -778,7 +778,11 @@ export function SidebarButton({ icon, label, to }: SidebarButtonProps) {
   const matchRoute = useMatchRoute();
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton size="lg" asChild isActive={!!matchRoute({ to: to })}>
+      <SidebarMenuButton
+        size="lg"
+        asChild
+        isActive={!!matchRoute({ to: to, fuzzy: true })}
+      >
         <Link to={to}>
           <span className="[&>*]:h-5 [&>*]:w-5 text-black">{icon}</span>
           <Typography variant="body" className="text-black">
