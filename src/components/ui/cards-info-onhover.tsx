@@ -50,7 +50,9 @@ export function CardsInfoOnHover() {
               <h3 className="font-bold">{card.titulo}</h3>
               <p className="text-sm text-muted-foreground">{card.descricao}</p>
             </div>
-            <button className={`${active === i ? "opacity-100" : "opacity-0"} w-[100px] h-[40px] mt-4 px-3 py-1 rounded-full bg-[#4C9613] cursor-pointer text-white text-sm`}>
+            <button
+              className={`${active === i ? "opacity-100" : "opacity-0"} w-[100px] h-[40px] mt-4 px-3 py-1 rounded-full bg-[#4C9613] cursor-pointer text-white text-sm`}
+            >
               Ver mais
             </button>
           </div>

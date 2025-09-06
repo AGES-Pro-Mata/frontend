@@ -1,4 +1,4 @@
-import { DefaultButton } from "@/components/ui/defaultButton";
+import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -31,7 +31,11 @@ function RouteComponent() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <DefaultButton label="Acessar Analytics" />
+          <Button className="bg-contrast-green hover:bg-contrast-green/90 active:bg-contrast-green/70">
+            <Typography className="text-white" variant="body">
+              Acessar Analytics
+            </Typography>
+          </Button>
         </a>
       </div>
     </div>
