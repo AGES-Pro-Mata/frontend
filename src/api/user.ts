@@ -29,7 +29,45 @@ export interface RegisterUserAdminPayload {
   isProfessor: boolean;
   password: string;
 }
+export type UpdateUserPayload = {
+    fullName: string;
+    phone: string;
+    gender: string;
+    city: string;
+    addressLine: string;
+    country: string;
+    zip: string;
+    number: string;
+    institution?: string; // O '?' indica que é opcional
+};
+export async function getUserByIdRequest(userId: string): Promise<UserType> {
+    const response = await axios.get(`${BACKEND_URL}/users/${userId}`);
+    return response.data;
+}
 
+export async function updateUserRequest({ userId, payload }: { userId: string, payload: UpdateUserPayload }): Promise<HttpResponse> {
+    try {
+        const response = await axios.patch(
+            `${BACKEND_URL}/users/${userId}`,
+            payload,
+            {
+                timeout: 10000,
+                headers: { "Content-Type": "application/json" },
+            }
+        );
+        return {
+            statusCode: response.status,
+            message: "UsuÃ¡rio atualizado com sucesso",
+            data: response.data,
+        };
+    } catch (error: any) {
+        return {
+            statusCode: error.response?.data?.statusCode || 500,
+            message: error.response?.data?.message || "REQUEST_ERROR",
+            error: error.response?.data?.error || "REQUEST_ERROR",
+        };
+    }
+}
 export async function registerUserAdminRequest(
   payload: RegisterUserAdminPayload
 ): Promise<HttpResponse> {
