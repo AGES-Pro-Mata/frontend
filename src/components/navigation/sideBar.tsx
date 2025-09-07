@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { FileText, Inbox, UserPlus } from "lucide-react";
-import { Typography } from "./typography";
+import { Typography } from "../typography";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -574,7 +574,7 @@ function SidebarMenuAction({
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-        "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
+          "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
         className
       )}
       {...props}
@@ -778,7 +778,11 @@ export function SidebarButton({ icon, label, to }: SidebarButtonProps) {
   const matchRoute = useMatchRoute();
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton size="lg" asChild isActive={!!matchRoute({ to: to })}>
+      <SidebarMenuButton
+        size="lg"
+        asChild
+        isActive={!!matchRoute({ to: to, fuzzy: true })}
+      >
         <Link to={to}>
           <span className="[&>*]:h-5 [&>*]:w-5 text-black">{icon}</span>
           <Typography variant="body" className="text-black">

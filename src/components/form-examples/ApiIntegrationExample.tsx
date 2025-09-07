@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Typography } from "@/components/ui/typography";
+import { Typography } from "@/components/typography/typography";
 import { Separator } from "@/components/ui/separator";
 
 // Schema para usuário com upload de arquivo
@@ -24,9 +24,21 @@ const formSchema = z.object({
   avatar: z.instanceof(File).optional(),
   website: z.string().url("URL inválida").optional().or(z.literal("")),
   redesSociais: z.object({
-    twitter: z.string().url("URL do Twitter inválida").optional().or(z.literal("")),
-    linkedin: z.string().url("URL do LinkedIn inválida").optional().or(z.literal("")),
-    github: z.string().url("URL do GitHub inválida").optional().or(z.literal("")),
+    twitter: z
+      .string()
+      .url("URL do Twitter inválida")
+      .optional()
+      .or(z.literal("")),
+    linkedin: z
+      .string()
+      .url("URL do LinkedIn inválida")
+      .optional()
+      .or(z.literal("")),
+    github: z
+      .string()
+      .url("URL do GitHub inválida")
+      .optional()
+      .or(z.literal("")),
   }),
 });
 
@@ -69,16 +81,17 @@ export function ApiIntegrationExample() {
       } else {
         throw new Error(response.message || "Erro desconhecido");
       }
-
     } catch (error) {
       console.error("Erro na API:", error);
-      setError(error instanceof Error ? error.message : "Erro interno do servidor");
+      setError(
+        error instanceof Error ? error.message : "Erro interno do servidor"
+      );
 
       // Simular erro de validação da API
       if (error instanceof Error && error.message.includes("email")) {
         form.setError("email", {
           type: "manual",
-          message: "Este e-mail já está em uso"
+          message: "Este e-mail já está em uso",
         });
       }
     } finally {
@@ -107,7 +120,7 @@ export function ApiIntegrationExample() {
         id: Math.random().toString(36).substr(2, 9),
         ...data,
         createdAt: new Date().toISOString(),
-      }
+      },
     };
   };
 
@@ -118,7 +131,10 @@ export function ApiIntegrationExample() {
     setError(null);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: any
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validar tipo e tamanho do arquivo
@@ -127,7 +143,8 @@ export function ApiIntegrationExample() {
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) { // 5MB
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB
         alert("Arquivo muito grande. Tamanho máximo: 5MB");
         return;
       }
@@ -228,9 +245,7 @@ export function ApiIntegrationExample() {
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  Máximo de 500 caracteres
-                </FormDescription>
+                <FormDescription>Máximo de 500 caracteres</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -323,22 +338,19 @@ export function ApiIntegrationExample() {
           {/* Erro da API */}
           {error && (
             <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-              <Typography variant="h4" className="text-sm font-medium text-red-800 mb-1">
+              <Typography
+                variant="h4"
+                className="text-sm font-medium text-red-800 mb-1"
+              >
                 Erro da API
               </Typography>
-              <p className="text-sm text-red-700">
-                {error}
-              </p>
+              <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
           {/* Botões */}
           <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
               {isSubmitting ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -366,7 +378,10 @@ export function ApiIntegrationExample() {
         <>
           <Separator />
           <div className="space-y-4">
-            <Typography variant="h3" className="text-lg font-semibold text-green-600">
+            <Typography
+              variant="h3"
+              className="text-lg font-semibold text-green-600"
+            >
               ✅ API Response
             </Typography>
 
@@ -387,7 +402,10 @@ export function ApiIntegrationExample() {
         <>
           <Separator />
           <div className="space-y-4">
-            <Typography variant="h3" className="text-lg font-semibold text-blue-600">
+            <Typography
+              variant="h3"
+              className="text-lg font-semibold text-blue-600"
+            >
               📤 Dados Enviados
             </Typography>
 
@@ -410,21 +428,42 @@ export function ApiIntegrationExample() {
           🔄 Funcionalidades de API Demonstradas:
         </Typography>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 ml-4">
-          <li><strong>Simulação de API:</strong> Delay de 2 segundos para simular chamada real</li>
-          <li><strong>Validação do Servidor:</strong> E-mail "admin@teste.com" retorna erro</li>
-          <li><strong>Upload de Arquivos:</strong> Validação de tipo e tamanho</li>
-          <li><strong>Tratamento de Erros:</strong> Diferentes tipos de erro da API</li>
-          <li><strong>Estados de Loading:</strong> Feedback visual durante chamadas</li>
-          <li><strong>Resposta Estruturada:</strong> Dados retornados pela API</li>
+          <li>
+            <strong>Simulação de API:</strong> Delay de 2 segundos para simular
+            chamada real
+          </li>
+          <li>
+            <strong>Validação do Servidor:</strong> E-mail "admin@teste.com"
+            retorna erro
+          </li>
+          <li>
+            <strong>Upload de Arquivos:</strong> Validação de tipo e tamanho
+          </li>
+          <li>
+            <strong>Tratamento de Erros:</strong> Diferentes tipos de erro da
+            API
+          </li>
+          <li>
+            <strong>Estados de Loading:</strong> Feedback visual durante
+            chamadas
+          </li>
+          <li>
+            <strong>Resposta Estruturada:</strong> Dados retornados pela API
+          </li>
         </ul>
       </div>
 
       <div className="rounded-lg border bg-blue-50 p-4">
-        <Typography variant="h4" className="text-sm font-medium text-blue-800 mb-2">
+        <Typography
+          variant="h4"
+          className="text-sm font-medium text-blue-800 mb-2"
+        >
           💡 Dicas para Integração Real:
         </Typography>
         <ul className="list-disc list-inside text-sm text-blue-700 space-y-1 ml-4">
-          <li>Use <code>fetch</code> ou <code>axios</code> para chamadas HTTP</li>
+          <li>
+            Use <code>fetch</code> ou <code>axios</code> para chamadas HTTP
+          </li>
           <li>Implemente retry logic para falhas temporárias</li>
           <li>Use interceptors para tratamento global de erros</li>
           <li>Implemente cache para dados frequentemente acessados</li>

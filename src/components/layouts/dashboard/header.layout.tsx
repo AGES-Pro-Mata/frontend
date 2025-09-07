@@ -1,8 +1,6 @@
 import { cn } from "@/lib/utils";
 import { HeaderDrawerMobile } from "./components/header-drawer-mobile";
-import CartButton from "@/components/ui/cartButton";
 import { useCartStore } from "@/store/cartStore";
-import { HeaderButton } from "@/components/ui/HeaderButton";
 import {
   Building2,
   CalendarDays,
@@ -10,8 +8,10 @@ import {
   LayoutDashboard,
   Mountain,
 } from "lucide-react";
-import { useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useIsAdmin } from "@/api/user";
+import CartButton from "@/components/buttons/cartButton";
+import { HeaderButton } from "@/components/buttons/headerButton";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -28,17 +28,13 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         className
       )}
     >
-      <a
-        href="https://www.pucrs.br/ima/pro-mata/"
-        target="_blank"
-        className="cursor-pointer"
-      >
+      <Link to="/">
         <img
-          src="logo-pro-mata.svg "
+          src="/logo-pro-mata.svg"
           alt="Logo Pro Mata"
           className="w-40 object-fit"
         />
-      </a>
+      </Link>
       <div className="hidden md:flex justify-around gap-6 lg:gap-10 items-center w-auto">
         <HeaderButton
           label="Início"
