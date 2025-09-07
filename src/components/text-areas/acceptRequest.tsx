@@ -1,15 +1,14 @@
 
 import { Button } from "../buttons/defaultButton";
-import { MarkdownTextArea } from "../text-area/markdownTextArea";
-
+import { MarkdownTextArea } from "./markdownTextArea";
 
 interface ProfessorApprovalProps {
   markdown: string;
+  placeholder?: string;
   setMarkdown: (value: string) => void;
   onApprove?: (markdown: string) => void;
   onReject?: (markdown: string) => void;
   onViewReceipt?: () => void;
-  placeholder?: string;
 }
 
 export default function ProfessorApproval({ markdown, setMarkdown, onApprove, onReject, onViewReceipt, placeholder }: ProfessorApprovalProps) {
