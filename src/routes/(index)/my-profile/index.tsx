@@ -1,9 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
+import ProfileCard from "@/components/profile/profilecard";
 
-export const Route = createFileRoute('/(index)/my-profile/')({
+export const Route = createFileRoute("/(index)/my-profile/")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  return <div>Hello "/(index)/my-profile"!</div>
+  return (
+    <div className="p-6">
+      <ProfileCard />
+    </div>
+  );
 }
