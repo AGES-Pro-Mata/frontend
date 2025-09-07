@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Typography } from "@/components/ui/typography";
+import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { LogOutIcon } from "lucide-react";

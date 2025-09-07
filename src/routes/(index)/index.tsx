@@ -1,6 +1,6 @@
-import { Carousel } from "@/components/ui/caroulsel";
-import { CardsInfoOnHover } from "@/components/ui/cards-info-onhover";
 
+import { Carousel } from "@/components/ui/caroulsel";
+import { CardsInfoOnHover } from "@/components/cards/cards-info-onhover";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(index)/")({

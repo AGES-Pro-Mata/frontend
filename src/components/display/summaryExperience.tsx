@@ -1,8 +1,8 @@
-import calendarIcon from "../../public/calendar-icon.svg";
-import priceIcon from "../../public/price-icon.svg";
-import personIcon from "../../public/person-icon.svg";
-import xpImage from "../../public/xp-image.png";
-import { Typography } from "./ui/typography";
+const calendarIcon = "/calendar-icon.svg";
+const priceIcon = "/price-icon.svg";
+const personIcon = "/person-icon.svg";
+const xpImage = "/xp-image.png";
+import { Typography } from "@/components/typography/typography";
 import type { Locale } from "@/types/locale";
 
 type summaryXpProps = {
