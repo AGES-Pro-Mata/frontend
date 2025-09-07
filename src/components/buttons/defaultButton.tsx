@@ -20,7 +20,7 @@ export function DefaultButton({
   disabled = false,
   ...props
 }: DefaultButtonProps) {
-  const base = "w-22 transition-colors duration-150 px-10 py-5 rounded-md";
+  const base = "w-22 transition-colors duration-150 px-10 py-5 rounded-md hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 text-md";
 
   const styles = {
     primary:
