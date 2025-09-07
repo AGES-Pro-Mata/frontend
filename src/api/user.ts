@@ -2,8 +2,11 @@ import axios from "axios";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { UserType } from "@/types/user";
 import type { HttpResponse } from "@/types/http-response";
+import { z } from 'zod';
 
 const BACKEND_URL = import.meta.env.VITE_API_URL;
+
+const UserIdSchema = z.uuidv4();
 
 export type CurrentUser = { id: string; name: string; roles: string[] };
 export interface ForgotPasswordPayload {
@@ -97,4 +100,37 @@ export const userQueryOptions = queryOptions({
 export function useIsAdmin() {
   const { data } = useQuery(userQueryOptions);
   return !!data?.roles?.includes("ADMIN");
+}
+
+export async function deleteUser(userId: string) {
+  UserIdSchema.parse(userId);
+
+  return await axios.delete(`${BACKEND_URL}/user/${userId}`, {
+    timeout: 10000,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+const SearchUserPayloadSchema = z.object({
+  filter: z.string(),
+  pageSize: z.number(),
+  page: z.number(),
+})
+
+export type SearchUserPayload = z.infer<typeof SearchUserPayloadSchema>
+
+export async function searchUsers(payload: SearchUserPayload) {
+  const parsedPayload = SearchUserPayloadSchema.parse(payload);
+
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  return await axios.get(`${BACKEND_URL}/user/search`, {
+    params: parsedPayload,
+    timeout: 10000,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
