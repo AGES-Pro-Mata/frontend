@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ExperienceCategory } from "@/types/experiences";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Upload,
   FlaskConical,
@@ -35,58 +35,51 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useCreateExperience } from "@/hooks/useCreateExperience";
+import { toast } from "sonner";
 
+const { mutate } = useCreateExperience();
 const formSchema = z
   .object({
     experienceName: z.string().min(2, "Informe o nome da experiência"),
     experienceDescription: z
       .string()
       .min(2, "Informe a descrição da experiência"),
-    experienceCategory: z.string().min(2, "Informe a categoria da experiência"),
+    experienceCategory: z.enum(ExperienceCategory),
     experienceCapacity: z.coerce
       .number()
       .min(1, "Informe a quantidade de pessoas"),
-    experienceStartDate: z.date({
-      message: "Informe a data de início",
+    experienceImage: z.instanceof(File, {
+      message: "Selecione uma imagem para a experiência",
     }),
-    experienceEndDate: z.date({
-      message: "Informe a data de fim",
-    }),
-    experiencePrice: z.coerce
-      .number()
-      .min(0, "O preço deve ser maior ou igual a zero"),
-    experienceWeekDays: z.array(z.string()).optional(),
-    experienceImage: z.instanceof(File).optional(),
-    trailDuration: z.coerce.number().optional(),
+    experienceStartDate: z.date().optional(),
+    experienceEndDate: z.date().optional(),
+    experiencePrice: z.coerce.number().optional(),
+    experienceWeekDays: z.array(z.string()).optional().default([]),
     trailDurationMinutes: z.coerce.number().optional(),
     trailDifficulty: z.string().optional(),
     trailLength: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    // Validação de datas
-    if (data.experienceEndDate < data.experienceStartDate) {
+    if (
+      data.experienceEndDate &&
+      data.experienceStartDate &&
+      data.experienceEndDate < data.experienceStartDate
+    ) {
       ctx.addIssue({
         code: "custom",
         message: "A data de fim deve ser posterior à data de início",
         path: ["experienceEndDate"],
       });
     }
-
-    // Validação específica para trilhas
     if (data.experienceCategory === ExperienceCategory.TRILHA) {
-      const hasValidHours = !!data.trailDuration && data.trailDuration > 0;
       const hasValidMinutes =
         !!data.trailDurationMinutes && data.trailDurationMinutes > 0;
 
-      if (!hasValidHours && !hasValidMinutes) {
+      if (!hasValidMinutes) {
         ctx.addIssue({
           code: "custom",
-          message: "Informe a duração em horas ou minutos",
-          path: ["trailDuration"],
-        });
-        ctx.addIssue({
-          code: "custom",
-          message: "Informe a duração em horas ou minutos",
+          message: "Informe a duração em minutos",
           path: ["trailDurationMinutes"],
         });
       }
@@ -122,9 +115,10 @@ const WEEK_DAYS = [
 ];
 
 const DIFFICULTY_LEVELS = [
-  { value: "facil", label: "Fácil" },
-  { value: "medio", label: "Médio" },
-  { value: "dificil", label: "Difícil" },
+  { value: "leve", label: "Leve" },
+  { value: "moderado", label: "Moderado" },
+  { value: "pesado", label: "Pesado" },
+  { value: "extremo", label: "Extremo" },
 ];
 
 const getCategoryIcon = (category: string) => {
@@ -142,21 +136,14 @@ const getCategoryIcon = (category: string) => {
   }
 };
 
-// Função para formatar preço
 const formatPrice = (value: string) => {
-  // Remove tudo que não é dígito
   const numbers = value.replace(/\D/g, "");
-
-  // Converte para centavos
   const cents = parseInt(numbers) || 0;
-
-  // Formata como XX,XX
   const formatted = (cents / 100).toFixed(2).replace(".", ",");
 
   return formatted;
 };
 
-// Função para converter preço formatado para número
 const parsePrice = (formattedValue: string) => {
   const numbers = formattedValue.replace(/\D/g, "");
   return parseInt(numbers) || 0;
@@ -181,7 +168,6 @@ export function CreateExperience() {
       experienceEndDate: undefined,
       experiencePrice: 0,
       experienceWeekDays: [],
-      trailDuration: undefined,
       trailDurationMinutes: undefined,
       trailDifficulty: undefined,
       trailLength: undefined,
@@ -192,8 +178,7 @@ export function CreateExperience() {
   const watchedStartDate = form.watch("experienceStartDate");
   const watchedEndDate = form.watch("experienceEndDate");
 
-  // Limpar data de fim se ela for anterior à data de início
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       watchedStartDate &&
       watchedEndDate &&
@@ -203,16 +188,13 @@ export function CreateExperience() {
     }
   }, [watchedStartDate, watchedEndDate, form]);
 
-  // Função para desabilitar datas inválidas no calendário
   const getDisabledDates = (isStartDate: boolean) => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Zerar horas para comparar apenas a data
+    today.setHours(0, 0, 0, 0);
 
     if (isStartDate) {
-      // Para data de início, desabilitar datas passadas
       return { before: today };
     } else {
-      // Para data de fim, desabilitar datas passadas e anteriores à data de início
       const startDate = watchedStartDate;
       if (startDate) {
         return {
@@ -226,7 +208,6 @@ export function CreateExperience() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validar tipo e tamanho do arquivo
       if (!file.type.startsWith("image/")) {
         alert("Por favor, selecione apenas arquivos de imagem");
         return;
@@ -239,7 +220,6 @@ export function CreateExperience() {
 
       form.setValue("experienceImage", file);
 
-      // Criar preview da imagem
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
@@ -249,8 +229,14 @@ export function CreateExperience() {
   };
 
   const onSubmit = (data: FormData) => {
-    console.log("Dados do formulário:", data);
-    // Aqui você pode implementar a lógica para salvar a experiência
+    mutate(data, {
+      onSuccess: () => {
+        toast.success("Experiência criada com sucesso");
+      },
+      onError: () => {
+        toast.error("Erro ao criar experiência");
+      },
+    });
   };
 
   return (
@@ -263,50 +249,54 @@ export function CreateExperience() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Upload de Imagem */}
-          <div className="space-y-4">
-            <Typography className="font-medium text-foreground text-lg">
-              Imagem da Experiência
-            </Typography>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                id="image-upload"
-              />
-              <label
-                htmlFor="image-upload"
-                className="cursor-pointer flex flex-col items-center gap-4"
-              >
-                {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="max-w-full max-h-48 object-cover rounded-lg"
+          <FormField
+            control={form.control}
+            name="experienceImage"
+            render={() => (
+              <FormItem>
+                <Typography className="font-medium text-foreground text-lg">
+                  Imagem da Experiência *
+                </Typography>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="image-upload"
                   />
-                ) : (
-                  <>
-                    <Upload className="h-12 w-12 text-contrast-green" />
-                    <Typography className="text-lg font-medium text-foreground">
-                      SELECIONE UMA IMAGEM
-                    </Typography>
-                  </>
-                )}
-              </label>
-              <Typography className="text-sm text-muted-foreground mt-2">
-                Sua imagem deve ser dimensionada em 400x200, nos formatos .PNG,
-                .JPG e .JPEG, com limite de tamanho de 5mb
-              </Typography>
-            </div>
-          </div>
+                  <label
+                    htmlFor="image-upload"
+                    className="cursor-pointer flex flex-col items-center gap-4"
+                  >
+                    {imagePreview ? (
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="max-w-full max-h-48 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <>
+                        <Upload className="h-12 w-12 text-contrast-green" />
+                        <Typography className="text-lg font-medium text-foreground">
+                          SELECIONE UMA IMAGEM
+                        </Typography>
+                      </>
+                    )}
+                  </label>
+                  <Typography className="text-sm text-muted-foreground mt-2">
+                    Sua imagem deve ser dimensionada em 400x200, nos formatos
+                    .PNG, .JPG e .JPEG, com limite de tamanho de 5mb
+                  </Typography>
+                </div>
+                <FormMessage className="text-red-500" />
+              </FormItem>
+            )}
+          />
 
           <Separator />
 
-          {/* Campos do Formulário */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Nome da Experiência */}
             <FormField
               control={form.control}
               name="experienceName"
@@ -318,12 +308,11 @@ export function CreateExperience() {
                     placeholder="Digite o nome da experiência"
                     {...field}
                   />
-                  <FormMessage />
+                  <FormMessage className="text-red-500" />
                 </FormItem>
               )}
             />
 
-            {/* Tipo de Experiência */}
             <FormField
               control={form.control}
               name="experienceCategory"
@@ -339,7 +328,7 @@ export function CreateExperience() {
                           {field.value && (
                             <div className="flex items-center gap-2">
                               {getCategoryIcon(field.value)}
-                              <span>
+                              <Typography>
                                 {field.value ===
                                   ExperienceCategory.LABORATORIO &&
                                   "Laboratório"}
@@ -349,7 +338,7 @@ export function CreateExperience() {
                                   ExperienceCategory.HOSPEDAGEM && "Hospedagem"}
                                 {field.value === ExperienceCategory.EVENTO &&
                                   "Evento"}
-                              </span>
+                              </Typography>
                             </div>
                           )}
                         </SelectValue>
@@ -382,12 +371,11 @@ export function CreateExperience() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <FormMessage />
+                  <FormMessage className="text-red-500" />
                 </FormItem>
               )}
             />
 
-            {/* Quantidade de Pessoas */}
             <FormField
               control={form.control}
               name="experienceCapacity"
@@ -407,12 +395,11 @@ export function CreateExperience() {
                       )
                     }
                   />
-                  <FormMessage />
+                  <FormMessage className="text-red-500" />
                 </FormItem>
               )}
             />
 
-            {/* Dias da Semana */}
             <FormField
               control={form.control}
               name="experienceWeekDays"
@@ -426,9 +413,9 @@ export function CreateExperience() {
                       <SelectTrigger className="h-10 px-5">
                         <SelectValue placeholder="Selecione os dias da semana">
                           {field.value && field.value.length > 0 ? (
-                            <span>
+                            <Typography>
                               {field.value.length} dia(s) selecionado(s)
-                            </span>
+                            </Typography>
                           ) : (
                             "Selecione os dias da semana"
                           )}
@@ -460,13 +447,12 @@ export function CreateExperience() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <FormMessage />
+                  <FormMessage className="text-red-500" />
                 </FormItem>
               )}
             />
           </div>
 
-          {/* Descrição */}
           <FormField
             control={form.control}
             name="experienceDescription"
@@ -480,14 +466,12 @@ export function CreateExperience() {
                   placeholder="Descreva a experiência..."
                   {...field}
                 />
-                <FormMessage />
+                <FormMessage className="text-red-500" />
               </FormItem>
             )}
           />
 
-          {/* Datas e Preço */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Data de Início */}
             <FormField
               control={form.control}
               name="experienceStartDate"
@@ -495,13 +479,13 @@ export function CreateExperience() {
                 <FormItem>
                   <div className="flex flex-col gap-0">
                     <Typography className="text-foreground font-medium mb-1">
-                      Data de início *
+                      Data de início
                     </Typography>
                     <Popover>
                       <PopoverTrigger asChild>
                         <ShadcnButton
                           variant="outline"
-                          className="w-full justify-start text-left font-normal h-10"
+                          className="w-full justify-start text-left font-normal h-12"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value ? (
@@ -509,7 +493,7 @@ export function CreateExperience() {
                               locale: ptBR,
                             })
                           ) : (
-                            <span>Selecione a data</span>
+                            <Typography>Selecione a data</Typography>
                           )}
                         </ShadcnButton>
                       </PopoverTrigger>
@@ -519,17 +503,16 @@ export function CreateExperience() {
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={getDisabledDates(true)}
-                          initialFocus
+                          autoFocus
                         />
                       </PopoverContent>
                     </Popover>
                   </div>
-                  <FormMessage />
+                  <FormMessage className="text-red-500" />
                 </FormItem>
               )}
             />
 
-            {/* Data de Fim */}
             <FormField
               control={form.control}
               name="experienceEndDate"
@@ -537,13 +520,13 @@ export function CreateExperience() {
                 <FormItem>
                   <div className="flex flex-col gap-0">
                     <Typography className="text-foreground font-medium mb-1">
-                      Data de fim *
+                      Data de fim
                     </Typography>
                     <Popover>
                       <PopoverTrigger asChild>
                         <ShadcnButton
                           variant="outline"
-                          className="w-full justify-start text-left font-normal h-10"
+                          className="w-full justify-start text-left font-normal h-12"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value ? (
@@ -551,7 +534,7 @@ export function CreateExperience() {
                               locale: ptBR,
                             })
                           ) : (
-                            <span>Selecione a data</span>
+                            <Typography>Selecione a data</Typography>
                           )}
                         </ShadcnButton>
                       </PopoverTrigger>
@@ -561,25 +544,23 @@ export function CreateExperience() {
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={getDisabledDates(false)}
-                          initialFocus
+                          autoFocus
                         />
                       </PopoverContent>
                     </Popover>
                   </div>
-                  <FormMessage />
+                  <FormMessage className="text-red-500" />
                 </FormItem>
               )}
             />
 
-            {/* Preço */}
             <FormField
               control={form.control}
               name="experiencePrice"
               render={({ field }) => (
                 <FormItem>
                   <TextInput
-                    label="Preço"
-                    required
+                    label="Preço R$ (Diária)"
                     placeholder="0,00"
                     value={priceDisplay}
                     onChange={(e) => {
@@ -588,44 +569,19 @@ export function CreateExperience() {
                       field.onChange(parsePrice(formatted));
                     }}
                   />
-                  <FormMessage />
+                  <FormMessage className="text-red-500" />
                 </FormItem>
               )}
             />
           </div>
 
-          {/* Campos específicos para Trilha */}
           {watchedCategory === ExperienceCategory.TRILHA && (
             <div className="space-y-4">
               <Separator />
               <Typography className="font-medium text-foreground text-lg">
                 Informações da Trilha
               </Typography>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <FormField
-                  control={form.control}
-                  name="trailDuration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <TextInput
-                        label="Duração (horas)"
-                        required
-                        type="number"
-                        placeholder="Ex: 2"
-                        value={field.value as number | undefined}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.currentTarget.value === ""
-                              ? undefined
-                              : Number(e.currentTarget.value)
-                          )
-                        }
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="trailDurationMinutes"
@@ -635,7 +591,7 @@ export function CreateExperience() {
                         label="Duração (minutos)"
                         required
                         type="number"
-                        placeholder="Ex: 30"
+                        placeholder="Ex: 120"
                         value={field.value as number | undefined}
                         onChange={(e) =>
                           field.onChange(
@@ -645,7 +601,7 @@ export function CreateExperience() {
                           )
                         }
                       />
-                      <FormMessage />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
@@ -675,7 +631,7 @@ export function CreateExperience() {
                           </SelectContent>
                         </Select>
                       </div>
-                      <FormMessage />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
@@ -686,12 +642,12 @@ export function CreateExperience() {
                   render={({ field }) => (
                     <FormItem>
                       <TextInput
-                        label="Comprimento (km)"
+                        label="Distância (km)"
                         required
                         placeholder="Ex: 5.2"
                         {...field}
                       />
-                      <FormMessage />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
@@ -699,7 +655,6 @@ export function CreateExperience() {
             </div>
           )}
 
-          {/* Botões */}
           <div className="flex justify-end gap-2">
             <Button
               type="button"
