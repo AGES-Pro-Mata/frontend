@@ -34,7 +34,7 @@ export function Carousel() {
   const next = () => setFirstIndex(i => Math.min(recursos.length - 2, i + 1));
 
   return (
-    <div className="flex flex-col mb-[100px] items-center w-fit h-fit scale-[0.9]">
+    <div className="flex flex-col mb-[10px] items-center w-fit h-fit scale-[0.9]">
       <h2 className="text-[36px] m-0 p-0 font-bold text-[#484848]">Conheça seu Destino!</h2>
       <LineSVG />
       <p className="text-[22px] font-bold mb-[40px]">
