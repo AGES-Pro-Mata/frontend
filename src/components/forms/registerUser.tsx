@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/lib/countries";
-import { fetchAddressByZip } from "@/api/cep";
 import { toast } from "sonner";
+import { useCepQuery } from "@/hooks/useCepQuery";
 import {
   isValidBrazilZip,
   isValidCpf,
@@ -27,7 +27,6 @@ import {
   isValidForeignZip,
   maskCpf,
   maskCep,
-  hashPassword,
 } from "@/lib/utils";
 import type { RegisterUserPayload } from "@/api/user";
 import { CanvasCard } from "../cards";
@@ -66,15 +65,21 @@ const formSchema = z
       });
     }
 
-    if (
-      data.docencyDocument &&
-      data.docencyDocument.type !== "application/pdf"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Apenas arquivos PDF são aceitos",
-        path: ["docencyDocument"],
-      });
+    if (data.docencyDocument) {
+      if (data.docencyDocument.type !== "application/pdf") {
+        ctx.addIssue({
+          code: "custom",
+          message: "Apenas arquivos PDF são aceitos",
+          path: ["docencyDocument"],
+        });
+      }
+      if (data.docencyDocument.size > 20 * 1024 * 1024) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Arquivo deve ter no máximo 20MB",
+          path: ["docencyDocument"],
+        });
+      }
     }
 
     if (!data.isForeign) {
@@ -138,7 +143,6 @@ export function RegisterUser() {
     addressLine: false,
     city: false,
   });
-  const [isFetchingCep, setIsFetchingCep] = useState(false);
   const { mutate: registerUser, isPending } = useRegisterUser();
   const form = useForm<
     z.input<typeof formSchema>,
@@ -172,59 +176,45 @@ export function RegisterUser() {
   const isForeign = form.watch("isForeign");
   const watchedZip = form.watch("zipCode");
 
+  const {
+    isLoading: isFetchingCep,
+    data: cepData,
+    isSuccess: isSuccessCep,
+  } = useCepQuery(watchedZip || "", {
+    enabled: !isForeign,
+  });
+
+  useEffect(() => {
+    if (isSuccessCep) {
+      if (cepData?.addressLine) {
+        form.setValue("addressLine", cepData.addressLine, {
+          shouldValidate: true,
+        });
+      }
+    }
+    if (cepData?.city) {
+      form.setValue("city", cepData.city, { shouldValidate: true });
+    }
+    setAutoFilled({
+      addressLine: !!cepData?.addressLine,
+      city: !!cepData?.city,
+    });
+  }, [isSuccessCep, cepData]);
+
   useEffect(() => {
     if (isForeign) {
       setAutoFilled({ addressLine: false, city: false });
     }
   }, [isForeign]);
 
-  useEffect(() => {
-    const zipDigits = digitsOnly(watchedZip || "");
-    if (isForeign || zipDigits.length !== 8) return;
-
-    let abort = false;
-    const fetchAddress = async () => {
-      try {
-        setIsFetchingCep(true);
-        const data = await fetchAddressByZip(zipDigits);
-        if (abort) return;
-        if (data) {
-          if (data.addressLine) {
-            form.setValue("addressLine", data.addressLine, {
-              shouldValidate: true,
-            });
-          }
-          if (data.city) {
-            form.setValue("city", data.city, { shouldValidate: true });
-          }
-          setAutoFilled({
-            addressLine: !!data.addressLine,
-            city: !!data.city,
-          });
-        }
-      } catch (e) {
-        console.error("Erro ao buscar CEP:", e);
-      } finally {
-        if (!abort) setIsFetchingCep(false);
-      }
-    };
-
-    fetchAddress();
-    return () => {
-      abort = true;
-    };
-  }, [watchedZip, isForeign, form]);
-
   const onSubmit = async (data: FormData) => {
     const sanitizedPhone = digitsOnly(data.phone);
-    const hashedPassword = await hashPassword(data.password);
-    const hashedConfirmPassword = await hashPassword(data.confirmPassword);
 
     const payload: RegisterUserPayload = {
       name: data.name,
       email: data.email,
-      password: hashedPassword,
-      confirmPassword: hashedConfirmPassword,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
       phone: sanitizedPhone,
       gender: data.gender,
       cpf: data.cpf ? maskCpf(data.cpf) : undefined,
@@ -682,7 +672,7 @@ export function RegisterUser() {
                         </Typography>
                         <Typography className="text-sm text-muted-foreground">
                           Você pode enviar o comprovante agora ou posteriormente
-                          na edição do perfil
+                          na edição do perfil. Máximo 20MB.
                         </Typography>
                         <div className="flex items-center gap-4">
                           <input

@@ -26,8 +26,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/lib/countries";
-import { fetchAddressByZip } from "@/api/cep";
 import { toast } from "sonner";
+import { useCepQuery } from "@/hooks/useCepQuery";
 import {
   isValidBrazilZip,
   isValidCpf,
@@ -36,7 +36,6 @@ import {
   generateRandomPassword,
   maskCpf,
   maskCep,
-  hashPassword,
 } from "@/lib/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
 
@@ -121,7 +120,6 @@ export function RegisterUserAdmin() {
     addressLine: false,
     city: false,
   });
-  const [isFetchingCep, setIsFetchingCep] = useState(false);
   const { mutate: registerAdmin, isPending } = useRegisterAdmin();
   const form = useForm<
     z.input<typeof formSchema>,
@@ -150,6 +148,30 @@ export function RegisterUserAdmin() {
 
   const isForeign = form.watch("isForeign");
   const watchedZip = form.watch("zipCode");
+  const {
+    isLoading: isFetchingCep,
+    data: cepData,
+    isSuccess: isSuccessCep,
+  } = useCepQuery(watchedZip || "", {
+    enabled: !isForeign,
+  });
+
+  useEffect(() => {
+    if (isSuccessCep) {
+      if (cepData?.addressLine) {
+        form.setValue("addressLine", cepData.addressLine, {
+          shouldValidate: true,
+        });
+      }
+      if (cepData?.city) {
+        form.setValue("city", cepData.city, { shouldValidate: true });
+      }
+      setAutoFilled({
+        addressLine: !!cepData?.addressLine,
+        city: !!cepData?.city,
+      });
+    }
+  }, [isSuccessCep, cepData]);
 
   useEffect(() => {
     if (isForeign) {
@@ -157,51 +179,13 @@ export function RegisterUserAdmin() {
     }
   }, [isForeign]);
 
-  useEffect(() => {
-    const zipDigits = digitsOnly(watchedZip || "");
-    if (isForeign || zipDigits.length !== 8) return;
-
-    let abort = false;
-    const fetchAddress = async () => {
-      try {
-        setIsFetchingCep(true);
-        const data = await fetchAddressByZip(zipDigits);
-        if (abort) return;
-        if (data) {
-          if (data.addressLine) {
-            form.setValue("addressLine", data.addressLine, {
-              shouldValidate: true,
-            });
-          }
-          if (data.city) {
-            form.setValue("city", data.city, { shouldValidate: true });
-          }
-          setAutoFilled({
-            addressLine: !!data.addressLine,
-            city: !!data.city,
-          });
-        }
-      } catch (e) {
-        console.error("Erro ao buscar CEP:", e);
-      } finally {
-        if (!abort) setIsFetchingCep(false);
-      }
-    };
-
-    fetchAddress();
-    return () => {
-      abort = true;
-    };
-  }, [watchedZip, isForeign, form]);
-
   const onSubmit = async (data: FormData) => {
     const sanitizedPhone = digitsOnly(data.phone);
-    const hashedPassword = await hashPassword(data.password);
 
     const payload = {
       ...data,
       phone: sanitizedPhone,
-      password: hashedPassword,
+      password: data.password,
       cpf: data.cpf ? maskCpf(data.cpf) : undefined,
       rg: data.rg ? data.rg : undefined,
       userType: data.isAdmin
@@ -556,7 +540,7 @@ export function RegisterUserAdmin() {
                   <TextInput
                     label="Senha"
                     required
-                    type="text"
+                    type="password"
                     placeholder="Senha"
                     {...field}
                   />
