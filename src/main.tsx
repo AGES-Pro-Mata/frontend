@@ -2,31 +2,17 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// Import the generated route tree
-
-
-import "./styles.css";
+import "./styles/globals.css";
 import reportWebVitals from "./reportWebVitals.ts";
 import { routeTree } from "./routeTree.gen.ts";
+import { Toaster } from "sonner";
 
-// Create a QueryClient instance for TanStack Query
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutos
-      retry: 1,
-    },
-    mutations: {
-      retry: 1,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  context: {},
+  context: { queryClient },
   defaultPreload: "intent",
   scrollRestoration: true,
   defaultStructuralSharing: true,
@@ -47,9 +33,10 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
+        <Toaster position="top-center"/>
         <RouterProvider router={router} />
       </QueryClientProvider>
-    </StrictMode>,
+    </StrictMode>
   );
 }
 
