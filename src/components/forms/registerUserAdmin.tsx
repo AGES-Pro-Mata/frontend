@@ -26,8 +26,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/lib/countries";
-import { fetchAddressByZip } from "@/api/cep";
 import { toast } from "sonner";
+import { useCepQuery } from "@/hooks/useCepQuery";
 import {
   isValidBrazilZip,
   isValidCpf,
@@ -37,16 +37,17 @@ import {
   maskCpf,
   maskCep,
 } from "@/lib/utils";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 const formSchema = z
   .object({
-    fullName: z.string().min(2, "Informe o nome completo"),
+    name: z.string().min(2, "Informe o nome completo"),
     email: z.email("Digite um e-mail válido"),
     phone: z.string().min(8, "Informe o telefone"),
     cpf: z.string().optional().default(""),
     rg: z.string().optional().default(""),
     gender: z.string().min(1, "Informe o gênero"),
-    zip: z.string().min(5, "Informe o CEP/ZIP"),
+    zipCode: z.string().min(5, "Informe o CEP/ZIP"),
     country: z.string().min(2, "Informe o país"),
     isForeign: z.boolean().default(false),
     addressLine: z.string().optional().default(""),
@@ -79,11 +80,11 @@ const formSchema = z
           path: ["addressLine"],
         });
       }
-      if (!isValidBrazilZip(data.zip)) {
+      if (!isValidBrazilZip(data.zipCode)) {
         ctx.addIssue({
           code: "custom",
           message: "CEP deve conter 8 dígitos",
-          path: ["zip"],
+          path: ["zipCode"],
         });
       }
       if (!data.cpf || !isValidCpf(data.cpf)) {
@@ -101,11 +102,11 @@ const formSchema = z
         });
       }
     } else {
-      if (!isValidForeignZip(data.zip)) {
+      if (!isValidForeignZip(data.zipCode)) {
         ctx.addIssue({
           code: "custom",
           message: "ZIP inválido",
-          path: ["zip"],
+          path: ["zipCode"],
         });
       }
     }
@@ -114,11 +115,11 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>;
 
 export function RegisterUserAdmin() {
+  const navigate = useNavigate();
   const [autoFilled, setAutoFilled] = useState({
     addressLine: false,
     city: false,
   });
-  const [isFetchingCep, setIsFetchingCep] = useState(false);
   const { mutate: registerAdmin, isPending } = useRegisterAdmin();
   const form = useForm<
     z.input<typeof formSchema>,
@@ -127,13 +128,13 @@ export function RegisterUserAdmin() {
   >({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
+      name: "",
       email: "",
       phone: "",
       cpf: "",
       rg: "",
       gender: "",
-      zip: "",
+      zipCode: "",
       country: "Brasil",
       isForeign: false,
       addressLine: "",
@@ -146,7 +147,31 @@ export function RegisterUserAdmin() {
   });
 
   const isForeign = form.watch("isForeign");
-  const watchedZip = form.watch("zip");
+  const watchedZip = form.watch("zipCode");
+  const {
+    isLoading: isFetchingCep,
+    data: cepData,
+    isSuccess: isSuccessCep,
+  } = useCepQuery(watchedZip || "", {
+    enabled: !isForeign,
+  });
+
+  useEffect(() => {
+    if (isSuccessCep) {
+      if (cepData?.addressLine) {
+        form.setValue("addressLine", cepData.addressLine, {
+          shouldValidate: true,
+        });
+      }
+      if (cepData?.city) {
+        form.setValue("city", cepData.city, { shouldValidate: true });
+      }
+      setAutoFilled({
+        addressLine: !!cepData?.addressLine,
+        city: !!cepData?.city,
+      });
+    }
+  }, [isSuccessCep, cepData]);
 
   useEffect(() => {
     if (isForeign) {
@@ -154,48 +179,13 @@ export function RegisterUserAdmin() {
     }
   }, [isForeign]);
 
-  useEffect(() => {
-    const zipDigits = digitsOnly(watchedZip || "");
-    if (isForeign || zipDigits.length !== 8) return;
-
-    let abort = false;
-    const fetchAddress = async () => {
-      try {
-        setIsFetchingCep(true);
-        const data = await fetchAddressByZip(zipDigits);
-        if (abort) return;
-        if (data) {
-          if (data.addressLine) {
-            form.setValue("addressLine", data.addressLine, {
-              shouldValidate: true,
-            });
-          }
-          if (data.city) {
-            form.setValue("city", data.city, { shouldValidate: true });
-          }
-          setAutoFilled({
-            addressLine: !!data.addressLine,
-            city: !!data.city,
-          });
-        }
-      } catch (e) {
-        console.error("Erro ao buscar CEP:", e);
-      } finally {
-        if (!abort) setIsFetchingCep(false);
-      }
-    };
-
-    fetchAddress();
-    return () => {
-      abort = true;
-    };
-  }, [watchedZip, isForeign, form]);
-
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     const sanitizedPhone = digitsOnly(data.phone);
+
     const payload = {
       ...data,
       phone: sanitizedPhone,
+      password: data.password,
       cpf: data.cpf ? maskCpf(data.cpf) : undefined,
       rg: data.rg ? data.rg : undefined,
       userType: data.isAdmin
@@ -211,6 +201,7 @@ export function RegisterUserAdmin() {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           form.reset();
           toast.success("Usuário cadastrado com sucesso", {});
+          navigate({ to: "/admin/users" });
           setAutoFilled({ addressLine: false, city: false });
         } else {
           toast.error("Erro ao cadastrar usuário", {});
@@ -274,7 +265,7 @@ export function RegisterUserAdmin() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="fullName"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <TextInput
@@ -375,6 +366,7 @@ export function RegisterUserAdmin() {
                   <TextInput
                     label="RG"
                     placeholder="999999999"
+                    required
                     disabled={isForeign}
                     {...field}
                   />
@@ -385,7 +377,7 @@ export function RegisterUserAdmin() {
 
             <FormField
               control={form.control}
-              name="zip"
+              name="zipCode"
               render={({ field }) => (
                 <FormItem>
                   <TextInput
@@ -548,7 +540,7 @@ export function RegisterUserAdmin() {
                   <TextInput
                     label="Senha"
                     required
-                    type="text"
+                    type="password"
                     placeholder="Senha"
                     {...field}
                   />
@@ -563,13 +555,14 @@ export function RegisterUserAdmin() {
           </div>
 
           <div className="flex justify-end pt-2 gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              label="Voltar"
-              className="w-36"
-              onClick={() => history.back()}
-            />
+            <Link to="/admin/users">
+              <Button
+                type="button"
+                variant="ghost"
+                label="Voltar"
+                className="w-36"
+              />
+            </Link>
             <Button
               type="submit"
               variant="primary"

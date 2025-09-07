@@ -11,13 +11,13 @@ export interface ForgotPasswordPayload {
 }
 
 export interface RegisterUserAdminPayload {
-  fullName: string;
+  name: string;
   email: string;
   phone: string;
   cpf?: string;
   rg?: string;
   gender: string;
-  zip: string;
+  zipCode: string;
   country: string;
   userType: UserType;
   institution?: string;
@@ -25,9 +25,27 @@ export interface RegisterUserAdminPayload {
   addressLine: string;
   city?: string;
   number?: string;
-  isAdmin: boolean;
-  isProfessor: boolean;
   password: string;
+}
+
+export interface RegisterUserPayload {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phone: string;
+  gender: string;
+  cpf?: string;
+  rg?: string;
+  country: string;
+  userType: UserType;
+  institution?: string;
+  isForeign: boolean;
+  addressLine?: string;
+  city?: string;
+  zipCode: string;
+  number?: number;
+  teacherDocument?: File;
 }
 
 export async function registerUserAdminRequest(
@@ -44,6 +62,52 @@ export async function registerUserAdminRequest(
         },
       }
     );
+    return {
+      statusCode: response.status,
+      message: "Usuário registrado com sucesso",
+      data: response.data,
+    };
+  } catch (error: any) {
+    return {
+      statusCode: error.response?.data?.statusCode || 500,
+      message: error.response?.data?.message || "REQUEST_ERROR",
+      error: error.response?.data?.error || "REQUEST_ERROR",
+    };
+  }
+}
+
+export async function registerUserRequest(
+  payload: RegisterUserPayload
+): Promise<HttpResponse> {
+  try {
+    const formData = new FormData();
+
+    formData.append("name", payload.name);
+    formData.append("email", payload.email);
+    formData.append("password", payload.password);
+    formData.append("confirmPassword", payload.confirmPassword);
+    formData.append("phone", payload.phone);
+    formData.append("gender", payload.gender);
+    formData.append("country", payload.country);
+    formData.append("userType", payload.userType);
+    formData.append("isForeign", payload.isForeign.toString());
+    formData.append("zipCode", payload.zipCode);
+
+    if (payload.cpf) formData.append("cpf", payload.cpf);
+    if (payload.number) formData.append("number", payload.number.toString());
+    if (payload.addressLine) formData.append("addressLine", payload.addressLine);
+    if (payload.institution) formData.append("institution", payload.institution);
+    if (payload.rg) formData.append("rg", payload.rg);
+    if (payload.city) formData.append("city", payload.city);
+    if (payload.teacherDocument)
+      formData.append("teacherDocument", payload.teacherDocument);
+
+    const response = await axios.post(`${BACKEND_URL}/auth/signUp`, formData, {
+      timeout: 10000,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return {
       statusCode: response.status,
       message: "Usuário registrado com sucesso",
