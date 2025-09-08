@@ -1,4 +1,4 @@
-import z, { ZodType } from "zod";
+import z from "zod";
 import { ApiDefaultFilters } from "./api-default-filters";
 
 export const UserAdminFilters = () => {

@@ -2,7 +2,7 @@ import DataTable from "@/components/table";
 import { useFilters } from "@/hooks/filters";
 import { createFileRoute } from "@tanstack/react-router";
 import type { CellContext } from "@tanstack/react-table";
-import { useFetchAdminUsers } from "./_hooks/use-fetch-admin-users";
+import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
 
 export const Route = createFileRoute("/admin/users/")({
   component: RouteComponent,
