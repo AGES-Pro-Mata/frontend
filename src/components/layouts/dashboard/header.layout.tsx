@@ -16,6 +16,7 @@ import CartButton from "@/components/buttons/cartButton";
 import { HeaderButton } from "@/components/buttons/headerButton";
 import { useQuery } from "@tanstack/react-query";
 import { useLogout } from "@/hooks/useLogout";
+import { MoonLoader } from "react-spinners";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -25,8 +26,7 @@ type HeaderLayoutProps = {
 export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
   const pathname = useRouterState().location.pathname;
   const isAdmin = useIsAdmin();
-  console.log("isAdmin", isAdmin);
-  const { data: user } = useQuery(userQueryOptions);
+  const { data: user, isPending: isLoading } = useQuery(userQueryOptions);
   const isLoggedIn = !!user;
   const cartItemCount = useCartStore((state) => state.itemCount);
   const { logout } = useLogout();
@@ -58,25 +58,35 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
           icon={<Building2 />}
           selected={pathname === "/reserve"}
         />
-        {isLoggedIn && (
-          <HeaderButton
-            label="Minhas reservas"
-            to="/user/my-reservations"
-            icon={<CalendarDays />}
-            selected={pathname === "/user/my-reservations"}
-          />
+        {isLoading ? (
+          <MoonLoader size={20} />
+        ) : (
+          isLoggedIn && (
+            <HeaderButton
+              label="Minhas reservas"
+              to="/user/my-reservations"
+              icon={<CalendarDays />}
+              selected={pathname === "/user/my-reservations"}
+            />
+          )
         )}
-        {isAdmin && (
-          <HeaderButton
-            label="Administrador"
-            to="/admin/reports"
-            icon={<LayoutDashboard />}
-            selected={pathname === "/admin/reports"}
-          />
+        {isLoading ? (
+          <MoonLoader size={20} />
+        ) : (
+          isAdmin && (
+            <HeaderButton
+              label="Administrador"
+              to="/admin/reports"
+              icon={<LayoutDashboard />}
+              selected={pathname === "/admin/reports"}
+            />
+          )
         )}
       </div>
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
-        {isLoggedIn ? (
+        {isLoading ? (
+          <MoonLoader size={20} />
+        ) : isLoggedIn ? (
           <>
             <HeaderButton
               secondary
@@ -95,13 +105,17 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
           />
         )}
         <HeaderButton secondary label="PT / EN" />
-        {isLoggedIn && (
-          <HeaderButton
-            secondary
-            label="Sair"
-            icon={<LogOut />}
-            onClick={logout}
-          />
+        {isLoading ? (
+          <MoonLoader size={20} />
+        ) : (
+          isLoggedIn && (
+            <HeaderButton
+              secondary
+              label="Sair"
+              icon={<LogOut />}
+              onClick={logout}
+            />
+          )
         )}
       </div>
 
