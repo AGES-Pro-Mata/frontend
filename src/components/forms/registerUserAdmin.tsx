@@ -36,6 +36,7 @@ import {
   generateRandomPassword,
   maskCpf,
   maskCep,
+  hashPassword,
 } from "@/lib/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
 
@@ -182,10 +183,13 @@ export function RegisterUserAdmin() {
   const onSubmit = async (data: FormData) => {
     const sanitizedPhone = digitsOnly(data.phone);
 
+    // Hash password
+    const hashedPassword = await hashPassword(data.password);
+
     const payload = {
       ...data,
       phone: sanitizedPhone,
-      password: data.password,
+      password: hashedPassword,
       cpf: data.cpf ? maskCpf(data.cpf) : undefined,
       rg: data.rg ? data.rg : undefined,
       userType: data.isAdmin
@@ -193,7 +197,7 @@ export function RegisterUserAdmin() {
         : data.isProfessor
           ? "PROFESSOR"
           : "GUEST",
-      institution: data.isProfessor ? "PUCRS" : undefined,
+      institution: data.isProfessor ? "PUCRS" : "",
     };
 
     registerAdmin(payload as any, {

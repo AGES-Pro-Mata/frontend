@@ -27,10 +27,11 @@ import {
   isValidForeignZip,
   maskCpf,
   maskCep,
+  hashPassword,
 } from "@/lib/utils";
 import type { RegisterUserPayload } from "@/api/user";
 import { CanvasCard } from "../cards";
-import { Link } from "@tanstack/react-router";
+import { Link, Navigate } from "@tanstack/react-router";
 
 const formSchema = z
   .object({
@@ -45,7 +46,7 @@ const formSchema = z
     isForeign: z.boolean().default(false),
     addressLine: z.string().optional().default(""),
     city: z.string().optional(),
-    number: z.number().optional(),
+    number: z.string().optional(),
     password: z.string().min(6, "Senha mínima de 6 caracteres"),
     confirmPassword: z.string().min(6, "Confirme a senha"),
     institution: z.string().optional().default(""),
@@ -90,7 +91,7 @@ const formSchema = z
           path: ["city"],
         });
       }
-      if (!data.number || data.number < 1) {
+      if (!data.number || data.number.length < 1) {
         ctx.addIssue({
           code: "custom",
           message: "Cidade e número são obrigatórios para brasileiros",
@@ -162,7 +163,7 @@ export function RegisterUser() {
       isForeign: false,
       addressLine: "",
       city: "",
-      number: undefined,
+      number: "",
       password: "",
       confirmPassword: "",
       institution: "",
@@ -210,23 +211,27 @@ export function RegisterUser() {
   const onSubmit = async (data: FormData) => {
     const sanitizedPhone = digitsOnly(data.phone);
 
+    // Hash passwords
+    const hashedPassword = await hashPassword(data.password);
+    const hashedConfirmPassword = await hashPassword(data.confirmPassword);
+
     const payload: RegisterUserPayload = {
       name: data.name,
       email: data.email,
-      password: data.password,
-      confirmPassword: data.confirmPassword,
+      password: hashedPassword,
+      confirmPassword: hashedConfirmPassword,
       phone: sanitizedPhone,
       gender: data.gender,
       cpf: data.cpf ? maskCpf(data.cpf) : undefined,
       rg: data.rg || undefined,
       country: data.country,
       userType: data.wantsDocencyRegistration ? "PROFESSOR" : "GUEST",
-      institution: data.institution,
+      institution: data.institution || "",
       isForeign: data.isForeign,
       addressLine: data.addressLine || "",
       city: data.city || "",
       zipCode: data.zipCode,
-      number: data.number,
+      number: data.number ? parseInt(data.number, 10) : undefined,
       teacherDocument: data.docencyDocument,
     };
 
@@ -236,6 +241,7 @@ export function RegisterUser() {
           form.reset();
           toast.success("Usuário cadastrado com sucesso", {});
           setAutoFilled({ addressLine: false, city: false });
+          Navigate({ to: "/auth/login" });
         } else {
           toast.error("Erro ao cadastrar usuário", {});
         }
@@ -281,7 +287,7 @@ export function RegisterUser() {
                           field.onChange(checked);
                           if (checked) {
                             form.setValue("city", "");
-                            form.setValue("number", undefined);
+                            form.setValue("number", "");
                             form.setValue("cpf", "");
                             form.setValue("rg", "");
                             form.setValue("country", "");
