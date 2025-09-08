@@ -9,9 +9,16 @@ import {
 } from "@/components/ui/drawer";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "@tanstack/react-router";
-import { Menu, XCircle } from "lucide-react";
+import { Menu, XCircle, LogOut } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { userQueryOptions } from "@/api/user";
+import { useLogout } from "@/hooks/useLogout";
 
 export function HeaderDrawerMobile() {
+  const { data: user } = useQuery(userQueryOptions);
+  const isLoggedIn = !!user;
+  const { logout } = useLogout();
+
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>
@@ -37,20 +44,50 @@ export function HeaderDrawerMobile() {
           </DrawerClose>
           <Separator />
           <DrawerClose asChild>
-            <Link to="/">Reservar</Link>
+            <Link to="/reserve">Reservar</Link>
           </DrawerClose>
-          <Separator />
-          <DrawerClose asChild>
-            <Link to="/">Minhas reservas</Link>
-          </DrawerClose>
-          <Separator />
-          <DrawerClose asChild>
-            <Link to="/">User</Link>
-          </DrawerClose>
-          <Separator />
-          <DrawerClose asChild>
-            <Link to="/">Carrinho</Link>
-          </DrawerClose>
+          {isLoggedIn && (
+            <>
+              <Separator />
+              <DrawerClose asChild>
+                <Link to="/user/my-reservations">Minhas reservas</Link>
+              </DrawerClose>
+              <Separator />
+              <DrawerClose asChild>
+                <Link to="/user/my-profile">Meu Perfil</Link>
+              </DrawerClose>
+              <Separator />
+              <DrawerClose asChild>
+                <Link to="/">Carrinho</Link>
+              </DrawerClose>
+            </>
+          )}
+          {!isLoggedIn && (
+            <>
+              <Separator />
+              <DrawerClose asChild>
+                <Link to="/auth/login">Entrar</Link>
+              </DrawerClose>
+              <Separator />
+              <DrawerClose asChild>
+                <Link to="/auth/register">Cadastrar</Link>
+              </DrawerClose>
+            </>
+          )}
+          {isLoggedIn && (
+            <>
+              <Separator />
+              <DrawerClose asChild>
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 text-left w-full py-2 px-0 text-sm hover:text-gray-600"
+                >
+                  <LogOut className="size-4" />
+                  Sair
+                </button>
+              </DrawerClose>
+            </>
+          )}
         </nav>
       </DrawerContent>
     </Drawer>

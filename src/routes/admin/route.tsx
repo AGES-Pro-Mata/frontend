@@ -10,14 +10,22 @@ export const Route = createFileRoute("/admin")({
     const user = await (
       context as { queryClient: QueryClient }
     ).queryClient.ensureQueryData(userQueryOptions);
-    const isAdmin = !!user?.roles?.includes("ADMIN");
+    const isAdmin =
+      user?.userType === "ADMIN" || user?.userType === "ROOT";
     return { isAdmin };
   },
   beforeLoad: async ({ context }) => {
     const user = await (
       context as { queryClient: QueryClient }
     ).queryClient.ensureQueryData(userQueryOptions);
-    const isAdmin = !!user?.roles?.includes("ADMIN");
+
+    // Se não há usuário logado, redireciona para login
+    if (!user) {
+      throw redirect({ to: "/auth/login" });
+    }
+
+    // Se não é admin, redireciona para home
+    const isAdmin = user?.userType === "ADMIN" || user?.userType === "ROOT";
     if (!isAdmin) {
       throw redirect({ to: "/" });
     }

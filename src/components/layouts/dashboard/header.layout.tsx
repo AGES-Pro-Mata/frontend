@@ -7,11 +7,15 @@ import {
   CircleUserRound,
   LayoutDashboard,
   Mountain,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useIsAdmin } from "@/api/user";
+import { useIsAdmin, userQueryOptions } from "@/api/user";
 import CartButton from "@/components/buttons/cartButton";
 import { HeaderButton } from "@/components/buttons/headerButton";
+import { useQuery } from "@tanstack/react-query";
+import { useLogout } from "@/hooks/useLogout";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -21,6 +25,12 @@ type HeaderLayoutProps = {
 export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
   const pathname = useRouterState().location.pathname;
   const isAdmin = useIsAdmin();
+  console.log("isAdmin", isAdmin);
+  const { data: user } = useQuery(userQueryOptions);
+  const isLoggedIn = !!user;
+  const cartItemCount = useCartStore((state) => state.itemCount);
+  const { logout } = useLogout();
+
   return (
     <div
       className={cn(
@@ -48,12 +58,14 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
           icon={<Building2 />}
           selected={pathname === "/reserve"}
         />
-        <HeaderButton
-          label="Minhas reservas"
-          to="/my-reservations"
-          icon={<CalendarDays />}
-          selected={pathname === "/my-reservations"}
-        />
+        {isLoggedIn && (
+          <HeaderButton
+            label="Minhas reservas"
+            to="/user/my-reservations"
+            icon={<CalendarDays />}
+            selected={pathname === "/user/my-reservations"}
+          />
+        )}
         {isAdmin && (
           <HeaderButton
             label="Administrador"
@@ -64,14 +76,33 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         )}
       </div>
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
-        <HeaderButton
-          secondary
-          label="João da Silva"
-          to="/my-profile"
-          icon={<CircleUserRound />}
-        />
-        <CartButton itemCount={useCartStore((state) => state.itemCount)} />
+        {isLoggedIn ? (
+          <>
+            <HeaderButton
+              secondary
+              label={user?.name || "Usuário"}
+              to="/user/my-profile"
+              icon={<CircleUserRound />}
+            />
+            <CartButton itemCount={cartItemCount} />
+          </>
+        ) : (
+          <HeaderButton
+            secondary
+            label="Entrar"
+            to="/auth/login"
+            icon={<LogIn />}
+          />
+        )}
         <HeaderButton secondary label="PT / EN" />
+        {isLoggedIn && (
+          <HeaderButton
+            secondary
+            label="Sair"
+            icon={<LogOut />}
+            onClick={logout}
+          />
+        )}
       </div>
 
       <HeaderDrawerMobile />
