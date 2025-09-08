@@ -37,7 +37,7 @@ export function CardsInfoOnHover() {
   const [active, setActive] = useState(0); // primeiro card ativo por padrão
 
   return (
-    <div className="flex flex-col gap-8 w-[70%] box-border h-fit my-[70px]">
+    <div className="flex flex-col gap-8 w-full max-w-6xl box-border h-fit my-[70px] mx-auto">
       <div className="flex flex-row box-border w-full gap-6 relative justify-center ">
         {cards.map((card, i) => (
           <div
