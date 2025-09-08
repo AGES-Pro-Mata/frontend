@@ -26,14 +26,16 @@ export const Route = createFileRoute("/admin")({
 
 function RouteComponent() {
   return (
-    <AdminLayout>
-      <AdminLayout.Header></AdminLayout.Header>
-      <AdminLayout.Sidebar>
-        <AdminSideBar />
-      </AdminLayout.Sidebar>
-      <AdminLayout.Content>
-        <Outlet />
-      </AdminLayout.Content>
-    </AdminLayout>
+    <div className="admin-route">
+      <AdminLayout>
+        <AdminLayout.Header></AdminLayout.Header>
+        <AdminLayout.Sidebar>
+          <AdminSideBar />
+        </AdminLayout.Sidebar>
+        <AdminLayout.Content>
+          <Outlet />
+        </AdminLayout.Content>
+      </AdminLayout>
+    </div>
   );
 }

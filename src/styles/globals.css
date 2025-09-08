@@ -29,6 +29,7 @@ code {
   --color-muted-foreground: #64748B;
   --color-card: #E7DED4;
   --color-card-background: #E7DED4;
+  --color-popover: #FFFFFF;
 }
 
 :root {
@@ -93,8 +94,41 @@ code {
   * {
     @apply border-gray-200 outline-gray-200;
   }
-  body {
-  @apply bg-white text-black;
+  html, body {
+    @apply bg-white text-black;
   }
+}
+
+/* Força comportamento específico para rotas admin */
+.admin-route {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.admin-route * {
+  box-sizing: border-box;
+}
+
+/* Força todos os elementos dentro de admin a não expandir além do container */
+.admin-route div,
+.admin-route section,
+.admin-route form,
+.admin-route main,
+.admin-route article {
+  max-height: 100% !important;
+}
+
+/* Previne qualquer scroll externo */
+.admin-route {
+  position: relative !important;
+}
+
+/* Força o body e html a não scrollar quando dentro de admin */
+body.admin-active,
+html.admin-active {
+  overflow: hidden !important;
+  height: 100% !important;
+  max-height: 100% !important;
 }
 

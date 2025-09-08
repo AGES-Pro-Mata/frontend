@@ -26,10 +26,17 @@ export function AdminLayoutRoot({ children }: AdminLayoutRootProps) {
   });
 
   return (
-    <div className="h-svh w-full bg-soft-white overflow-hidden flex flex-col">
+    <div
+      className="w-full bg-soft-white flex flex-col overflow-hidden"
+      style={{
+        height: "100vh",
+        maxHeight: "100vh",
+        minHeight: "100vh",
+      }}
+    >
       {headerChildren}
 
-      <div className="flex gap-[18px] px-[18px] pb-[18px] pt-[18px] flex-1 overflow-hidden">
+      <div className="flex gap-[18px] px-[18px] pb-[18px] pt-[18px] flex-1 min-h-0 overflow-hidden">
         {bodyChildren}
       </div>
     </div>

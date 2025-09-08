@@ -3,7 +3,7 @@ import type React from "react";
 
 interface DefaultButtonProps {
   label: React.ReactNode;
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "ghost" | "destructive";
   onClick?: () => void;
   className?: string;
   type?: "button" | "submit" | "reset";
@@ -27,6 +27,8 @@ export function DefaultButton({
       "shadow-sm bg-contrast-green text-white hover:bg-contrast-green/90 active:bg-contrast-green/70",
     secondary:
       "shadow-sm bg-banner text-on-banner-text border border-banner hover:bg-banner/90 active:bg-banner/70 hover:border-banner",
+    destructive:
+      "shadow-sm bg-default-red text-white hover:bg-default-red/90 active:bg-default-red/70",
     ghost:
       "bg-transparent text-on-banner-text border-transparent transition-colors duration-150 hover:bg-banner/10 active:bg-banner/20",
   } as const;
