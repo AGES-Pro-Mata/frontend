@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProfessorById } from "@/api/professor";
+import { getUserById } from "@/api/user";
 
 export function useProfessorById(id: string) {
   return useQuery({
     queryKey: ["professor", id],
-    queryFn: () => getProfessorById(id),
+    queryFn: () => getUserById(id),
     enabled: !!id,
   });
 }

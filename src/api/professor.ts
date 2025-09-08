@@ -1,15 +1,31 @@
 import axios from "axios";
-import type { RegisterUserAdminPayload } from "@/api/user";
 import type { HttpResponse } from "@/types/http-response";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL;
 
-export async function getProfessorById(id: string): Promise<HttpResponse<RegisterUserAdminPayload>> {
+export interface ProfessorApprovalPayload {
+  id: string;
+  approved: boolean;
+  observation: string;
+}
+
+export async function approveOrRejectProfessor(
+  payload: ProfessorApprovalPayload
+): Promise<HttpResponse> {
   try {
-    const response = await axios.get(`${BACKEND_URL}/admin/professor/${id}`);
+    const response = await axios.post(
+      `${BACKEND_URL}/admin/professor/approval`,
+      payload,
+      {
+        timeout: 10000,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return {
       statusCode: response.status,
-      message: "Professor encontrado com sucesso",
+      message: response.data?.message || "Operação realizada com sucesso",
       data: response.data,
     };
   } catch (error: any) {

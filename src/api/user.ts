@@ -95,8 +95,10 @@ export async function registerUserRequest(
 
     if (payload.cpf) formData.append("cpf", payload.cpf);
     if (payload.number) formData.append("number", payload.number.toString());
-    if (payload.addressLine) formData.append("addressLine", payload.addressLine);
-    if (payload.institution) formData.append("institution", payload.institution);
+    if (payload.addressLine)
+      formData.append("addressLine", payload.addressLine);
+    if (payload.institution)
+      formData.append("institution", payload.institution);
     if (payload.rg) formData.append("rg", payload.rg);
     if (payload.city) formData.append("city", payload.city);
     if (payload.teacherDocument)
@@ -135,6 +137,30 @@ export async function forgotPasswordRequest(
     return {
       statusCode: response.status,
       message: "Email enviado com sucesso",
+      data: response.data,
+    };
+  } catch (error: any) {
+    return {
+      statusCode: error.response?.data?.statusCode || 500,
+      message: error.response?.data?.message || "REQUEST_ERROR",
+      error: error.response?.data?.error || "REQUEST_ERROR",
+    };
+  }
+}
+
+export async function getUserById(
+  id: string
+): Promise<HttpResponse<RegisterUserPayload>> {
+  try {
+    const response = await axios.get(`${BACKEND_URL}/user/${id}`, {
+      timeout: 10000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return {
+      statusCode: response.status,
+      message: "Usuário encontrado com sucesso",
       data: response.data,
     };
   } catch (error: any) {

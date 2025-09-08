@@ -1,12 +1,12 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import type { RegisterUserAdminPayload } from '@/api/user';
+import type { RegisterUserPayload } from '@/api/user';
 import { ShowInfo } from '@/components/display/showInfo';
 import { Typography } from '@/components/typography/typography';
 
 
 export interface ProfessorProfileCardProps {
-  professor: RegisterUserAdminPayload;
+  professor: RegisterUserPayload;
 }
 
 export function ProfessorProfileCard({ professor }: ProfessorProfileCardProps) {
@@ -24,16 +24,16 @@ export function ProfessorProfileCard({ professor }: ProfessorProfileCardProps) {
           </Typography>
           <Separator className="mb-1" />
           <div className="grid grid-cols-2 text-sm">
-            <ShowInfo header="Nome Completo:" label={professor.fullName} />
+            <ShowInfo header="Nome Completo:" label={professor.name} />
             <ShowInfo header="Email:" label={professor.email} />
             <ShowInfo header="Telefone:" label={professor.phone} />
             <ShowInfo header="CPF:" label={professor.cpf ?? ''} />
             <ShowInfo header="Gênero:" label={professor.gender} />
             <ShowInfo header="RG:" label={professor.rg ?? ''} />
-            <ShowInfo header="CEP/ZIP CODE:" label={professor.zip} />
-            <ShowInfo header="Endereço:" label={professor.addressLine} />
+            <ShowInfo header="CEP/ZIP CODE:" label={professor.zipCode} />
+            <ShowInfo header="Endereço:" label={professor.addressLine ?? ''} />
             <ShowInfo header="Cidade:" label={professor.city ?? ''} />
-            <ShowInfo header="Número:" label={professor.number ?? ''} />
+            <ShowInfo header="Número:" label={professor.number !== undefined && professor.number !== null ? String(professor.number) : ''} />
           </div>
         </div>
         <div className="mb-4">
