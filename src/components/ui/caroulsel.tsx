@@ -21,13 +21,19 @@ export function Carousel() {
   const [stepPx, setStepPx] = useState(0);
 
   useLayoutEffect(() => {
-    const recalc = () => {
-      const gap = 60; // gap-[60px]
-      if (itemRef.current) setStepPx(itemRef.current.clientWidth + gap);
-    };
-    recalc();
-    window.addEventListener("resize", recalc);
-    return () => window.removeEventListener("resize", recalc);
+    if (!itemRef.current) return;
+    const gap = 60;
+
+    // observa mudanças de tamanho no itemRef
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setStepPx(entry.contentRect.width + gap);
+      }
+    });
+
+    observer.observe(itemRef.current);
+
+    return () => observer.disconnect();
   }, []);
 
   const prev = () => setFirstIndex((i) => Math.max(0, i - 1));
