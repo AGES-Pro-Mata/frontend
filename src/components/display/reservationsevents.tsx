@@ -66,6 +66,7 @@ export function ReservationCard({ event }: { event: ReservationEvent }) {
   );
 }
 
+// TODO: Fazer os botões funcionarem
 export function ReservationEvents({
   events,
   className,
