@@ -30,15 +30,18 @@ export function Carousel() {
     return () => window.removeEventListener("resize", recalc);
   }, []);
 
-  const prev = () => setFirstIndex(i => Math.max(0, i - 1));
-  const next = () => setFirstIndex(i => Math.min(recursos.length - 2, i + 1));
+  const prev = () => setFirstIndex((i) => Math.max(0, i - 1));
+  const next = () => setFirstIndex((i) => Math.min(recursos.length - 2, i + 1));
 
   return (
-    <div className="flex flex-col mb-[10px] items-center w-fit h-fit scale-[0.9]">
-      <h2 className="text-[36px] m-0 p-0 font-bold text-[#484848]">Conheça seu Destino!</h2>
+    <div className="flex flex-col mb-[10px] items-center w-full max-w-6xl h-fit scale-[0.9] mx-auto">
+      <h2 className="text-[36px] m-0 p-0 font-bold text-[#484848]">
+        Conheça seu Destino!
+      </h2>
       <LineSVG />
       <p className="text-[22px] font-bold mb-[40px]">
-        Conheça alguns dos cenários deslumbrantes que você encontrará no PRÓ-MATA
+        Conheça alguns dos cenários deslumbrantes que você encontrará no
+        PRÓ-MATA
       </p>
 
       {/* imagem grande */}
