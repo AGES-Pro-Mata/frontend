@@ -6,7 +6,7 @@
 
 body {
   font-family:
-    "Montserrat" sans-serif;
+    "Montserrat", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -28,7 +28,7 @@ code {
   --color-warning: #A18900;
   --color-default-red: #CD5252;
   --color-muted-foreground: #64748B;
-  --color-card: #E7DED445;
+  --color-card: #E7DED4;
   --color-card-background: #E7DED4;
   --color-popover: #FFFFFF;
 }
