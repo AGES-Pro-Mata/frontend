@@ -20,7 +20,7 @@ export function DefaultButton({
   disabled = false,
   ...props
 }: DefaultButtonProps) {
-  const base = "w-22 transition-colors duration-150 px-10 py-5 rounded-md";
+  const base = "w-fit font-semibold transition-colors duration-150 px-3 py-4 rounded-[5px]";
 
   const styles = {
     primary:
