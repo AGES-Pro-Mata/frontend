@@ -60,4 +60,12 @@ export class AxiosHttpClient implements IHttpClient {
   setBaseURL(baseURL: string): void {
     this.client.defaults.baseURL = baseURL;
   }
+
+  async patch<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig<T>
+  ): Promise<AxiosResponse<T>> {
+    return await this.client.patch<T>(url, data, config);
+  }
 }
