@@ -5,7 +5,12 @@ import type { HttpResponse } from "@/types/http-response";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL;
 
-export type CurrentUser = { id: string; name: string; roles: string[] };
+export type CurrentUser = { id: string; name: string; userType: UserType };
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
 export interface ForgotPasswordPayload {
   email: string;
 }
@@ -122,6 +127,30 @@ export async function registerUserRequest(
   }
 }
 
+export async function loginRequest(
+  payload: LoginPayload
+): Promise<HttpResponse> {
+  try {
+    const response = await axios.post(`${BACKEND_URL}/auth/signIn`, payload, {
+      timeout: 10000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return {
+      statusCode: response.status,
+      message: "Login realizado com sucesso",
+      data: response.data,
+    };
+  } catch (error: any) {
+    return {
+      statusCode: error.response?.data?.statusCode || 500,
+      message: error.response?.data?.message || "Credenciais inválidas",
+      error: error.response?.data?.error || "REQUEST_ERROR",
+    };
+  }
+}
+
 export async function forgotPasswordRequest(
   payload: ForgotPasswordPayload
 ): Promise<HttpResponse> {
@@ -198,6 +227,29 @@ export async function resetPasswordRequest(
   }
 }
 
+export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return null;
+    }
+
+    const response = await axios.get(`${BACKEND_URL}/user/me`, {
+      timeout: 10000,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    localStorage.removeItem("token");
+    return null;
+  }
+}
+
 export async function getUserById(
   id: string
 ): Promise<HttpResponse<RegisterUserPayload>> {
@@ -224,17 +276,12 @@ export async function getUserById(
 
 export const userQueryOptions = queryOptions({
   queryKey: ["me"],
-  queryFn: (): CurrentUser => {
-    return {
-      id: "1",
-      name: "John Doe",
-      roles: ["ADMIN"],
-    };
-  },
+  queryFn: getCurrentUserRequest,
   staleTime: 5 * 60 * 1000, // 5 minutos
+  retry: false, // Não retry se falhar (token inválido)
 });
 
 export function useIsAdmin() {
   const { data } = useQuery(userQueryOptions);
-  return !!data?.roles?.includes("ADMIN");
+  return data?.userType === "ADMIN" || data?.userType === "ROOT";
 }

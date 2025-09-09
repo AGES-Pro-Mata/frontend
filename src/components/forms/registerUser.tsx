@@ -31,7 +31,7 @@ import {
 } from "@/lib/utils";
 import type { RegisterUserPayload } from "@/api/user";
 import { CanvasCard } from "../cards";
-import { Link, Navigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 const formSchema = z
   .object({
@@ -140,6 +140,7 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>;
 
 export function RegisterUser() {
+  const navigate = useNavigate();
   const [autoFilled, setAutoFilled] = useState({
     addressLine: false,
     city: false,
@@ -241,7 +242,7 @@ export function RegisterUser() {
           form.reset();
           toast.success("Usuário cadastrado com sucesso", {});
           setAutoFilled({ addressLine: false, city: false });
-          Navigate({ to: "/auth/login" });
+          navigate({ to: "/auth/login" });
         } else {
           toast.error("Erro ao cadastrar usuário", {});
         }
