@@ -4,12 +4,6 @@ import type { QueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/(index)/user")({
   component: RouteComponent,
-  loader: async ({ context }) => {
-    const user = await (
-      context as { queryClient: QueryClient }
-    ).queryClient.ensureQueryData(userQueryOptions);
-    return { user };
-  },
   beforeLoad: async ({ context }) => {
     const user = await (
       context as { queryClient: QueryClient }
