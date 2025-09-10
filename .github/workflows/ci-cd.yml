@@ -239,6 +239,7 @@ jobs:
           fi
 
       - name: Dispatch to Infrastructure Repository
+        if: ${{ secrets.PAT_INFRASTRUCTURE_REPO != '' }}
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.PAT_INFRASTRUCTURE_REPO }}
@@ -251,3 +252,9 @@ jobs:
               "branch": "${{ steps.deploy-config.outputs.target_branch }}",
               "triggered_by": "frontend"
             }
+      
+      - name: Skip Infrastructure Dispatch
+        if: ${{ secrets.PAT_INFRASTRUCTURE_REPO == '' }}
+        run: |
+          echo "⚠️ PAT_INFRASTRUCTURE_REPO secret not configured"
+          echo "Skipping infrastructure deployment trigger"
