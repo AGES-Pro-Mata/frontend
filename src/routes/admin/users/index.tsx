@@ -5,6 +5,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/typography";
+import { Edit, MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/admin/users/")({
   component: RouteComponent,
@@ -30,11 +37,6 @@ function RouteComponent() {
       enableSorting: true,
     },
     {
-      accessorKey: "email",
-      header: "Email",
-      enableSorting: true,
-    },
-    {
       accessorKey: "createdBy",
       header: "Criado por",
       enableSorting: true,
@@ -44,11 +46,28 @@ function RouteComponent() {
       },
     },
     {
-      accessorKey: "actions",
-      header: "",
+      accessorKey: "email",
+      header: "Email",
+      enableSorting: true,
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      size: 50,
       cell: () => {
-        //TODO: Implement actions
-        return <div>...</div>;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <MoreHorizontal className="size-5 p-0 cursor-pointer" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem className="cursor-pointer gap-4">
+                {"Editar"}
+                <Edit className="size-4 text-black" />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
       },
     },
   ];

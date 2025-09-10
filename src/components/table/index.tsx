@@ -8,7 +8,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
-
 import {
   Table,
   TableBody,
@@ -17,8 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import type { TApiDefaultFilters } from "@/entities/api-default-filters";
 import { cn } from "@/lib/utils";
 import {
   IoIosArrowBack,
@@ -27,12 +24,13 @@ import {
   IoIosArrowUp,
 } from "react-icons/io";
 import { Button } from "../ui/button";
+import type { TApiDefaultFilters } from "@/entities/api-default-filters";
 import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
 
 type DataTableProps<
   TData,
   TValue,
-  F extends TApiDefaultFilters = TApiDefaultFilters,
+  F extends TApiDefaultFilters = TApiDefaultFilters
 > = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -45,7 +43,7 @@ type DataTableProps<
 export function DataTable<
   TData,
   TValue,
-  F extends TApiDefaultFilters = TApiDefaultFilters,
+  F extends TApiDefaultFilters = TApiDefaultFilters
 >({
   columns,
   data,
@@ -54,8 +52,8 @@ export function DataTable<
   setFilter,
   filters,
 }: DataTableProps<TData, TValue, F>) {
-  console.log(meta);
   const { dir, sort } = filters;
+
   const handleSortColumn = (columnId: string) => {
     if (sort === columnId) {
       if (dir === "asc") setFilter("dir", "desc");
@@ -76,7 +74,7 @@ export function DataTable<
     }),
     [meta.page, meta.limit, sort, dir]
   );
-  console.log(tableState);
+
   const table = useReactTable({
     data,
     columns,
@@ -95,7 +93,7 @@ export function DataTable<
               {headerGroup.headers.map((header) => {
                 const canSort = header.column.getCanSort();
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} style={{ width: header.column.columnDef.size || "auto" }}>
                     <div
                       className={cn("flex items-center gap-1 select-none", {
                         "cursor-pointer": canSort,
@@ -120,6 +118,7 @@ export function DataTable<
           ))}
         </TableHeader>
       </Table>
+
       <div className="flex-1 overflow-auto">
         <Table className="w-full table-fixed">
           <TableBody>
@@ -128,10 +127,14 @@ export function DataTable<
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
-                  className={cn("h-16 !border-b border-slate-300")}
+                  className="h-16 !border-b border-slate-300"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-4 py-4">
+                    <TableCell
+                      key={cell.id}
+                      className="px-4 py-4"
+                      style={{ width: cell.column.columnDef.size || "auto" }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -203,18 +206,14 @@ export function DataTable<
                 meta.page !==
                 Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1,
             })}
-            disabled={
-              meta.page ===
-              Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1
-            }
+            disabled={meta.page === Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1}
             onClick={() => setFilter("page", meta.page + 1)}
           >
             <IoIosArrowForward
               className={cn("size-5", {
                 "opacity-50":
                   meta.page ===
-                  Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) -
-                    1,
+                  Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1,
               })}
             />
           </Button>
