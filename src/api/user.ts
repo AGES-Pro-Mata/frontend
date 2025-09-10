@@ -72,6 +72,7 @@ export interface RegisterUserPayload {
   zipCode: string;
   number?: number;
   teacherDocument?: File;
+  function?: string; // professional role
 }
 
 export async function registerUserAdminRequest(
@@ -210,6 +211,35 @@ export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
     console.error("Error fetching current user:", error);
     return null;
   }
+}
+
+export interface UpdateUserPayload {
+  name?: string;
+  phone?: string;
+  gender?: string;
+  addressLine?: string;
+  city?: string;
+  number?: string | number;
+  zipCode?: string;
+  institution?: string;
+  country?: string;
+  userType?: UserType;
+  isForeign?: boolean | string;
+}
+
+export async function updateCurrentUserRequest(
+  payload: UpdateUserPayload
+): Promise<HttpResponse> {
+  const body: Record<string, unknown> = { ...payload };
+  if (typeof body.isForeign === "boolean") {
+    body.isForeign = body.isForeign ? "true" : "false";
+  }
+  const response = await api.patch(`/user`, body);
+  return {
+    statusCode: response.status,
+    message: "Perfil atualizado com sucesso",
+    data: response.data,
+  };
 }
 
 export function useIsAdmin() {

@@ -3,7 +3,7 @@ import { Typography } from "@/components/typography/typography";
 
 export const FooterLayout = () => {
   return (
-    <div className="md:h-80 flex flex-col !w-full h-auto !py-4 !px-6 bg-main-dark-green items-center text-white">
+    <div className="flex flex-col w-full py-4 px-6 bg-main-dark-green items-center text-white">
       <div className="md:flex-row md:gap-10 md:h-4/5 flex flex-col h-auto w-full">
         <div className="md:w-1/3 flex justify-center">
           <a
@@ -39,7 +39,7 @@ export const FooterLayout = () => {
         </div>
       </div>
       <Separator className="my-4" />
-      <div className="w-full flex justify-center items-center h-1/5">
+  <div className="w-full flex justify-center items-center">
         <Typography variant="h6_light">
           © 2025 PRÓ-MATA. Todos os direitos reservados.
         </Typography>

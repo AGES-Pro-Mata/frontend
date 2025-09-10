@@ -36,8 +36,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
   const onSubmit = async (data: FormData) => {
     try {
-      // const hashedPassword = await hashPassword(data.password);
-      const hashedPassword = data.password; // Remove hashing for now
+      const hashedPassword = await hashPassword(data.password);
       mutation.mutate(
         { ...data, password: hashedPassword },
         {
@@ -122,15 +121,15 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             </div>
           )}
 
-          <div className="flex flex-col items-center gap-2 mt-4">
+          <div className="flex flex-col items-center gap-3 mt-4 w-full">
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="w-40"
+              className="w-full sm:w-56"
               label={mutation.isPending ? "Entrando..." : "Entrar"}
             />
 
-            <Link to="/auth/register">
+            <Link to="/auth/register" className="w-full sm:w-56">
               <Button
                 variant="secondary"
                 className="w-full"

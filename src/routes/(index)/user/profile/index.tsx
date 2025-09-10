@@ -1,5 +1,5 @@
 import UserProfileCard from "@/components/cards/userProfileCard";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
 
 export const Route = createFileRoute("/(index)/user/profile/")({
@@ -8,6 +8,7 @@ export const Route = createFileRoute("/(index)/user/profile/")({
 
 function RouteComponent() {
   const { status, error, data, mapped, documentStatus } = useCurrentUserProfile();
+  const navigate = useNavigate();
 
   if (status === "pending") {
     return (
@@ -31,7 +32,7 @@ function RouteComponent() {
       <UserProfileCard
         user={mapped}
         documentStatus={documentStatus}
-        onEdit={() => console.log("edit")}
+  onEdit={() => navigate({ to: "/user/profile/edit-profile" })}
         onSendDocument={() => console.log("send doc")}
       />
     </div>

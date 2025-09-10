@@ -20,7 +20,7 @@ export function DefaultButton({
   disabled = false,
   ...props
 }: DefaultButtonProps) {
-  const base = "w-fit font-semibold transition-colors duration-150 px-3 py-4 rounded-[5px] hover:cursor-pointer select-none";
+  const base = "w-fit font-semibold transition-colors duration-150 px-3 py-4 rounded-[5px] hover:cursor-pointer select-none text-md p-5";
 
   const styles = {
     primary:

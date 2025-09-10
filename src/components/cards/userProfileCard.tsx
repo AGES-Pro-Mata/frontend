@@ -4,7 +4,17 @@ import { ShowInfo } from "@/components/display";
 import { Button } from "@/components/buttons/defaultButton";
 import type { ReservationStatus } from "@/components/cards/cardStatus";
 import type { RegisterUserPayload } from "@/api/user";
-import { Link } from "@tanstack/react-router";
+import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
+
+// Mapeia códigos internos de gênero para rótulos exibidos ao usuário
+function genderLabel(g?: string) {
+  if (!g) return "-";
+  const v = g.toLowerCase();
+  if (["male", "m", "masculino"].includes(v)) return "Masculino";
+  if (["female", "f", "feminino"].includes(v)) return "Feminino";
+  if (["other", "outro", "o", "não-binário", "nao-binario"].includes(v)) return "Outro";
+  return g;
+}
 
 export interface UserProfileCardProps {
   user: Partial<RegisterUserPayload>;
@@ -23,6 +33,7 @@ export function UserProfileCard({
   disableSendDocument = false,
   className = "",
 }: UserProfileCardProps) {
+  const { verified } = useCurrentUserProfile();
   return (
     <CanvasCard
       className={`w-full max-w-[clamp(40rem,82vw,760px)] mx-auto p-8 sm:p-12 bg-card shadow-md rounded-[20px] ${className}`}
@@ -45,7 +56,9 @@ export function UserProfileCard({
             <ShowInfo header="Email" label={user.email || "-"} />
             <ShowInfo header="Telefone" label={user.phone || "-"} />
             {user.cpf && <ShowInfo header="CPF" label={user.cpf} />}
-            {user.gender && <ShowInfo header="Gênero" label={user.gender} />}
+            {user.gender && (
+              <ShowInfo header="Gênero" label={genderLabel(user.gender)} />
+            )}
             {user.rg && <ShowInfo header="RG" label={user.rg} />}
             {user.zipCode && (
               <ShowInfo header="CEP/ZIP CODE" label={user.zipCode} />
@@ -56,6 +69,9 @@ export function UserProfileCard({
             {user.city && <ShowInfo header="Cidade" label={user.city} />}
             {user.number !== undefined && (
               <ShowInfo header="Número" label={String(user.number)} />
+            )}
+            {(user as any).function && (
+              <ShowInfo header="Função" label={(user as any).function} />
             )}
           </div>
         </section>
@@ -74,11 +90,11 @@ export function UserProfileCard({
             </div>
             <div className="flex flex-row flex-wrap items-center gap-4">
               <Button
-                label="Enviar comprovante"
+                label={verified ? "Comprovante enviado" : "Enviar comprovante"}
                 variant="gray"
                 className="px-6 py-3 text-sm font-medium rounded-md disabled:opacity-50"
                 onClick={onSendDocument}
-                disabled={disableSendDocument || !onSendDocument}
+                disabled={verified || disableSendDocument || !onSendDocument}
               />
               <CardStatus status={documentStatus} />
             </div>
@@ -86,14 +102,11 @@ export function UserProfileCard({
         </section>
 
         <div className="flex justify-center pt-2">
-          <Link to="/user/profile/edit-profile" className="contents">
-            <Button
-              label="Editar Dados"
-              variant="primary"
-              className="px-8 py-3 text-sm font-semibold rounded-md"
-              onClick={onEdit}
-            />
-          </Link>
+          <Button
+            label="Editar Dados"
+            variant="primary"
+            onClick={onEdit}
+          />
         </div>
       </div>
     </CanvasCard>

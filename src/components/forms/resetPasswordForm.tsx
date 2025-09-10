@@ -105,7 +105,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="w-40"
+              className="w-full sm:w-56"
               label={mutation.isPending ? "Confirmando..." : "Confirmar"}
             />
           </div>
