@@ -2,9 +2,10 @@ import { api } from "@/core/api";
 import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
 
 import {
-  UserAdminFilters,
+  UserAdminRequestFilters,
   type TUserAdminRequestFilters,
 } from "@/entities/user-admin-filters";
+import type { TUserAdminResponse } from "@/entities/user-admin-response";
 import { safeParseFilters } from "@/utils/safe-filters";
 
 import { useQuery } from "@tanstack/react-query";
@@ -21,9 +22,9 @@ export const useFetchAdminUsers = ({ filters }: useFetchAdminUsersParams) => {
     queryFn: async () => {
       const response = await api.get<
         {
-          items: [];
+          items: TUserAdminResponse[];
         } & TApiPaginationMetaResult
-      >("/user" + safeParseFilters(filters, UserAdminFilters));
+      >("/user" + safeParseFilters(filters, UserAdminRequestFilters));
       return response.data;
     },
   });

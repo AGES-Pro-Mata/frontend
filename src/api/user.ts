@@ -250,8 +250,7 @@ export function useIsAdmin() {
 export const userQueryOptions = queryOptions({
   queryKey: ["me"],
   queryFn: getCurrentUserRequest,
-  // No automatic polling by default; pages opt-in explicitly if needed
-  refetchInterval: false,
+  refetchInterval: 10000,
   retry: false,
 });
 

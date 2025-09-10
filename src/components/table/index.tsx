@@ -128,7 +128,7 @@ export function DataTable<
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
-                  className="h-16"
+                  className={cn("h-16 !border-b border-slate-300")}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="px-4 py-4">
@@ -141,7 +141,7 @@ export function DataTable<
                 </TableRow>
               ))
             ) : (
-              <TableRow>
+              <TableRow className="border-b border-slate-300">
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
@@ -190,8 +190,9 @@ export function DataTable<
           </Button>
 
           <div className="py-1 select-none">
-            {`Página ${meta.page + 1} de ${Math.ceil(
-              Number(meta?.total) / Number(meta.limit)
+            {`Página ${meta.page + 1} de ${Math.max(
+              1,
+              Math.ceil(Number(meta?.total) / Number(meta.limit))
             )}`}
           </div>
 
