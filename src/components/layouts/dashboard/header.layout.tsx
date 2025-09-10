@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { HeaderDrawerMobile } from "./components/header-drawer-mobile";
+import { HeaderDrawerMobile } from "@/components/layouts/dashboard/components/headerDrawerMobile";
 import { useCartStore } from "@/store/cartStore";
 import {
   Building2,
@@ -7,11 +7,16 @@ import {
   CircleUserRound,
   LayoutDashboard,
   Mountain,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useIsAdmin } from "@/api/user";
+import { useIsAdmin, userQueryOptions } from "@/api/user";
 import CartButton from "@/components/buttons/cartButton";
 import { HeaderButton } from "@/components/buttons/headerButton";
+import { useQuery } from "@tanstack/react-query";
+import { useLogout } from "@/hooks/useLogout";
+import { MoonLoader } from "react-spinners";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -21,6 +26,11 @@ type HeaderLayoutProps = {
 export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
   const pathname = useRouterState().location.pathname;
   const isAdmin = useIsAdmin();
+  const { data: user, isPending: isLoading } = useQuery(userQueryOptions);
+  const isLoggedIn = !!user;
+  const cartItemCount = useCartStore((state) => state.itemCount);
+  const { logout } = useLogout();
+
   return (
     <div
       className={cn(
@@ -48,30 +58,65 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
           icon={<Building2 />}
           selected={pathname === "/reserve"}
         />
-        <HeaderButton
-          label="Minhas reservas"
-          to="/my-reservations"
-          icon={<CalendarDays />}
-          selected={pathname === "/my-reservations"}
-        />
-        {isAdmin && (
-          <HeaderButton
-            label="Administrador"
-            to="/admin/reports"
-            icon={<LayoutDashboard />}
-            selected={pathname === "/admin/reports"}
-          />
+        {isLoading ? (
+          <MoonLoader size={20} />
+        ) : (
+          isLoggedIn && (
+            <HeaderButton
+              label="Minhas reservas"
+              to="/user/my-reservations"
+              icon={<CalendarDays />}
+              selected={pathname === "/user/my-reservations"}
+            />
+          )
+        )}
+        {isLoading ? (
+          <MoonLoader size={20} />
+        ) : (
+          isAdmin && (
+            <HeaderButton
+              label="Administrador"
+              to="/admin/reports"
+              icon={<LayoutDashboard />}
+              selected={pathname === "/admin/reports"}
+            />
+          )
         )}
       </div>
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
-        <HeaderButton
-          secondary
-          label="João da Silva"
-          to="/my-profile"
-          icon={<CircleUserRound />}
-        />
-        <CartButton itemCount={useCartStore((state) => state.itemCount)} />
+        {isLoading ? (
+          <MoonLoader size={20} />
+        ) : isLoggedIn ? (
+          <>
+            <HeaderButton
+              secondary
+              label={user?.name || "Usuário"}
+              to="/user/profile"
+              icon={<CircleUserRound />}
+            />
+            <CartButton itemCount={cartItemCount} />
+          </>
+        ) : (
+          <HeaderButton
+            secondary
+            label="Entrar"
+            to="/auth/login"
+            icon={<LogIn />}
+          />
+        )}
         <HeaderButton secondary label="PT / EN" />
+        {isLoading ? (
+          <MoonLoader size={20} />
+        ) : (
+          isLoggedIn && (
+            <HeaderButton
+              secondary
+              label="Sair"
+              icon={<LogOut />}
+              onClick={logout}
+            />
+          )
+        )}
       </div>
 
       <HeaderDrawerMobile />
