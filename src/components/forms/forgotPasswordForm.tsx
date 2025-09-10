@@ -48,7 +48,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
   };
 
   return (
-    <AuthCard>
+    <AuthCard className="">
       <div className="space-y-4">
         <Typography className="text-xl font-semibold text-left text-on-banner-text">
           Esqueci a senha
@@ -57,7 +57,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex flex-col gap-2 items-center w-full">
+          <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs">
               <FormField
                 control={form.control}
@@ -94,16 +94,16 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
                 : "Ocorreu um erro ao enviar o email. Tente novamente."}
             </div>
           )}
-          <div className="flex flex-col items-center gap-2 mt-2">
+          <div className="flex flex-col items-center gap-3 mt-4 w-full">
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="w-40"
+              className="w-full sm:w-56"
               label={mutation.isPending ? "Enviando..." : "Enviar"}
             />
             <Link
               to="/auth/login"
-              className="w-40 mt-2 text-on-banner-text cursor-pointer text-center block"
+              className="w-full sm:w-56 text-on-banner-text cursor-pointer text-center block"
             >
               <Button variant="ghost" className="w-full" label="Voltar" />
             </Link>

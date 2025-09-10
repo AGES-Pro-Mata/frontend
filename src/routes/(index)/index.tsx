@@ -1,5 +1,5 @@
-import { Carousel } from "@/components/ui/carousel";
-import { CardsInfoOnHover } from "@/components/cards/cards-info-onhover";
+import { Carousel } from "@/components/carousel/carousel";
+import { CardsInfoOnHover } from "@/components/cards/cardInfoOnHover";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button, DefaultButton } from "@/components/buttons/defaultButton";
 import { InfoExperiencias } from "@/components/ui/info-experiencias-home";

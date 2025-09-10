@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { HeaderDrawerMobile } from "@/components/layouts/dashboard/components/header-drawer-mobile";
+import { HeaderDrawerMobile } from "@/components/layouts/dashboard/components/headerDrawerMobile";
 import { useCartStore } from "@/store/cartStore";
 import {
   Building2,
@@ -91,7 +91,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
             <HeaderButton
               secondary
               label={user?.name || "Usuário"}
-              to="/user/my-profile"
+              to="/user/profile"
               icon={<CircleUserRound />}
             />
             <CartButton itemCount={cartItemCount} />
