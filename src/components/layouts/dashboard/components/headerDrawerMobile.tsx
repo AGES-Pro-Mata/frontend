@@ -60,7 +60,7 @@ export function HeaderDrawerMobile() {
                   </Link>
                 </DrawerClose>
                 <DrawerClose asChild>
-                  <Link to="/user/my-profile" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
+                  <Link to="/user/profile" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
                     <User2 className="size-4" /> Meu Perfil
                   </Link>
                 </DrawerClose>
