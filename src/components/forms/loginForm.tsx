@@ -36,7 +36,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const hashedPassword = await hashPassword(data.password);
+      // const hashedPassword = await hashPassword(data.password);
+      const hashedPassword = data.password; // Remove hashing for now
       mutation.mutate(
         { ...data, password: hashedPassword },
         {

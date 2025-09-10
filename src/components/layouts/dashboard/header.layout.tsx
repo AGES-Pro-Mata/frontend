@@ -91,7 +91,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
             <HeaderButton
               secondary
               label={user?.name || "Usuário"}
-              to="/user/my-profile"
+              to="/user/profile"
               icon={<CircleUserRound />}
             />
             <CartButton itemCount={cartItemCount} />

@@ -1,10 +1,32 @@
 import type { UserType } from "@/types/user";
+import z from "zod";
 import type { HttpResponse } from "@/types/http-response";
 import { api } from "@/core/api";
 import { QueryClient, queryOptions, useQuery } from "@tanstack/react-query";
 import { redirect } from "@tanstack/react-router";
 
-export type CurrentUser = { id: string; name: string; userType: UserType };
+export type CurrentUser = {
+  id?: string;
+  userType: UserType;
+  name: string;
+  email?: string;
+  phone?: string;
+  cpf?: string;
+  gender?: string;
+  rg?: string;
+  institution?: string;
+  isForeign?: boolean;
+  verified?: boolean;
+  updatedAt?: string;
+  address?: {
+    street?: string;
+    number?: string;
+    city?: string;
+    zip?: string;
+    country?: string;
+    updatedAt?: string;
+  };
+};
 export interface LoginPayload {
   email: string;
   password: string;
@@ -149,9 +171,41 @@ export async function resetPasswordRequest(
 
 export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
   try {
-    const response = await api.get<CurrentUser>(`/auth/profile`);
+    const response = await api.get(`/auth/profile`);
 
-    return response.data;
+    const addressSchema = z
+      .object({
+        street: z.string().optional(),
+        number: z.string().optional(),
+        city: z.string().optional(),
+        zip: z.string().optional(),
+        country: z.string().optional(),
+        updatedAt: z.string().datetime().optional(),
+      })
+      .optional();
+
+    const profileSchema = z.object({
+      userType: z.custom<UserType>(),
+      name: z.string(),
+      email: z.string().email().optional(),
+      phone: z.string().optional(),
+      cpf: z.string().optional(),
+      gender: z.string().optional(),
+      rg: z.string().optional(),
+      institution: z.string().optional(),
+      isForeign: z.boolean().optional(),
+      verified: z.boolean().optional(),
+      updatedAt: z.string().datetime().optional(),
+      address: addressSchema,
+      id: z.string().optional(),
+    });
+
+    const parsed = profileSchema.safeParse(response.data);
+    if (!parsed.success) {
+      console.error("Invalid profile payload", parsed.error.format());
+      return null;
+    }
+    return parsed.data as CurrentUser;
   } catch (error) {
     console.error("Error fetching current user:", error);
     return null;
@@ -166,9 +220,17 @@ export function useIsAdmin() {
 export const userQueryOptions = queryOptions({
   queryKey: ["me"],
   queryFn: getCurrentUserRequest,
-  refetchInterval: 10000,
+  // No automatic polling by default; pages opt-in explicitly if needed
+  refetchInterval: false,
   retry: false,
 });
+
+export function userPollingQueryOptions(intervalMs = 60000) {
+  return {
+    ...userQueryOptions,
+    refetchInterval: intervalMs,
+  } as typeof userQueryOptions & { refetchInterval: number };
+}
 
 export async function requireAdminUser(queryClient: QueryClient) {
   const user = await queryClient.ensureQueryData(userQueryOptions);
