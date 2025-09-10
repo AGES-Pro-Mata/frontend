@@ -5,7 +5,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/typography";
-import { Edit, MoreHorizontal } from "lucide-react";
+import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,8 +24,6 @@ function RouteComponent() {
     initialFilters: {
       limit: 10,
       page: 0,
-      sort: "email",
-      dir: "asc",
     },
   });
   const { items, meta } = useFetchAdminUsers({ filters });
@@ -64,6 +62,10 @@ function RouteComponent() {
               <DropdownMenuItem className="cursor-pointer gap-4">
                 {"Editar"}
                 <Edit className="size-4 text-black" />
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer text-red-500 gap-3">
+                {"Excluir"}
+                <Trash className="size-4 text-red-500" />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
