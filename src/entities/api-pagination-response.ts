@@ -6,6 +6,8 @@ const ApiPaginationMetaResult = z.object({
   total: z.number().default(0),
 });
 
+export type TApiPaginationMetaResult = z.infer<typeof ApiPaginationMetaResult>;
+
 export const ApiPaginationResult = <T extends ZodType>(object: T) => {
   return z
     .object({
