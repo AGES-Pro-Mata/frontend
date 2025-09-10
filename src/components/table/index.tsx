@@ -27,6 +27,7 @@ import {
   IoIosArrowUp,
 } from "react-icons/io";
 import { Button } from "../ui/button";
+import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
 
 type DataTableProps<
   TData,
@@ -35,7 +36,7 @@ type DataTableProps<
 > = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  meta?: { total: number; page: number; limit: number };
+  meta?: TApiPaginationMetaResult;
   pageSizeOptions?: number[];
   filters: F;
   setFilter: <K extends keyof F>(key: K, value: F[K]) => void;
@@ -48,11 +49,12 @@ export function DataTable<
 >({
   columns,
   data,
-  meta = { total: 11, page: 1, limit: 10 },
+  meta = { total: 10, page: 0, limit: 10 },
   pageSizeOptions = [10, 25, 50],
   setFilter,
   filters,
 }: DataTableProps<TData, TValue, F>) {
+  console.log(meta);
   const { dir, sort } = filters;
   const handleSortColumn = (columnId: string) => {
     if (sort === columnId) {
@@ -74,7 +76,7 @@ export function DataTable<
     }),
     [meta.page, meta.limit, sort, dir]
   );
-
+  console.log(tableState);
   const table = useReactTable({
     data,
     columns,
@@ -210,7 +212,8 @@ export function DataTable<
               className={cn("size-5", {
                 "opacity-50":
                   meta.page ===
-                  Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1,
+                  Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) -
+                    1,
               })}
             />
           </Button>
