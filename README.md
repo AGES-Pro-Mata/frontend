@@ -1,6 +1,6 @@
 # PRÓ-MATA Frontend
 
-Aplicação React moderna com Vite, TanStack Router (file-based routing), Tailwind CSS e Shadcn/UI. Este README descreve a stack, pré-requisitos, como instalar/rodar e traz um guia de desenvolvimento focado em Roteamento e Dados.
+Aplicação React moderna com Vite, TanStack Router (file-based routing), Tailwind CSS e Shadcn/UI. Este README descreve a stack, pré-requisitos, como instalar/rodar e traz um guia de desenvolvimento focado em Roteamento e Dados!
 
 ---
 
