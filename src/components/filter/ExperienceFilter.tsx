@@ -2,7 +2,19 @@ import { useEffect, useState } from "react";
 
 const experienceTypes = ["Quartos", "Eventos", "Laboratórios", "Trilhas"];
 
-export function ExperienceFilter({ experiences, onFilter }) {
+type Experience = {
+  name: string;
+  description: string;
+  type: string;
+  date: string;
+};
+
+interface ExperienceFilterProps {
+  experiences: Experience[];
+  onFilter: (filtered: Experience[]) => void;
+}
+
+export function ExperienceFilter({ experiences, onFilter }: ExperienceFilterProps) {
   const [selectedType, setSelectedType] = useState("Laboratórios");
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
