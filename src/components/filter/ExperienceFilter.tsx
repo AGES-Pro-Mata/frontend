@@ -41,31 +41,43 @@ export function ExperienceFilter({ experiences, onFilter }: ExperienceFilterProp
       <div className="flex gap-4 mb-4 justify-center">
         <div className="flex flex-col">
           <Label className="px-1 mb-3">Data de Entrada</Label>
-          <Calendar22 value={startDate} onChange={e => setStartDate(e.target.value)} className="border rounded px-2 py-1" />
+          <Calendar22
+            value={startDate}
+            onChange={e => setStartDate(e.target.value)}
+            placeholder="Entrada"
+            className="border rounded px-2 py-1"
+          />
         </div>
         <div className="flex flex-col">
           <Label className="px-1 mb-3">Data de Saída</Label>
-          <Calendar22 value={endDate} onChange={e => setEndDate(e.target.value)} className="border rounded px-2 py-1" />
+          <Calendar22
+            value={endDate}
+            onChange={e => setEndDate(e.target.value)}
+            placeholder="Saída"
+            className="border rounded px-2 py-1"
+          />
         </div>
       </div>
-      <div className="flex gap-2 mb-4 justify-center bg-[#F5F2ED] rounded-full py-2 px-4">
+      <div className="flex gap-27 mb-4 justify-center bg-[#F4F2EF]  rounded-full w-full max-w-lvh mx-auto">
         {experienceTypes.map(type => (
           <Button
             key={type}
-            className={`px-4 py-2 rounded-full ${selectedType === type ? "bg-neutral-200" : "bg-neutral-100"}`}
+            className={`px-4 py-2 rounded-full ${selectedType === type ? "bg-[#E1DBD3]" : "bg-[#F4F2EF] shadow-none "}`}
             onClick={() => setSelectedType(type)}
           >
             {type}
           </Button>
         ))}
       </div>
-      <Input
-        type="text"
-        placeholder="Buscar..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        className="w-full border rounded px-2 py-1 justify-center"
-      />
+      <div className="mb-4 flex justify-center mt-4">
+        <Input
+          type="text"
+          placeholder="Buscar..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="border rounded px-2 py-1 justify-center max-w-lvh">
+          </Input>
+      </div>
     </div>
   );
 }
