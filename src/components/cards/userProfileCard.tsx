@@ -55,7 +55,7 @@ export function UserProfileCard({
             <ShowInfo header="Nome Completo" label={user.name || "-"} />
             <ShowInfo header="Email" label={user.email || "-"} />
             <ShowInfo header="Telefone" label={user.phone || "-"} />
-            {user.cpf && <ShowInfo header="CPF" label={user.cpf} />}
+            {user.document && <ShowInfo header={user.isForeign ? "Passaporte" : "CPF"} label={user.document} />}
             {user.gender && (
               <ShowInfo header="Gênero" label={genderLabel(user.gender)} />
             )}

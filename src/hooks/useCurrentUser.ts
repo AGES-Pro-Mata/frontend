@@ -14,7 +14,7 @@ function mapCurrentUserToProfile(
     name: user.name,
     email: user.email,
     phone: user.phone,
-    cpf: user.cpf,
+    document: user.document,
     gender: user.gender,
     rg: user.rg,
     zipCode: user.address?.zip,
