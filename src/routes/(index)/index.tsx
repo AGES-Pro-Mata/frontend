@@ -4,7 +4,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button, DefaultButton } from "@/components/buttons/defaultButton";
 import { InfoExperiencias } from "@/components/ui/info-experiencias-home";
 import { Typography } from "@/components/typography/typography";
-import ExperienceCard from "@/components/cards/experienceTuningCard"
 
 export const Route = createFileRoute("/(index)/")({
   component: RouteComponent,
@@ -69,16 +68,6 @@ function RouteComponent() {
       <div className="px-4 sm:px-6 lg:px-8 py-[clamp(2rem,6vw,5rem)] flex flex-col items-center">
         <InfoExperiencias />
         <CardsInfoOnHover />
-        <ExperienceCard
-          title="Experiência X"
-          price={450}
-          period={{
-            start: new Date("2024-08-01"),
-            end: new Date("2024-08-31"),
-          }}
-          imageUrl="/home-page-image.png"
-        />
-
         <Carousel />
         <div className="flex flex-col items-center mb-[clamp(2rem,5vw,3.75rem)] justify-center">
           <Typography

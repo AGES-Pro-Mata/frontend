@@ -16,7 +16,7 @@ type DateRange = {
 type ExperienceCardProps = {
   title: string
   price: number
-  period: { start: Date; end: Date }
+  period: { start: Date; end: Date } 
   imageUrl: string
 }
 
@@ -31,22 +31,12 @@ export default function ExperienceCard({
   const [savedRange, setSavedRange] = useState<DateRange | undefined>()
   const [men, setMen] = useState(0)
   const [women, setWomen] = useState(0)
-  const [menNames, setMenNames] = useState("")
-  const [womenNames, setWomenNames] = useState("")
   const [saved, setSaved] = useState(false)
 
   const fmt = (d: Date) => d.toLocaleDateString("pt-BR")
 
-  const validateNames = () => {
-    const menCount = menNames.trim() ? menNames.trim().split("\n").length : 0
-    const womenCount = womenNames.trim() ? womenNames.trim().split("\n").length : 0
-    if (men !== menCount) return false
-    if (women !== womenCount) return false
-    return true
-  }
-
   const handleSave = () => {
-    if (range?.from && range?.to && validateNames()) {
+    if (range?.from && range?.to) {
       setSavedRange(range)
       setSaved(true)
       setOpen(false)
@@ -68,49 +58,82 @@ export default function ExperienceCard({
 
   return (
     <CanvasCard className="w-[985px] min-h-[352px] bg-card shadow-lg rounded-xl overflow-hidden flex flex-col">
+      {/* imagem */}
       <div className="w-[959px] h-[277px] mx-auto mt-2 rounded-md overflow-hidden">
         <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
       </div>
-      <div className="w-full h-[85px] flex flex-col justify-between px-6 py-2 text-main-dark-green">
-        <div className="flex items-center gap-4">
-          <h2 className="font-bold">{title}</h2>
-          <span
-            className="w-[59px] h-[20px] flex items-center justify-center text-xs text-main-dark-green bg-card rounded-full font-bold shadow-inner"
-          >
-            Pacote
-          </span>
-          <div className="flex items-center justify-start rounded-full bg-card shadow-md gap-2 h-[26px] px-3">
-            <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white">
-              <span className="text-[14px] font-bold">$</span>
-            </div>
-            <span className="text-[14px] font-bold text-main-dark-green">
-              R$ {price.toFixed(2)}
-            </span>
-          </div>
-          <div className="flex items-center justify-start rounded-full bg-card shadow-md gap-2 h-[26px] px-3">
-            <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white">
-              <CalendarIcon size={14} />
-            </div>
-            <span className="text-[14px] font-bold text-main-dark-green">
-              {savedRange?.from && savedRange?.to
-                ? `${fmt(savedRange.from)} a ${fmt(savedRange.to)}`
-                : `${fmt(period.start)} a ${fmt(period.end)}`}
-            </span>
-          </div>
-        </div>
-        <div className="flex justify-end mt-1">
-          <Button
-            onClick={() => setOpen(true)}
-            className="bg-main-dark-green text-white rounded-full px-8 py-2 shadow-md hover:bg-contrast-green"
-          >
-            {saved ? "Editar informações" : "Selecionar data e número de pessoas"}
-          </Button>
-        </div>
+
+      {/* rodapé */}
+<div className="w-full px-6 py-2 text-main-dark-green flex flex-col gap-2">
+  {/* linha 1: info principal */}
+  <div className="flex items-center gap-4">
+    <h2 className="font-bold">{title}</h2>
+
+    {/* pacote */}
+    <span
+      className="w-[59px] h-[20px] flex items-center justify-center text-xs text-main-dark-green bg-card rounded-full font-bold shadow-inner"
+    >
+      Pacote
+    </span>
+
+    {/* preço */}
+    <div className="flex items-center justify-start rounded-full bg-card shadow-md gap-2 h-[26px] px-3">
+      <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white">
+        <span className="text-[14px] font-bold">$</span>
       </div>
+      <span className="text-[14px] font-bold text-main-dark-green">
+        R$ {price.toFixed(2)}
+      </span>
+    </div>
+
+    {/* período mockado */}
+    <div className="flex items-center justify-start rounded-full bg-card shadow-md gap-2 h-[26px] px-3">
+      <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white">
+        <CalendarIcon size={14} />
+      </div>
+      <span className="text-[14px] font-bold text-main-dark-green">
+        {`${fmt(period.start)} a ${fmt(period.end)}`}
+      </span>
+    </div>
+  </div>
+
+  {/* linha 2: botão à direita */}
+  <div className="flex justify-end">
+    <Button
+      onClick={() => setOpen(true)}
+      className="bg-main-dark-green text-white rounded-full px-8 py-2 shadow-md hover:bg-main-dark-green"
+    >
+      {saved ? "Editar informações" : "Selecionar data e número de pessoas"}
+    </Button>
+  </div>
+
+  {/* linha 3: dados escolhidos à esquerda */}
+{saved && savedRange?.from && savedRange?.to && (
+  <div className="flex justify-start gap-6">
+    <span className="text-sm text-main-dark-green">
+      Homens: <span className="font-bold">{men}</span>
+    </span>
+    <span className="text-sm text-main-dark-green">
+      Mulheres: <span className="font-bold">{women}</span>
+    </span>
+    <span className="text-sm text-main-dark-green">
+      Data selecionada:{" "}
+      <span className="font-bold">
+        {`${fmt(savedRange.from)} a ${fmt(savedRange.to)}`}
+      </span>
+    </span>
+  </div>
+)}
+
+</div>
+
+
+      {/* modal de seleção */}
       {open && (
         <div className="p-6 bg-banner rounded-lg shadow-md flex flex-col gap-6 text-main-dark-green mx-4 my-4">
           <h3 className="text-lg font-bold">Escolha de Data</h3>
 
+          {/* período selecionado */}
           <div className="flex items-center justify-start rounded-full bg-card shadow-md gap-2 h-[26px] px-3">
             <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white">
               <CalendarIcon size={14} />
@@ -122,6 +145,7 @@ export default function ExperienceCard({
             </span>
           </div>
 
+          {/* calendário e inputs */}
           <div className="grid grid-cols-2 gap-6">
             <div className="flex justify-center">
               <div className="bg-soft-white rounded-lg shadow-sm p-4">
@@ -131,66 +155,51 @@ export default function ExperienceCard({
                   onSelect={(value: DateRange | undefined) =>
                     setRange(value ?? { from: undefined, to: undefined })
                   }
-                  defaultMonth={range.from}
+                  defaultMonth={range.from ?? period.start}
+                  disabled={[
+                    { before: period.start }, 
+                    { after: period.end },  
+                  ]}
                   classNames={{
                     day_selected: "bg-main-dark-green text-white",
                     day_range_start: "bg-main-dark-green text-white rounded-l-full",
                     day_range_end: "bg-main-dark-green text-white rounded-r-full",
                     day_range_middle: "bg-contrast-green text-white",
+                    day_disabled: "text-gray-400 opacity-50 cursor-not-allowed", 
                   }}
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-4">
-              <div>
-                <Label>Número de pessoas do gênero masculino</Label>
+            {/* inputs centralizados */}
+            <div className="flex flex-col items-center justify-center gap-6 w-full">
+              <div className="w-3/4">
+                <Label className="mb-2 block">Número de pessoas do gênero masculino</Label>
                 <Input
                   inputMode="numeric"
                   pattern="\d*"
                   value={men}
                   onChange={(e) => handleNumberInput(e, setMen)}
-                  className="border border-main-dark-green rounded-md"
+                  className="border border-main-dark-green rounded-md w-full"
                 />
               </div>
-
-              <div>
-                <Label>Número de pessoas do gênero feminino</Label>
+              <div className="w-3/4">
+                <Label className="mb-2 block">Número de pessoas do gênero feminino</Label>
                 <Input
                   inputMode="numeric"
                   pattern="\d*"
                   value={women}
                   onChange={(e) => handleNumberInput(e, setWomen)}
-                  className="border border-main-dark-green rounded-md"
-                />
-              </div>
-
-              <div>
-                <Label>Nomes dos participantes masculinos</Label>
-                <textarea
-                  className="w-full mt-2 p-2 border border-main-dark-green rounded-md h-16 resize-none"
-                  placeholder="Um nome por linha"
-                  value={menNames}
-                  onChange={(e) => setMenNames(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <Label>Nomes dos participantes femininos</Label>
-                <textarea
-                  className="w-full mt-2 p-2 border border-main-dark-green rounded-md h-16 resize-none"
-                  placeholder="Um nome por linha"
-                  value={womenNames}
-                  onChange={(e) => setWomenNames(e.target.value)}
+                  className="border border-main-dark-green rounded-md w-full"
                 />
               </div>
             </div>
           </div>
-
+          {/* salvar */}
           <div className="flex justify-end">
             <Button
               className="mt-3 bg-main-dark-green text-white rounded-full px-8 py-2 shadow-md hover:bg-contrast-green"
               onClick={handleSave}
-              disabled={!range?.from || !range?.to || !validateNames()}
+              disabled={!range?.from || !range?.to}
             >
               Salvar
             </Button>
