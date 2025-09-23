@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Typography } from "@/components/ui/typography";
+import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
-import { Link } from "@tanstack/react-router";
 import { LogOutIcon } from "lucide-react";
+import { useLogout } from "@/hooks/useLogout";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -10,6 +10,8 @@ type HeaderLayoutProps = {
 };
 
 export function AdminLayoutHeader({ className, children }: HeaderLayoutProps) {
+  const { logout } = useLogout();
+
   return (
     <div
       className={cn(
@@ -32,14 +34,12 @@ export function AdminLayoutHeader({ className, children }: HeaderLayoutProps) {
         Administrador
       </Typography>
       {children}
-      <Link to="/">
-        <Button variant="link" size="lg">
-          <Typography variant="h4" className="text-black">
-            Sair
-          </Typography>
-          <LogOutIcon className="!h-5 !w-5 text-black mt-0.5" />
-        </Button>
-      </Link>
+      <Button variant="link" size="lg" onClick={logout}>
+        <Typography variant="h4" className="text-black">
+          Sair
+        </Typography>
+        <LogOutIcon className="!h-5 !w-5 text-black mt-0.5" />
+      </Button>
     </div>
   );
 }

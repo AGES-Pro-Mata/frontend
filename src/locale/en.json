@@ -3,6 +3,222 @@
     "reserve": "Reserve",
     "myReservations": "My Reservations",
     "admin": "Admin",
-    "profile": "My Profile",
-    "userName": "João da Silva"
+
+    "common": {
+        "menu": "Menu",
+        "back": "Back",
+        "save": "Save",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "send": "Send",
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "cart": "Cart",
+        "email": "Email",
+        "function": "Role"
+    },
+
+    "nav": {
+        "home": "Home",
+        "reserve": "Reserve",
+        "myReservations": "My Reservations",
+        "profile": "My Profile",
+        "login": "Login",
+        "logout": "Logout",
+        "register": "Register"
+    },
+    "profile": {
+        "card": {
+            "title": "My Profile",
+            "sections": {
+                "personal": "Personal Information",
+                "professional": "Professional Information"
+            },
+            "docency": {
+                "sendReceipt": "Send receipt",
+                "receiptSent": "Receipt sent"
+            },
+            "editButton": "Edit Profile"
+        },
+        "edit": {
+            "title": "Edit Profile",
+            "subtitle": "Fill in the fields below to edit your account",
+            "docency": {
+                "canUploadHint": "Send a PDF up to 20MB.",
+                "alreadyVerified": "Already verified and institution has not changed."
+            },
+            "toasts": {
+                "success": "Profile updated successfully",
+                "error": "Error updating profile"
+            }
+        }
+    },
+
+    "homePage": {
+        "welcome": "Welcome to",
+        "subtitle": "Center for Research and Nature Conservation",
+        "ctaPrimary": "Reserve",
+        "ctaSecondary": "Come visit us!",
+        "ctaBottomTitle": "Don't waste time — come live this unique experience!",
+        "ctaBottom": "Make a Reservation"
+    },
+
+    "experiences": {
+        "title": "Experiences!",
+        "headline": "Live unforgettable moments connected with the preserved nature of Serra Gaúcha!",
+        "list": {
+            "accommodations": "Multiple accommodations",
+            "labs": "Laboratories",
+            "trails": "Trails",
+            "events": "Events"
+        },
+        "bookNow": "Book now!",
+        "book": "Make a Reservation"
+    },
+
+    "auth": {
+        "login": {
+            "title": "Login",
+            "email": "Email",
+            "password": "Password",
+            "emailPlaceholder": "you@email.com",
+            "passwordPlaceholder": "Your password",
+            "forgot": "I forgot my password",
+            "submit": "Login",
+            "submitting": "Logging in...",
+            "register": "Sign up",
+            "toastSuccess": "Logged in successfully!",
+            "toastError": "Error logging in",
+            "toastErrorTryAgain": "Error logging in. Please try again.",
+            "toastInternal": "Internal error. Please try again.",
+            "invalidCredentials": "Invalid credentials. Please try again."
+        },
+        "forgot": {
+            "title": "Forgot password",
+            "email": "Email",
+            "emailPlaceholder": "you@email.com",
+            "helper": "You'll receive an email to reset your password if an account exists.",
+            "submit": "Send",
+            "submitting": "Sending...",
+            "back": "Back",
+            "resultSuccess": "Email sent successfully. Check your inbox.",
+            "resultError": "There was an error sending the email. Please try again."
+        },
+        "reset": {
+            "title": "Reset password",
+            "newPassword": "New password*",
+            "newPasswordPlaceholder": "New password",
+            "confirmPassword": "Confirm password*",
+            "confirmPasswordPlaceholder": "Confirm password",
+            "submit": "Confirm",
+            "submitting": "Confirming...",
+            "toastSuccess": "Password reset successfully",
+            "toastError": "Error resetting password"
+        },
+        "common": {
+            "login": "Login",
+            "logout": "Logout",
+            "register": "Register",
+            "createAccount": "Create Account",
+            "haveAccount": "Already have an account?",
+            "goToLogin": "Log in"
+        }
+    },
+
+    "register": {
+        "title": "Sign up",
+        "subtitle": "Fill in the fields below to create your account",
+        "sections": {
+            "personal": "Personal Information",
+            "security": "Security",
+            "professional": "Professional Information"
+        },
+        "fields": {
+            "notBrazilian": "I am not Brazilian",
+            "fullName": "Full name",
+            "phone": "Phone",
+            "document": {
+                "cpf": "CPF",
+                "passport": "Passport",
+                "passportNumber": "Passport number"
+            },
+            "gender": {
+                "label": "Gender",
+                "select": "Select gender",
+                "female": "Female",
+                "male": "Male",
+                "other": "Other"
+            },
+            "rg": "RG",
+            "zip": {
+                "cep": "ZIP Code",
+                "zip": "ZIP CODE"
+            },
+            "country": "Country",
+            "selectCountry": "Select country",
+            "address": "Address",
+            "addressPlaceholder": "Street",
+            "city": "City",
+            "number": "Number",
+            "password": "Password",
+            "confirmPassword": "Confirm password",
+            "institution": "Institution",
+            "institutionPlaceholder": "University/Company",
+            "function": {
+                "label": "Select your Role",
+                "select": "Select your Role",
+                "student": "Student",
+                "teacher": "Teacher",
+                "researcher": "Researcher",
+                "employee": "Employee",
+                "other": "Other"
+            },
+            "docency": {
+                "ask": "I would like to request a teacher registration",
+                "proofLabel": "Teaching Proof (PDF) - Optional",
+                "proofHint": "You can upload the proof now or later when editing your profile. Max 20MB.",
+                "uploaded": "✓ {{name}}"
+            },
+            "terms": {
+                "accept": "I accept the {{terms}} and the {{privacy}} of PRÓ-MATA *",
+                "terms": "Terms of Use",
+                "privacy": "Privacy Policy"
+            }
+        },
+        "cta": {
+            "create": "Create Account",
+            "haveAccount": "Already have an account?",
+            "login": "Log in"
+        },
+        "toasts": {
+            "success": "User registered successfully",
+            "error": "Error registering user"
+        }
+    },
+
+    "validation": {
+        "email": "Enter a valid email.",
+        "passwordRequired": "Enter your password.",
+        "passwordMin": "Password must be at least 6 characters.",
+        "passwordUpper": "Password must contain at least one uppercase letter.",
+        "passwordNumber": "Password must contain at least one number.",
+        "passwordsMustMatch": "Passwords must match.",
+        "nameRequired": "Enter your full name",
+        "phoneRequired": "Enter your phone number",
+        "genderRequired": "Select your gender",
+        "zipRequired": "Enter the ZIP/CEP",
+        "countryRequired": "Enter the country",
+        "addressRequired": "Address is required",
+        "cityNumberBrazilRequired": "City and number are required for Brazilians",
+        "cep8": "CEP must contain 8 digits",
+        "cpfInvalid": "Invalid CPF",
+        "rgInvalid": "Invalid RG",
+        "zipInvalid": "Invalid ZIP",
+        "pdfOnly": "Only PDF files are accepted",
+        "max20mb": "File must be at most 20MB",
+        "mustAcceptTerms": "You must accept the terms of use",
+        "cityRequired": "City is required",
+        "numberRequired": "Number is required"
+    }
 }

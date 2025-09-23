@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Typography } from "@/components/ui/typography";
+import { Typography } from "@/components/typography/typography";
 
 // Schema de validação básico
 const formSchema = z.object({
@@ -33,7 +33,9 @@ export function BasicFormExample() {
 
   const onSubmit = (data: FormData) => {
     console.log("Dados do formulário:", data);
-    alert(`Formulário enviado com sucesso!\nNome: ${data.nome}\nE-mail: ${data.email}`);
+    alert(
+      `Formulário enviado com sucesso!\nNome: ${data.nome}\nE-mail: ${data.email}`
+    );
   };
 
   return (
@@ -64,9 +66,7 @@ export function BasicFormExample() {
                 <FormControl>
                   <Input placeholder="Seu nome" {...field} />
                 </FormControl>
-                <FormDescription>
-                  Digite seu nome completo.
-                </FormDescription>
+                <FormDescription>Digite seu nome completo.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -79,15 +79,9 @@ export function BasicFormExample() {
               <FormItem>
                 <FormLabel>E-mail</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="seu@email.com"
-                    {...field}
-                  />
+                  <Input type="email" placeholder="seu@email.com" {...field} />
                 </FormControl>
-                <FormDescription>
-                  Digite um e-mail válido.
-                </FormDescription>
+                <FormDescription>Digite um e-mail válido.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
