@@ -11,9 +11,12 @@ import { useTranslation } from "react-i18next";
 function genderLabel(g?: string, t?: (k: string) => string) {
   if (!g) return "-";
   const v = g.toLowerCase();
-  if (["male", "m", "masculino"].includes(v)) return t ? t("register.fields.gender.male") : "Masculino";
-  if (["female", "f", "feminino"].includes(v)) return t ? t("register.fields.gender.female") : "Feminino";
-  if (["other", "outro", "o", "não-binário", "nao-binario"].includes(v)) return t ? t("register.fields.gender.other") : "Outro";
+  if (["male", "m", "masculino"].includes(v))
+    return t ? t("register.fields.gender.male") : "Masculino";
+  if (["female", "f", "feminino"].includes(v))
+    return t ? t("register.fields.gender.female") : "Feminino";
+  if (["other", "outro", "o", "não-binário", "nao-binario"].includes(v))
+    return t ? t("register.fields.gender.other") : "Outro";
   return g;
 }
 
@@ -54,31 +57,60 @@ export function UserProfileCard({
           </Typography>
           <div className="w-full h-px bg-on-banner-text/60" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-1">
-            <ShowInfo header={t("register.fields.fullName")} label={user.name || "-"} />
+            <ShowInfo
+              header={t("register.fields.fullName")}
+              label={user.name || "-"}
+            />
             <ShowInfo header={t("common.email")} label={user.email || "-"} />
-            <ShowInfo header={t("register.fields.phone")} label={user.phone || "-"} />
+            <ShowInfo
+              header={t("register.fields.phone")}
+              label={user.phone || "-"}
+            />
             {user.document && (
               <ShowInfo
-                header={user.isForeign ? t("register.fields.document.passport") : t("register.fields.document.cpf")}
+                header={
+                  user.isForeign
+                    ? t("register.fields.document.passport")
+                    : t("register.fields.document.cpf")
+                }
                 label={user.document}
               />
             )}
             {user.gender && (
-              <ShowInfo header={t("register.fields.gender.label")} label={genderLabel(user.gender, t)} />
+              <ShowInfo
+                header={t("register.fields.gender.label")}
+                label={genderLabel(user.gender, t)}
+              />
             )}
             {user.rg && <ShowInfo header="RG" label={user.rg} />}
             {user.zipCode && (
-              <ShowInfo header={t("register.fields.zip.cep") + "/" + t("register.fields.zip.zip")} label={user.zipCode} />
+              <ShowInfo
+                header={
+                  t("register.fields.zip.zip")
+                }
+                label={user.zipCode}
+              />
             )}
             {user.addressLine && (
-              <ShowInfo header={t("register.fields.address")} label={user.addressLine} />
+              <ShowInfo
+                header={t("register.fields.address")}
+                label={user.addressLine}
+              />
             )}
-            {user.city && <ShowInfo header={t("register.fields.city")} label={user.city} />}
+            {user.city && (
+              <ShowInfo header={t("register.fields.city")} label={user.city} />
+            )}
             {user.number !== undefined && (
-              <ShowInfo header={t("register.fields.number")} label={String(user.number)} />
+              <ShowInfo
+                header={t("register.fields.number")}
+                label={String(user.number)}
+              />
             )}
             {(user as any).function && (
-              <ShowInfo header={t("common.function")} label={(user as any).function} />
+              <ShowInfo
+                header={t("common.function")}
+                label={(user as any).function}
+              />
             )}
           </div>
         </section>
@@ -92,12 +124,19 @@ export function UserProfileCard({
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex-1 grid grid-cols-1">
               {user.institution && (
-                <ShowInfo header={t("register.fields.institution")} label={user.institution} />
+                <ShowInfo
+                  header={t("register.fields.institution")}
+                  label={user.institution}
+                />
               )}
             </div>
             <div className="flex flex-row flex-wrap items-center gap-4">
               <Button
-                label={verified ? t("profile.card.docency.proofSent") : t("profile.card.docency.sendProof")}
+                label={
+                  verified
+                    ? t("profile.card.docency.receiptSent")
+                    : t("profile.card.docency.sendReceipt")
+                }
                 variant="gray"
                 className="px-6 py-3 text-sm font-medium rounded-md disabled:opacity-50"
                 onClick={onSendDocument}

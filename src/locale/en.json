@@ -2,7 +2,6 @@
     "home": "Home",
     "reserve": "Reserve",
     "myReservations": "My Reservations",
-    "admin": "Admin",
 
     "common": {
         "menu": "Menu",
@@ -17,6 +16,14 @@
         "cart": "Cart",
         "email": "Email",
         "function": "Role"
+    },
+    "status": {
+        "confirmada": "Confirmed",
+        "pagamento_pendente": "Payment pending",
+        "cadastro_pendente": "Registration pending",
+        "aguardando_aprovacao": "Awaiting approval",
+        "cancelada": "Cancelled",
+        "desconhecido": "Unknown"
     },
 
     "nav": {
@@ -82,9 +89,9 @@
             "title": "Login",
             "email": "Email",
             "password": "Password",
-            "emailPlaceholder": "you@email.com",
+            "emailPlaceholder": "your@email.com",
             "passwordPlaceholder": "Your password",
-            "forgot": "I forgot my password",
+            "forgot": "Forgot password",
             "submit": "Login",
             "submitting": "Logging in...",
             "register": "Sign up",
@@ -97,7 +104,7 @@
         "forgot": {
             "title": "Forgot password",
             "email": "Email",
-            "emailPlaceholder": "you@email.com",
+            "emailPlaceholder": "your@email.com",
             "helper": "You'll receive an email to reset your password if an account exists.",
             "submit": "Send",
             "submitting": "Sending...",
@@ -107,9 +114,9 @@
         },
         "reset": {
             "title": "Reset password",
-            "newPassword": "New password*",
+            "newPassword": "New password",
             "newPasswordPlaceholder": "New password",
-            "confirmPassword": "Confirm password*",
+            "confirmPassword": "Confirm password",
             "confirmPasswordPlaceholder": "Confirm password",
             "submit": "Confirm",
             "submitting": "Confirming...",
@@ -135,7 +142,7 @@
             "professional": "Professional Information"
         },
         "fields": {
-            "notBrazilian": "I am not Brazilian",
+            "notBrazilian": "I'm not Brazilian",
             "fullName": "Full name",
             "phone": "Phone",
             "document": {
@@ -152,7 +159,6 @@
             },
             "rg": "RG",
             "zip": {
-                "cep": "ZIP Code",
                 "zip": "ZIP CODE"
             },
             "country": "Country",
@@ -169,19 +175,19 @@
                 "label": "Select your Role",
                 "select": "Select your Role",
                 "student": "Student",
-                "teacher": "Teacher",
+                "teacher": "Professor",
                 "researcher": "Researcher",
                 "employee": "Employee",
                 "other": "Other"
             },
             "docency": {
-                "ask": "I would like to request a teacher registration",
-                "proofLabel": "Teaching Proof (PDF) - Optional",
-                "proofHint": "You can upload the proof now or later when editing your profile. Max 20MB.",
+                "ask": "I would like to request a professor registration",
+                "receiptLabel": "Teaching Receipt (PDF) - Optional",
+                "receiptHint": "You can upload the receipt now or later when editing your profile. Max 20MB.",
                 "uploaded": "✓ {{name}}"
             },
             "terms": {
-                "accept": "I accept the {{terms}} and the {{privacy}} of PRÓ-MATA *",
+                "accept": "I accept the {{terms}} and the {{privacy}} of PRÓ-MATA*",
                 "terms": "Terms of Use",
                 "privacy": "Privacy Policy"
             }
@@ -207,10 +213,10 @@
         "nameRequired": "Enter your full name",
         "phoneRequired": "Enter your phone number",
         "genderRequired": "Select your gender",
-        "zipRequired": "Enter the ZIP/CEP",
+    "zipRequired": "Enter ZIP code",
         "countryRequired": "Enter the country",
         "addressRequired": "Address is required",
-        "cityNumberBrazilRequired": "City and number are required for Brazilians",
+        
         "cep8": "CEP must contain 8 digits",
         "cpfInvalid": "Invalid CPF",
         "rgInvalid": "Invalid RG",

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
@@ -35,126 +35,128 @@ import { CanvasCard } from "@/components/cards";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-const formSchema = z
-  .object({
-    name: z.string().min(2, "validation.nameRequired" as unknown as string),
-    email: z.email("validation.email" as unknown as string),
-    phone: z.string().min(8, "validation.phoneRequired" as unknown as string),
-    document: z.string().optional().default(""),
-    rg: z.string().optional().default(""),
-    gender: z.string().min(1, "validation.genderRequired" as unknown as string),
-    zipCode: z.string().min(5, "validation.zipRequired" as unknown as string),
-    country: z.string().min(2, "validation.countryRequired" as unknown as string),
-    isForeign: z.boolean().default(false),
-    addressLine: z.string().optional().default(""),
-    city: z.string().optional(),
-    number: z.string().optional(),
-    password: z.string().min(6, "validation.passwordMin" as unknown as string),
-    confirmPassword: z.string().min(6, "validation.passwordsMustMatch" as unknown as string),
-    institution: z.string().optional().default(""),
-    function: z.string().optional().default(""),
-    wantsDocencyRegistration: z.boolean().default(false),
-    docencyDocument: z.instanceof(File).optional(),
-    acceptTerms: z.boolean().refine((val) => val === true, {
-      message: "validation.mustAcceptTerms" as unknown as string,
-    }),
-  })
-  .superRefine((data, ctx) => {
-    if (data.password !== data.confirmPassword) {
-      ctx.addIssue({
-        code: "custom",
-        message: "validation.passwordsMustMatch" as unknown as string,
-        path: ["confirmPassword"],
-      });
-    }
-
-    if (data.docencyDocument) {
-      if (data.docencyDocument.type !== "application/pdf") {
-        ctx.addIssue({
-          code: "custom",
-            message: "validation.pdfOnly" as unknown as string,
-          path: ["docencyDocument"],
-        });
-      }
-      if (data.docencyDocument.size > 20 * 1024 * 1024) {
-        ctx.addIssue({
-          code: "custom",
-            message: "validation.max20mb" as unknown as string,
-          path: ["docencyDocument"],
-        });
-      }
-    }
-
-    if (!data.isForeign) {
-      if (!data.city || data.city.length < 2) {
-        ctx.addIssue({
-          code: "custom",
-          message: "validation.cityNumberBrazilRequired" as unknown as string,
-          path: ["city"],
-        });
-      }
-      if (!data.number || data.number.length < 1) {
-        ctx.addIssue({
-          code: "custom",
-          message: "validation.cityNumberBrazilRequired" as unknown as string,
-          path: ["number"],
-        });
-      }
-      if (!data.addressLine || data.addressLine.length < 2) {
-        ctx.addIssue({
-          code: "custom",
-          message: "validation.addressRequired" as unknown as string,
-          path: ["addressLine"],
-        });
-      }
-      if (!isValidBrazilZip(data.zipCode)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "validation.cep8" as unknown as string,
-          path: ["zipCode"],
-        });
-      }
-      if (!data.document || !isValidCpf(data.document)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "validation.cpfInvalid" as unknown as string,
-          path: ["document"],
-        });
-      }
-      if (!data.rg || digitsOnly(data.rg).length < 5) {
-        ctx.addIssue({
-          code: "custom",
-          message: "validation.rgInvalid" as unknown as string,
-          path: ["rg"],
-        });
-      }
-    } else {
-      if (!isValidForeignZip(data.zipCode)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "validation.zipInvalid" as unknown as string,
-          path: ["zipCode"],
-        });
-      }
-    }
-  });
-
-type FormData = z.infer<typeof formSchema>;
 
 export function RegisterUser() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const formSchema = useMemo(() =>
+    z
+      .object({
+        name: z.string().min(2, t("validation.nameRequired")),
+        email: z.email(t("validation.email")),
+        phone: z.string().min(8, t("validation.phoneRequired")),
+        document: z.string().optional().default(""),
+        rg: z.string().optional().default(""),
+        gender: z.string().min(1, t("validation.genderRequired")),
+        zipCode: z.string().min(5, t("validation.zipRequired")),
+        country: z.string().min(2, t("validation.countryRequired")),
+        isForeign: z.boolean().default(false),
+        addressLine: z.string().optional().default(""),
+        city: z.string().optional(),
+        number: z.string().optional(),
+        password: z.string().min(6, t("validation.passwordMin")),
+        confirmPassword: z.string().min(6, t("validation.passwordMin")),
+        institution: z.string().optional().default(""),
+        function: z.string().optional().default(""),
+        wantsDocencyRegistration: z.boolean().default(false),
+        docencyDocument: z.instanceof(File).optional(),
+        acceptTerms: z.boolean().refine((val) => val === true, {
+          message: t("validation.mustAcceptTerms"),
+        }),
+      })
+      .superRefine((data, ctx) => {
+        if (data.password !== data.confirmPassword) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("validation.passwordsMustMatch"),
+            path: ["confirmPassword"],
+          });
+        }
+
+        if (data.docencyDocument) {
+          if (data.docencyDocument.type !== "application/pdf") {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.pdfOnly"),
+              path: ["docencyDocument"],
+            });
+          }
+          if (data.docencyDocument.size > 20 * 1024 * 1024) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.max20mb"),
+              path: ["docencyDocument"],
+            });
+          }
+        }
+
+        if (!data.isForeign) {
+          if (!data.city || data.city.length < 2) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.cityRequired"),
+              path: ["city"],
+            });
+          }
+          if (!data.number || data.number.length < 1) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.numberRequired"),
+              path: ["number"],
+            });
+          }
+          if (!data.addressLine || data.addressLine.length < 2) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.addressRequired"),
+              path: ["addressLine"],
+            });
+          }
+          if (!isValidBrazilZip(data.zipCode)) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.cep8"),
+              path: ["zipCode"],
+            });
+          }
+          if (!data.document || !isValidCpf(data.document)) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.cpfInvalid"),
+              path: ["document"],
+            });
+          }
+          if (!data.rg || digitsOnly(data.rg).length < 5) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.rgInvalid"),
+              path: ["rg"],
+            });
+          }
+        } else {
+          if (!isValidForeignZip(data.zipCode)) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.zipInvalid"),
+              path: ["zipCode"],
+            });
+          }
+        }
+    }),
+  // Recreate schema when language changes so messages are translated
+  [i18n.language]
+  );
+
+  type FormData = z.infer<typeof formSchema>;
   const [autoFilled, setAutoFilled] = useState({
     addressLine: false,
     city: false,
   });
   const { mutate: registerUser, isPending } = useRegisterUser();
-  const form = useForm<
-    z.input<typeof formSchema>,
-    any,
-    z.output<typeof formSchema>
-  >({
+  const form = useForm<z.input<typeof formSchema>, any, z.output<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       name: "",
       email: "",
@@ -180,6 +182,15 @@ export function RegisterUser() {
 
   const isForeign = form.watch("isForeign");
   const watchedZip = form.watch("zipCode");
+
+  // Re-run validation on language change to update visible messages
+  useEffect(() => {
+    // Clear and re-trigger to replace message strings
+    form.clearErrors();
+    // Small timeout allows UI to re-render before triggering
+    const id = setTimeout(() => form.trigger(), 0);
+    return () => clearTimeout(id);
+  }, [i18n.language]);
 
   const {
     isLoading: isFetchingCep,
@@ -298,6 +309,8 @@ export function RegisterUser() {
                           } else {
                             form.setValue("country", "Brasil");
                           }
+                          // Re-run validation to clear/set field errors according to new mode
+                          setTimeout(() => form.trigger(["city", "number", "zipCode", "document", "rg", "addressLine", "country"]), 0);
                         }}
                       />
                       <Label htmlFor="isForeign">
@@ -323,8 +336,9 @@ export function RegisterUser() {
                       required
                       placeholder={t("register.fields.fullName")}
                       {...field}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -340,8 +354,9 @@ export function RegisterUser() {
                       type="email"
                       placeholder={t("auth.login.emailPlaceholder")}
                       {...field}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -360,8 +375,9 @@ export function RegisterUser() {
                         const digits = digitsOnly(e.target.value).slice(0, 11);
                         field.onChange(maskPhone(digits));
                       }}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -385,8 +401,9 @@ export function RegisterUser() {
                           field.onChange(masked);
                         }
                       }}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -414,7 +431,7 @@ export function RegisterUser() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -434,8 +451,9 @@ export function RegisterUser() {
                         const digits = digitsOnly(e.target.value).slice(0, 15);
                         field.onChange(digits);
                       }}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -446,7 +464,7 @@ export function RegisterUser() {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label={isForeign ? t("register.fields.zip.zip") : t("register.fields.zip.cep")}
+                      label={t("register.fields.zip.zip")}
                       required
                       placeholder={isForeign ? "12345" : "98460-000"}
                       value={maskCep(field.value || "")}
@@ -458,8 +476,9 @@ export function RegisterUser() {
                         }
                         field.onChange(masked);
                       }}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -499,7 +518,7 @@ export function RegisterUser() {
                         />
                       )}
                     </div>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -517,8 +536,9 @@ export function RegisterUser() {
                         isForeign || autoFilled.addressLine || isFetchingCep
                       }
                       {...field}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -535,7 +555,7 @@ export function RegisterUser() {
                       disabled={isForeign || autoFilled.city || isFetchingCep}
                       {...field}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -552,7 +572,7 @@ export function RegisterUser() {
                       disabled={isForeign}
                       {...field}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -578,7 +598,7 @@ export function RegisterUser() {
                         placeholder={t("register.fields.password")}
                         {...field}
                       />
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -595,7 +615,7 @@ export function RegisterUser() {
                         placeholder={t("register.fields.confirmPassword")}
                         {...field}
                       />
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -620,7 +640,7 @@ export function RegisterUser() {
                         placeholder={t("register.fields.institutionPlaceholder")}
                         {...field}
                       />
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -650,7 +670,7 @@ export function RegisterUser() {
                           </SelectContent>
                         </Select>
                       </div>
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -673,7 +693,7 @@ export function RegisterUser() {
                         </Typography>
                       </Label>
                     </div>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -700,16 +720,16 @@ export function RegisterUser() {
                               const file = e.target.files?.[0];
                               onChange(file);
                             }}
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-900 hover:file:bg-yellow-100"
+                            className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-900 hover:file:bg-yellow-100"
                           />
                             {value && (
-                            <Typography className="text-sm text-green-600">
+                            <Typography className="text-sm text-contrast-green">
                               {t("register.fields.docency.uploaded", { name: value.name })}
                             </Typography>
                           )}
                         </div>
                       </div>
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -735,7 +755,7 @@ export function RegisterUser() {
                         </Typography>
                       </Label>
                     </div>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
