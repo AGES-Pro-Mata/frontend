@@ -35,6 +35,12 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
   const isLoggedIn = !!user;
   const cartItemCount = useCartStore((state) => state.itemCount);
   const { logout } = useLogout();
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
 
   return (
@@ -44,7 +50,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         className
       )}
     >
-      <Link to="/">
+      <Link to="/" onClick={handleLogoClick}>
         <img
           src="/logo-pro-mata.svg"
           alt="Logo Pro Mata"

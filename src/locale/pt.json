@@ -85,6 +85,34 @@
     "book": "Fazer Reserva"
   },
 
+  "homeCards": {
+    "cta": "Ver mais",
+    "labs": {
+      "title": "Laboratórios",
+      "description": "Espaços equipados para pesquisas científicas e projetos acadêmicos."
+    },
+    "rooms": {
+      "title": "Quartos",
+      "description": "Espaços confortáveis para hospedagem acadêmica e turística."
+    },
+    "events": {
+      "title": "Eventos",
+      "description": "Estrutura para palestras, seminários e congressos."
+    },
+    "trails": {
+      "title": "Trilhas",
+      "description": "Caminhos ecológicos para exploração e aprendizado."
+    }
+  },
+
+  "carousel": {
+    "title": "Conheça seu Destino!",
+    "subtitle": "Conheça alguns dos cenários deslumbrantes que você encontrará no {{brand}}",
+    "prev": "Anterior",
+    "next": "Próximo",
+    "imageAlt": "Cenário do {{brand}} {{index}}"
+  },
+
   "auth": {
     "login": {
       "title": "Login",
@@ -159,9 +187,7 @@
         "other": "Outro"
       },
       "rg": "RG",
-      "zip": {
-        "zip": "CEP"
-      },
+      "zip": "CEP",
       "country": "País",
       "selectCountry": "Selecione o país",
       "address": "Endereço",
@@ -227,5 +253,14 @@
     "mustAcceptTerms": "Você deve aceitar os termos de uso",
     "cityRequired": "Cidade é obrigatória",
     "numberRequired": "Número é obrigatório"
+  }
+  ,
+  "footer": {
+    "contact": "Entre em contato",
+    "researchCenter": "Centro de Pesquisas PRÓ-MATA",
+    "city": "CIDADE",
+    "phone": "Telefone: (XX) XXXX-XXXX",
+    "email": "E-mail: contato@pro-mata.org",
+    "copyright": "© {{year}} PRÓ-MATA. Todos os direitos reservados."
   }
 }

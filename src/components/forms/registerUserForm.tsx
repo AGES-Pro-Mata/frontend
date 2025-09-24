@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
@@ -155,7 +155,7 @@ export function RegisterUser() {
   const { mutate: registerUser, isPending } = useRegisterUser();
   const form = useForm<z.input<typeof formSchema>, any, z.output<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: "onChange",
+    mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
       name: "",
@@ -183,13 +183,18 @@ export function RegisterUser() {
   const isForeign = form.watch("isForeign");
   const watchedZip = form.watch("zipCode");
 
-  // Re-run validation on language change to update visible messages
+  // Re-run validation on language change only for fields that already have errors, and skip on initial mount
+  const didMountLang = useRef(false);
   useEffect(() => {
-    // Clear and re-trigger to replace message strings
-    form.clearErrors();
-    // Small timeout allows UI to re-render before triggering
-    const id = setTimeout(() => form.trigger(), 0);
-    return () => clearTimeout(id);
+    if (!didMountLang.current) {
+      didMountLang.current = true;
+      return;
+    }
+    const errorFields = Object.keys(form.formState.errors || {});
+    if (errorFields.length > 0) {
+      // retrigger only errored fields to refresh message language
+      void form.trigger(errorFields as any);
+    }
   }, [i18n.language]);
 
   const {
@@ -464,7 +469,7 @@ export function RegisterUser() {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label={t("register.fields.zip.zip")}
+                      label={t("register.fields.zip")}
                       required
                       placeholder={isForeign ? "12345" : "98460-000"}
                       value={maskCep(field.value || "")}
@@ -706,10 +711,10 @@ export function RegisterUser() {
                     <FormItem>
                       <div className="flex flex-col gap-2">
                         <Typography className="text-foreground font-medium">
-                          {t("register.fields.docency.proofLabel")}
+                          {t("register.fields.docency.receiptLabel")}
                         </Typography>
                         <Typography className="text-sm text-muted-foreground">
-                          {t("register.fields.docency.proofHint")}
+                          {t("register.fields.docency.receiptHint")}
                         </Typography>
                         <div className="flex items-center gap-4">
                           <input

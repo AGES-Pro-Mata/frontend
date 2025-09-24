@@ -2,8 +2,10 @@ import { useState, useRef, useLayoutEffect } from "react";
 import { Typography } from "@/components/typography/typography";
 import { Button } from "@/components/buttons/defaultButton";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Carousel() {
+  const { t } = useTranslation();
   const recursos = [
     "/mock/infrastructure-0.jpg",
     "/mock/trail-1.jpg",
@@ -81,13 +83,12 @@ export function Carousel() {
     <div className="flex flex-col mb-[clamp(0.25rem,1.2vw,0.625rem)] items-center w-full max-w-[clamp(60rem,90vw,72rem)] h-fit scale-100 sm:scale-[0.9] mx-auto">
       <div className="w-fit flex flex-col items-center">
         <Typography className="inline-block text-[clamp(1.75rem,4.5vw,2.25rem)] m-0 p-0 font-bold text-on-banner-text">
-          Conheça seu Destino!
+          {t("carousel.title")}
         </Typography>
         <div className="w-full h-[clamp(1px,0.2vh,2px)] bg-on-banner-text mt-[clamp(0.125rem,0.5vh,0.25rem)] mb-[clamp(0.75rem,3vw,1.5rem)]" />
       </div>
       <Typography className="text-black text-[clamp(1.125rem,2.5vw,1.375rem)] font-bold mb-[clamp(1.5rem,4vw,2.5rem)]">
-        Conheça alguns dos cenários deslumbrantes que você encontrará no
-        PRÓ-MATA
+        {t("carousel.subtitle", { brand: "PRÓ-MATA" })}
       </Typography>
 
       {/* imagem grande */}
@@ -95,6 +96,7 @@ export function Carousel() {
         <div className="flex flex-1 h-full rounded-[clamp(0.625rem,1.8vw,0.9375rem)] overflow-hidden">
           <img
             src={recursos[selected]}
+            alt={t("carousel.imageAlt", { brand: "PRÓ-MATA", index: selected + 1 })}
             className="h-full w-full object-cover object-center box-border select-none"
           />
         </div>
@@ -105,7 +107,7 @@ export function Carousel() {
         <Button
           variant="ghost"
           onClick={prev}
-          aria-label="Anterior"
+          aria-label={t("carousel.prev")}
           label={
             <span className="w-full h-full grid place-items-center">
               <ArrowLeft className="block w-[90%] h-[90%]" strokeWidth={3} />
@@ -137,6 +139,7 @@ export function Carousel() {
               >
                 <img
                   src={src}
+                  alt={t("carousel.imageAlt", { brand: "PRÓ-MATA", index: i + 1 })}
                   className="h-full w-full object-cover object-center box-border select-none"
                 />
               </div>
@@ -147,7 +150,7 @@ export function Carousel() {
         <Button
           variant="ghost"
           onClick={next}
-          aria-label="Próximo"
+          aria-label={t("carousel.next")}
           label={
             <span className="w-full h-full grid place-items-center">
               <ArrowRight className="block w-[90%] h-[90%]" strokeWidth={3} />

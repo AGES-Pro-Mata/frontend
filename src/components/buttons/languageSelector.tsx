@@ -2,7 +2,17 @@ import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 
-export default function LanguageSelect() {
+type LanguageSelectProps = {
+  orientation?: "vertical" | "horizontal";
+  variant?: "header" | "drawer"; // drawer gets inverted colors
+  className?: string;
+};
+
+export default function LanguageSelect({
+  orientation = "vertical",
+  variant = "header",
+  className = "",
+}: LanguageSelectProps) {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const routerState = useRouterState();
@@ -39,28 +49,36 @@ export default function LanguageSelect() {
     });
   };
 
+  const isDrawer = variant === "drawer";
+  const baseWrap = orientation === "horizontal" ? "flex-row gap-2" : "flex-col";
+  const colorSelected = isDrawer ? "bg-white/15 text-white" : "underline font-semibold";
+  const colorIdle = isDrawer ? "text-white/80 hover:text-white" : "text-main-dark-green";
+  const itemBase = isDrawer
+    ? "px-2 py-1 rounded-md text-xs"
+    : "text-sm font-medium";
+
   return (
-    <div className="flex flex-col text-sm font-medium items-center select-none">
-      <span
+    <div className={`flex items-center select-none ${baseWrap} ${className}`}>
+      <button
+        type="button"
         onClick={() => setLanguage("PT")}
-        role="button"
         aria-label="Mudar para Português"
-        className={`cursor-pointer hover:opacity-70 ${
-          current === "PT" ? "underline font-semibold" : "text-main-dark-green"
+        className={`cursor-pointer transition-colors ${itemBase} ${
+          current === "PT" ? colorSelected : colorIdle
         }`}
       >
         PT
-      </span>
-      <span
+      </button>
+      <button
+        type="button"
         onClick={() => setLanguage("EN")}
-        role="button"
         aria-label="Switch to English"
-        className={`cursor-pointer hover:opacity-70 ${
-          current === "EN" ? "underline font-semibold" : "text-main-dark-green"
+        className={`cursor-pointer transition-colors ${itemBase} ${
+          current === "EN" ? colorSelected : colorIdle
         }`}
       >
         EN
-      </span>
+      </button>
     </div>
   );
 }

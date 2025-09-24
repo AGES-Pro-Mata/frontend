@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/api/user";
 import { useLogout } from "@/hooks/useLogout";
 import { useTranslation } from "react-i18next";
+import LanguageSelect from "@/components/buttons/languageSelector";
 
 export function HeaderDrawerMobile() {
   const { t } = useTranslation();
@@ -29,7 +30,7 @@ export function HeaderDrawerMobile() {
         </Button>
       </DrawerTrigger>
 
-      <DrawerContent className="h-full w-80 bg-gradient-to-b from-main-dark-green via-main-dark-green/95 to-main-dark-green/90 text-white border-r border-main-dark-green shadow-xl">
+      <DrawerContent className="h-full w-80 bg-gradient-to-b from-main-dark-green via-main-dark-green/95 to-main-dark-green/90 text-white border-r border-main-dark-green shadow-xl flex flex-col">
         <DrawerHeader className="!flex-row justify-between items-center gap-4 px-5 py-4">
           <div className="flex items-center gap-3">
             <DrawerClose asChild>
@@ -39,10 +40,10 @@ export function HeaderDrawerMobile() {
             </DrawerClose>
             <DrawerTitle className="text-lg font-semibold tracking-wide">{t("common.menu")}</DrawerTitle>
           </div>
-          <div className="flex items-center gap-2 text-xs font-medium bg-white/10 px-2 py-1 rounded-md">PT / EN</div>
+          {/* keep header minimal on mobile */}
         </DrawerHeader>
         <Separator className="opacity-30" />
-        <nav className="flex flex-col gap-1 px-3 py-5 overflow-y-auto text-sm font-medium">
+        <nav className="flex-1 flex flex-col gap-1 px-3 py-5 overflow-y-auto text-sm font-medium">
           <section className="flex flex-col gap-1">
             <DrawerClose asChild>
               <Link to="/" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
@@ -89,19 +90,21 @@ export function HeaderDrawerMobile() {
               </DrawerClose>
             </section>
           )}
-          {isLoggedIn && (
-            <section className="mt-auto pt-4 flex flex-col gap-2">
-              <DrawerClose asChild>
-                <button
-                  onClick={logout}
-                  className="flex items-center gap-3 rounded-md px-3 py-2 text-left hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
-                >
-                  <LogOut className="size-4" /> {t("nav.logout")}
-                </button>
-              </DrawerClose>
-            </section>
-          )}
         </nav>
+        {/* Footer with language selector and logout pinned at bottom */}
+        <div className="mt-auto px-3 py-4 border-t border-white/10 flex items-center justify-between gap-3">
+          <LanguageSelect variant="drawer" orientation="horizontal" />
+          {isLoggedIn && (
+            <DrawerClose asChild>
+              <button
+                onClick={logout}
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-left hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
+              >
+                <LogOut className="size-4" /> {t("nav.logout")}
+              </button>
+            </DrawerClose>
+          )}
+        </div>
       </DrawerContent>
     </Drawer>
   );

@@ -84,6 +84,34 @@
         "book": "Make a Reservation"
     },
 
+    "homeCards": {
+        "cta": "Learn more",
+        "labs": {
+            "title": "Laboratories",
+            "description": "Spaces equipped for scientific research and academic projects."
+        },
+        "rooms": {
+            "title": "Rooms",
+            "description": "Comfortable spaces for academic and tourist lodging."
+        },
+        "events": {
+            "title": "Events",
+            "description": "Facilities for lectures, seminars, and conferences."
+        },
+        "trails": {
+            "title": "Trails",
+            "description": "Ecological paths for exploration and learning."
+        }
+    },
+
+    "carousel": {
+        "title": "Discover your destination!",
+        "subtitle": "Explore some of the stunning views you'll find at {{brand}}",
+        "prev": "Previous",
+        "next": "Next",
+        "imageAlt": "{{brand}} scenery {{index}}"
+    },
+
     "auth": {
         "login": {
             "title": "Login",
@@ -158,9 +186,7 @@
                 "other": "Other"
             },
             "rg": "RG",
-            "zip": {
-                "zip": "ZIP CODE"
-            },
+            "zip":  "ZIP CODE",
             "country": "Country",
             "selectCountry": "Select country",
             "address": "Address",
@@ -227,4 +253,13 @@
         "cityRequired": "City is required",
         "numberRequired": "Number is required"
     }
+        ,
+        "footer": {
+            "contact": "Contact us",
+            "researchCenter": "PRÓ-MATA Research Center",
+            "city": "CITY",
+            "phone": "Phone: (XX) XXXX-XXXX",
+            "email": "Email: contato@pro-mata.org",
+            "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
+        }
 }

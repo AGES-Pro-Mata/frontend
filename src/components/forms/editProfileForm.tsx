@@ -354,7 +354,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                   return (
                     <FormItem>
                       <TextInput
-                        label={isForeign ? t("register.fields.zip.zip") : t("register.fields.zip.cep")}
+                        label={t("register.fields.zip")}
                         required
                         placeholder={isForeign ? "12345" : "00000-000"}
                         value={maskCep(digitsOnly(field.value || ""))}
@@ -542,7 +542,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                     <FormItem>
                       <div className="flex flex-col gap-2">
                         <Typography className="text-foreground font-medium">
-                          {t("register.fields.docency.proofLabel")}
+                          {t("register.fields.docency.receiptLabel")}
                         </Typography>
                         <Typography className="text-sm text-muted-foreground">
                           {canUpload

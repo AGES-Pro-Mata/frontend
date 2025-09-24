@@ -86,7 +86,7 @@ export function UserProfileCard({
             {user.zipCode && (
               <ShowInfo
                 header={
-                  t("register.fields.zip.zip")
+                  t("register.fields.zip")
                 }
                 label={user.zipCode}
               />

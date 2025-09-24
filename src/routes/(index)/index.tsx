@@ -2,7 +2,7 @@ import { Carousel } from "@/components/carousel/carousel";
 import { CardsInfoOnHover } from "@/components/cards/cardInfoOnHover";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button, DefaultButton } from "@/components/buttons/defaultButton";
-import { InfoExperiencias } from "@/components/ui/info-experiencias-home";
+import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
 import { useTranslation } from "react-i18next";
 
@@ -68,7 +68,7 @@ function RouteComponent() {
       </div>
       <div className="h-[clamp(2.5rem,6vh,5rem)] w-full bg-main-dark-green" />
       <div className="px-4 sm:px-6 lg:px-8 py-[clamp(2rem,6vw,5rem)] flex flex-col items-center">
-        <InfoExperiencias />
+        <InfoExperiencies />
         <CardsInfoOnHover />
         <Carousel />
         <div className="flex flex-col items-center mb-[clamp(2rem,5vw,3.75rem)] justify-center">
