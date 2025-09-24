@@ -23,6 +23,7 @@ function mapCurrentUserToProfile(
     number: parsedNumber,
     institution: user.institution,
     country: user.address?.country,
+    isForeign: user.isForeign ?? undefined,
   function: (user as any).function || (user as any).role || undefined,
   };
 }

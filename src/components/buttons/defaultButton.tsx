@@ -26,7 +26,7 @@ export function DefaultButton({
     primary:
       "shadow-sm bg-contrast-green text-white hover:bg-contrast-green/90 active:bg-contrast-green/70",
     secondary:
-      "shadow-sm bg-banner text-on-banner-text border border-banner hover:bg-banner/90 active:bg-banner/70 hover:border-banner",
+      "shadow-sm bg-banner text-on-banner-text hover:bg-banner/90 active:bg-banner/70 hover:border-banner",
     gray:
       "shadow-sm bg-dark-gray text-white hover:bg-dark-gray/90 active:bg-dark-gray/70",
     destructive:

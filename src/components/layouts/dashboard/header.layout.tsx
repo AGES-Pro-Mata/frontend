@@ -17,19 +17,31 @@ import { HeaderButton } from "@/components/buttons/headerButton";
 import { useQuery } from "@tanstack/react-query";
 import { useLogout } from "@/hooks/useLogout";
 import { MoonLoader } from "react-spinners";
+import { useTranslation } from "react-i18next";
+import LanguageSelect from "@/components/buttons/languageSelector";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
   className?: string;
 };
 
+// Language switcher moved to shared LanguageSelect component
+
 export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
+  const { t } = useTranslation();
   const pathname = useRouterState().location.pathname;
   const isAdmin = useIsAdmin();
   const { data: user, isPending: isLoading } = useQuery(userQueryOptions);
   const isLoggedIn = !!user;
   const cartItemCount = useCartStore((state) => state.itemCount);
   const { logout } = useLogout();
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
 
   return (
     <div
@@ -38,22 +50,23 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         className
       )}
     >
-      <Link to="/">
+      <Link to="/" onClick={handleLogoClick}>
         <img
           src="/logo-pro-mata.svg"
           alt="Logo Pro Mata"
           className="w-40 object-fit"
         />
       </Link>
+
       <div className="hidden md:flex justify-around gap-6 lg:gap-10 items-center w-auto">
         <HeaderButton
-          label="Início"
+          label={t("home")}
           to="/"
           icon={<Mountain />}
           selected={pathname === "/"}
         />
         <HeaderButton
-          label="Reservar"
+          label={t("reserve")}
           to="/reserve"
           icon={<Building2 />}
           selected={pathname === "/reserve"}
@@ -63,7 +76,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         ) : (
           isLoggedIn && (
             <HeaderButton
-              label="Minhas reservas"
+              label={t("myReservations")}
               to="/user/my-reservations"
               icon={<CalendarDays />}
               selected={pathname === "/user/my-reservations"}
@@ -75,7 +88,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         ) : (
           isAdmin && (
             <HeaderButton
-              label="Administrador"
+              label={t("admin")}
               to="/admin/reports"
               icon={<LayoutDashboard />}
               selected={pathname === "/admin/reports"}
@@ -83,6 +96,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
           )
         )}
       </div>
+
       <div className="hidden md:flex w-auto justify-end items-center gap-6">
         {isLoading ? (
           <MoonLoader size={20} />
@@ -99,19 +113,19 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         ) : (
           <HeaderButton
             secondary
-            label="Entrar"
+            label={t("nav.login")}
             to="/auth/login"
             icon={<LogIn />}
           />
         )}
-        <HeaderButton secondary label="PT / EN" />
+  <LanguageSelect />
         {isLoading ? (
           <MoonLoader size={20} />
         ) : (
           isLoggedIn && (
             <HeaderButton
               secondary
-              label="Sair"
+              label={t("nav.logout")}
               icon={<LogOut />}
               onClick={logout}
             />
