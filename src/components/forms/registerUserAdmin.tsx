@@ -45,7 +45,7 @@ const formSchema = z
     name: z.string().min(2, "Informe o nome completo"),
     email: z.email("Digite um e-mail válido"),
     phone: z.string().min(8, "Informe o telefone"),
-    cpf: z.string().optional().default(""),
+    document: z.string().optional().default(""),
     rg: z.string().optional().default(""),
     gender: z.string().min(1, "Informe o gênero"),
     zipCode: z.string().min(5, "Informe o CEP/ZIP"),
@@ -88,11 +88,11 @@ const formSchema = z
           path: ["zipCode"],
         });
       }
-      if (!data.cpf || !isValidCpf(data.cpf)) {
+      if (!data.document || !isValidCpf(data.document)) {
         ctx.addIssue({
           code: "custom",
           message: "CPF inválido",
-          path: ["cpf"],
+          path: ["document"],
         });
       }
       if (!data.rg || digitsOnly(data.rg).length < 5) {
@@ -132,7 +132,7 @@ export function RegisterUserAdmin() {
       name: "",
       email: "",
       phone: "",
-      cpf: "",
+      document: "",
       rg: "",
       gender: "",
       zipCode: "",
@@ -190,7 +190,7 @@ export function RegisterUserAdmin() {
       ...data,
       phone: sanitizedPhone,
       password: hashedPassword,
-      cpf: data.cpf ? maskCpf(data.cpf) : undefined,
+      document: data.document ? (isForeign ? data.document : maskCpf(data.document)) : undefined,
       rg: data.rg ? data.rg : undefined,
       userType: data.isAdmin
         ? "ADMIN"
@@ -246,7 +246,7 @@ export function RegisterUserAdmin() {
                         if (checked) {
                           form.setValue("city", "");
                           form.setValue("number", "");
-                          form.setValue("cpf", "");
+                          form.setValue("document", "");
                           form.setValue("rg", "");
                           form.setValue("country", "");
                         } else {
@@ -318,18 +318,22 @@ export function RegisterUserAdmin() {
 
             <FormField
               control={form.control}
-              name="cpf"
+              name="document"
               render={({ field }) => (
                 <FormItem>
                   <TextInput
-                    label="CPF"
-                    placeholder="XXX.XXX.XXX-XX"
-                    disabled={isForeign}
-                    value={maskCpf(field.value || "")}
+                    label={isForeign ? "Passaporte" : "CPF"}
+                    required
+                    placeholder={isForeign ? "Número do passaporte" : "XXX.XXX.XXX-XX"}
+                    value={isForeign ? field.value || "" : maskCpf(field.value || "")}
                     onChange={(e) => {
-                      const digits = digitsOnly(e.target.value).slice(0, 11);
-                      const masked = maskCpf(digits);
-                      field.onChange(masked);
+                      if (isForeign) {
+                        field.onChange(e.target.value);
+                      } else {
+                        const digits = digitsOnly(e.target.value).slice(0, 11);
+                        const masked = maskCpf(digits);
+                        field.onChange(masked);
+                      }
                     }}
                   />
                   <FormMessage />
