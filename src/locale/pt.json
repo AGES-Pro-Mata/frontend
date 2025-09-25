@@ -85,6 +85,23 @@
     "book": "Fazer Reserva"
   },
 
+  "experienceCard": {
+    "package": "Pacote",
+    "currencySymbol": "$",
+    "currencyPrefix": "R$",
+    "dateRange": "{{from}} a {{to}}",
+    "editInfo": "Editar informações",
+    "selectDateAndPeople": "Selecionar data e número de pessoas",
+    "men": "Homens",
+    "women": "Mulheres",
+    "selectedDate": "Data selecionada",
+    "chooseDate": "Escolha de Data",
+    "selectPeriodOnCalendar": "Selecione o período no calendário",
+    "selectAmountOfPeople": "Selecione a quantidade de pessoas",
+    "malePeople": "Número de pessoas do gênero masculino",
+    "femalePeople": "Número de pessoas do gênero feminino"
+  },
+
   "homeCards": {
     "cta": "Ver mais",
     "labs": {

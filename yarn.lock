@@ -1745,6 +1745,13 @@
   dependencies:
     undici-types "~7.10.0"
 
+"@types/react-day-picker@^5.2.1":
+  version "5.2.1"
+  resolved "https://registry.npmjs.org/@types/react-day-picker/-/react-day-picker-5.2.1.tgz"
+  integrity sha512-h1eWS/6RgtixUJTnosmYbyt0kmnZ+nkbSzspdvnTI6aGmuJ37VQap4CNV7jlEZ0ghiEL5oypMlk7IzNH1lDZ+g==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-dom@*", "@types/react-dom@^18.0.0 || ^19.0.0", "@types/react-dom@^19.1.8", "@types/react-dom@>=16.8":
   version "19.1.9"
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.1.9.tgz"

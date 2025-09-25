@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { ExperienceCategory } from "@/types/experiences";
+import { ExperienceCategory } from "@/types/experience";
 import React, { useEffect, useState } from "react";
 import {
   Upload,

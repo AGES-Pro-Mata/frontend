@@ -84,6 +84,23 @@
         "book": "Make a Reservation"
     },
 
+    "experienceCard": {
+        "package": "Package",
+        "currencySymbol": "$",
+        "currencyPrefix": "$",
+        "dateRange": "{{from}} to {{to}}",
+        "editInfo": "Edit information",
+        "selectDateAndPeople": "Select date and number of people",
+        "men": "Men",
+        "women": "Women",
+        "selectedDate": "Selected date",
+        "chooseDate": "Choose a Date",
+        "selectPeriodOnCalendar": "Select the period on the calendar",
+        "selectAmountOfPeople": "Select the amount of people",
+        "malePeople": "Number of male individuals",
+        "femalePeople": "Number of female individuals"
+    },
+
     "homeCards": {
         "cta": "Learn more",
         "labs": {
