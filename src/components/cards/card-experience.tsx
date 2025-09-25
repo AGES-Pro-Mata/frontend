@@ -36,24 +36,25 @@ export function CardExperience({ experience }: CardExperienceProps) {
 
   const labels = labelConfig[experience.category] ?? [];
 
-
-
   return (
-    <div className="bg-[#E7DED4] w-[450px] h-[400px] flex justify-center relative rounded-[20px] overflow-hidden">
-      <img src={`./mock/mock-${experience.category}.png`} className="flex h-[50%] w-[90%] object-cover mx-[15px] mt-[20px] box-border rounded-[15px]"></img>
-      <div className="flex flex-col absolute justify-between bg-[#E7DED4] h-[50%] w-full top-[200px] px-[15px] py-[15px] gap-[5px] shadow-[0_0px_12px_rgba(0,0,0,0.8)] z-[50]">
+    <div className="bg-[var(--color-card)] w-[450px] h-[400px] flex justify-center relative rounded-[20px] overflow-hidden">
+      <img
+        src={`./mock/mock-${experience.category}.png`}
+        className="flex h-[50%] w-[90%] object-cover mx-[15px] mt-[20px] box-border rounded-[15px]"
+      />
+      <div className="flex flex-col absolute justify-between bg-[var(--color-card)] h-[50%] w-full top-[200px] px-[15px] py-[15px] gap-[5px] shadow-[0_0px_12px_rgba(0,0,0,0.8)] z-[50]">
         <div className="flex flex-row gap-[10px] w-full flex-1">
           <div className="flex flex-col flex-1">
             <div className="flex flex-row items-center justify-start gap-[20px]">
-              <h3 className="font-bold leading-none flex p-0 m-0 text-[16px] text-[#2E361D]">
+              <h3 className="font-bold leading-none flex p-0 m-0 text-[16px] text-[var(--color-main-dark-green)]">
                 Nome da Experiência
-                <span className="capitalize flex w-fit leading-none items-center text-[10px] ml-[10px] text-[#484848] bg-[#DAD2C7] py-[4px] px-[12px] rounded-[30px] shadow-[inset_0_0px_2px_1px_rgba(0,0,0,0.3)]">
+                <span className="capitalize flex w-fit leading-none items-center text-[10px] ml-[10px] text-[var(--color-on-banner-text)] bg-[var(--color-banner)] py-[4px] px-[12px] rounded-[30px] shadow-[inset_0_0px_2px_1px_rgba(0,0,0,0.3)]">
                   {experience.category.charAt(0).toUpperCase() +
                     experience.category.slice(1).toLowerCase()}
                 </span>
               </h3>
             </div>
-            <p className="mt-[4px] text-[14px] p-0 m-0 h-[100px] overflow-y-auto text-[#6A6661] scrollbar-hide font-semibold">
+            <p className="mt-[4px] text-[14px] p-0 m-0 h-[100px] overflow-y-auto text-[var(--color-dark-gray)] scrollbar-hide font-semibold">
               Lorem ipsum dolor sit amet consectetur adipiscing elit feugiat,
               sociosqu conubia augue aenean orci faucibus felis venenatis cras,
               senectus enim fringilla dictumst pretium quisque dignissim. Massa
@@ -78,9 +79,9 @@ export function CardExperience({ experience }: CardExperienceProps) {
             {labels.map((label, idx) => (
               <div
                 key={idx}
-                className="flex flex-row bg-[#F6EDE4] shadow-[inset_0_0px_3px_1px_rgba(0,0,0,0.6)] rounded-[30px] items-center gap-2"
+                className="flex flex-row bg-[var(--color-card-labels)] shadow-[inset_0_0px_3px_1px_rgba(0,0,0,0.6)] rounded-[30px] items-center gap-2"
               >
-                <img src={label.icon} alt="" className="w-[auto] h-[28px]" />
+                <img src={label.icon} alt="" className="w-auto h-[28px]" />
                 <span className="text-[14px] font-semibold">{label.text}</span>
               </div>
             ))}
