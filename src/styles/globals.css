@@ -133,3 +133,13 @@ html.admin-active {
   max-height: 100% !important;
 }
 
+/* Esconde scrollbar mas mantém o scroll funcional */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE e Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
