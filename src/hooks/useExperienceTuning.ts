@@ -66,16 +66,21 @@ export function useExperienceTuning({
       to: range.to.toISOString(),
       savedAt: new Date().toISOString(),
     };
-  setSavedRange(range);
-  setSaved(true);
-  setSavedMen(menNum);
-  setSavedWomen(womenNum);
     if (storageKey) {
       try {
         localStorage.setItem(storageKey, JSON.stringify(payload));
+        setSavedRange(range);
+        setSaved(true);
+        setSavedMen(menNum);
+        setSavedWomen(womenNum);
       } catch (e) {
         console.warn("Unable to persist experience tuning data", e);
       }
+    } else {
+      setSavedRange(range);
+      setSaved(true);
+      setSavedMen(menNum);
+      setSavedWomen(womenNum);
     }
     onSave?.(payload);
     return payload;
