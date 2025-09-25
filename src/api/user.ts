@@ -11,7 +11,7 @@ export type CurrentUser = {
   name: string;
   email?: string;
   phone?: string;
-  cpf?: string;
+  document?: string;
   gender?: string;
   rg?: string;
   institution?: string;
@@ -40,7 +40,7 @@ export interface RegisterUserAdminPayload {
   name: string;
   email: string;
   phone: string;
-  cpf?: string;
+  document?: string;
   rg?: string;
   gender: string;
   zipCode: string;
@@ -61,7 +61,7 @@ export interface RegisterUserPayload {
   confirmPassword: string;
   phone: string;
   gender: string;
-  cpf?: string;
+  document?: string;
   rg?: string;
   country: string;
   userType: UserType;
@@ -108,7 +108,7 @@ export async function registerUserRequest(
   formData.append("institution", payload.institution || "");
   formData.append("city", payload.city || "");
 
-  if (payload.cpf) formData.append("cpf", payload.cpf);
+  if (payload.document) formData.append("document", payload.document);
   if (payload.number) formData.append("number", payload.number.toString());
   if (payload.rg) formData.append("rg", payload.rg);
   if (payload.teacherDocument)
@@ -176,29 +176,28 @@ export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
 
     const addressSchema = z
       .object({
-        street: z.string().optional(),
-        number: z.string().optional(),
-        city: z.string().optional(),
-        zip: z.string().optional(),
-        country: z.string().optional(),
-        updatedAt: z.string().datetime().optional(),
+        street: z.string().nullable(),
+        number: z.string().nullable(),
+        city: z.string().nullable(),
+        zip: z.string().nullable(),
+        country: z.string().nullable(),
+        updatedAt: z.iso.datetime().nullable(),
       })
       .optional();
 
     const profileSchema = z.object({
       userType: z.custom<UserType>(),
       name: z.string(),
-      email: z.string().email().optional(),
-      phone: z.string().optional(),
-      cpf: z.string().optional(),
-      gender: z.string().optional(),
-      rg: z.string().optional(),
-      institution: z.string().optional(),
-      isForeign: z.boolean().optional(),
-      verified: z.boolean().optional(),
-      updatedAt: z.string().datetime().optional(),
-      address: addressSchema,
-      id: z.string().optional(),
+      email: z.email().nullable(),
+      phone: z.string().nullable(),
+      document: z.string().nullable(),
+      gender: z.string().nullable(),
+      rg: z.string().nullable(),
+      institution: z.string().nullable(),
+      isForeign: z.boolean().nullable(),
+      verified: z.boolean().nullable(),
+      updatedAt: z.iso.datetime().nullable(),
+      address: addressSchema
     });
 
     const parsed = profileSchema.safeParse(response.data);
@@ -208,7 +207,6 @@ export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
     }
     return parsed.data as CurrentUser;
   } catch (error) {
-    console.error("Error fetching current user:", error);
     return null;
   }
 }

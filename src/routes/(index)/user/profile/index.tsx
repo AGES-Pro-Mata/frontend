@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import UserProfileCard from "@/components/cards/userProfileCard";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
@@ -7,13 +8,14 @@ export const Route = createFileRoute("/(index)/user/profile/")({
 });
 
 function RouteComponent() {
+  const { t } = useTranslation();
   const { status, error, data, mapped, documentStatus } = useCurrentUserProfile();
   const navigate = useNavigate();
 
   if (status === "pending") {
     return (
       <div className="w-full min-h-screen flex justify-center items-center bg-background">
-        <span className="text-on-banner-text text-sm">Carregando...</span>
+        <span className="text-on-banner-text text-sm">{t("common.loading")}</span>
       </div>
     );
   }
@@ -22,7 +24,7 @@ function RouteComponent() {
     console.error("Profile load error", error);
     return (
       <div className="w-full min-h-screen flex justify-center items-center bg-background">
-        <span className="text-default-red text-sm">Erro ao carregar perfil</span>
+        <span className="text-default-red text-sm">{t("common.error")}</span>
       </div>
     );
   }

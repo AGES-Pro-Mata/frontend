@@ -1,6 +1,7 @@
 import { Clock5, XCircle, CheckCircle2 } from "lucide-react";
 import type { JSX } from "react";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export const StatusEnum = {
   CONFIRMADA: "confirmada",
@@ -15,7 +16,6 @@ export type ReservationStatus = (typeof StatusEnum)[keyof typeof StatusEnum];
 
 type ReservationStyle = {
   className: string;
-  label: string;
   icon: JSX.Element;
 };
 
@@ -23,32 +23,26 @@ export const RESERVATIONS_STATUS_STYLES = {
   [StatusEnum.CONFIRMADA]: {
     className: "text-contrast-green",
     icon: <CheckCircle2 />,
-    label: "Confirmada",
   },
   [StatusEnum.CANCELADA]: {
     className: "text-default-red",
     icon: <XCircle />,
-    label: "Cancelada",
   },
   [StatusEnum.PAGAMENTO_PENDENTE]: {
     className: "text-warning",
     icon: <Clock5 />,
-    label: "Pagamento pendente",
   },
   [StatusEnum.CADASTRO_PENDENTE]: {
     className: "text-warning",
     icon: <Clock5 />,
-    label: "Cadastro pendente",
   },
   [StatusEnum.AGUARDANDO_APROVACAO]: {
     className: "text-warning",
     icon: <Clock5 />,
-    label: "Aguardando aprovação",
   },
   [StatusEnum.DESCONHECIDO]: {
     className: "text-on-banner-text",
     icon: <XCircle />,
-    label: "Desconhecido",
   },
 } satisfies Record<ReservationStatus, ReservationStyle>;
 
@@ -59,7 +53,9 @@ type CardStatusProps = {
 const cardStatusIconClass = "h-5 w-5";
 
 function CardStatus({ status }: CardStatusProps): JSX.Element {
-  const { className, label, icon } = RESERVATIONS_STATUS_STYLES[status];
+  const { t } = useTranslation();
+  const { className, icon } = RESERVATIONS_STATUS_STYLES[status];
+  const label = t(`status.${status}`);
 
   return (
     <span

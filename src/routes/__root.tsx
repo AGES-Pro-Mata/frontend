@@ -6,7 +6,7 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <Outlet />
-      {import.meta.env.DEV && (
+      {import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEVTOOLS === "true" && (
         <TanstackDevtools
           config={{
             position: "bottom-left",

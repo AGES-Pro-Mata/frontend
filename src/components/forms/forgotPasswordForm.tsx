@@ -14,9 +14,10 @@ import { TextInput } from "@/components/inputs/textInput";
 import { Link } from "@tanstack/react-router";
 import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/buttons/defaultButton";
+import { useTranslation } from "react-i18next";
 
 const formSchema = z.object({
-  email: z.email("Digite um e-mail válido."),
+  email: z.email("validation.email" as unknown as string),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -26,6 +27,7 @@ interface ForgotPasswordFormProps {
 }
 
 export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
+  const { t } = useTranslation();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "" },
@@ -51,7 +53,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
     <AuthCard className="">
       <div className="space-y-4">
         <Typography className="text-xl font-semibold text-left text-on-banner-text">
-          Esqueci a senha
+          {t("auth.forgot.title")}
         </Typography>
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
@@ -66,14 +68,13 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
                   <FormItem>
                     <TextInput
                       type="email"
-                      label="Email"
-                      placeholder="seu@email.com"
+                      label={t("auth.forgot.email")}
+                      placeholder={t("auth.forgot.emailPlaceholder")}
                       required
                       {...field}
                     />
                     <FormDescription>
-                      Você receberá um email para redefinir sua senha caso haja
-                      uma conta cadastrada.
+                      {t("auth.forgot.helper")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -90,8 +91,8 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
               }`}
             >
               {mutation.data.statusCode != 500
-                ? "Email enviado com sucesso. Verifique sua caixa de entrada."
-                : "Ocorreu um erro ao enviar o email. Tente novamente."}
+                ? t("auth.forgot.resultSuccess")
+                : t("auth.forgot.resultError")}
             </div>
           )}
           <div className="flex flex-col items-center gap-3 mt-4 w-full">
@@ -99,13 +100,13 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
               type="submit"
               disabled={mutation.isPending}
               className="w-full sm:w-56"
-              label={mutation.isPending ? "Enviando..." : "Enviar"}
+              label={mutation.isPending ? t("auth.forgot.submitting") : t("auth.forgot.submit")}
             />
             <Link
               to="/auth/login"
               className="w-full sm:w-56 text-on-banner-text cursor-pointer text-center block"
             >
-              <Button variant="ghost" className="w-full" label="Voltar" />
+              <Button variant="ghost" className="w-full" label={t("common.back")} />
             </Link>
           </div>
         </form>
