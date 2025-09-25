@@ -14,6 +14,7 @@ import type { ExperienceTuningData } from "@/types/experience";
 type ExperienceCardProps = {
   title: string;
   price: number;
+  type?: string;
   period: { start: Date; end: Date };
   imageUrl: string;
   experienceId?: string;
@@ -24,6 +25,7 @@ type ExperienceCardProps = {
 export default function ExperienceCard({
   title,
   price,
+  type,
   period,
   imageUrl,
   experienceId,
@@ -123,7 +125,7 @@ export default function ExperienceCard({
         <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3">
           <h2 className="font-bold text-sm md:text-base w-full md:w-auto">{title}</h2>
           <span className="inline-flex items-center justify-center text-xs text-main-dark-green bg-card rounded-full font-bold shadow-inner px-3 py-1 shrink-0">
-            Pacote
+            {type}
           </span>
           <div className="flex items-center justify-start rounded-full bg-card shadow-sm gap-2 h-8 md:h-9 px-3 shrink-0">
             <span className="text-xs md:text-sm font-semibold text-main-dark-green">R$ {price.toFixed(2)}</span>
