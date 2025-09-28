@@ -240,6 +240,7 @@ jobs:
 
       - name: Dispatch to Infrastructure Repository
         uses: peter-evans/repository-dispatch@v3
+        continue-on-error: true
         with:
           token: ${{ secrets.PAT_INFRASTRUCTURE_REPO }}
           repository: AGES-Pro-Mata/infrastructure
@@ -251,3 +252,12 @@ jobs:
               "branch": "${{ steps.deploy-config.outputs.target_branch }}",
               "triggered_by": "frontend"
             }
+      
+      - name: Infrastructure Dispatch Status
+        run: |
+          if [ -z "${{ secrets.PAT_INFRASTRUCTURE_REPO }}" ]; then
+            echo "⚠️ PAT_INFRASTRUCTURE_REPO secret not configured"
+            echo "Skipping infrastructure deployment trigger"
+          else
+            echo "✅ Infrastructure deployment triggered successfully"
+          fi
