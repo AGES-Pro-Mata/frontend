@@ -1,8 +1,8 @@
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 import AdminLayout from "@/components/layouts/admin";
 import { AdminSideBar } from "@/components/navigation/sideBar";
-import { userQueryOptions } from "@/api/user";
 import type { QueryClient } from "@tanstack/react-query";
+import { userQueryOptions } from "@/api/user";
 
 export const Route = createFileRoute("/admin")({
   component: RouteComponent,

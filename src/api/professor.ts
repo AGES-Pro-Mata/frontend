@@ -1,4 +1,4 @@
-import axios from "axios";
+import { api } from "@/core/api";
 import type { HttpResponse } from "@/types/http-response";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL;
@@ -9,11 +9,18 @@ export interface ProfessorApprovalPayload {
   observation: string;
 }
 
+export interface ProfessorApprovalResponse {
+  id: string;
+  name: string;
+  email: string;
+  //restante dos campos conforme necessário
+}
+
 export async function approveOrRejectProfessor(
   payload: ProfessorApprovalPayload
 ): Promise<HttpResponse> {
   try {
-    const response = await axios.post(
+    const response = await api.post(
       `${BACKEND_URL}/admin/professor/approval`,
       payload,
       {

@@ -1,4 +1,5 @@
 export { LoginForm } from "./loginForm";
-export { ForgotPasswordForm } from "./forgotpasswordform";
+export { RegisterUser } from "./registerUserForm";
+export { ForgotPasswordForm } from "./forgotPasswordForm";
 export { RegisterUserAdmin } from "./registerUserAdmin";
-export { CreateExperience } from "./createExperience";
+export { CreateExperience } from "./createExperienceForm";

@@ -62,3 +62,14 @@ export function maskCep(value: string): string {
   return `${part1}-${part2}`;
 }
 
+export function maskPhone(value: string): string {
+  const v = digitsOnly(value).slice(0, 11); // supports 10 or 11 digits
+  if (v.length === 0) return "";
+  if (v.length <= 2) return `(${v}`;
+  const ddd = v.slice(0, 2);
+  if (v.length <= 6) return `(${ddd}) ${v.slice(2)}`;
+  if (v.length <= 10) return `(${ddd}) ${v.slice(2, v.length - 4)}-${v.slice(-4)}`; // 10 digits
+  // 11 digits (mobile) -> 5 digit prefix
+  return `(${ddd}) ${v.slice(2, 7)}-${v.slice(7)}`;
+}
+

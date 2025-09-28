@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000",
-    "start": "vite --port 3000",
+    "dev": "vite --port 3002",
+    "start": "vite --port 3002",
     "build": "vite build && tsc",
+    "build:ci": "npm run generate-routes && vite build && tsc",
     "serve": "vite preview",
     "type-check": "npm run generate-routes && npx tsc --noEmit",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",

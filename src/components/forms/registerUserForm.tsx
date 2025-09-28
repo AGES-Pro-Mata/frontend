@@ -28,9 +28,10 @@ import {
   maskCpf,
   maskCep,
   hashPassword,
+  maskPhone,
 } from "@/lib/utils";
 import type { RegisterUserPayload } from "@/api/user";
-import { CanvasCard } from "../cards";
+import { CanvasCard } from "@/components/cards";
 import { Link, useNavigate } from "@tanstack/react-router";
 
 const formSchema = z
@@ -254,8 +255,8 @@ export function RegisterUser() {
   };
 
   return (
-    <div className="p-6 justify-center px-80">
-      <CanvasCard className="p-12">
+    <div className="w-full flex justify-center px-4 sm:px-8 lg:px-16 py-6">
+      <CanvasCard className="w-full max-w-[1180px] p-6 sm:p-10 lg:p-12">
         <div className="text-center space-y-2">
           <Typography variant="h2" className="pb-2 text-on-banner-text">
             Cadastro
@@ -270,7 +271,7 @@ export function RegisterUser() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="mt-6 space-y-3"
           >
-            <div className="flex items-center justify-start gap-4">
+            <div className="flex flex-wrap items-center justify-start gap-4">
               <Typography className="font-medium text-foreground text-lg">
                 Informações pessoais
               </Typography>
@@ -351,8 +352,12 @@ export function RegisterUser() {
                     <TextInput
                       label="Telefone"
                       required
-                      placeholder="(55) 99999-9999"
-                      {...field}
+                      placeholder="(51) 99999-9999"
+                      value={maskPhone(field.value || "")}
+                      onChange={(e) => {
+                        const digits = digitsOnly(e.target.value).slice(0, 11);
+                        field.onChange(maskPhone(digits));
+                      }}
                     />
                     <FormMessage className="text-red-400" />
                   </FormItem>
@@ -418,7 +423,11 @@ export function RegisterUser() {
                       placeholder="999999999"
                       required
                       disabled={isForeign}
-                      {...field}
+                      value={digitsOnly(field.value || "")}
+                      onChange={(e) => {
+                        const digits = digitsOnly(e.target.value).slice(0, 15);
+                        field.onChange(digits);
+                      }}
                     />
                     <FormMessage className="text-red-400" />
                   </FormItem>

@@ -1,12 +1,10 @@
-import { ForgotPasswordForm } from "@/components/forms/forgotpasswordform";
+import { ForgotPasswordForm } from "@/components/forms/forgotPasswordForm";
 import { createFileRoute } from "@tanstack/react-router";
 
 function ForgotPasswordPage() {
   return (
-    <div className="flex flex-col bg-background">
-      <div className="flex justify-center pt-16 pb-20">
-        <ForgotPasswordForm />
-      </div>
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 sm:px-8 md:px-12 lg:px-20 bg-background">
+      <ForgotPasswordForm />
     </div>
   );
 }

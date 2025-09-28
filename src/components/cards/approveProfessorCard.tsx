@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { ProfessorProfileCard } from "@/components/cards/professorProfileCard";
-import type { RegisterUserPayload } from "@/api/user";
 import { approveOrRejectProfessor } from "@/api/professor";
 import { toast } from "sonner";
 import ProfessorApproval from "@/components/text-areas/acceptRequest";
 import { Button } from "@/components/buttons/defaultButton";
 import { Link } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import type { ProfessorApprovalResponse } from "@/api/professor";
 
 interface ApproveProfessorCardProps {
-  professor: RegisterUserPayload;
+  professor: ProfessorApprovalResponse;
   professorId: string;
 }
 
@@ -18,40 +19,42 @@ export function ApproveProfessorCard({
 }: ApproveProfessorCardProps) {
   const [markdown, setMarkdown] = useState<string>("");
 
-  // Handlers para as ações
+  // Mutation para aprovar/recusar professor
+  const mutation = useMutation({
+    mutationFn: approveOrRejectProfessor,
+    onSuccess: (res) => {
+      if (res.statusCode === 200) {
+        toast.success("Operação realizada com sucesso!", {
+          style: { background: "var(--color-contrast-green)", color: "white" },
+        });
+      } else {
+        toast.error("Erro na operação", {
+          style: { background: "var(--color-default-red)", color: "white" },
+        });
+      }
+    },
+    onError: () => {
+      toast.error("Erro na operação", {
+        style: { background: "var(--color-default-red)", color: "white" },
+      });
+    },
+  });
 
-  const handleApprove = async (obs: string) => {
-    const res = await approveOrRejectProfessor({
+  // Handlers para as ações
+  const handleApprove = (obs: string) => {
+    mutation.mutate({
       id: professorId,
       approved: true,
       observation: obs,
     });
-    if (res.statusCode === 200) {
-      toast.success("Professor aprovado!", {
-        style: { background: "var(--color-contrast-green)", color: "white" },
-      });
-    } else {
-      toast.error("Erro ao aprovar professor", {
-        style: { background: "var(--color-default-red)", color: "white" },
-      });
-    }
   };
 
-  const handleReject = async (obs: string) => {
-    const res = await approveOrRejectProfessor({
+  const handleReject = (obs: string) => {
+    mutation.mutate({
       id: professorId,
       approved: false,
       observation: obs,
     });
-    if (res.statusCode === 200) {
-      toast.success("Professor recusado!", {
-        style: { background: "var(--color-contrast-green)", color: "white" },
-      });
-    } else {
-      toast.error("Erro ao recusar professor", {
-        style: { background: "var(--color-default-red)", color: "white" },
-      });
-    }
   };
 
   const handleViewReceipt = () => {
@@ -90,3 +93,5 @@ export function ApproveProfessorCard({
     </div>
   );
 }
+
+

@@ -5,6 +5,8 @@ import { buildQueryParams } from "./functions/build-query-params";
 
 export const safeParseFilters = <T>(filters: T, schema: ZodType): string => {
   return filters && Object.keys(filters).length
-    ? buildQueryParams(schema.parse(omitBy(filters, isNil)) as Record<string, unknown>)
+    ? buildQueryParams(
+        schema.parse(omitBy(filters, isNil)) as Record<string, unknown>
+      )
     : String();
 };
