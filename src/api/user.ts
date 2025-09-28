@@ -27,6 +27,7 @@ export type CurrentUser = {
     updatedAt?: string;
   };
 };
+
 export interface LoginPayload {
   email: string;
   password: string;
@@ -211,35 +212,26 @@ export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
   }
 }
 
-<<<<<<< HEAD
-export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
-  try {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      return null;
-    }
-
-    const response = await axios.get(`${BACKEND_URL}/user/me`, {
-      timeout: 10000,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    localStorage.removeItem("token");
-    return null;
-  }
+export interface GetUserByIdResponse {
+  name: string;
+  email: string;
+  phone: string;
+  document?: string
+  rg?: string;
+  gender?: string;
+  zipCode?: string;
+  country?: string;
+  userType: UserType;
+  institution?: string;
+  isForeign?: boolean;
+  addressLine?: string;
+  city?: string;
+  number?: number;
 }
 
-=======
->>>>>>> 68503a832543b98b7318ec117ad24a60d677df17
 export async function getUserById(
   id: string
-): Promise<HttpResponse<RegisterUserPayload>> {
+): Promise<HttpResponse<GetUserByIdResponse>> {
   try {
     const response = await api.get(`/user/${id}`, {
       timeout: 10000,
@@ -250,7 +242,7 @@ export async function getUserById(
     return {
       statusCode: response.status,
       message: "Usuário encontrado com sucesso",
-      data: response.data as RegisterUserPayload,
+      data: response.data as GetUserByIdResponse,
     };
   } catch (error: any) {
     return {

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/lib/countries";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 import { useCepQuery } from "@/hooks/useCepQuery";
 import {
   isValidBrazilZip,
@@ -35,116 +35,116 @@ import { CanvasCard } from "@/components/cards";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-
 export function RegisterUser() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const formSchema = useMemo(() =>
-    z
-      .object({
-        name: z.string().min(2, t("validation.nameRequired")),
-        email: z.email(t("validation.email")),
-        phone: z.string().min(8, t("validation.phoneRequired")),
-        document: z.string().optional().default(""),
-        rg: z.string().optional().default(""),
-        gender: z.string().min(1, t("validation.genderRequired")),
-        zipCode: z.string().min(5, t("validation.zipRequired")),
-        country: z.string().min(2, t("validation.countryRequired")),
-        isForeign: z.boolean().default(false),
-        addressLine: z.string().optional().default(""),
-        city: z.string().optional(),
-        number: z.string().optional(),
-        password: z.string().min(6, t("validation.passwordMin")),
-        confirmPassword: z.string().min(6, t("validation.passwordMin")),
-        institution: z.string().optional().default(""),
-        function: z.string().optional().default(""),
-        wantsDocencyRegistration: z.boolean().default(false),
-        docencyDocument: z.instanceof(File).optional(),
-        acceptTerms: z.boolean().refine((val) => val === true, {
-          message: t("validation.mustAcceptTerms"),
+  const formSchema = useMemo(
+    () =>
+      z
+        .object({
+          name: z.string().min(2, t("validation.nameRequired")),
+          email: z.email(t("validation.email")),
+          phone: z.string().min(8, t("validation.phoneRequired")),
+          document: z.string().optional().default(""),
+          rg: z.string().optional().default(""),
+          gender: z.string().min(1, t("validation.genderRequired")),
+          zipCode: z.string().min(5, t("validation.zipRequired")),
+          country: z.string().min(2, t("validation.countryRequired")),
+          isForeign: z.boolean().default(false),
+          addressLine: z.string().optional().default(""),
+          city: z.string().optional(),
+          number: z.string().optional(),
+          password: z.string().min(6, t("validation.passwordMin")),
+          confirmPassword: z.string().min(6, t("validation.passwordMin")),
+          institution: z.string().optional().default(""),
+          function: z.string().optional().default(""),
+          wantsDocencyRegistration: z.boolean().default(false),
+          docencyDocument: z.instanceof(File).optional(),
+          acceptTerms: z.boolean().refine((val) => val === true, {
+            message: t("validation.mustAcceptTerms"),
+          }),
+        })
+        .superRefine((data, ctx) => {
+          if (data.password !== data.confirmPassword) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.passwordsMustMatch"),
+              path: ["confirmPassword"],
+            });
+          }
+
+          if (data.docencyDocument) {
+            if (data.docencyDocument.type !== "application/pdf") {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.pdfOnly"),
+                path: ["docencyDocument"],
+              });
+            }
+            if (data.docencyDocument.size > 20 * 1024 * 1024) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.max20mb"),
+                path: ["docencyDocument"],
+              });
+            }
+          }
+
+          if (!data.isForeign) {
+            if (!data.city || data.city.length < 2) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.cityRequired"),
+                path: ["city"],
+              });
+            }
+            if (!data.number || data.number.length < 1) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.numberRequired"),
+                path: ["number"],
+              });
+            }
+            if (!data.addressLine || data.addressLine.length < 2) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.addressRequired"),
+                path: ["addressLine"],
+              });
+            }
+            if (!isValidBrazilZip(data.zipCode)) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.cep8"),
+                path: ["zipCode"],
+              });
+            }
+            if (!data.document || !isValidCpf(data.document)) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.cpfInvalid"),
+                path: ["document"],
+              });
+            }
+            if (!data.rg || digitsOnly(data.rg).length < 5) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.rgInvalid"),
+                path: ["rg"],
+              });
+            }
+          } else {
+            if (!isValidForeignZip(data.zipCode)) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.zipInvalid"),
+                path: ["zipCode"],
+              });
+            }
+          }
         }),
-      })
-      .superRefine((data, ctx) => {
-        if (data.password !== data.confirmPassword) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("validation.passwordsMustMatch"),
-            path: ["confirmPassword"],
-          });
-        }
-
-        if (data.docencyDocument) {
-          if (data.docencyDocument.type !== "application/pdf") {
-            ctx.addIssue({
-              code: "custom",
-              message: t("validation.pdfOnly"),
-              path: ["docencyDocument"],
-            });
-          }
-          if (data.docencyDocument.size > 20 * 1024 * 1024) {
-            ctx.addIssue({
-              code: "custom",
-              message: t("validation.max20mb"),
-              path: ["docencyDocument"],
-            });
-          }
-        }
-
-        if (!data.isForeign) {
-          if (!data.city || data.city.length < 2) {
-            ctx.addIssue({
-              code: "custom",
-              message: t("validation.cityRequired"),
-              path: ["city"],
-            });
-          }
-          if (!data.number || data.number.length < 1) {
-            ctx.addIssue({
-              code: "custom",
-              message: t("validation.numberRequired"),
-              path: ["number"],
-            });
-          }
-          if (!data.addressLine || data.addressLine.length < 2) {
-            ctx.addIssue({
-              code: "custom",
-              message: t("validation.addressRequired"),
-              path: ["addressLine"],
-            });
-          }
-          if (!isValidBrazilZip(data.zipCode)) {
-            ctx.addIssue({
-              code: "custom",
-              message: t("validation.cep8"),
-              path: ["zipCode"],
-            });
-          }
-          if (!data.document || !isValidCpf(data.document)) {
-            ctx.addIssue({
-              code: "custom",
-              message: t("validation.cpfInvalid"),
-              path: ["document"],
-            });
-          }
-          if (!data.rg || digitsOnly(data.rg).length < 5) {
-            ctx.addIssue({
-              code: "custom",
-              message: t("validation.rgInvalid"),
-              path: ["rg"],
-            });
-          }
-        } else {
-          if (!isValidForeignZip(data.zipCode)) {
-            ctx.addIssue({
-              code: "custom",
-              message: t("validation.zipInvalid"),
-              path: ["zipCode"],
-            });
-          }
-        }
-    }),
-  // Recreate schema when language changes so messages are translated
-  [i18n.language]
+    // Recreate schema when language changes so messages are translated
+    [i18n.language]
   );
 
   type FormData = z.infer<typeof formSchema>;
@@ -153,7 +153,11 @@ export function RegisterUser() {
     city: false,
   });
   const { mutate: registerUser, isPending } = useRegisterUser();
-  const form = useForm<z.input<typeof formSchema>, any, z.output<typeof formSchema>>({
+  const form = useForm<
+    z.input<typeof formSchema>,
+    any,
+    z.output<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
@@ -242,7 +246,11 @@ export function RegisterUser() {
       confirmPassword: hashedConfirmPassword,
       phone: sanitizedPhone,
       gender: data.gender,
-      document: data.document ? (isForeign ? data.document : maskCpf(data.document)) : undefined,
+      document: data.document
+        ? isForeign
+          ? data.document
+          : maskCpf(data.document)
+        : undefined,
       rg: data.rg || undefined,
       country: data.country,
       userType: data.wantsDocencyRegistration ? "PROFESSOR" : "GUEST",
@@ -259,15 +267,15 @@ export function RegisterUser() {
       onSuccess: (response) => {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           form.reset();
-          toast.success(t("register.toasts.success"), {});
+          appToast.success(t("register.toasts.success"));
           setAutoFilled({ addressLine: false, city: false });
           navigate({ to: "/auth/login" });
         } else {
-          toast.error(t("register.toasts.error"), {});
+          appToast.error(t("register.toasts.error"));
         }
       },
       onError: () => {
-        toast.error(t("register.toasts.error"));
+        appToast.error(t("register.toasts.error"));
       },
     });
   };
@@ -279,9 +287,7 @@ export function RegisterUser() {
           <Typography variant="h2" className="pb-2 text-on-banner-text">
             {t("register.title")}
           </Typography>
-          <Typography variant="body">
-            {t("register.subtitle")}
-          </Typography>
+          <Typography variant="body">{t("register.subtitle")}</Typography>
         </div>
 
         <Form {...form}>
@@ -315,7 +321,19 @@ export function RegisterUser() {
                             form.setValue("country", "Brasil");
                           }
                           // Re-run validation to clear/set field errors according to new mode
-                          setTimeout(() => form.trigger(["city", "number", "zipCode", "document", "rg", "addressLine", "country"]), 0);
+                          setTimeout(
+                            () =>
+                              form.trigger([
+                                "city",
+                                "number",
+                                "zipCode",
+                                "document",
+                                "rg",
+                                "addressLine",
+                                "country",
+                              ]),
+                            0
+                          );
                         }}
                       />
                       <Label htmlFor="isForeign">
@@ -389,19 +407,34 @@ export function RegisterUser() {
 
               <FormField
                 control={form.control}
-                name="document"                
+                name="document"
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label={isForeign ? t("register.fields.document.passport") : t("register.fields.document.cpf")}
+                      label={
+                        isForeign
+                          ? t("register.fields.document.passport")
+                          : t("register.fields.document.cpf")
+                      }
                       required
-                      placeholder={isForeign ? t("register.fields.document.passportNumber") : "XXX.XXX.XXX-XX"}
-                      value={isForeign ? field.value || "" : maskCpf(field.value || "")}
+                      placeholder={
+                        isForeign
+                          ? t("register.fields.document.passportNumber")
+                          : "XXX.XXX.XXX-XX"
+                      }
+                      value={
+                        isForeign
+                          ? field.value || ""
+                          : maskCpf(field.value || "")
+                      }
                       onChange={(e) => {
                         if (isForeign) {
                           field.onChange(e.target.value);
                         } else {
-                          const digits = digitsOnly(e.target.value).slice(0, 11);
+                          const digits = digitsOnly(e.target.value).slice(
+                            0,
+                            11
+                          );
                           const masked = maskCpf(digits);
                           field.onChange(masked);
                         }
@@ -427,12 +460,20 @@ export function RegisterUser() {
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder={t("register.fields.gender.select")} />
+                          <SelectValue
+                            placeholder={t("register.fields.gender.select")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="female">{t("register.fields.gender.female")}</SelectItem>
-                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
-                          <SelectItem value="other">{t("register.fields.gender.other")}</SelectItem>
+                          <SelectItem value="female">
+                            {t("register.fields.gender.female")}
+                          </SelectItem>
+                          <SelectItem value="male">
+                            {t("register.fields.gender.male")}
+                          </SelectItem>
+                          <SelectItem value="other">
+                            {t("register.fields.gender.other")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -503,7 +544,9 @@ export function RegisterUser() {
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder={t("register.fields.selectCountry")} />
+                            <SelectValue
+                              placeholder={t("register.fields.selectCountry")}
+                            />
                           </SelectTrigger>
                           <SelectContent>
                             {COUNTRIES.map((c) => (
@@ -642,7 +685,9 @@ export function RegisterUser() {
                     <FormItem>
                       <TextInput
                         label={t("register.fields.institution")}
-                        placeholder={t("register.fields.institutionPlaceholder")}
+                        placeholder={t(
+                          "register.fields.institutionPlaceholder"
+                        )}
                         {...field}
                       />
                       <FormMessage className="text-default-red" />
@@ -664,14 +709,26 @@ export function RegisterUser() {
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder={t("register.fields.function.select")} />
+                            <SelectValue
+                              placeholder={t("register.fields.function.select")}
+                            />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="student">{t("register.fields.function.student")}</SelectItem>
-                            <SelectItem value="teacher">{t("register.fields.function.teacher")}</SelectItem>
-                            <SelectItem value="researcher">{t("register.fields.function.researcher")}</SelectItem>
-                            <SelectItem value="employee">{t("register.fields.function.employee")}</SelectItem>
-                            <SelectItem value="other">{t("register.fields.function.other")}</SelectItem>
+                            <SelectItem value="student">
+                              {t("register.fields.function.student")}
+                            </SelectItem>
+                            <SelectItem value="teacher">
+                              {t("register.fields.function.teacher")}
+                            </SelectItem>
+                            <SelectItem value="researcher">
+                              {t("register.fields.function.researcher")}
+                            </SelectItem>
+                            <SelectItem value="employee">
+                              {t("register.fields.function.employee")}
+                            </SelectItem>
+                            <SelectItem value="other">
+                              {t("register.fields.function.other")}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -727,9 +784,11 @@ export function RegisterUser() {
                             }}
                             className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-900 hover:file:bg-yellow-100"
                           />
-                            {value && (
+                          {value && (
                             <Typography className="text-sm text-contrast-green">
-                              {t("register.fields.docency.uploaded", { name: value.name })}
+                              {t("register.fields.docency.uploaded", {
+                                name: value.name,
+                              })}
                             </Typography>
                           )}
                         </div>
@@ -756,7 +815,10 @@ export function RegisterUser() {
                       />
                       <Label htmlFor="acceptTerms">
                         <Typography variant="body" className="text-foreground">
-                          {t("register.fields.terms.accept", { terms: t("register.fields.terms.terms"), privacy: t("register.fields.terms.privacy") })}
+                          {t("register.fields.terms.accept", {
+                            terms: t("register.fields.terms.terms"),
+                            privacy: t("register.fields.terms.privacy"),
+                          })}
                         </Typography>
                       </Label>
                     </div>
@@ -767,9 +829,15 @@ export function RegisterUser() {
             </div>
 
             <div className="flex flex-col items-center gap-4 pt-4">
-              <Button type="submit" variant="primary" className="w-full max-w-xs" label={t("register.cta.create")} disabled={isPending} />
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-full max-w-xs"
+                label={t("register.cta.create")}
+                disabled={isPending}
+              />
               <Typography className="text-sm text-muted-foreground">
-                {t("register.cta.haveAccount")} {" "}
+                {t("register.cta.haveAccount")}{" "}
                 <Link to="/auth/login" className="text-primary underline">
                   {t("register.cta.login")}
                 </Link>

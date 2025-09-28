@@ -1,38 +1,41 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ApproveProfessorCard } from "@/components/cards/approveProfessorCard";
-import { getUserById } from "@/api/user";
-import { toast } from "sonner";
+import { getUserById, type GetUserByIdResponse } from "@/api/user";
+import { appToast } from "@/components/toast/toast";
 import { useEffect } from "react";
+import type { ProfessorApprovalPayload } from "@/api/professor";
+import type { QueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute(
   "/admin/requests/professor-approval/$professor-id"
 )({
   component: RouteComponent,
-  errorComponent: RouteErrorComponent, 
-  loader: async ({ params }) => {
+  errorComponent: RouteErrorComponent,
+  beforeLoad: async ({ params, context }) => {
     const id = params["professor-id"];
     if (!id) throw new Response("Not Found", { status: 404 });
 
-    try {
-      const response = await getUserById(id);
-      const data = response?.data;
-      if (!data || !data.name || !data.email) {
-        throw new Response("Not Found", { status: 404 });
+    const { queryClient } = context as { queryClient: QueryClient };
+    await queryClient.ensureQueryData({
+      queryKey: ["professor", id] as const,
+      queryFn: async (): Promise<GetUserByIdResponse> => {
+        const res = await getUserById(id);
+        if (!res.data) {
+          throw new Response("Professor not found", {
+            status: res.statusCode || 404,
+          });
+        }
+        return res.data;
       }
-      // para simplificar, retorne só o payload que o componente precisa
-      return data;
-    } catch {
-      // se o backend “não responder”/falhar, também trata como 404 para navegar de volta
-      throw new Response("Not Found", { status: 404 });
-    }
-  },
+    });
+    return queryClient.getQueryData(["professor", id]) as GetUserByIdResponse;
+  }
 });
 
 function RouteComponent() {
-  const data = Route.useLoaderData();
-  const { "professor-id": professorId } = Route.useParams();
-
-  return <ApproveProfessorCard professor={data} professorId={professorId} />;
+  const data = Route.useRouteContext() as ProfessorApprovalPayload | undefined;
+  if (!data) return null; // Loader throws if not found
+  return <ApproveProfessorCard professor={data} />;
 }
 
 let toastShown = false;
@@ -41,13 +44,13 @@ function RouteErrorComponent() {
   useEffect(() => {
     if (!toastShown) {
       toastShown = true;
-      toast.error("Professor não encontrado", {
-        style: { background: "var(--color-default-red)", color: "white" },
-      });
+      appToast.error("Professor não encontrado");
     }
     navigate({ to: "/admin/requests", replace: true });
     // reset flag após um tempo para permitir novo toast em navegação futura
-    const timeout = setTimeout(() => { toastShown = false; }, 2000);
+    const timeout = setTimeout(() => {
+      toastShown = false;
+    }, 2000);
     return () => clearTimeout(timeout);
   }, [navigate]);
   return null;

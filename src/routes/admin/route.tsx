@@ -23,20 +23,6 @@ export const Route = createFileRoute("/admin")({
     if (lang && i18n.language !== lang) {
       i18n.changeLanguage(lang);
     }
-
-    // User/admin redirect logic
-    const user = await queryClient.ensureQueryData(userQueryOptions);
-
-    // Se não há usuário logado, redireciona para login
-    if (!user) {
-      //throw redirect({ to: "/auth/login" });
-    }
-
-    // Se não é admin, redireciona para home
-    const isAdmin = user?.userType === "ADMIN" || user?.userType === "ROOT";
-    if (!isAdmin) {
-      //throw redirect({ to: "/" });
-    }
   },
   loader: async ({ context }) => {
     const user = await (

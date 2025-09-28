@@ -1,7 +1,7 @@
 import { ResetPasswordForm } from "@/components/forms/resetPasswordForm";
 import { verifyTokenRequest } from "@/api/user";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 
 export const Route = createFileRoute("/(index)/auth/redefine/$token")({
   component: RouteComponent,
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/(index)/auth/redefine/$token")({
         });
       }
     } catch (error) {
-      toast.error("Erro ao verificar token");
+      appToast.error("Erro ao verificar token");
       throw redirect({
         to: "/auth/login",
         search: { error: "Erro ao verificar token" },
