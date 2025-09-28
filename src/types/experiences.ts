@@ -1,8 +1,8 @@
 export enum ExperienceCategory {
-  TRILHA = "trilha",
-  EVENTO = "evento",
-  HOSPEDAGEM = "hospedagem",
-  LABORATORIO = "laboratorio",
+  TRAIL = "TRAIL",
+  EVENT = "EVENT",
+  ROOM = "ROOM",
+  LAB = "LAB",
 }
 
 export type TrailDifficulty = "EASY" | "MEDIUM" | "HARD";
