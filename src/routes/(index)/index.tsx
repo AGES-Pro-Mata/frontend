@@ -5,6 +5,7 @@ import { Button, DefaultButton } from "@/components/buttons/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
 import { useTranslation } from "react-i18next";
+import ReservaCard from "@/components/cards/myReservation";
 
 export const Route = createFileRoute("/(index)/")({
   component: RouteComponent,
@@ -71,6 +72,14 @@ function RouteComponent() {
         <InfoExperiencies />
         <CardsInfoOnHover />
         <Carousel />
+        <ReservaCard
+          titulo="Pacote personalizado"
+          preco={356.9}
+          tipo="Pacote"
+          periodo={{ inicio: new Date("2025-08-11"), fim: new Date("2025-08-15") }}
+          imagem="/home-page-image.png"
+          status="confirmada"
+        />
         <div className="flex flex-col items-center mb-[clamp(2rem,5vw,3.75rem)] justify-center">
           <Typography
             variant="h4"
