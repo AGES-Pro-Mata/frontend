@@ -1,4 +1,11 @@
 export enum ExperienceCategory {
+  TRILHA = "trilha",
+  EVENTO = "evento",
+  HOSPEDAGEM = "hospedagem",
+  LABORATORIO = "laboratorio"
+}
+
+export enum ExperienceCategoryCard {
   TRAIL = "TRAIL",
   EVENT = "EVENT",
   ROOM = "ROOM",
@@ -10,7 +17,7 @@ export type TrailDifficulty = "EASY" | "MEDIUM" | "HARD";
 export interface ExperienceDTO {
   id: string;
   name: string;
-  category: ExperienceCategory;
+  category: ExperienceCategoryCard;
   capacity: number;
   startDate?: string | null;
   endDate?: string | null;
