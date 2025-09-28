@@ -9,6 +9,7 @@ import reportWebVitals from "./reportWebVitals.ts";
 import { routeTree } from "./routeTree.gen.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
+import "./i18n.ts";
 
 const queryClient = new QueryClient();
 
