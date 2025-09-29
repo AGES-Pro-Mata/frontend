@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
@@ -47,9 +46,13 @@ export default function ReservaCard({
 }: ReservaCardProps) {
   const [openModalPessoas, setOpenModalPessoas] = useState(false);
   const [openModalCancel, setOpenModalCancel] = useState(false);
+  const [openModalComprovante, setOpenModalComprovante] = useState(false);
+
   const [status, setStatus] = useState<
     "confirmada" | "pagamento_pendente" | "cancelada"
   >(initialStatus);
+
+  const [draftPessoas, setDraftPessoas] = useState<Pessoa[]>([]);
 
   const [pessoas, setPessoas] = useState<Pessoa[]>(
     Array.from({ length: 1 }, () => ({
@@ -67,6 +70,20 @@ export default function ReservaCard({
     setStatus("cancelada");
     setOpenModalCancel(false);
     toast.error("Solicitação de cancelamento enviada!");
+  };
+
+const handleOpenModalPessoas = (open: boolean) => {
+  if (open) {
+    setDraftPessoas(pessoas.map(p => ({ ...p })));
+  } else {
+    setDraftPessoas(pessoas.map(p => ({ ...p })));
+  }
+  setOpenModalPessoas(open);
+};
+
+  const handleEnviarComprovante = () => {
+    setOpenModalComprovante(false);
+    toast.success("Comprovante enviado com sucesso!");
   };
 
   const StatusBadge = () => {
@@ -174,7 +191,7 @@ export default function ReservaCard({
               )}
               {status === "pagamento_pendente" && (
                 <Button
-                  onClick={() => toast.info("Comprovante enviado!")}
+                  onClick={() => setOpenModalComprovante(true)}
                   className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
                   label="Enviar Comprovante"
                 />
@@ -190,36 +207,190 @@ export default function ReservaCard({
       </CanvasCard>
 
       {/* MODAL CANCELAR */}
-<Dialog open={openModalCancel} onOpenChange={setOpenModalCancel}>
-  <DialogContent className="w-[499px] h-[268px] rounded-2xl bg-card flex flex-col justify-between p-6">
+      <Dialog open={openModalCancel} onOpenChange={setOpenModalCancel}>
+        <DialogContent className="w-[499px] h-[268px] rounded-2xl bg-card flex flex-col justify-between p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-main-dark-green">
+              Cancelar reserva?
+            </DialogTitle>
+          </DialogHeader>
+
+          <p className="text-main-dark-green text-base">
+            Tem certeza de que deseja cancelar sua reserva? <br />
+            Esta ação não poderá ser desfeita.
+          </p>
+
+          <div className="flex flex-col gap-3 mt-4 w-full">
+            <Button
+              onClick={() => setOpenModalCancel(false)}
+              className="w-full bg-card border border-gray-300 text-main-dark-green rounded-lg h-[48px] shadow-sm"
+              label="Manter reserva"
+            />
+            <Button
+              onClick={handleCancelarReserva}
+              className="w-full bg-default-red text-soft-white rounded-lg h-[48px] shadow-md"
+              label="Cancelar"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+     {/* MODAL ADICIONAR PESSOAS */}
+<Dialog open={openModalPessoas} onOpenChange={handleOpenModalPessoas}>
+  <DialogContent className="!max-w-none w-[90vw] h-[75vh] bg-card rounded-xl shadow-lg p-6 flex flex-col">
     <DialogHeader>
-      <DialogTitle className="text-xl font-bold text-main-dark-green">
-        Cancelar reserva?
+      <DialogTitle className="text-main-dark-green text-2xl font-bold">
+        Cadastrar Pessoas
       </DialogTitle>
     </DialogHeader>
 
-    <p className="text-main-dark-green text-base">
-      Tem certeza de que deseja cancelar sua reserva? <br />
-      Esta ação não poderá ser desfeita.
-    </p>
+    <div className="mt-2 flex flex-col gap-4 flex-grow overflow-y-auto">
+      {draftPessoas.map((pessoa, index) => (
+        <div
+          key={index}
+          className="grid grid-cols-5 gap-4 border-b border-gray-300 pb-4"
+        >
+          <Input
+            placeholder="Nome"
+            value={pessoa.nome}
+            onChange={(e) => {
+              const newDraft = [...draftPessoas];
+              newDraft[index].nome = e.target.value;
+              setDraftPessoas(newDraft);
+            }}
+          />
+          <Input
+  placeholder="Telefone"
+  value={pessoa.telefone}
+  onChange={(e) => {
+    const newDraft = draftPessoas.map((p, i) =>
+      i === index ? { ...p, telefone: e.target.value } : p
+    );
+    setDraftPessoas(newDraft);
+  }}
+/>
 
-    {/* Botões empilhados */}
-    <div className="flex flex-col gap-3 mt-4 w-full">
+<Input
+  type="date"
+  value={pessoa.nascimento}
+  onChange={(e) => {
+    const newDraft = draftPessoas.map((p, i) =>
+      i === index ? { ...p, nascimento: e.target.value } : p
+    );
+    setDraftPessoas(newDraft);
+  }}
+/>
+
+<Input
+  placeholder="CPF"
+  value={pessoa.cpf}
+  onChange={(e) => {
+    const newDraft = draftPessoas.map((p, i) =>
+      i === index ? { ...p, cpf: e.target.value } : p
+    );
+    setDraftPessoas(newDraft);
+  }}
+/>
+
+          <Select
+            value={pessoa.genero}
+            onValueChange={(v) => {
+              const newDraft = [...draftPessoas];
+              newDraft[index].genero = v;
+              setDraftPessoas(newDraft);
+            }}
+          >
+            <SelectTrigger className="col-span-1">
+              <SelectValue placeholder="Gênero" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="masculino">Masculino</SelectItem>
+              <SelectItem value="feminino">Feminino</SelectItem>
+              <SelectItem value="outro">Outro</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      ))}
+
+      {/* Botão adicionar pessoa */}
       <Button
-        onClick={() => setOpenModalCancel(false)}
-        className="w-full bg-card border border-gray-300 text-main-dark-green rounded-lg h-[48px] shadow-sm"
-        label="Manter reserva"
-      />
-      <Button
-        onClick={handleCancelarReserva}
-        className="w-full bg-default-red text-soft-white rounded-lg h-[48px] shadow-md"
-        label="Cancelar"
+        onClick={() =>
+          setDraftPessoas([
+            ...draftPessoas,
+            { nome: "", telefone: "", nascimento: "", cpf: "", genero: "" },
+          ])
+        }
+        className="bg-main-dark-green text-soft-white rounded-full w-[240px] h-[40px] text-sm shadow-md hover:opacity-90"
+        label="Adicionar mais pessoa"
       />
     </div>
+
+    {/* Rodapé */}
+<div className="flex justify-between mt-4">
+<Button
+  onClick={() => {
+    setDraftPessoas(pessoas.map(p => ({ ...p }))); 
+    setOpenModalPessoas(false);
+  }}
+  className="bg-dark-gray text-soft-white rounded-full w-[120px] h-[40px]"
+  label="Voltar"
+/>
+
+
+
+
+  <Button
+  onClick={() => {
+    setPessoas(draftPessoas.map(p => ({ ...p }))); // Salva cópia no estado definitivo
+    toast.success("Pessoas cadastradas com sucesso!");
+    setOpenModalPessoas(false);
+  }}
+  className="bg-contrast-green text-soft-white rounded-full w-[120px] h-[40px]"
+  label="Salvar"
+/>
+
+</div>
+
   </DialogContent>
 </Dialog>
 
 
+
+      {/* MODAL ENVIAR COMPROVANTE */}
+      <Dialog open={openModalComprovante} onOpenChange={setOpenModalComprovante}>
+        <DialogContent className="w-[499px] h-[372px] rounded-2xl bg-card flex flex-col justify-between p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-main-dark-green">
+              Enviar Comprovante
+            </DialogTitle>
+          </DialogHeader>
+
+          <p className="text-main-dark-green text-sm">
+            Envie o comprovante de pagamento para confirmar a reserva
+          </p>
+
+          <div className="text-sm text-main-dark-green">
+            Hoje, aceitamos os seguintes comprovantes:
+            <ul className="list-disc ml-6 mt-1">
+              <li>TED: BANCO</li>
+              <li>PIX: CHAVEPIX</li>
+            </ul>
+            <p className="mt-2">Envie o comprovante com o valor de X</p>
+          </div>
+
+          <div className="flex flex-col gap-3 mt-4">
+            <label className="text-main-dark-green font-semibold text-sm">
+              Comprovante de Pagamento
+            </label>
+            <Input type="file" className="w-full" />
+            <Button
+              onClick={handleEnviarComprovante}
+              className="w-full bg-contrast-green text-soft-white rounded-lg h-[40px] shadow-md"
+              label="Enviar Comprovante"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
