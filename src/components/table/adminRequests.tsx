@@ -124,8 +124,14 @@ export default function AdminRequestsPage() {
 
   const loading = tab === "professor" ? professorQuery.isLoading : reservationQuery.isLoading;
   const error = tab === "professor" ? professorQuery.error : reservationQuery.error;
-  const professorRequests: Request[] = professorQuery.data || [];
-  const reservationRequests: Request[] = reservationQuery.data || [];
+  // Garante que sempre seja array, mesmo que a API retorne objeto
+  const professorRequests: Request[] = Array.isArray(professorQuery.data)
+    ? professorQuery.data
+    : professorQuery.data?.data || professorQuery.data?.results || [];
+
+  const reservationRequests: Request[] = Array.isArray(reservationQuery.data)
+    ? reservationQuery.data
+    : reservationQuery.data?.data || reservationQuery.data?.results || [];
 
   const handleStatusChange = (status: string) => {
     setSelectedStatus((prev) =>
@@ -210,7 +216,11 @@ export default function AdminRequestsPage() {
         setFilter={(key, value) =>
           setFilters((prev) => ({ ...prev, [key]: value }))
         }
-        meta={{ total: filteredRequests.length }}
+        meta={{ 
+          page: filters.page, 
+          limit: filters.limit, 
+          total: filteredRequests.length 
+        }}
       />
     </div>
   );
