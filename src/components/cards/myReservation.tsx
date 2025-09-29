@@ -47,6 +47,7 @@ export default function ReservaCard({
   const [openModalPessoas, setOpenModalPessoas] = useState(false);
   const [openModalCancel, setOpenModalCancel] = useState(false);
   const [openModalComprovante, setOpenModalComprovante] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [status, setStatus] = useState<
     "confirmada" | "pagamento_pendente" | "cancelada"
@@ -128,9 +129,7 @@ const handleOpenModalPessoas = (open: boolean) => {
 
   return (
     <>
-      {/* CARD */}
       <CanvasCard className="relative w-[921px] h-[445px] mx-auto bg-card shadow-lg rounded-xl overflow-hidden flex flex-col">
-        {/* Imagem */}
         <div className="relative w-[889px] h-[251px] mx-4 mt-4 rounded-t-[16px] overflow-hidden">
           <img
             src={imagem}
@@ -139,7 +138,6 @@ const handleOpenModalPessoas = (open: boolean) => {
           />
         </div>
 
-        {/* sombra */}
         <div className="absolute top-[239px] left-0 w-full h-[15px] bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
 
         <div className="flex flex-col flex-1 px-6 py-4">
@@ -206,7 +204,6 @@ const handleOpenModalPessoas = (open: boolean) => {
         </div>
       </CanvasCard>
 
-      {/* MODAL CANCELAR */}
       <Dialog open={openModalCancel} onOpenChange={setOpenModalCancel}>
         <DialogContent className="w-[499px] h-[268px] rounded-2xl bg-card flex flex-col justify-between p-6">
           <DialogHeader>
@@ -235,7 +232,6 @@ const handleOpenModalPessoas = (open: boolean) => {
         </DialogContent>
       </Dialog>
 
-     {/* MODAL ADICIONAR PESSOAS */}
 <Dialog open={openModalPessoas} onOpenChange={handleOpenModalPessoas}>
   <DialogContent className="!max-w-none w-[90vw] h-[75vh] bg-card rounded-xl shadow-lg p-6 flex flex-col">
     <DialogHeader>
@@ -312,7 +308,6 @@ const handleOpenModalPessoas = (open: boolean) => {
         </div>
       ))}
 
-      {/* Botão adicionar pessoa */}
       <Button
         onClick={() =>
           setDraftPessoas([
@@ -325,7 +320,6 @@ const handleOpenModalPessoas = (open: boolean) => {
       />
     </div>
 
-    {/* Rodapé */}
 <div className="flex justify-between mt-4">
 <Button
   onClick={() => {
@@ -341,7 +335,7 @@ const handleOpenModalPessoas = (open: boolean) => {
 
   <Button
   onClick={() => {
-    setPessoas(draftPessoas.map(p => ({ ...p }))); // Salva cópia no estado definitivo
+    setPessoas(draftPessoas.map(p => ({ ...p }))); 
     toast.success("Pessoas cadastradas com sucesso!");
     setOpenModalPessoas(false);
   }}
@@ -354,43 +348,72 @@ const handleOpenModalPessoas = (open: boolean) => {
   </DialogContent>
 </Dialog>
 
+     <Dialog open={openModalComprovante} onOpenChange={setOpenModalComprovante}>
+  <DialogContent className="w-[499px] h-[400px] rounded-2xl bg-card flex flex-col justify-between p-6">
+    <DialogHeader>
+      <DialogTitle className="text-xl font-bold text-main-dark-green">
+        Enviar Comprovante
+      </DialogTitle>
+    </DialogHeader>
+
+    <p className="text-main-dark-green text-sm">
+      Envie o comprovante de pagamento para confirmar a reserva
+    </p>
+
+    <div className="text-sm text-main-dark-green">
+      Hoje, aceitamos os seguintes comprovantes:
+      <ul className="list-disc ml-6 mt-1">
+        <li>TED: BANCO</li>
+        <li>PIX: CHAVEPIX</li>
+      </ul>
+      <p className="mt-2">
+        Envie o comprovante com o valor de{" "}
+        <span className="font-semibold">R$ {preco.toFixed(2)}</span>
+      </p>
+    </div>
+
+    <div className="flex flex-col gap-3 mt-4">
+      <label className="text-main-dark-green font-semibold text-sm">
+        Comprovante de Pagamento
+      </label>
+
+      {/* Input + texto abaixo */}
+<div className="flex flex-col gap-1">
+  <label className="relative w-full cursor-pointer">
+    <span className="block w-full bg-main-dark-green text-soft-white text-center py-2 rounded-lg shadow-md">
+      Escolher ficheiro
+    </span>
+    <input
+      type="file"
+      className="absolute inset-0 opacity-0 cursor-pointer"
+      onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+    />
+  </label>
+
+  {!selectedFile && (
+    <span className="text-xs text-gray-500">Nenhum ficheiro selecionado</span>
+  )}
+  {selectedFile && (
+    <span className="text-xs text-main-dark-green">{selectedFile.name}</span>
+  )}
+</div>
 
 
-      {/* MODAL ENVIAR COMPROVANTE */}
-      <Dialog open={openModalComprovante} onOpenChange={setOpenModalComprovante}>
-        <DialogContent className="w-[499px] h-[372px] rounded-2xl bg-card flex flex-col justify-between p-6">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-main-dark-green">
-              Enviar Comprovante
-            </DialogTitle>
-          </DialogHeader>
+      <Button
+        onClick={() => {
+          if (!selectedFile) {
+            toast.error("Selecione um ficheiro antes de enviar!");
+            return;
+          }
+          handleEnviarComprovante();
+        }}
+        className="w-full bg-contrast-green text-soft-white rounded-lg h-[40px] shadow-md"
+        label="Enviar Comprovante"
+      />
+    </div>
+  </DialogContent>
+</Dialog>
 
-          <p className="text-main-dark-green text-sm">
-            Envie o comprovante de pagamento para confirmar a reserva
-          </p>
-
-          <div className="text-sm text-main-dark-green">
-            Hoje, aceitamos os seguintes comprovantes:
-            <ul className="list-disc ml-6 mt-1">
-              <li>TED: BANCO</li>
-              <li>PIX: CHAVEPIX</li>
-            </ul>
-            <p className="mt-2">Envie o comprovante com o valor de X</p>
-          </div>
-
-          <div className="flex flex-col gap-3 mt-4">
-            <label className="text-main-dark-green font-semibold text-sm">
-              Comprovante de Pagamento
-            </label>
-            <Input type="file" className="w-full" />
-            <Button
-              onClick={handleEnviarComprovante}
-              className="w-full bg-contrast-green text-soft-white rounded-lg h-[40px] shadow-md"
-              label="Enviar Comprovante"
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
