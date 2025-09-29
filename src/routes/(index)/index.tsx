@@ -78,7 +78,7 @@ function RouteComponent() {
           tipo="Pacote"
           periodo={{ inicio: new Date("2025-08-11"), fim: new Date("2025-08-15") }}
           imagem="/home-page-image.png"
-          status="confirmada"
+          status="pagamento_pendente"
         />
         <div className="flex flex-col items-center mb-[clamp(2rem,5vw,3.75rem)] justify-center">
           <Typography
