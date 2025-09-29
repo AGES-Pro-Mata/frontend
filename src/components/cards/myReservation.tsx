@@ -181,26 +181,40 @@ const handleOpenModalPessoas = (open: boolean) => {
             <StatusBadge />
 
             <div className="flex gap-3">
-              {status === "confirmada" && (
-                <Button
-                  onClick={() => setOpenModalPessoas(true)}
-                  className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
-                  label="Adicionar pessoas"
-                />
-              )}
-              {status === "pagamento_pendente" && (
-                <Button
-                  onClick={() => setOpenModalComprovante(true)}
-                  className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-                  label="Enviar Comprovante"
-                />
-              )}
-              <Button
-                onClick={() => setOpenModalCancel(true)}
-                className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
-                label="Cancelar Reserva"
-              />
-            </div>
+  {/* Sempre mostrar este */}
+
+
+  {/* Só aparece se confirmada */}
+  {status === "confirmada" && (
+    <Button
+      onClick={() => setOpenModalPessoas(true)}
+      className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
+      label="Adicionar pessoas"
+    />
+  )}
+
+  {/* Só aparece se pendente */}
+  {status === "pagamento_pendente" && (
+    <Button
+      onClick={() => setOpenModalComprovante(true)}
+      className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
+      label="Enviar Comprovante"
+    />
+  )}
+
+  {/* Sempre mostrar este */}
+  <Button
+    onClick={() => setOpenModalCancel(true)}
+    className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
+    label="Cancelar Reserva"
+  />
+    <Button
+    onClick={() => toast.info("Abrindo detalhes da reserva...")}
+    className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
+    label="Visualizar Reserva"
+  />
+</div>
+
           </div>
         </div>
       </CanvasCard>
