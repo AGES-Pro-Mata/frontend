@@ -8,7 +8,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
-
 import {
   Table,
   TableBody,
@@ -17,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import { cn } from "@/lib/utils";
 import {
   IoIosArrowBack,
   IoIosArrowDown,
@@ -25,29 +24,36 @@ import {
   IoIosArrowUp,
 } from "react-icons/io";
 import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
 import type { TApiDefaultFilters } from "@/entities/api-default-filters";
+import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
 
-type DataTableProps<TData, TValue> = {
+type DataTableProps<
+  TData,
+  TValue,
+  F extends TApiDefaultFilters = TApiDefaultFilters
+> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  meta?: { total: number };
+  meta?: TApiPaginationMetaResult;
   pageSizeOptions?: number[];
-  filters: TApiDefaultFilters;
-  setFilter: <K extends keyof TApiDefaultFilters>(
-    key: K,
-    value: TApiDefaultFilters[K]
-  ) => void;
+  filters: F;
+  setFilter: <K extends keyof F>(key: K, value: F[K]) => void;
 };
 
-export function DataTable<TData, TValue>({
+export function DataTable<
+  TData,
+  TValue,
+  F extends TApiDefaultFilters = TApiDefaultFilters
+>({
   columns,
   data,
-  meta = { total: 11 },
+  meta = { total: 10, page: 0, limit: 10 },
   pageSizeOptions = [10, 25, 50],
   setFilter,
-  filters: { dir, sort, limit, page },
-}: DataTableProps<TData, TValue>) {
+  filters,
+}: DataTableProps<TData, TValue, F>) {
+  const { dir, sort } = filters;
+
   const handleSortColumn = (columnId: string) => {
     if (sort === columnId) {
       if (dir === "asc") setFilter("dir", "desc");
@@ -63,10 +69,10 @@ export function DataTable<TData, TValue>({
 
   const tableState: Partial<TableState> = React.useMemo(
     () => ({
-      pagination: { pageIndex: page, pageSize: limit },
+      pagination: { pageIndex: meta.page, pageSize: meta.limit },
       sorting: sort ? [{ id: sort, desc: dir === "desc" }] : [],
     }),
-    [page, limit, sort, dir]
+    [meta.page, meta.limit, sort, dir]
   );
 
   const table = useReactTable({
@@ -87,7 +93,7 @@ export function DataTable<TData, TValue>({
               {headerGroup.headers.map((header) => {
                 const canSort = header.column.getCanSort();
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} style={{ width: header.column.columnDef.size || "auto" }}>
                     <div
                       className={cn("flex items-center gap-1 select-none", {
                         "cursor-pointer": canSort,
@@ -112,6 +118,7 @@ export function DataTable<TData, TValue>({
           ))}
         </TableHeader>
       </Table>
+
       <div className="flex-1 overflow-auto">
         <Table className="w-full table-fixed">
           <TableBody>
@@ -120,10 +127,14 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
-                  className="h-16"
+                  className="h-16 !border-b border-slate-300"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-4 py-4">
+                    <TableCell
+                      key={cell.id}
+                      className="px-4 py-4"
+                      style={{ width: cell.column.columnDef.size || "auto" }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -133,7 +144,7 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))
             ) : (
-              <TableRow>
+              <TableRow className="border-b border-slate-300">
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
@@ -151,7 +162,7 @@ export function DataTable<TData, TValue>({
           <span>Resultados por página:</span>
           <select
             className="border rounded px-2 py-1"
-            value={limit}
+            value={meta.limit}
             onChange={(e) => {
               setFilter("limit", Number(e.target.value));
               setFilter("page", 0);
@@ -169,21 +180,22 @@ export function DataTable<TData, TValue>({
           <Button
             size="icon"
             className={cn("shadow-none", {
-              "cursor-pointer": page !== 0,
+              "cursor-pointer": meta.page !== 0,
             })}
-            disabled={page === 0}
-            onClick={() => setFilter("page", Math.max(0, page - 1))}
+            disabled={meta.page === 0}
+            onClick={() => setFilter("page", Math.max(0, meta.page - 1))}
           >
             <IoIosArrowBack
               className={cn("size-5", {
-                "opacity-50": page === 0,
+                "opacity-50": meta.page === 0,
               })}
             />
           </Button>
 
           <div className="py-1 select-none">
-            {`Página ${page + 1} de ${Math.ceil(
-              Number(meta?.total) / Number(limit)
+            {`Página ${meta.page + 1} de ${Math.max(
+              1,
+              Math.ceil(Number(meta?.total) / Number(meta.limit))
             )}`}
           </div>
 
@@ -191,20 +203,17 @@ export function DataTable<TData, TValue>({
             size="icon"
             className={cn("shadow-none", {
               "cursor-pointer":
-                page !==
-                Number(Math.ceil(Number(meta?.total) / Number(limit))) - 1,
+                meta.page !==
+                Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1,
             })}
-            disabled={
-              page ===
-              Number(Math.ceil(Number(meta?.total) / Number(limit))) - 1
-            }
-            onClick={() => setFilter("page", page + 1)}
+            disabled={meta.page === Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1}
+            onClick={() => setFilter("page", meta.page + 1)}
           >
             <IoIosArrowForward
               className={cn("size-5", {
                 "opacity-50":
-                  page ===
-                  Number(Math.ceil(Number(meta?.total) / Number(limit))) - 1,
+                  meta.page ===
+                  Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1,
               })}
             />
           </Button>

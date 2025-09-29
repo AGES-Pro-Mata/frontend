@@ -17,4 +17,9 @@ export interface IHttpClient {
     config?: AxiosRequestConfig<T>
   ): Promise<AxiosResponse<T>>
   setBaseURL(baseURL: string): void
+  patch<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig<T>
+  ): Promise<AxiosResponse<T>>
 }

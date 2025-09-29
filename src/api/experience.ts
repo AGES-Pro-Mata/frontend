@@ -1,4 +1,4 @@
-import type { ExperienceCategory } from "@/types/experiences";
+import type { ExperienceCategory } from "@/types/experience";
 import type { HttpResponse } from "@/types/http-response";
 import axios from "axios";
 

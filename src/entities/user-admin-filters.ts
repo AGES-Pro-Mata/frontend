@@ -1,12 +1,11 @@
 import z from "zod";
 import { ApiDefaultFilters } from "./api-default-filters";
 
-export const UserAdminFilters = () => {
-  return z
-    .object({
-      name: z.string().min(2).max(100).default(""),
-    })
-    .extend(ApiDefaultFilters);
-};
+export const UserAdminRequestFilters = z.object({
+  ...ApiDefaultFilters.shape,
+  name: z.string().max(100).optional(),
+  email: z.string().optional(),
+  createdBy: z.string().max(100).optional(),
+});
 
-export type TUserAdminFilters = z.infer<typeof UserAdminFilters>;
+export type TUserAdminRequestFilters = z.infer<typeof UserAdminRequestFilters>;

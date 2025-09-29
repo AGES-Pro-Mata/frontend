@@ -1,13 +1,20 @@
-import { userQueryOptions } from "@/api/user"
-import type { QueryClient } from "@tanstack/react-query"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import Layout from "@/components/layouts/dashboard"
+import z from "zod"
+import i18n from "@/i18n"
 export const Route = createFileRoute("/(index)")({
-  component: RouteComponent,
-  loader: async ({ context }) => {
-    await (context as { queryClient: QueryClient })
-      .queryClient.ensureQueryData(userQueryOptions)
+  validateSearch: z
+    .object({
+      lang: z.enum(["pt", "en"]).optional(),
+    })
+    .optional(),
+  beforeLoad: ({ search }) => {
+    const lang = (search as any)?.lang as "pt" | "en" | undefined
+    if (lang && i18n.language !== lang) {
+      i18n.changeLanguage(lang)
+    }
   },
+  component: RouteComponent,
 })
 
 function RouteComponent() {

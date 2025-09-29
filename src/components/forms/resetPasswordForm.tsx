@@ -10,24 +10,26 @@ import { Button } from "../buttons/defaultButton";
 import { useResetPasswordMutation } from "@/hooks/useResetPasswordMutation";
 import { toast } from "sonner";
 import { hashPassword } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const formSchema = z
   .object({
     password: z
       .string()
-      .min(6, "A senha deve ter no mínimo 6 caracteres.")
-      .regex(/[A-Z]/, "A senha deve conter ao menos uma letra maiúscula.")
-      .regex(/\d/, "A senha deve conter ao menos um número."),
+      .min(6, "validation.passwordMin" as unknown as string)
+      .regex(/[A-Z]/, "validation.passwordUpper" as unknown as string)
+      .regex(/\d/, "validation.passwordNumber" as unknown as string),
     confirm: z.string(),
   })
   .refine((data) => data.password === data.confirm, {
-    message: "As senhas devem ser iguais.",
+    message: "validation.passwordsMustMatch" as unknown as string,
     path: ["confirm"],
   });
 
 type FormData = z.infer<typeof formSchema>;
 
 export function ResetPasswordForm({ token }: { token: string }) {
+  const { t } = useTranslation();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { password: "", confirm: "" },
@@ -37,12 +39,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
   const navigate = useNavigate();
 
   if (mutation.isSuccess) {
-    toast.success("Senha redefinida com sucesso");
+    toast.success(t("auth.reset.toastSuccess"));
     navigate({ to: "/auth/login" });
   }
 
   if (mutation.isError) {
-    toast.error("Erro ao redefinir senha");
+    toast.error(t("auth.reset.toastError"));
   }
 
   const onSubmit = async (data: FormData) => {
@@ -61,7 +63,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
     <AuthCard>
       <div className="space-y-4">
         <Typography className="text-xl font-semibold text-left text-on-banner-text">
-          Redefinir senha
+          {t("auth.reset.title")}
         </Typography>
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
@@ -76,8 +78,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
                   <FormItem>
                     <TextInput
                       type="password"
-                      label="Nova senha*"
-                      placeholder="Nova senha"
+                      label={t("auth.reset.newPassword")}
+                      placeholder={t("auth.reset.newPasswordPlaceholder")}
                       required
                       {...field}
                     />
@@ -92,8 +94,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
                   <FormItem>
                     <TextInput
                       type="password"
-                      label="Confirme a senha*"
-                      placeholder="Confirme a senha"
+                      label={t("auth.reset.confirmPassword")}
+                      placeholder={t("auth.reset.confirmPasswordPlaceholder")}
                       required
                       {...field}
                     />
@@ -105,8 +107,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="w-40"
-              label={mutation.isPending ? "Confirmando..." : "Confirmar"}
+              className="w-full sm:w-56"
+              label={mutation.isPending ? t("auth.reset.submitting") : t("auth.reset.submit")}
             />
           </div>
         </form>

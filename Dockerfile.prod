@@ -29,7 +29,7 @@ ENV VITE_APP_ENV=${VITE_APP_ENV}
 ENV VITE_APP_VERSION=${VITE_APP_VERSION}
 
 # Build with Vite
-RUN npm run build
+RUN npm run build:ci
 
 # Production stage with Nginx
 FROM nginx:alpine AS production

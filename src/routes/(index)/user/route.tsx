@@ -4,18 +4,12 @@ import type { QueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/(index)/user")({
   component: RouteComponent,
-  loader: async ({ context }) => {
-    const user = await (
-      context as { queryClient: QueryClient }
-    ).queryClient.ensureQueryData(userQueryOptions);
-    return { user };
-  },
   beforeLoad: async ({ context }) => {
-    const user = await (
-      context as { queryClient: QueryClient }
-    ).queryClient.ensureQueryData(userQueryOptions);
-
-    // Se não há usuário logado, redireciona para login
+    const qc = (context as { queryClient: QueryClient }).queryClient;
+    let user = qc.getQueryData(userQueryOptions.queryKey);
+    if (!user) {
+      user = await qc.fetchQuery(userQueryOptions);
+    }
     if (!user) {
       throw redirect({ to: "/auth/login" });
     }
