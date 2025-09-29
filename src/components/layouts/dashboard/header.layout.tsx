@@ -1,6 +1,8 @@
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { HeaderDrawerMobile } from "@/components/layouts/dashboard/components/headerDrawerMobile";
 import { useCartStore } from "@/store/cartStore";
+import { Cart } from "@/components/cards/Cart";
 import {
   Building2,
   CalendarDays,
@@ -25,16 +27,17 @@ type HeaderLayoutProps = {
   className?: string;
 };
 
-// Language switcher moved to shared LanguageSelect component
-
 export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
   const { t } = useTranslation();
   const pathname = useRouterState().location.pathname;
   const isAdmin = useIsAdmin();
   const { data: user, isPending: isLoading } = useQuery(userQueryOptions);
   const isLoggedIn = !!user;
-  const cartItemCount = useCartStore((state) => state.itemCount);
+  const cartItemCount = useCartStore((state) => state.getCartItemCount());
   const { logout } = useLogout();
+  
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
   const handleLogoClick = (e: React.MouseEvent) => {
     if (pathname === "/") {
       e.preventDefault();
@@ -42,99 +45,104 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
     }
   };
 
-
   return (
-    <div
-      className={cn(
-        "flex sticky top-0 !w-full h-20 !py-4 !px-6 bg-banner drop-shadow-md items-center justify-between gap-4 z-[9999]",
-        className
-      )}
-    >
-      <Link to="/" onClick={handleLogoClick}>
-        <img
-          src="/logo-pro-mata.svg"
-          alt="Logo Pro Mata"
-          className="w-40 object-fit"
-        />
-      </Link>
-
-      <div className="hidden md:flex justify-around gap-6 lg:gap-10 items-center w-auto">
-        <HeaderButton
-          label={t("home")}
-          to="/"
-          icon={<Mountain />}
-          selected={pathname === "/"}
-        />
-        <HeaderButton
-          label={t("reserve")}
-          to="/reserve"
-          icon={<Building2 />}
-          selected={pathname === "/reserve"}
-        />
-        {isLoading ? (
-          <MoonLoader size={20} />
-        ) : (
-          isLoggedIn && (
-            <HeaderButton
-              label={t("myReservations")}
-              to="/user/my-reservations"
-              icon={<CalendarDays />}
-              selected={pathname === "/user/my-reservations"}
-            />
-          )
+    <>
+      <div
+        className={cn(
+          "flex sticky top-0 !w-full h-20 !py-4 !px-6 bg-banner drop-shadow-md items-center justify-between gap-4 z-[9999]",
+          className
         )}
-        {isLoading ? (
-          <MoonLoader size={20} />
-        ) : (
-          isAdmin && (
-            <HeaderButton
-              label={t("admin")}
-              to="/admin/reports"
-              icon={<LayoutDashboard />}
-              selected={pathname === "/admin/reports"}
-            />
-          )
-        )}
-      </div>
-
-      <div className="hidden md:flex w-auto justify-end items-center gap-6">
-        {isLoading ? (
-          <MoonLoader size={20} />
-        ) : isLoggedIn ? (
-          <>
-            <HeaderButton
-              secondary
-              label={user?.name || "Usuário"}
-              to="/user/profile"
-              icon={<CircleUserRound />}
-            />
-            <CartButton itemCount={cartItemCount} />
-          </>
-        ) : (
-          <HeaderButton
-            secondary
-            label={t("nav.login")}
-            to="/auth/login"
-            icon={<LogIn />}
+      >
+        <Link to="/" onClick={handleLogoClick}>
+          <img
+            src="/logo-pro-mata.svg"
+            alt="Logo Pro Mata"
+            className="w-40 object-fit"
           />
-        )}
-  <LanguageSelect />
-        {isLoading ? (
-          <MoonLoader size={20} />
-        ) : (
-          isLoggedIn && (
+        </Link>
+
+        <div className="hidden md:flex justify-around gap-6 lg:gap-10 items-center w-auto">
+          <HeaderButton
+            label={t("home")}
+            to="/"
+            icon={<Mountain />}
+            selected={pathname === "/"}
+          />
+          <HeaderButton
+            label={t("reserve")}
+            to="/reserve"
+            icon={<Building2 />}
+            selected={pathname === "/reserve"}
+          />
+          {isLoading ? (
+            <MoonLoader size={20} />
+          ) : (
+            isLoggedIn && (
+              <HeaderButton
+                label={t("myReservations")}
+                to="/user/my-reservations"
+                icon={<CalendarDays />}
+                selected={pathname === "/user/my-reservations"}
+              />
+            )
+          )}
+          {isLoading ? (
+            <MoonLoader size={20} />
+          ) : (
+            isAdmin && (
+              <HeaderButton
+                label={t("admin")}
+                to="/admin/reports"
+                icon={<LayoutDashboard />}
+                selected={pathname === "/admin/reports"}
+              />
+            )
+          )}
+        </div>
+
+        <div className="hidden md:flex w-auto justify-end items-center gap-6">
+          {isLoading ? (
+            <MoonLoader size={20} />
+          ) : isLoggedIn ? (
+            <>
+              <HeaderButton
+                secondary
+                label={user?.name || "Usuário"}
+                to="/user/profile"
+                icon={<CircleUserRound />}
+              />
+              <button type="button" onClick={() => setIsCartOpen(true)} style={{ background: "none", border: "none", padding: 0 }}>
+                <CartButton itemCount={cartItemCount} />
+              </button>
+            </>
+          ) : (
             <HeaderButton
               secondary
-              label={t("nav.logout")}
-              icon={<LogOut />}
-              onClick={logout}
+              label={t("nav.login")}
+              to="/auth/login"
+              icon={<LogIn />}
             />
-          )
-        )}
+          )}
+          <LanguageSelect />
+          {isLoading ? (
+            <MoonLoader size={20} />
+          ) : (
+            isLoggedIn && (
+              <HeaderButton
+                secondary
+                label={t("nav.logout")}
+                icon={<LogOut />}
+                onClick={logout}
+              />
+            )
+          )}
+        </div>
+
+        <HeaderDrawerMobile />
+        {children}
       </div>
 
-      <HeaderDrawerMobile />
-      {children}
-    </div>
+      {isCartOpen && <Cart onClose={() => setIsCartOpen(false)} />}
+    </>
   );
 };
