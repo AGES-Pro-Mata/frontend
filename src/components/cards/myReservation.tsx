@@ -3,6 +3,7 @@ import { Button } from "@/components/buttons/defaultButton";
 import CanvasCard from "@/components/cards/canvasCard";
 import { CalendarIcon, DollarSign, Check, Clock, X } from "lucide-react";
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 
 import {
   Dialog,
@@ -244,67 +245,110 @@ const handleOpenModalPessoas = (open: boolean) => {
       {draftPessoas.map((pessoa, index) => (
         <div
           key={index}
-          className="grid grid-cols-5 gap-4 border-b border-gray-300 pb-4"
+          className="grid grid-cols-6 gap-4 border-b border-gray-300 pb-4 items-center"
         >
-          <Input
-            placeholder="Nome"
-            value={pessoa.nome}
-            onChange={(e) => {
-              const newDraft = [...draftPessoas];
-              newDraft[index].nome = e.target.value;
-              setDraftPessoas(newDraft);
-            }}
-          />
-          <Input
-  placeholder="Telefone"
-  value={pessoa.telefone}
-  onChange={(e) => {
-    const newDraft = draftPessoas.map((p, i) =>
-      i === index ? { ...p, telefone: e.target.value } : p
-    );
-    setDraftPessoas(newDraft);
-  }}
-/>
+          {/* Nome */}
+          <div className="flex flex-col">
+            <label className="text-sm text-main-dark-green font-semibold">
+              Nome <span className="text-red-500">*</span>
+            </label>
+            <Input
+              placeholder="Nome"
+              value={pessoa.nome}
+              onChange={(e) => {
+                const newDraft = [...draftPessoas];
+                newDraft[index].nome = e.target.value;
+                setDraftPessoas(newDraft);
+              }}
+            />
+          </div>
 
-<Input
-  type="date"
-  value={pessoa.nascimento}
-  onChange={(e) => {
-    const newDraft = draftPessoas.map((p, i) =>
-      i === index ? { ...p, nascimento: e.target.value } : p
-    );
-    setDraftPessoas(newDraft);
-  }}
-/>
+          {/* Telefone */}
+          <div className="flex flex-col">
+            <label className="text-sm text-main-dark-green font-semibold">
+              Telefone <span className="text-red-500">*</span>
+            </label>
+            <Input
+              placeholder="Telefone"
+              value={pessoa.telefone}
+              onChange={(e) => {
+                const newDraft = draftPessoas.map((p, i) =>
+                  i === index ? { ...p, telefone: e.target.value } : p
+                );
+                setDraftPessoas(newDraft);
+              }}
+            />
+          </div>
 
-<Input
-  placeholder="CPF"
-  value={pessoa.cpf}
-  onChange={(e) => {
-    const newDraft = draftPessoas.map((p, i) =>
-      i === index ? { ...p, cpf: e.target.value } : p
-    );
-    setDraftPessoas(newDraft);
-  }}
-/>
+          {/* Data de nascimento */}
+          <div className="flex flex-col">
+            <label className="text-sm text-main-dark-green font-semibold">
+              Nascimento <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="date"
+              value={pessoa.nascimento}
+              onChange={(e) => {
+                const newDraft = draftPessoas.map((p, i) =>
+                  i === index ? { ...p, nascimento: e.target.value } : p
+                );
+                setDraftPessoas(newDraft);
+              }}
+            />
+          </div>
 
-          <Select
-            value={pessoa.genero}
-            onValueChange={(v) => {
-              const newDraft = [...draftPessoas];
-              newDraft[index].genero = v;
-              setDraftPessoas(newDraft);
-            }}
-          >
-            <SelectTrigger className="col-span-1">
-              <SelectValue placeholder="Gênero" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="masculino">Masculino</SelectItem>
-              <SelectItem value="feminino">Feminino</SelectItem>
-              <SelectItem value="outro">Outro</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* CPF */}
+          <div className="flex flex-col">
+            <label className="text-sm text-main-dark-green font-semibold">
+              CPF <span className="text-red-500">*</span>
+            </label>
+            <Input
+              placeholder="CPF"
+              value={pessoa.cpf}
+              onChange={(e) => {
+                const newDraft = draftPessoas.map((p, i) =>
+                  i === index ? { ...p, cpf: e.target.value } : p
+                );
+                setDraftPessoas(newDraft);
+              }}
+            />
+          </div>
+
+          {/* Gênero */}
+          <div className="flex flex-col">
+            <label className="text-sm text-main-dark-green font-semibold">
+              Gênero <span className="text-red-500">*</span>
+            </label>
+            <Select
+              value={pessoa.genero}
+              onValueChange={(v) => {
+                const newDraft = [...draftPessoas];
+                newDraft[index].genero = v;
+                setDraftPessoas(newDraft);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Gênero" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="masculino">Masculino</SelectItem>
+                <SelectItem value="feminino">Feminino</SelectItem>
+                <SelectItem value="outro">Outro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Lixeira */}
+          <div className="flex items-center justify-center">
+            <button
+              onClick={() => {
+                setDraftPessoas(draftPessoas.filter((_, i) => i !== index));
+              }}
+              className="text-default-red hover:text-red-700"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       ))}
 
@@ -320,31 +364,36 @@ const handleOpenModalPessoas = (open: boolean) => {
       />
     </div>
 
-<div className="flex justify-between mt-4">
-<Button
-  onClick={() => {
-    setDraftPessoas(pessoas.map(p => ({ ...p }))); 
-    setOpenModalPessoas(false);
-  }}
-  className="bg-dark-gray text-soft-white rounded-full w-[120px] h-[40px]"
-  label="Voltar"
-/>
+    <div className="flex justify-between mt-4">
+      <Button
+        onClick={() => {
+          setDraftPessoas(pessoas.map(p => ({ ...p })));
+          setOpenModalPessoas(false);
+        }}
+        className="bg-dark-gray text-soft-white rounded-full w-[120px] h-[40px]"
+        label="Voltar"
+      />
 
+      <Button
+        onClick={() => {
+          const camposIncompletos = draftPessoas.some(
+            (p) =>
+              !p.nome || !p.telefone || !p.nascimento || !p.cpf || !p.genero
+          );
 
+          if (camposIncompletos) {
+            toast.error("Preencha todos os campos obrigatórios!");
+            return;
+          }
 
-
-  <Button
-  onClick={() => {
-    setPessoas(draftPessoas.map(p => ({ ...p }))); 
-    toast.success("Pessoas cadastradas com sucesso!");
-    setOpenModalPessoas(false);
-  }}
-  className="bg-contrast-green text-soft-white rounded-full w-[120px] h-[40px]"
-  label="Salvar"
-/>
-
-</div>
-
+          setPessoas(draftPessoas.map(p => ({ ...p })));
+          toast.success("Pessoas cadastradas com sucesso!");
+          setOpenModalPessoas(false);
+        }}
+        className="bg-contrast-green text-soft-white rounded-full w-[120px] h-[40px]"
+        label="Salvar"
+      />
+    </div>
   </DialogContent>
 </Dialog>
 
