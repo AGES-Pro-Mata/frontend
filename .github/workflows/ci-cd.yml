@@ -137,7 +137,10 @@ jobs:
 
       - name: Build Application
         env:
-          VITE_API_URL: https://api.promata.com.br
+          VITE_UMAMI_WEBSITE_ID: ${{ vars.VITE_UMAMI_WEBSITE_ID }}
+          VITE_UMAMI_SCRIPT_URL: ${{ vars.VITE_UMAMI_SCRIPT_URL }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_ENABLE_DEVTOOLS: false
           VITE_APP_ENV: production
           VITE_APP_VERSION: ${{ github.sha }}
         run: npm run build:ci
