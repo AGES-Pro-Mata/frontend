@@ -98,6 +98,9 @@ export function Carousel() {
             src={recursos[selected]}
             alt={t("carousel.imageAlt", { brand: "PRÓ-MATA", index: selected + 1 })}
             className="h-full w-full object-cover object-center box-border select-none"
+            loading="lazy"
+            decoding="async"
+            sizes="(min-width: 1024px) 50vw, (min-width: 640px) 70vw, 92vw"
           />
         </div>
       </div>
@@ -141,6 +144,9 @@ export function Carousel() {
                   src={src}
                   alt={t("carousel.imageAlt", { brand: "PRÓ-MATA", index: i + 1 })}
                   className="h-full w-full object-cover object-center box-border select-none"
+                  loading={i <= 1 ? "eager" : "lazy"}
+                  decoding="async"
+                  sizes="(min-width: 1024px) 20vw, (min-width: 640px) 35vw, 80vw"
                 />
               </div>
             ))}

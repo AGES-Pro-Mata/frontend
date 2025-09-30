@@ -76,6 +76,9 @@ export function CardsInfoOnHover() {
               alt={t(`homeCards.${homeCards[active].id}.title`)}
               className="h-full w-full object-cover object-center box-border rounded-[clamp(0.75rem,2vw,1.25rem)]"
               style={{ borderRadius: "clamp(0.75rem,2vw,1.25rem)" }}
+              loading="lazy"
+              decoding="async"
+              sizes="(min-width: 640px) 25vw, 85vw"
             />
           </div>
         ))}

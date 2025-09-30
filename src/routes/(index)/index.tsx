@@ -15,11 +15,19 @@ function RouteComponent() {
   return (
     <div className="w-full overflow-x-hidden">
       <div className="relative w-full h-screen bg-main-dark-green flex items-start justify-center pt-[clamp(2rem,6vh,5rem)]">
-        <img
-          src="home-page-image.png"
-          alt="PRÓ-MATA Centro de Pesquisas"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <picture className="absolute inset-0 w-full h-full">
+          <source srcSet="/home-page-image.avif" type="image/avif" />
+          <source srcSet="/home-page-image.webp" type="image/webp" />
+          <img
+            src="/home-page-image.png"
+            alt="PRÓ-MATA Centro de Pesquisas"
+            className="w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            sizes="100vw"
+          />
+        </picture>
 
         <div className="absolute inset-0 bg-black/20"></div>
 
