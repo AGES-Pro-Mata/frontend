@@ -15,12 +15,19 @@ import { userQueryOptions } from "@/api/user";
 import { useLogout } from "@/hooks/useLogout";
 import { useTranslation } from "react-i18next";
 import LanguageSelect from "@/components/buttons/languageSelector";
+import { useCartStore } from "@/store/cartStore";
 
 export function HeaderDrawerMobile() {
   const { t } = useTranslation();
   const { data: user } = useQuery(userQueryOptions);
   const isLoggedIn = !!user;
   const { logout } = useLogout();
+  const openCart = useCartStore((state) => state.openCart);
+  const cartItemsCount = useCartStore((state) => state.items.length);
+
+  const handleCartClick = () => {
+    openCart();
+  };
 
   return (
     <Drawer direction="left">
@@ -68,9 +75,21 @@ export function HeaderDrawerMobile() {
                   </Link>
                 </DrawerClose>
                 <DrawerClose asChild>
-                  <Link to="/user/profile" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
-                    <ShoppingCart className="size-4" /> {t("common.cart")}
-                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleCartClick}
+                    className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
+                  >
+                    <span className="relative inline-flex items-center gap-2">
+                      <ShoppingCart className="size-4" />
+                      {cartItemsCount > 0 && (
+                        <span className="inline-flex min-w-5 justify-center rounded-full bg-banner px-2 py-0.5 text-xs font-semibold text-main-dark-green">
+                          {cartItemsCount}
+                        </span>
+                      )}
+                    </span>
+                    {t("common.cart")}
+                  </button>
                 </DrawerClose>
               </>
             )}

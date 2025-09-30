@@ -18,6 +18,19 @@
     "email": "Email",
     "function": "Função"
   },
+  "cartDrawer": {
+    "heading": {
+      "empty": "Seu carrinho está vazio",
+      "single": "Você possui 1 experiência marcada para reservar",
+      "plural": "Você possui {{count}} experiências marcadas para reservar"
+    },
+    "emptyState": {
+      "title": "Seu carrinho está vazio no momento.",
+      "subtitle": "Adicione experiências ao seu carrinho para finalizar a reserva."
+    },
+    "checkoutButton": "Finalizar Reserva",
+    "browseLink": "Ver mais experiências"
+  },
   "status": {
     "confirmada": "Confirmada",
     "pagamento_pendente": "Pagamento pendente",

@@ -2,7 +2,6 @@
     "home": "Home",
     "reserve": "Reserve",
     "myReservations": "My Reservations",
-
     "common": {
         "menu": "Menu",
         "back": "Back",
@@ -17,6 +16,19 @@
         "email": "Email",
         "function": "Role"
     },
+    "cartDrawer": {
+        "heading": {
+            "empty": "Your cart is empty",
+            "single": "You have 1 experience ready to reserve",
+            "plural": "You have {{count}} experiences ready to reserve"
+        },
+        "emptyState": {
+            "title": "Your cart is empty right now.",
+            "subtitle": "Add experiences to your cart to finish your reservation."
+        },
+        "checkoutButton": "Finish Reservation",
+        "browseLink": "See more experiences"
+    },
     "status": {
         "confirmada": "Confirmed",
         "pagamento_pendente": "Payment pending",
@@ -25,7 +37,6 @@
         "cancelada": "Cancelled",
         "desconhecido": "Unknown"
     },
-
     "nav": {
         "home": "Home",
         "reserve": "Reserve",
@@ -61,7 +72,6 @@
             }
         }
     },
-
     "homePage": {
         "welcome": "Welcome to",
         "subtitle": "Center for Research and Nature Conservation",
@@ -70,7 +80,6 @@
         "ctaBottomTitle": "Don't waste time — come live this unique experience!",
         "ctaBottom": "Make a Reservation"
     },
-
     "experiences": {
         "title": "Experiences!",
         "headline": "Live unforgettable moments connected with the preserved nature of Serra Gaúcha!",
@@ -83,7 +92,6 @@
         "bookNow": "Book now!",
         "book": "Make a Reservation"
     },
-
     "experienceCard": {
         "package": "Package",
         "currencySymbol": "$",
@@ -100,7 +108,6 @@
         "malePeople": "Number of male individuals",
         "femalePeople": "Number of female individuals"
     },
-
     "homeCards": {
         "cta": "Learn more",
         "labs": {
@@ -120,7 +127,6 @@
             "description": "Ecological paths for exploration and learning."
         }
     },
-
     "carousel": {
         "title": "Discover your destination!",
         "subtitle": "Explore some of the stunning views you'll find at {{brand}}",
@@ -128,7 +134,6 @@
         "next": "Next",
         "imageAlt": "{{brand}} scenery {{index}}"
     },
-
     "auth": {
         "login": {
             "title": "Login",
@@ -177,7 +182,6 @@
             "goToLogin": "Log in"
         }
     },
-
     "register": {
         "title": "Sign up",
         "subtitle": "Fill in the fields below to create your account",
@@ -203,7 +207,7 @@
                 "other": "Other"
             },
             "rg": "RG",
-            "zip":  "ZIP CODE",
+            "zip": "ZIP CODE",
             "country": "Country",
             "selectCountry": "Select country",
             "address": "Address",
@@ -245,7 +249,6 @@
             "error": "Error registering user"
         }
     },
-
     "validation": {
         "email": "Enter a valid email.",
         "passwordRequired": "Enter your password.",
@@ -256,10 +259,9 @@
         "nameRequired": "Enter your full name",
         "phoneRequired": "Enter your phone number",
         "genderRequired": "Select your gender",
-    "zipRequired": "Enter ZIP code",
+        "zipRequired": "Enter ZIP code",
         "countryRequired": "Enter the country",
         "addressRequired": "Address is required",
-        
         "cep8": "CEP must contain 8 digits",
         "cpfInvalid": "Invalid CPF",
         "rgInvalid": "Invalid RG",
@@ -269,14 +271,13 @@
         "mustAcceptTerms": "You must accept the terms of use",
         "cityRequired": "City is required",
         "numberRequired": "Number is required"
+    },
+    "footer": {
+        "contact": "Contact us",
+        "researchCenter": "PRÓ-MATA Research Center",
+        "city": "CITY",
+        "phone": "Phone: (XX) XXXX-XXXX",
+        "email": "Email: contato@pro-mata.org",
+        "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
     }
-        ,
-        "footer": {
-            "contact": "Contact us",
-            "researchCenter": "PRÓ-MATA Research Center",
-            "city": "CITY",
-            "phone": "Phone: (XX) XXXX-XXXX",
-            "email": "Email: contato@pro-mata.org",
-            "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
-        }
 }
