@@ -4,6 +4,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/buttons/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/(index)/")({
@@ -12,14 +13,25 @@ export const Route = createFileRoute("/(index)/")({
 
 function RouteComponent() {
   const { t } = useTranslation();
+  const [heroLoaded, setHeroLoaded] = useState(false);
   return (
     <div className="w-full overflow-x-hidden">
       <div className="relative w-full h-screen bg-main-dark-green flex items-start justify-center pt-[clamp(2rem,6vh,5rem)]">
-        <img
-          src="home-page-image.png"
-          alt="PRÓ-MATA Centro de Pesquisas"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <picture className="absolute inset-0 w-full h-full">
+          <source srcSet="/home-page-image.avif" type="image/avif" />
+          <source srcSet="/home-page-image.webp" type="image/webp" />
+          <img
+            src="/home-page-image.avif"
+            alt="PRÓ-MATA Centro de Pesquisas"
+            className={`w-full h-full object-cover transition-opacity duration-700 ease-out ${heroLoaded ? "opacity-100" : "opacity-0"
+              }`}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            sizes="100vw"
+            onLoad={() => setHeroLoaded(true)}
+          />
+        </picture>
 
         <div className="absolute inset-0 bg-black/20"></div>
 
