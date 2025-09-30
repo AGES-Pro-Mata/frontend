@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { userQueryOptions, type CurrentUser } from "@/api/user";
 import type { RegisterUserPayload } from "@/api/user";
-import { StatusEnum } from "@/components/cards/cardStatus";
+import { StatusEnum } from "@/entities/reservation-status";
 
 function mapCurrentUserToProfile(
   user: CurrentUser
@@ -24,7 +24,7 @@ function mapCurrentUserToProfile(
     institution: user.institution,
     country: user.address?.country,
     isForeign: user.isForeign ?? undefined,
-  function: (user as any).function || (user as any).role || undefined,
+    function: (user as any).function || (user as any).role || undefined,
   };
 }
 
