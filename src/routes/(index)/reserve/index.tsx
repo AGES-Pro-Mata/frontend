@@ -1,5 +1,6 @@
 
 import ExperienceCard from "@/components/cards/experienceTuningCard";
+import { DefaultButton } from "@/components/buttons/defaultButton";
 import { useExperienceAdjustments } from "@/hooks/useExperienceAdjustments";
 
 
@@ -44,8 +45,16 @@ function ExperienceAdjustmentsPage() {
           )}
         </div>
           <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4 mt-8 pr-0 sm:pr-4 pb-4">
-            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded bg-gray-100 font-bold text-black shadow-sm">Voltar</button>
-            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded bg-[#16B33A] text-white font-bold shadow-sm">Finalizar</button>
+            <DefaultButton
+              label="Voltar"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 font-bold text-black bg-gray-100 shadow-sm"
+              onClick={() => {}}
+            />
+            <DefaultButton
+              label="Finalizar"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 font-bold text-white bg-[#16B33A] shadow-sm"
+              onClick={() => {}}
+            />
           </div>
         </div>
       </div>
