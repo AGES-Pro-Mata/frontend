@@ -13,11 +13,11 @@ function ExperienceAdjustmentsPage() {
   if (error) return <div className="p-8 text-red-500">Erro ao carregar experiências.</div>;
 
   return (
-    <div className="min-h-screen bg-[#F6F6F6] pb-8">
-      <div className="max-w-5xl mx-auto pt-8">
+    <div className="min-h-screen bg-[#F6F6F6] pb-4">
+      <div className="max-w-5xl mx-auto pt-6 px-2 sm:px-4">
         <h1 className="text-xl font-bold mb-4 text-left">Ajuste de experiências</h1>
-        <div className="border-2 border-gray-400 rounded-2xl p-8 pb-0 bg-white">
-          <div className="flex flex-col gap-8">
+        <div className="border-2 border-gray-400 rounded-2xl p-2 sm:p-6 md:p-8 pb-0 bg-white">
+          <div className="flex flex-col gap-4 sm:gap-6 md:gap-8">
           {experiences.length === 0 ? (
             <ExperienceCard
               title="Experiência X"
@@ -43,9 +43,9 @@ function ExperienceAdjustmentsPage() {
             ))
           )}
         </div>
-          <div className="flex justify-end gap-4 mt-8 pr-4 pb-4">
-            <button className="px-8 py-3 rounded bg-gray-100 font-bold text-black shadow-sm">Voltar</button>
-            <button className="px-8 py-3 rounded bg-[#16B33A] text-white font-bold shadow-sm">Finalizar</button>
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4 mt-8 pr-0 sm:pr-4 pb-4">
+            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded bg-gray-100 font-bold text-black shadow-sm">Voltar</button>
+            <button className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded bg-[#16B33A] text-white font-bold shadow-sm">Finalizar</button>
           </div>
         </div>
       </div>
