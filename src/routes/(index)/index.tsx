@@ -1,7 +1,7 @@
 import { Carousel } from "@/components/carousel/carousel";
 import { CardsInfoOnHover } from "@/components/cards/cardInfoOnHover";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button, DefaultButton } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/buttons/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
 import { useState } from "react";
@@ -58,7 +58,7 @@ function RouteComponent() {
 
           <div className="flex flex-col sm:flex-row gap-[clamp(0.75rem,2vw,1rem)] justify-center items-center">
             <Link to="/reserve">
-              <DefaultButton
+              <Button
                 label={t("homePage.ctaPrimary")}
                 variant="primary"
                 className="p-5 text-md"
@@ -69,7 +69,7 @@ function RouteComponent() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <DefaultButton
+              <Button
                 label={t("homePage.ctaSecondary")}
                 variant="secondary"
                 className="p-5 text-md"

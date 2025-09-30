@@ -5,3 +5,6 @@ Use the latest version of Shadcn to install new components, like this command to
 ```bash
 pnpx shadcn@latest add button
 ```
+
+# color variables instructions
+- Always apply colors in `global.css` using `color-name` so themes stay consistent and no hex values are hard-coded. Example: `bg-my-color`
