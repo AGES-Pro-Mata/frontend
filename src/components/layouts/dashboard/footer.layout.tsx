@@ -21,7 +21,7 @@ export const FooterLayout = () => {
             />
           </a>
         </div>
-        <div className="md:w-2/3 md:items-start flex flex-col w-full items-center">
+        <div className="md:w-2/3 md:items-start flex flex-col w-full items-center mt-5">
           <Typography variant="h5_light">{t("footer.contact")}</Typography>
           <div className="md:flex-row md:items-start flex flex-col w-full mt-5 items-center">
             <div className="w-1/2 gap-4">
