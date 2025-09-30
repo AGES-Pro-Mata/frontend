@@ -2,6 +2,7 @@ import React from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -110,6 +111,7 @@ export function ReceiptPreview({
                 }
               />
             )}
+            <DialogDescription />
             <DialogClose asChild>
               <Button
                 variant="ghost"

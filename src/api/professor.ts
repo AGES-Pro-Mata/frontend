@@ -1,42 +1,23 @@
+import type { GetUserByIdResponse } from "@/api/user";
 import { api } from "@/core/api";
 import type { HttpResponse } from "@/types/http-response";
 import type { UserType } from "@/types/user";
 
-export interface ProfessorApprovalPayload {
-  id?: string;
-  approved?: boolean;
-  observation?: string;
-  name: string;
-  email: string;
-  phone: string;
-  document: string;
-  rg: string;
-  gender: string;
-  zipCode: string;
-  country: string;
-  userType: UserType;
-  institution?: string;
-  isForeign: boolean;
-  addressLine: string;
-  city: string;
-  number?: number;
-}
-
-export interface ProfessorApprovalResponse {
+export type ProfessorApprovalDetails = GetUserByIdResponse & {
   id: string;
-  name: string;
-  email: string;
-  message: string;
+  message?: string | null;
+};
+
+export interface ProfessorApprovalRequestPayload {
+  userType: UserType;
 }
 
 export async function approveOrRejectProfessor(
-  payload: ProfessorApprovalPayload
+  id: string,
+  payload: ProfessorApprovalRequestPayload
 ): Promise<HttpResponse> {
   try {
-    const response = await api.post(
-      `/admin/professor/approval`,
-      payload
-    );
+    const response = await api.patch(`/user/${id}`, payload);
     return {
       statusCode: response.status,
       message: "Operação realizada com sucesso",
@@ -45,7 +26,8 @@ export async function approveOrRejectProfessor(
   } catch (error: any) {
     return {
       statusCode: error.response?.status || 500,
-      message: error.response?.data?.message || "Erro ao processar a solicitação",
+      message:
+        error.response?.data?.message || "Erro ao processar a solicitação",
     };
   }
 }

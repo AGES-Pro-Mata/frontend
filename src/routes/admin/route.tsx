@@ -26,10 +26,9 @@ export const Route = createFileRoute("/admin")({
   },
   loader: async ({ context }) => {
     const user = await (
-      (context as unknown as { queryClient: QueryClient })
+      context as unknown as { queryClient: QueryClient }
     ).queryClient.ensureQueryData(userQueryOptions);
-    const isAdmin =
-      user?.userType === "ADMIN" || user?.userType === "ROOT";
+    const isAdmin = user?.userType === "ADMIN" || user?.userType === "ROOT";
     return { isAdmin };
   },
 });

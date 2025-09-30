@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ApproveProfessorCard } from "@/components/cards/approveProfessorCard";
-import { getUserById, type GetUserByIdResponse } from "@/api/user";
 import { appToast } from "@/components/toast/toast";
 import { useEffect } from "react";
-import type { ProfessorApprovalPayload } from "@/api/professor";
+import type { ProfessorApprovalDetails } from "@/api/professor";
 import type { QueryClient } from "@tanstack/react-query";
+import { useGetProfessorById } from "@/hooks/useGetProfessorById";
 
 export const Route = createFileRoute(
   "/admin/requests/professor-approval/$professor-id"
@@ -12,28 +12,15 @@ export const Route = createFileRoute(
   component: RouteComponent,
   errorComponent: RouteErrorComponent,
   beforeLoad: async ({ params, context }) => {
-    const id = params["professor-id"];
-    if (!id) throw new Response("Not Found", { status: 404 });
-
-    const { queryClient } = context as { queryClient: QueryClient };
-    await queryClient.ensureQueryData({
-      queryKey: ["professor", id] as const,
-      queryFn: async (): Promise<GetUserByIdResponse> => {
-        const res = await getUserById(id);
-        if (!res.data) {
-          throw new Response("Professor not found", {
-            status: res.statusCode || 404,
-          });
-        }
-        return res.data;
-      }
-    });
-    return queryClient.getQueryData(["professor", id]) as GetUserByIdResponse;
-  }
+    return useGetProfessorById(
+      params["professor-id"],
+      context as { queryClient: QueryClient }
+    );
+  },
 });
 
 function RouteComponent() {
-  const data = Route.useRouteContext() as ProfessorApprovalPayload | undefined;
+  const data = Route.useRouteContext() as ProfessorApprovalDetails | undefined;
   if (!data) return null; // Loader throws if not found
   return <ApproveProfessorCard professor={data} />;
 }

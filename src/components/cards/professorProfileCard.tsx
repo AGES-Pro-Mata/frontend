@@ -2,11 +2,11 @@ import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ShowInfo } from "@/components/display/showInfo";
 import { Typography } from "@/components/typography/typography";
-import type { ProfessorApprovalPayload } from "@/api/professor";
+import type { ProfessorApprovalDetails } from "@/api/professor";
 import CanvasCard from "@/components/cards/canvasCard";
 
 export interface ProfessorProfileCardProps {
-  professor: ProfessorApprovalPayload;
+  professor: ProfessorApprovalDetails;
 }
 
 export function ProfessorProfileCard({ professor }: ProfessorProfileCardProps) {

@@ -1,29 +1,43 @@
 import { useState, useCallback } from "react";
 import { ReceiptPreview } from "@/components/dialogs/receiptPreview";
 import { ProfessorProfileCard } from "@/components/cards/professorProfileCard";
-import { approveOrRejectProfessor } from "@/api/professor";
+import {
+  approveOrRejectProfessor,
+  type ProfessorApprovalDetails,
+  type ProfessorApprovalRequestPayload,
+} from "@/api/professor";
 import { appToast } from "@/components/toast/toast";
-import ProfessorApproval from "@/components/text-areas/acceptRequest";
+import ProfessorApproval from "@/components/text-areas/reviewProfessorRequest";
 import { Button } from "@/components/buttons/defaultButton";
 import { Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import type { HttpResponse } from "@/types/http-response";
-import type { ProfessorApprovalPayload } from "@/api/professor";
-
+import type { UserType } from "@/types/user";
 interface ApproveProfessorCardProps {
-  professor: ProfessorApprovalPayload;
+  professor: ProfessorApprovalDetails;
 }
 
 export function ApproveProfessorCard({ professor }: ApproveProfessorCardProps) {
   const [markdown, setMarkdown] = useState<string>("");
+  const [professorState, setProfessorState] = useState(professor);
+  const [statusVersion, setStatusVersion] = useState(0);
 
-  const mutation = useMutation<HttpResponse, Error, ProfessorApprovalPayload>({
+  const mutation = useMutation<
+    HttpResponse,
+    Error,
+    { id: string; data: ProfessorApprovalRequestPayload }
+  >({
     mutationKey: ["approve-professor"],
-    mutationFn: approveOrRejectProfessor,
-    onSuccess: (res) => {
+    mutationFn: ({ id, data }) => approveOrRejectProfessor(id, data),
+    onSuccess: (res, variables) => {
       const ok = res.statusCode >= 200 && res.statusCode < 300;
       if (ok) {
         appToast.success("Operação realizada com sucesso!");
+        setProfessorState((prev) => ({
+          ...prev,
+          userType: variables.data.userType,
+        }));
+        setStatusVersion((prev) => prev + 1);
       } else {
         appToast.error("Erro na operação");
       }
@@ -34,12 +48,13 @@ export function ApproveProfessorCard({ professor }: ApproveProfessorCardProps) {
   });
 
   const submit = useCallback(
-    (approved: boolean, observation: string) => {
+    (user: UserType) => {
       if (mutation.isPending) return; // evita cliques duplos
       mutation.mutate({
-        ...professor,
-        approved,
-        observation,
+        id: professor.id,
+        data: {
+          userType: user,
+        },
       });
     },
     [mutation, professor]
@@ -62,8 +77,10 @@ export function ApproveProfessorCard({ professor }: ApproveProfessorCardProps) {
               markdown={markdown}
               setMarkdown={setMarkdown}
               placeholder="Digite alguma observação sobre essa solicitação"
-              onApprove={(obs) => submit(true, obs)}
-              onReject={(obs) => submit(false, obs)}
+              userType={professorState.userType}
+              statusVersion={statusVersion}
+              onApprove={() => submit("PROFESSOR")}
+              onReject={() => submit("GUEST")}
               onViewReceipt={handleViewReceipt}
             />
           </div>
