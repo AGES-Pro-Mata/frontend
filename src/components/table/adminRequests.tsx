@@ -59,7 +59,8 @@ const professorColumns: ColumnDef<Request>[] = [
 ];
 
 function ApproveButton({ requestId }: { requestId: string }) {
-  const { approveMutation } = useAdminRequests();
+  // Usa apenas a mutation, sem filtros
+  const { approveMutation } = useAdminRequests({});
 
   const handleApprove = useCallback(() => {
     approveMutation.mutate(requestId);
@@ -116,22 +117,30 @@ const reservationColumns: ColumnDef<Request>[] = [
   },
 ];
 
-export default function AdminRequestsPage() {
+export default function AdminRequests() {
   const [tab, setTab] = useState<"professor" | "reservation">("professor");
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 10,
+    status: undefined as string | undefined,
+    sort: undefined as string | undefined,
+    dir: undefined as "asc" | "desc" | undefined,
+  });
 
-  const { professorQuery, reservationQuery } = useAdminRequests();
+  // Passa filtros para o hook
+  const { requestsQuery } = useAdminRequests({
+    page: filters.page,
+    limit: filters.limit,
+    status: selectedStatus.length ? selectedStatus[0] : undefined,
+  });
 
-  const loading = tab === "professor" ? professorQuery.isLoading : reservationQuery.isLoading;
-  const error = tab === "professor" ? professorQuery.error : reservationQuery.error;
+  const loading = requestsQuery.isLoading;
+  const error = requestsQuery.error;
   // Garante que sempre seja array, mesmo que a API retorne objeto
-  const professorRequests: Request[] = Array.isArray(professorQuery.data)
-    ? professorQuery.data
-    : professorQuery.data?.data || professorQuery.data?.results || [];
-
-  const reservationRequests: Request[] = Array.isArray(reservationQuery.data)
-    ? reservationQuery.data
-    : reservationQuery.data?.data || reservationQuery.data?.results || [];
+  const allRequests: Request[] = Array.isArray(requestsQuery.data)
+    ? requestsQuery.data
+    : requestsQuery.data?.data || requestsQuery.data?.results || [];
 
   const handleStatusChange = (status: string) => {
     setSelectedStatus((prev) =>
@@ -141,20 +150,15 @@ export default function AdminRequestsPage() {
     );
   };
 
-  const filteredRequests =
-    tab === "professor"
-      ? selectedStatus.length
-        ? professorRequests.filter((d) => selectedStatus.includes(d.status))
-        : professorRequests
-      : selectedStatus.length
-      ? reservationRequests.filter((d) => selectedStatus.includes(d.status))
-      : reservationRequests;
-
-  const [filters, setFilters] = useState({
-    page: 0,
-    limit: 10,
-    sort: undefined as string | undefined,
-    dir: undefined as "asc" | "desc" | undefined,
+  // Filtra por status e tab
+  const filteredRequests = allRequests.filter((d) => {
+    if (tab === "professor") {
+      return professorStatus.includes(d.status) &&
+        (selectedStatus.length ? selectedStatus.includes(d.status) : true);
+    } else {
+      return reservationStatus.includes(d.status) &&
+        (selectedStatus.length ? selectedStatus.includes(d.status) : true);
+    }
   });
 
   if (loading) {

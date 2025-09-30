@@ -1,45 +1,49 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
-async function fetchProfessorRequests() {
-  const response = await axios.get("/api/admin/professor-requests");
+const reservationStatus = [
+  "CREATED",
+  "CANCELED",
+  "CANCELED_REQUESTED",
+  "EDITED",
+  "REJECTED",
+  "APPROVED",
+  "PEOPLE_REQUESTED",
+  "PAYMENT_REQUESTED",
+  "PEOPLE_SENT",
+  "PAYMENT_SENT",
+];
+
+async function fetchRequests({ page = 1, limit = 10, status }: { page?: number; limit?: number; status?: string }) {
+  const params: any = { page, limit };
+  if (status) params.status = status;
+  const response = await axios.get("/api/requests", { params });
   return response.data;
 }
 
-async function fetchReservationRequests() {
-  const response = await axios.get("/api/admin/reservation-requests");
-  return response.data;
-}
-
-async function approveRequest(id: string) {
-  const response = await axios.post(`/api/admin/requests/${id}/approve`);
-  return response.data;
-}
-
-export function useAdminRequests() {
+export function useAdminRequests(filters: { page?: number; limit?: number; status?: string }) {
   const queryClient = useQueryClient();
 
-  const professorQuery = useQuery({
-    queryKey: ["professorRequests"],
-    queryFn: fetchProfessorRequests,
+  const requestsQuery = useQuery({
+    queryKey: ["adminRequests", filters],
+    queryFn: () => fetchRequests(filters),
   });
 
-  const reservationQuery = useQuery({
-    queryKey: ["reservationRequests"],
-    queryFn: fetchReservationRequests,
-  });
-
+  // Exemplo de mutation para aprovar (ajuste endpoint se necessário)
   const approveMutation = useMutation({
-    mutationFn: approveRequest,
+    mutationFn: async (id: string) => {
+      const response = await axios.post(`/api/requests/${id}/approve`);
+      return response.data;
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["professorRequests"] });
-      queryClient.invalidateQueries({ queryKey: ["reservationRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["adminRequests"] });
     },
   });
 
   return {
-    professorQuery,
-    reservationQuery,
+    requestsQuery,
     approveMutation,
+    reservationStatus,
   };
 }
