@@ -21,11 +21,10 @@ function RouteComponent() {
           <source srcSet="/home-page-image.avif" type="image/avif" />
           <source srcSet="/home-page-image.webp" type="image/webp" />
           <img
-            src="/home-page-image.png"
+            src="/home-page-image.avif"
             alt="PRÓ-MATA Centro de Pesquisas"
-            className={`w-full h-full object-cover transition-opacity duration-700 ease-out ${
-              heroLoaded ? "opacity-100" : "opacity-0"
-            }`}
+            className={`w-full h-full object-cover transition-opacity duration-700 ease-out ${heroLoaded ? "opacity-100" : "opacity-0"
+              }`}
             loading="eager"
             decoding="async"
             fetchPriority="high"

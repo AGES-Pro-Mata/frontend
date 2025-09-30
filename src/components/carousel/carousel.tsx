@@ -8,7 +8,7 @@ export function Carousel() {
   const { t } = useTranslation();
   const recursos = [
     "/mock/infrastructure-0.jpg",
-    "/mock/trail-1.jpg",
+    "/mock/trail-1.webp",
     "/mock/landscape-2.webp",
     "/mock/landscape-3.webp",
     "/mock/landscape-4.webp",

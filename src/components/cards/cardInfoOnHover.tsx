@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/buttons/defaultButton";
 import { Typography } from "@/components/typography/typography";
@@ -19,52 +19,109 @@ const DESKTOP_CARD_INACTIVE = "opacity-70 hover:opacity-100";
 const CTA_BUTTON_CLASSES =
   "pointer-events-none mt-[clamp(0.75rem,2vw,1rem)] h-[clamp(2.25rem,6vh,2.5rem)] w-[clamp(5.5rem,18vw,6.25rem)] rounded-full bg-[#4C9613] text-sm text-white transition-all duration-200";
 
+const ImageTile = memo(function ImageTile({
+  src,
+  alt,
+  priority,
+}: {
+  src: string;
+  alt: string;
+  priority: boolean;
+}) {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(false);
+  }, [src]);
+
+  return (
+    <div className="relative flex h-full w-full">
+      <img
+        src={src}
+        alt={alt}
+        className={cn(
+          "h-full w-full rounded-[inherit] object-cover object-center transition-opacity duration-500",
+          loaded ? "opacity-100" : "opacity-0"
+        )}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+        sizes="(min-width: 640px) 25vw, 85vw"
+        onLoad={() => setLoaded(true)}
+      />
+      <span
+        aria-hidden="true"
+        className={cn(
+          "absolute inset-0 rounded-[inherit] bg-card/70",
+          loaded ? "opacity-0" : "opacity-100 animate-pulse"
+        )}
+      />
+    </div>
+  );
+});
+
+ImageTile.displayName = "ImageTile";
+
 const DesktopCard = memo(function DesktopCard({
   card,
   index,
   isActive,
-  onActivate,
+  isHovered,
+  onHover,
+  onSelect,
   ctaLabel,
 }: {
   card: TranslatedCard;
   index: number;
   isActive: boolean;
-  onActivate: (index: number) => void;
+  isHovered: boolean;
+  onHover: (index: number | null) => void;
+  onSelect: (index: number) => void;
   ctaLabel: string;
 }) {
-  const activate = useCallback(() => onActivate(index), [index, onActivate]);
+  const handleMouseEnter = useCallback(() => onHover(index), [index, onHover]);
+  const handleMouseLeave = useCallback(() => onHover(null), [onHover]);
+  const handleSelect = useCallback(() => onSelect(index), [index, onSelect]);
 
   return (
-    <button
-      type="button"
-      onFocus={activate}
-      onMouseEnter={activate}
+    <div
       className={cn(
         DESKTOP_CARD_BASE,
         isActive ? DESKTOP_CARD_ACTIVE : DESKTOP_CARD_INACTIVE
       )}
-      aria-pressed={isActive}
-      aria-label={card.title}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onFocus={handleMouseEnter}
+      onBlur={handleMouseLeave}
+      role="group"
+      aria-labelledby={`card-${card.id}-title`}
+      aria-describedby={`card-${card.id}-description`}
     >
       <div className="flex flex-col gap-[clamp(0.375rem,1.5vw,0.5rem)] text-left">
-        <Typography variant="h5" className="text-black">
+        <Typography
+          id={`card-${card.id}-title`}
+          variant="h5"
+          className="text-black"
+        >
           {card.title}
         </Typography>
-        <Typography className="text-sm text-muted-foreground">
+        <Typography
+          id={`card-${card.id}-description`}
+          className="text-sm text-muted-foreground"
+        >
           {card.description}
         </Typography>
       </div>
       <Button
         label={ctaLabel}
-        aria-hidden={!isActive}
-        tabIndex={-1}
+        onClick={handleSelect}
         className={cn(
           CTA_BUTTON_CLASSES,
-          "translate-y-2 opacity-0",
-          isActive && "pointer-events-auto translate-y-0 opacity-100"
+          "pointer-events-none translate-y-2 opacity-0",
+          (isHovered || isActive) &&
+            "pointer-events-auto translate-y-0 opacity-100"
         )}
       />
-    </button>
+    </div>
   );
 });
 
@@ -131,13 +188,10 @@ const ImagesStrip = memo(function ImagesStrip({ card }: { card: TranslatedCard }
           key={`${card.id}-${index}`}
           className="relative flex aspect-[3/2] w-[calc(100%_-_0.75rem)] shrink-0 snap-center overflow-hidden rounded-[clamp(0.75rem,2vw,1.25rem)] sm:h-[clamp(12rem,28vw,17.5rem)] sm:w-full sm:flex-1"
         >
-          <img
+          <ImageTile
             src={src}
             alt={card.title}
-            className="h-full w-full rounded-[inherit] object-cover object-center"
-            loading={index === 0 ? "eager" : "lazy"}
-            decoding="async"
-            sizes="(min-width: 640px) 25vw, 85vw"
+            priority={index === 0}
           />
         </div>
       ))}
@@ -150,6 +204,7 @@ ImagesStrip.displayName = "ImagesStrip";
 export function CardsInfoOnHover() {
   const { t, i18n } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   const cards = useMemo<TranslatedCard[]>(
     () =>
@@ -166,12 +221,13 @@ export function CardsInfoOnHover() {
     [t, i18n.language]
   );
 
-  const handleActivate = useCallback(
-    (index: number) => {
-      setActiveIndex(index);
-    },
-    []
-  );
+  const handleSelect = useCallback((index: number) => {
+    setActiveIndex(index);
+  }, []);
+
+  const handleHover = useCallback((index: number | null) => {
+    setHoverIndex(index);
+  }, []);
 
   const activeCard = cards[activeIndex] ?? cards[0];
 
@@ -192,7 +248,9 @@ export function CardsInfoOnHover() {
             card={card}
             index={index}
             isActive={index === activeIndex}
-            onActivate={handleActivate}
+            isHovered={hoverIndex === index}
+            onHover={handleHover}
+            onSelect={handleSelect}
             ctaLabel={ctaLabel}
           />
         ))}
@@ -201,7 +259,7 @@ export function CardsInfoOnHover() {
       <MobileNavigation
         cards={cards}
         activeIndex={activeIndex}
-        onActivate={handleActivate}
+        onActivate={handleSelect}
         ctaLabel={ctaLabel}
       />
 
