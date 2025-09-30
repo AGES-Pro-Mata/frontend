@@ -1,13 +1,10 @@
 import { Button } from "@/components/ui/button";
 import type React from "react";
 
-interface DefaultButtonProps {
+interface DefaultButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: React.ReactNode;
   variant?: "primary" | "secondary" | "gray" | "ghost" | "destructive";
-  onClick?: () => void;
-  className?: string;
-  type?: "button" | "submit" | "reset";
-  disabled?: boolean;
 }
 
 export { DefaultButton as Button };
@@ -39,7 +36,7 @@ export function DefaultButton({
     <Button
       type={type}
       variant="ghost"
-      className={`${base} ${styles[variant]} ${className}`}
+      className={`${base} ${styles[variant]} ${className ?? ""}`.trim()}
       onClick={onClick}
       disabled={disabled}
       {...props}
