@@ -332,6 +332,33 @@
             "success": "Reservation updated successfully!"
         }
     },
+    "reserveSummary": {
+        "page": {
+            "title": "Reservation overview",
+            "description": "Review participant information and confirm the details of each selected experience."
+        },
+        "people": {
+            "title": "Participants",
+            "personBadge": "Participant {{index}}",
+            "fields": {
+                "name": "Name",
+                "phone": "Phone",
+                "birthDate": "Date of birth",
+                "cpf": "CPF",
+                "gender": "Gender"
+            },
+            "notes": "Reservation notes"
+        },
+        "experiences": {
+            "title": "Experiences",
+            "period": "{{from}} to {{to}}",
+            "peopleCount_one": "{{count}} person",
+            "peopleCount_other": "{{count}} people"
+        },
+        "actions": {
+            "back": "Back"
+        }
+    },
     "validation": {
         "email": "Enter a valid email.",
         "passwordRequired": "Enter your password.",

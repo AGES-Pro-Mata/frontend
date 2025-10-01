@@ -69,9 +69,9 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
         />
         <HeaderButton
           label={t("reserve")}
-          to="/reserve/finish"
+          to="/reserve"
           icon={<Building2 />}
-          selected={pathname === "/reserve/finish"}
+          selected={pathname === "/reserve"}
         />
         {isLoading ? (
           <MoonLoader size={20} />

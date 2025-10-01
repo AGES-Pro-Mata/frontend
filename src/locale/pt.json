@@ -344,6 +344,34 @@
     }
   },
 
+  "reserveSummary": {
+    "page": {
+      "title": "Visualizar Reserva",
+      "description": "Revise os dados dos participantes e confirme os detalhes das experiências selecionadas."
+    },
+    "people": {
+      "title": "Participantes",
+      "personBadge": "Participante {{index}}",
+      "fields": {
+        "name": "Nome",
+        "phone": "Telefone",
+        "birthDate": "Data de nascimento",
+        "cpf": "CPF",
+        "gender": "Gênero"
+      },
+      "notes": "Observações da reserva"
+    },
+    "experiences": {
+      "title": "Experiências",
+      "period": "{{from}} a {{to}}",
+      "peopleCount_one": "{{count}} pessoa",
+      "peopleCount_other": "{{count}} pessoas"
+    },
+    "actions": {
+      "back": "Voltar"
+    }
+  },
+
   "validation": {
     "email": "Digite um e-mail válido.",
     "passwordRequired": "Digite sua senha.",

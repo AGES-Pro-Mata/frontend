@@ -7,15 +7,9 @@ import { ReserveStepLayout } from "@/components/layouts/reserve/ReserveStepLayou
 import { PeopleRegistrationStep } from "@/components/layouts/reserve/PeopleRegistrationStep";
 import { ExperienceAdjustmentsStep } from "@/components/layouts/reserve/ExperienceAdjustmentsStep";
 import { appToast } from "@/components/toast/toast";
+import type { ReserveParticipantDraft } from "@/types/reserve";
 
-type PersonForm = {
-  id: string;
-  name: string;
-  phone: string;
-  birthDate: string;
-  cpf: string;
-  gender: string;
-};
+type PersonForm = ReserveParticipantDraft;
 
 function createEmptyPerson(): PersonForm {
   const id =
@@ -100,6 +94,7 @@ export function ReserveFlow() {
         label={t("common.finish")}
         onClick={() => {
           appToast.success(t("reserveFlow.toast.success"));
+          navigate({ to: "/reserve/summary" });
         }}
         className="sm:w-auto"
       />,

@@ -1,7 +1,7 @@
 import React, { Fragment, type ReactElement } from "react";
 import { BsSpeedometer2 } from "react-icons/bs";
 import { Trash2 } from "lucide-react";
-import type { ExperienceDTO } from "@/types/experiences";
+import type { ExperienceDTO } from "@/types/experience";
 import { cn } from "@/lib/utils";
 
 export interface CartItemProps {
