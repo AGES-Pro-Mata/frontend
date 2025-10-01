@@ -280,7 +280,8 @@ const StatusBadge = () => {
           <div className="flex flex-col gap-3 mt-4 w-full">
             <Button
               onClick={() => setOpenModalCancel(false)}
-              className="w-full bg-card border border-gray-300 text-main-dark-green rounded-lg h-[48px] shadow-sm"
+              variant="ghost"
+              className="w-full rounded-lg h-[48px] shadow-sm"
               label="Manter reserva"
             />
             <Button
