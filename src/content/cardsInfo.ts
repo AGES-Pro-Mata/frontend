@@ -1,10 +1,10 @@
 // Centralized content data for the home hover cards
 // Images live under /public; reference with absolute paths
 
-import labJpg from "/mock/lab.jpg?url";
-import roomJpg from "/mock/room.jpg?url";
-import eventJpg from "/mock/event.jpg?url";
-import trailJpg from "/mock/trail-1.jpg?url";
+import labwebp from "/mock/lab.webp?url";
+import roomwebp from "/mock/room.webp?url";
+import eventwebp from "/mock/event.webp?url";
+import trailwebp from "/mock/trail-1.webp?url";
 
 export type HomeCardId = "labs" | "rooms" | "events" | "trails";
 
@@ -14,8 +14,8 @@ export interface HomeCard {
 }
 
 export const homeCards: HomeCard[] = [
-  { id: "labs", images: [labJpg, labJpg, labJpg] },
-  { id: "rooms", images: [roomJpg, roomJpg, roomJpg] },
-  { id: "events", images: [eventJpg, eventJpg, eventJpg] },
-  { id: "trails", images: [trailJpg, trailJpg, trailJpg] },
+  { id: "labs", images: [labwebp, labwebp, labwebp] },
+  { id: "rooms", images: [roomwebp, roomwebp, roomwebp] },
+  { id: "events", images: [eventwebp, eventwebp, eventwebp] },
+  { id: "trails", images: [trailwebp, trailwebp, trailwebp] },
 ];

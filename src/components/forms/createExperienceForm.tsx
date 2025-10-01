@@ -36,7 +36,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useCreateExperience } from "@/hooks/useCreateExperience";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 
 const { mutate } = useCreateExperience();
 const formSchema = z
@@ -231,10 +231,10 @@ export function CreateExperience() {
   const onSubmit = (data: FormData) => {
     mutate(data, {
       onSuccess: () => {
-        toast.success("Experiência criada com sucesso");
+        appToast.success("Experiência criada com sucesso");
       },
       onError: () => {
-        toast.error("Erro ao criar experiência");
+        appToast.error("Erro ao criar experiência");
       },
     });
   };

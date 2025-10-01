@@ -110,14 +110,14 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
       {/* Tabs */}
       <div className="flex bg-white justify-center items-center mb-1">
         <button
-          className={`px-2 py-1 mb-1 text-md font-medium focus:outline-none ${tab === "write" ? "border-b-1 border-black text-black" : "text-black/60"}`}
+          className={`px-2 py-1 mb-1 text-md font-medium focus:outline-none hover:cursor-pointer ${tab === "write" ? "border-b-1 border-black text-black" : "text-black/60"}`}
           onClick={() => setTab("write")}
           type="button"
         >
           Editar
         </button>
         <button
-          className={`px-2 py-1 mb-1 text-md font-medium focus:outline-none ${tab === "preview" ? "border-b-1 border-black text-black" : "text-black/60"}`}
+          className={`px-2 py-1 mb-1 text-md font-medium focus:outline-none hover:cursor-pointer ${tab === "preview" ? "border-b-1 border-black text-black" : "text-black/60"}`}
           onClick={() => setTab("preview")}
           type="button"
         >
@@ -129,28 +129,28 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
         <div className="flex items-center gap-2 px-4 pt-3 pb-2 border-b">
           <button
             onClick={() => insertMarkdown("bold")}
-            className="p-1 rounded font-bold text-base flex items-center justify-center"
+            className="p-1 rounded font-bold text-base flex items-center justify-center hover:cursor-pointer"
             type="button"
           >
             <Bold size={18} strokeWidth={3} className="align-middle" />
           </button>
           <button
             onClick={() => insertMarkdown("italic")}
-            className="p-1 rounded italic text-base flex items-center justify-center"
+            className="p-1 rounded italic text-base flex items-center justify-center hover:cursor-pointer"
             type="button"
           >
             <Italic size={18} strokeWidth={2} className="align-middle" />
           </button>
           <button
             onClick={() => insertMarkdown("underline")}
-            className="p-1 rounded underline text-base flex items-center justify-center"
+            className="p-1 rounded underline text-base flex items-center justify-center hover:cursor-pointer"
             type="button"
           >
             <Underline size={18} strokeWidth={2} className="align-middle" />
           </button>
           <button
             onClick={() => insertMarkdown("strike")}
-            className="p-1 rounded line-through text-base flex items-center justify-center"
+            className="p-1 rounded line-through text-base flex items-center justify-center hover:cursor-pointer"
             type="button"
           >
             <Strikethrough size={18} strokeWidth={2} className="align-middle" />
@@ -159,17 +159,18 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
           <div ref={headingMenuRef} className="relative">
             <button
               type="button"
-              className="p-1 rounded font-bold text-lg"
+              className="p-1 rounded font-bold text-lg hover:cursor-pointer"
               title="Título"
               onClick={() => setShowHeadingMenu((v) => !v)}
             >
               <Heading size={20} />
             </button>
             {showHeadingMenu && (
-              <div className="absolute left-0 mt-1 z-10 bg-white rounded shadow-md min-w-[60px]">
+                 <div className="absolute left-0 mt-1 z-10 rounded-lg shadow-lg min-w-[60px]">
+                   <div className="bg-soft-white rounded-lg">
                 <button
                   type="button"
-                  className="block w-full text-left px-3 py-1 hover:bg-gray-100"
+                  className="block w-full text-left px-3 py-1 rounded-lg hover:bg-soft-gray hover:cursor-pointer"
                   onClick={() => {
                     insertMarkdown("heading", 1);
                     setShowHeadingMenu(false);
@@ -179,7 +180,7 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
                 </button>
                 <button
                   type="button"
-                  className="block w-full text-left px-3 py-1 hover:bg-gray-100"
+                  className="block w-full text-left px-3 py-1 rounded-lg hover:bg-soft-gray hover:cursor-pointer"
                   onClick={() => {
                     insertMarkdown("heading", 2);
                     setShowHeadingMenu(false);
@@ -189,7 +190,7 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
                 </button>
                 <button
                   type="button"
-                  className="block w-full text-left px-3 py-1 hover:bg-gray-100"
+                  className="block w-full text-left px-3 py-1 rounded-lg hover:bg-soft-gray hover:cursor-pointer"
                   onClick={() => {
                     insertMarkdown("heading", 3);
                     setShowHeadingMenu(false);
@@ -197,12 +198,13 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
                 >
                   <Heading3 className="inline mr-2" />
                 </button>
+                   </div>
               </div>
             )}
           </div>
           <button
             onClick={() => insertMarkdown("ol")}
-            className="p-1 rounded text-base"
+            className="p-1 rounded text-base hover:cursor-pointer"
             type="button"
             title="Lista ordenada"
           >
@@ -210,7 +212,7 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
           </button>
           <button
             onClick={() => insertMarkdown("ul")}
-            className="p-1 rounded text-base"
+            className="p-1 rounded text-base hover:cursor-pointer"
             type="button"
             title="Lista não ordenada"
           >

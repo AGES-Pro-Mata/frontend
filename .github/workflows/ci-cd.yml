@@ -163,6 +163,15 @@ jobs:
 
           aws s3 sync dist/ "s3://$TARGET_BUCKET" --delete
 
+      - name: Invalidate CloudFront cache
+        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+            --paths '/*'
+        env:
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+
       - name: Deployment Summary
         run: |
           echo "## 🌐 Static Site Deployment" >> $GITHUB_STEP_SUMMARY
@@ -170,4 +179,4 @@ jobs:
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| **Branch** | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Bucket** | ${{ vars.AWS_S3_BUCKET }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **CloudFront Distribution** | Not used |" >> $GITHUB_STEP_SUMMARY
+          echo "| **CloudFront Distribution** | ${{ vars.CLOUDFRONT_DISTRIBUTION_ID || 'None' }} |" >> $GITHUB_STEP_SUMMARY

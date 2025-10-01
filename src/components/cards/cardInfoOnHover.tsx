@@ -1,88 +1,271 @@
-import { useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/buttons/defaultButton";
 import { Typography } from "@/components/typography/typography";
-import { homeCards } from "@/content/cardsInfo";
+import { homeCards, type HomeCard } from "@/content/cardsInfo";
+import { cn } from "@/lib/utils";
 
-export function CardsInfoOnHover() {
-  const { t } = useTranslation();
-  const [active, setActive] = useState(0); // primeiro card ativo por padrão
+interface TranslatedCard extends HomeCard {
+  title: string;
+  description: string;
+}
+
+const DESKTOP_CARD_BASE =
+  "group relative flex w-full flex-col justify-between rounded-[clamp(0.75rem,2vw,1.125rem)] bg-card px-[clamp(1.25rem,3vw,1.875rem)] pt-[clamp(0.75rem,2vw,1.0625rem)] pb-[clamp(1rem,3vw,1.5625rem)] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main-dark-green";
+const DESKTOP_CARD_ACTIVE =
+  "opacity-100 shadow-md after:absolute after:top-full after:left-1/2 after:h-0 after:w-0 after:-translate-x-1/2 after:border-x-[clamp(0.75rem,2.5vw,1.25rem)] after:border-x-transparent after:border-t-[clamp(1.25rem,4vw,2.1875rem)] after:border-t-card";
+const DESKTOP_CARD_INACTIVE = "opacity-70 hover:opacity-100";
+
+const CTA_BUTTON_CLASSES =
+  "pointer-events-none mt-[clamp(0.75rem,2vw,1rem)] h-[clamp(2.25rem,6vh,2.5rem)] w-[clamp(5.5rem,18vw,6.25rem)] rounded-full bg-[#4C9613] text-sm text-white transition-all duration-200";
+
+const ImageTile = memo(function ImageTile({
+  src,
+  alt,
+  priority,
+}: {
+  src: string;
+  alt: string;
+  priority: boolean;
+}) {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(false);
+  }, [src]);
 
   return (
-    <div className="flex flex-col gap-[clamp(1rem,3vw,2rem)] w-full max-w-[clamp(60rem,90vw,72rem)] box-border h-fit my-[clamp(2.5rem,6vw,4.375rem)] mx-auto px-4 sm:px-0">
-      {/* Desktop cards (hover) */}
-      <div className="hidden sm:flex flex-row box-border w-full gap-[clamp(1rem,2.5vw,1.5rem)] relative justify-center ">
-        {homeCards.map((card, i) => (
-          <div
-            key={i}
-            onMouseEnter={() => setActive(i)}
-            className={`flex flex-col px-[clamp(1.25rem,3vw,1.875rem)] opacity-70 pt-[clamp(0.75rem,2vw,1.0625rem)] pb-[clamp(1rem,3vw,1.5625rem)] bg-card transition after:border-b-card relative w-full h-[clamp(10rem,32vw,12.75rem)] rounded-[clamp(0.75rem,2vw,1.125rem)] justify-between after:transition-all after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px] after:border-l-[clamp(0.75rem,2.5vw,1.25rem)] after:border-r-[clamp(0.75rem,2.5vw,1.25rem)] after:border-r-transparent after:border-l-transparent after:border-b-[clamp(1.25rem,4vw,2.1875rem)] after:bg-transparent
-              ${active === i ? "opacity-100 after:content-[''] after:border-b-card after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:rotate-180 after:w-[0px] after:h-[0px] after:border-l-[clamp(0.75rem,2.5vw,1.25rem)] after:border-r-[clamp(0.75rem,2.5vw,1.25rem)] after:border-r-transparent after:border-l-transparent after:border-b-[clamp(1.25rem,4vw,2.1875rem)] after:bg-transparent" : "after:opacity-0"}`}
-          >
-            <div className="flex flex-col gap-[clamp(0.375rem,1.5vw,0.5rem)]">
-              <Typography variant="h5" className="text-black">
-                {t(`homeCards.${card.id}.title`)}
-              </Typography>
-              <Typography className="text-sm text-muted-foreground">
-                {t(`homeCards.${card.id}.description`)}
-              </Typography>
-            </div>
-            <Button
-              label={t("homeCards.cta")}
-              className={`${active === i ? "opacity-100" : "opacity-0"} w-[clamp(5.5rem,18vw,6.25rem)] h-[clamp(2.25rem,6vh,2.5rem)] mt-[clamp(0.75rem,2vw,1rem)] px-[clamp(0.625rem,2.2vw,0.75rem)] py-[clamp(0.25rem,1.2vw,0.375rem)] rounded-full bg-[#4C9613] cursor-pointer text-white text-sm`}
-            />
-          </div>
-        ))}
-      </div>
+    <div className="relative flex h-full w-full">
+      <img
+        src={src}
+        alt={alt}
+        className={cn(
+          "h-full w-full rounded-[inherit] object-cover object-center transition-opacity duration-500",
+          loaded ? "opacity-100" : "opacity-0"
+        )}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+        sizes="(min-width: 640px) 25vw, 85vw"
+        onLoad={() => setLoaded(true)}
+      />
+      <span
+        aria-hidden="true"
+        className={cn(
+          "absolute inset-0 rounded-[inherit] bg-card/70",
+          loaded ? "opacity-0" : "opacity-100 animate-pulse"
+        )}
+      />
+    </div>
+  );
+});
 
-      {/* Mobile: pill nav + active content */}
-      <div className="sm:hidden flex flex-col w-full">
-        <div className="-mx-4 px-4 flex gap-[clamp(0.5rem,3vw,0.75rem)] overflow-x-auto snap-x snap-mandatory pb-2">
-          {homeCards.map((card, i) => (
+ImageTile.displayName = "ImageTile";
+
+const DesktopCard = memo(function DesktopCard({
+  card,
+  index,
+  isActive,
+  isHovered,
+  onHover,
+  onSelect,
+  ctaLabel,
+}: {
+  card: TranslatedCard;
+  index: number;
+  isActive: boolean;
+  isHovered: boolean;
+  onHover: (index: number | null) => void;
+  onSelect: (index: number) => void;
+  ctaLabel: string;
+}) {
+  const handleMouseEnter = useCallback(() => onHover(index), [index, onHover]);
+  const handleMouseLeave = useCallback(() => onHover(null), [onHover]);
+  const handleSelect = useCallback(() => onSelect(index), [index, onSelect]);
+
+  return (
+    <div
+      className={cn(
+        DESKTOP_CARD_BASE,
+        isActive ? DESKTOP_CARD_ACTIVE : DESKTOP_CARD_INACTIVE
+      )}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onFocus={handleMouseEnter}
+      onBlur={handleMouseLeave}
+      role="group"
+      aria-labelledby={`card-${card.id}-title`}
+      aria-describedby={`card-${card.id}-description`}
+    >
+      <div className="flex flex-col gap-[clamp(0.375rem,1.5vw,0.5rem)] text-left">
+        <Typography
+          id={`card-${card.id}-title`}
+          variant="h5"
+          className="text-black"
+        >
+          {card.title}
+        </Typography>
+        <Typography
+          id={`card-${card.id}-description`}
+          className="text-sm text-muted-foreground"
+        >
+          {card.description}
+        </Typography>
+      </div>
+      <Button
+        label={ctaLabel}
+        onClick={handleSelect}
+        className={cn(
+          CTA_BUTTON_CLASSES,
+          "pointer-events-none translate-y-2 opacity-0",
+          (isHovered || isActive) &&
+            "pointer-events-auto translate-y-0 opacity-100"
+        )}
+      />
+    </div>
+  );
+});
+
+DesktopCard.displayName = "DesktopCard";
+
+const MobileNavigation = memo(function MobileNavigation({
+  cards,
+  activeIndex,
+  onActivate,
+  ctaLabel,
+}: {
+  cards: TranslatedCard[];
+  activeIndex: number;
+  onActivate: (index: number) => void;
+  ctaLabel: string;
+}) {
+  return (
+    <div className="sm:hidden flex flex-col w-full">
+      <div className="-mx-4 flex snap-x snap-mandatory gap-[clamp(0.5rem,3vw,0.75rem)] overflow-x-auto px-4 pb-2">
+        {cards.map((card, index) => {
+          const selected = index === activeIndex;
+          return (
             <button
-              key={i}
-              onClick={() => setActive(i)}
-              className={`shrink-0 snap-start rounded-full border px-3 py-2 text-sm font-semibold transition-colors
-                ${active === i ? "bg-selected-banner text-main-dark-green border-transparent" : "bg-transparent text-on-banner-text border-banner"}`}
+              key={card.id}
+              type="button"
+              onClick={() => onActivate(index)}
+              className={cn(
+                "shrink-0 snap-start rounded-full border px-3 py-2 text-sm font-semibold transition-colors",
+                selected
+                  ? "bg-selected-banner text-main-dark-green border-transparent"
+                  : "border-banner bg-transparent text-on-banner-text"
+              )}
+              aria-pressed={selected}
             >
-              {t(`homeCards.${card.id}.title`)}
+              {card.title}
             </button>
-          ))}
-        </div>
-
-        <div className="mt-2">
-          <Typography variant="h5" className="text-black">
-            {t(`homeCards.${homeCards[active].id}.title`)}
-          </Typography>
-          <Typography className="text-sm text-muted-foreground mt-1">
-            {t(`homeCards.${homeCards[active].id}.description`)}
-          </Typography>
-          <Button
-            label={t("homeCards.cta")}
-            className="mt-3 w-[clamp(7rem,50vw,9rem)] h-[clamp(2.25rem,6vh,2.5rem)] rounded-full bg-[#4C9613] text-white text-sm"
-          />
-        </div>
+          );
+        })}
       </div>
 
-      {/* Retângulo de fotos */}
-      <div className=" flex flex-row gap-[clamp(0.5rem,2vw,0.625rem)] sm:[--gap:clamp(0.5rem,2vw,0.625rem)] sm:gap-[var(--gap)] box-border p-[clamp(0.75rem,3vw,1rem)] sm:py-[clamp(2rem,5vw,2.75rem)] sm:px-[var(--gap)] bg-card rounded-[clamp(0.75rem,2vw,1.25rem)] overflow-x-auto sm:overflow-visible snap-x snap-mandatory -mx-4 px-4 sm:mx-[clamp(0.75rem,3vw,1.5rem)]">
-        {homeCards[active].images.map((src, j) => (
-          <div
-            key={j}
-            className={`flex flex-row w-[calc(100%_-_0.75rem)] sm:w-full sm:flex-1 shrink-0 relative aspect-[3/2] sm:aspect-auto sm:h-[clamp(12rem,28vw,17.5rem)] overflow-hidden box-border rounded-[clamp(0.75rem,2vw,1.25rem)] snap-center`}
-          >
-            <img
-              src={src}
-              alt={t(`homeCards.${homeCards[active].id}.title`)}
-              className="h-full w-full object-cover object-center box-border rounded-[clamp(0.75rem,2vw,1.25rem)]"
-              style={{ borderRadius: "clamp(0.75rem,2vw,1.25rem)" }}
-              loading="lazy"
-              decoding="async"
-              sizes="(min-width: 640px) 25vw, 85vw"
-            />
-          </div>
-        ))}
+      <div className="mt-2">
+        <Typography variant="h5" className="text-black">
+          {cards[activeIndex]?.title}
+        </Typography>
+        <Typography className="mt-1 text-sm text-muted-foreground">
+          {cards[activeIndex]?.description}
+        </Typography>
+        <Button
+          label={ctaLabel}
+          className="mt-3 h-[clamp(2.25rem,6vh,2.5rem)] w-[clamp(7rem,50vw,9rem)] rounded-full bg-[#4C9613] text-sm text-white"
+        />
       </div>
     </div>
+  );
+});
+
+MobileNavigation.displayName = "MobileNavigation";
+
+const ImagesStrip = memo(function ImagesStrip({ card }: { card: TranslatedCard }) {
+  return (
+    <div className="-mx-4 flex snap-x snap-mandatory gap-[clamp(0.5rem,2vw,0.625rem)] overflow-x-auto px-4 sm:mx-[clamp(0.75rem,3vw,1.5rem)] sm:gap-[var(--gap)] sm:overflow-visible sm:[--gap:clamp(0.5rem,2vw,0.625rem)]">
+      {card.images.map((src, index) => (
+        <div
+          key={`${card.id}-${index}`}
+          className="relative flex aspect-[3/2] w-[calc(100%_-_0.75rem)] shrink-0 snap-center overflow-hidden rounded-[clamp(0.75rem,2vw,1.25rem)] sm:h-[clamp(12rem,28vw,17.5rem)] sm:w-full sm:flex-1"
+        >
+          <ImageTile
+            src={src}
+            alt={card.title}
+            priority={index === 0}
+          />
+        </div>
+      ))}
+    </div>
+  );
+});
+
+ImagesStrip.displayName = "ImagesStrip";
+
+export function CardsInfoOnHover() {
+  const { t, i18n } = useTranslation();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+
+  const cards = useMemo<TranslatedCard[]>(
+    () =>
+      homeCards.map((card) => ({
+        ...card,
+        title: t(`homeCards.${card.id}.title`),
+        description: t(`homeCards.${card.id}.description`),
+      })),
+    [t, i18n.language]
+  );
+
+  const ctaLabel = useMemo(
+    () => t("homeCards.cta", { defaultValue: "Saiba mais" }),
+    [t, i18n.language]
+  );
+
+  const handleSelect = useCallback((index: number) => {
+    setActiveIndex(index);
+  }, []);
+
+  const handleHover = useCallback((index: number | null) => {
+    setHoverIndex(index);
+  }, []);
+
+  const activeCard = cards[activeIndex] ?? cards[0];
+
+  if (!activeCard) {
+    return null;
+  }
+
+  return (
+    <section className="mx-auto my-[clamp(2.5rem,6vw,4.375rem)] flex w-full max-w-[clamp(60rem,90vw,72rem)] flex-col gap-[clamp(1rem,3vw,2rem)] px-4 sm:px-0" aria-labelledby="cards-info-heading">
+      <h2 id="cards-info-heading" className="sr-only">
+        {t("homeCards.sectionTitle", { defaultValue: "Recursos em destaque" })}
+      </h2>
+
+      <div className="hidden w-full justify-center gap-[clamp(1rem,2.5vw,1.5rem)] sm:flex">
+        {cards.map((card, index) => (
+          <DesktopCard
+            key={card.id}
+            card={card}
+            index={index}
+            isActive={index === activeIndex}
+            isHovered={hoverIndex === index}
+            onHover={handleHover}
+            onSelect={handleSelect}
+            ctaLabel={ctaLabel}
+          />
+        ))}
+      </div>
+
+      <MobileNavigation
+        cards={cards}
+        activeIndex={activeIndex}
+        onActivate={handleSelect}
+        ctaLabel={ctaLabel}
+      />
+
+      <div className="rounded-[clamp(0.75rem,2vw,1.25rem)] bg-card p-[clamp(0.75rem,3vw,1rem)] sm:px-[clamp(0.75rem,3vw,1.5rem)] sm:py-[clamp(2rem,5vw,2.75rem)]">
+        <ImagesStrip card={activeCard} />
+      </div>
+    </section>
   );
 }
