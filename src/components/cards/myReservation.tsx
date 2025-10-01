@@ -4,6 +4,7 @@ import CanvasCard from "@/components/cards/canvasCard";
 import { CalendarIcon, DollarSign, Check, Clock, X } from "lucide-react";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
+import { ModalPessoas } from "@/components/modals/peopleModal";
 
 import {
   Dialog,
@@ -27,6 +28,7 @@ type Pessoa = {
   cpf: string;
   genero: string;
 };
+
 
 type ReservaCardProps = {
   titulo: string;
@@ -290,161 +292,15 @@ const StatusBadge = () => {
         </DialogContent>
       </Dialog>
 
-<Dialog open={openModalPessoas} onOpenChange={handleOpenModalPessoas}>
-  <DialogContent className="!max-w-none w-[90vw] h-[75vh] bg-card rounded-xl shadow-lg p-6 flex flex-col">
-    <DialogHeader>
-      <DialogTitle className="text-main-dark-green text-2xl font-bold">
-        Cadastrar Pessoas
-      </DialogTitle>
-    </DialogHeader>
-
-    <div className="mt-2 flex flex-col gap-4 flex-grow overflow-y-auto">
-      {draftPessoas.map((pessoa, index) => (
-        <div
-          key={index}
-          className="grid grid-cols-6 gap-4 border-b border-gray-300 pb-4 items-center"
-        >
-          <div className="flex flex-col">
-            <label className="text-sm text-main-dark-green font-semibold">
-              Nome <span className="text-red-500">*</span>
-            </label>
-            <Input
-              placeholder="Nome"
-              value={pessoa.nome}
-              onChange={(e) => {
-                const newDraft = [...draftPessoas];
-                newDraft[index].nome = e.target.value;
-                setDraftPessoas(newDraft);
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-main-dark-green font-semibold">
-              Telefone <span className="text-red-500">*</span>
-            </label>
-            <Input
-              placeholder="Telefone"
-              value={pessoa.telefone}
-              onChange={(e) => {
-                const newDraft = draftPessoas.map((p, i) =>
-                  i === index ? { ...p, telefone: e.target.value } : p
-                );
-                setDraftPessoas(newDraft);
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-main-dark-green font-semibold">
-              Nascimento <span className="text-red-500">*</span>
-            </label>
-            <Input
-              type="date"
-              value={pessoa.nascimento}
-              onChange={(e) => {
-                const newDraft = draftPessoas.map((p, i) =>
-                  i === index ? { ...p, nascimento: e.target.value } : p
-                );
-                setDraftPessoas(newDraft);
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-main-dark-green font-semibold">
-              CPF <span className="text-red-500">*</span>
-            </label>
-            <Input
-              placeholder="CPF"
-              value={pessoa.cpf}
-              onChange={(e) => {
-                const newDraft = draftPessoas.map((p, i) =>
-                  i === index ? { ...p, cpf: e.target.value } : p
-                );
-                setDraftPessoas(newDraft);
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-main-dark-green font-semibold">
-              Gênero <span className="text-red-500">*</span>
-            </label>
-            <Select
-              value={pessoa.genero}
-              onValueChange={(v) => {
-                const newDraft = [...draftPessoas];
-                newDraft[index].genero = v;
-                setDraftPessoas(newDraft);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Gênero" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="masculino">Masculino</SelectItem>
-                <SelectItem value="feminino">Feminino</SelectItem>
-                <SelectItem value="outro">Outro</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center justify-center">
-            <button
-              onClick={() => {
-                setDraftPessoas(draftPessoas.filter((_, i) => i !== index));
-              }}
-              className="text-default-red hover:text-red-700"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      ))}
-
-      <Button
-        onClick={() =>
-          setDraftPessoas([
-            ...draftPessoas,
-            { nome: "", telefone: "", nascimento: "", cpf: "", genero: "" },
-          ])
-        }
-        className="bg-main-dark-green text-soft-white rounded-full w-[240px] h-[40px] text-sm shadow-md hover:opacity-90"
-        label="Adicionar mais pessoa"
-      />
-    </div>
-
-    <div className="flex justify-between mt-4">
-      <Button
-        onClick={() => {
-          setDraftPessoas(pessoas.map(p => ({ ...p })));
-          setOpenModalPessoas(false);
-        }}
-        className="bg-dark-gray text-soft-white rounded-full w-[120px] h-[40px]"
-        label="Voltar"
-      />
-
-<Button
-  onClick={() => {
-    const camposIncompletos = draftPessoas.some(
-      (p) => !p.nome || !p.telefone || !p.nascimento || !p.cpf || !p.genero
-    );
-
-    if (camposIncompletos) {
-      toast.error("Preencha todos os campos obrigatórios!");
-      return;
-    }
-
-    handleSalvarPessoas(draftPessoas.map(p => ({ ...p })));
-  }}
-  className="bg-contrast-green text-soft-white rounded-full w-[120px] h-[40px]"
-  label="Salvar"
+<ModalPessoas
+  open={openModalPessoas}
+  onOpenChange={handleOpenModalPessoas}
+  draftPessoas={draftPessoas}
+  setDraftPessoas={setDraftPessoas}
+  pessoas={pessoas}
+  handleSalvarPessoas={handleSalvarPessoas}
 />
 
-    </div>
-  </DialogContent>
-</Dialog>
 
      <Dialog open={openModalComprovante} onOpenChange={setOpenModalComprovante}>
   <DialogContent className="w-[499px] h-[400px] rounded-2xl bg-card flex flex-col justify-between p-6">
