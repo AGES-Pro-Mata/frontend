@@ -198,7 +198,7 @@ export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
       isForeign: z.boolean().nullable(),
       verified: z.boolean().nullable(),
       updatedAt: z.iso.datetime().nullable(),
-      address: addressSchema
+      address: addressSchema,
     });
 
     const parsed = profileSchema.safeParse(response.data);
@@ -252,6 +252,10 @@ export async function getUserById(
     };
   }
 }
+export async function deleteUser(id: string) {
+  return await api.delete<HttpResponse>(`/user/${id}`);
+}
+
 export interface UpdateUserPayload {
   name?: string;
   phone?: string;

@@ -1,20 +1,15 @@
-import { z } from "zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormMessage,
-  FormDescription,
-  FormLabel,
-} from "@/components/ui/form";
+import { Button } from "@/components/buttons/defaultButton";
 import { TextInput } from "@/components/inputs/textInput";
 import { Typography } from "@/components/typography/typography";
-import { Button } from "@/components/buttons/defaultButton";
-import { useRegisterAdmin } from "@/hooks/useRegisterAdmin";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Form,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -23,24 +18,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { COUNTRIES } from "@/lib/countries";
-import { appToast } from "@/components/toast/toast";
+import { Switch } from "@/components/ui/switch";
+import type { TEditUserAdminResponse } from "@/entities/edit-user-admin-response";
+import { useGetAdminUser } from "@/hooks/use-get-admin-user";
 import { useCepQuery } from "@/hooks/useCepQuery";
+import { useRegisterAdmin } from "@/hooks/useRegisterAdmin";
+import { COUNTRIES } from "@/lib/countries";
 import {
+  digitsOnly,
+  generateRandomPassword,
+  hashPassword,
   isValidBrazilZip,
   isValidCpf,
-  digitsOnly,
   isValidForeignZip,
-  generateRandomPassword,
-  maskCpf,
   maskCep,
-  hashPassword,
+  maskCpf,
 } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { z } from "zod";
+import { useForm } from "../form";
 
-const formSchema = z
+export const EditUserAdminSchema = z
   .object({
     name: z.string().min(2, "Informe o nome completo"),
     email: z.email("Digite um e-mail válido"),
@@ -113,9 +115,32 @@ const formSchema = z
     }
   });
 
-type FormData = z.infer<typeof formSchema>;
+export type TEditUserAdminSchema = z.infer<typeof EditUserAdminSchema>;
 
-export function RegisterUserAdmin() {
+type EditUserAdminProps = {
+  userId: string;
+};
+export function EditUserAdmin({ userId }: EditUserAdminProps) {
+  const { data, isFetching } = useGetAdminUser({ id: userId });
+    console.log(data);
+  const defaultValues = React.useMemo(() => {
+    return {
+      name: data?.name,
+      email: data?.email,
+      phone: data?.phone,
+      document: data?.document,
+      rg: data?.rg,
+      gender: data?.gender,
+      zipCode: data?.zipCode,
+      country: data?.country,
+      isForeign: data?.isForeign,
+      addressLine: data?.addressLine,
+      city: data?.city,
+      number: data?.number?.toString(),
+      isAdmin: data?.isAdmin,
+      isProfessor: data?.isProfessor,
+    };
+  }, [data]);
   const navigate = useNavigate();
   const [autoFilled, setAutoFilled] = useState({
     addressLine: false,
@@ -123,28 +148,12 @@ export function RegisterUserAdmin() {
   });
   const { mutate: registerAdmin, isPending } = useRegisterAdmin();
   const form = useForm<
-    z.input<typeof formSchema>,
+    z.input<typeof EditUserAdminSchema>,
     any,
-    z.output<typeof formSchema>
+    z.output<typeof EditUserAdminSchema>
   >({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      document: "",
-      rg: "",
-      gender: "",
-      zipCode: "",
-      country: "Brasil",
-      isForeign: false,
-      addressLine: "",
-      city: "",
-      number: "",
-      isAdmin: false,
-      isProfessor: false,
-      password: generateRandomPassword(),
-    },
+    resolver: zodResolver(EditUserAdminSchema),
+    defaultValues: defaultValues,
   });
 
   const isForeign = form.watch("isForeign");
@@ -180,7 +189,7 @@ export function RegisterUserAdmin() {
     }
   }, [isForeign]);
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: TEditUserAdminSchema) => {
     const sanitizedPhone = digitsOnly(data.phone);
 
     // Hash password
@@ -208,24 +217,24 @@ export function RegisterUserAdmin() {
       onSuccess: (response) => {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           form.reset();
-          appToast.success("Usuário cadastrado com sucesso");
+          toast.success("Usuário cadastrado com sucesso", {});
           navigate({ to: "/admin/users" });
           setAutoFilled({ addressLine: false, city: false });
         } else {
-          appToast.error("Erro ao cadastrar usuário");
+          toast.error("Erro ao cadastrar usuário", {});
         }
       },
       onError: () => {
-        appToast.error("Erro ao cadastrar usuário");
+        toast.error("Erro ao cadastrar usuário");
       },
     });
   };
-
+  if (isFetching) return;
   return (
     <div className="h-full flex flex-col px-4 overflow-x-hidden overflow-y-auto">
       <div className="space-y-2">
         <Typography className="text-2xl font-semibold text-on-banner-text">
-          Cadastro de Usuário
+          Edição de Usuário
         </Typography>
       </div>
 
@@ -445,7 +454,7 @@ export function RegisterUserAdmin() {
                         label=""
                         required={false}
                         placeholder=""
-                        value={field.value || "Brasil"}
+                        value={field.value}
                         disabled
                       />
                     )}
