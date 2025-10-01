@@ -47,6 +47,7 @@ export default defineConfig({
       ".promata.com.br", // Allow all subdomains
       "*.azure.com", // Azure domains
       "*.azurewebsites.net", // Azure App Service domains
+      "ec2-3-139-75-61.us-east-2.compute.amazonaws.com",
     ],
     cors: {
       origin: [
@@ -54,6 +55,7 @@ export default defineConfig({
         "https://promata.com.br",
         "https://www.promata.com.br",
         "https://api.promata.com.br",
+        "http://ec2-3-139-75-61.us-east-2.compute.amazonaws.com",
         /^https:\/\/.*\.promata\.com\.br$/,
         /^https:\/\/.*\.azure\.com$/,
         /^https:\/\/.*\.azurewebsites\.net$/,
