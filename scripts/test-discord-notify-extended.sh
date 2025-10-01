@@ -176,7 +176,7 @@ send_notification "Deploy Success (Dev)" '{
                 },
                 {
                     "name": "URL",
-                    "value": "[Acessar aplicação](https://promata-dev.duckdns.org)",
+                    "value": "[Acessar aplicação](https://promata.com.br)",
                     "inline": false
                 }
             ],

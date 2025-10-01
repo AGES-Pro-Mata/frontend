@@ -9,10 +9,28 @@ import { fileURLToPath, URL } from "node:url";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    TanStackRouterVite({ autoCodeSplitting: true }),
+    TanStackRouterVite({ 
+      autoCodeSplitting: true,
+      generatedRouteTree: './src/routeTree.gen.ts'
+    }),
     viteReact(),
     tailwindcss(),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'router-vendor': ['@tanstack/react-router'],
+          'query-vendor': ['@tanstack/react-query'],
+          'ui-vendor': ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu']
+        }
+      }
+    },
+    minify: 'esbuild',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000
+  },
   resolve: {
     alias: {
       // Use fileURLToPath e import.meta.url para criar o alias

@@ -27,7 +27,7 @@ function RouteComponent() {
           e relatórios avançados.
         </Typography>
         <a
-          href="http://localhost:3000/share/4lRWOL9vlv4TSONL/localhost:3001"
+          href="https://analytics.promata.com.br/share/jI46gjjTnDAhsNic/d35sqdoewd98mb.cloudfront.net"
           target="_blank"
           rel="noopener noreferrer"
         >

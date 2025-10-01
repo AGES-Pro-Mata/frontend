@@ -1,0 +1,296 @@
+{
+  "home": "Início",
+  "reserve": "Reservar",
+  "myReservations": "Minhas reservas",
+  "admin": "Administrador",
+
+  "common": {
+    "menu": "Menu",
+    "back": "Voltar",
+    "save": "Salvar",
+    "saving": "Salvando...",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "send": "Enviar",
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro",
+    "cart": "Carrinho",
+    "email": "Email",
+    "function": "Função"
+  },
+  "cartDrawer": {
+    "heading": {
+      "empty": "Seu carrinho está vazio",
+      "single": "Você possui 1 experiência marcada para reservar",
+      "plural": "Você possui {{count}} experiências marcadas para reservar"
+    },
+    "emptyState": {
+      "title": "Seu carrinho está vazio no momento.",
+      "subtitle": "Adicione experiências ao seu carrinho para finalizar a reserva."
+    },
+    "checkoutButton": "Finalizar Reserva",
+    "browseLink": "Ver mais experiências"
+  },
+  "status": {
+    "confirmada": "Confirmada",
+    "pagamento_pendente": "Pagamento pendente",
+    "cadastro_pendente": "Cadastro pendente",
+    "aguardando_aprovacao": "Aguardando aprovação",
+    "cancelada": "Cancelada",
+    "desconhecido": "Desconhecido"
+  },
+
+  "nav": {
+    "home": "Início",
+    "reserve": "Reservar",
+    "myReservations": "Minhas reservas",
+    "profile": "Meu Perfil",
+    "login": "Entrar",
+    "logout": "Sair",
+    "register": "Cadastrar"
+  },
+  "profile": {
+    "card": {
+      "title": "Meu Perfil",
+      "sections": {
+        "personal": "Informações pessoais",
+        "professional": "Informações Profissionais"
+      },
+      "docency": {
+        "sendReceipt": "Enviar comprovante",
+        "receiptSent": "Comprovante enviado"
+      },
+      "editButton": "Editar Dados"
+    },
+    "edit": {
+      "title": "Editar Cadastro",
+      "subtitle": "Preencha os dados abaixo para editar sua conta",
+      "docency": {
+        "canUploadHint": "Envie um PDF de até 20MB.",
+        "alreadyVerified": "Já verificado e instituição não mudou."
+      },
+      "toasts": {
+        "success": "Perfil atualizado com sucesso",
+        "error": "Erro ao atualizar perfil"
+      }
+    }
+  },
+
+  "homePage": {
+    "welcome": "Bem vindo ao",
+    "subtitle": "Centro de Pesquisas e Conservação da Natureza",
+    "ctaPrimary": "Reservar",
+    "ctaSecondary": "Venha nos conhecer!",
+    "ctaBottomTitle": "Não perca tempo e venha viver essa experiência única!",
+    "ctaBottom": "Fazer Reserva"
+  },
+
+  "experiences": {
+    "title": "Experiências!",
+    "headline": "Viva momentos inesquecíveis conectado com a natureza preservada da Serra Gaúcha!",
+    "list": {
+      "accommodations": "Acomodações diversas",
+      "labs": "Laboratórios",
+      "trails": "Trilhas",
+      "events": "Eventos"
+    },
+    "bookNow": "Faça sua reserva agora!",
+    "book": "Fazer Reserva"
+  },
+
+  "experienceCard": {
+    "package": "Pacote",
+    "currencySymbol": "$",
+    "currencyPrefix": "R$",
+    "dateRange": "{{from}} a {{to}}",
+    "editInfo": "Editar informações",
+    "selectDateAndPeople": "Selecionar data e número de pessoas",
+    "men": "Homens",
+    "women": "Mulheres",
+    "selectedDate": "Data selecionada",
+    "chooseDate": "Escolha de Data",
+    "selectPeriodOnCalendar": "Selecione o período no calendário",
+    "selectAmountOfPeople": "Selecione a quantidade de pessoas",
+    "malePeople": "Número de pessoas do gênero masculino",
+    "femalePeople": "Número de pessoas do gênero feminino"
+  },
+
+  "homeCards": {
+    "cta": "Ver mais",
+    "labs": {
+      "title": "Laboratórios",
+      "description": "Espaços equipados para pesquisas científicas e projetos acadêmicos."
+    },
+    "rooms": {
+      "title": "Quartos",
+      "description": "Espaços confortáveis para hospedagem acadêmica e turística."
+    },
+    "events": {
+      "title": "Eventos",
+      "description": "Estrutura para palestras, seminários e congressos."
+    },
+    "trails": {
+      "title": "Trilhas",
+      "description": "Caminhos ecológicos para exploração e aprendizado."
+    }
+  },
+
+  "carousel": {
+    "title": "Conheça seu Destino!",
+    "subtitle": "Conheça alguns dos cenários deslumbrantes que você encontrará no {{brand}}",
+    "prev": "Anterior",
+    "next": "Próximo",
+    "imageAlt": "Cenário do {{brand}} {{index}}"
+  },
+
+  "auth": {
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Senha",
+      "emailPlaceholder": "seu@email.com",
+      "passwordPlaceholder": "Sua senha",
+      "forgot": "Esqueci a senha",
+      "submit": "Entrar",
+      "submitting": "Entrando...",
+      "register": "Cadastre-se",
+      "toastSuccess": "Login realizado com sucesso!",
+      "toastError": "Erro ao fazer login",
+      "toastErrorTryAgain": "Erro ao fazer login. Tente novamente.",
+      "toastInternal": "Erro interno. Tente novamente.",
+      "invalidCredentials": "Credenciais inválidas. Tente novamente."
+    },
+    "forgot": {
+      "title": "Esqueci a senha",
+      "email": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "helper": "Você receberá um email para redefinir sua senha caso haja uma conta cadastrada.",
+      "submit": "Enviar",
+      "submitting": "Enviando...",
+      "back": "Voltar",
+      "resultSuccess": "Email enviado com sucesso. Verifique sua caixa de entrada.",
+      "resultError": "Ocorreu um erro ao enviar o email. Tente novamente."
+    },
+    "reset": {
+      "title": "Redefinir senha",
+      "newPassword": "Nova senha",
+      "newPasswordPlaceholder": "Nova senha",
+      "confirmPassword": "Confirme a senha",
+      "confirmPasswordPlaceholder": "Confirme a senha",
+      "submit": "Confirmar",
+      "submitting": "Confirmando...",
+      "toastSuccess": "Senha redefinida com sucesso",
+      "toastError": "Erro ao redefinir senha"
+    },
+    "common": {
+      "login": "Entrar",
+      "logout": "Sair",
+      "register": "Cadastrar",
+      "createAccount": "Criar Conta",
+      "haveAccount": "Já tem uma conta?",
+      "goToLogin": "Fazer login"
+    }
+  },
+
+  "register": {
+    "title": "Cadastro",
+    "subtitle": "Preencha os dados abaixo para criar sua conta",
+    "sections": {
+      "personal": "Informações pessoais",
+      "security": "Segurança",
+      "professional": "Informações Profissionais"
+    },
+    "fields": {
+      "notBrazilian": "Não sou brasileiro",
+      "fullName": "Nome completo",
+      "phone": "Telefone",
+      "document": {
+        "cpf": "CPF",
+        "passport": "Passaporte",
+        "passportNumber": "Número do passaporte"
+      },
+      "gender": {
+        "label": "Gênero",
+        "select": "Selecione o gênero",
+        "female": "Feminino",
+        "male": "Masculino",
+        "other": "Outro"
+      },
+      "rg": "RG",
+      "zip": "CEP",
+      "country": "País",
+      "selectCountry": "Selecione o país",
+      "address": "Endereço",
+      "addressPlaceholder": "Rua",
+      "city": "Cidade",
+      "number": "Número",
+      "password": "Senha",
+      "confirmPassword": "Confirmar senha",
+      "institution": "Instituição",
+      "institutionPlaceholder": "Universidade/Empresa",
+      "function": {
+        "label": "Selecione sua Função",
+        "select": "Selecione sua Função",
+        "student": "Estudante",
+        "teacher": "Professor",
+        "researcher": "Pesquisador",
+        "employee": "Funcionário",
+        "other": "Outro"
+      },
+      "docency": {
+        "ask": "Gostaria de solicitar um cadastro de docente",
+        "receiptLabel": "Comprovante de Docência (PDF) - Opcional",
+        "receiptHint": "Você pode enviar o comprovante agora ou posteriormente na edição do perfil. Máximo 20MB.",
+        "uploaded": "✓ {{name}}"
+      },
+      "terms": {
+        "accept": "Eu aceito os {{terms}} e a {{privacy}} do PRÓ-MATA *",
+        "terms": "Termos de Uso",
+        "privacy": "Política de Privacidade"
+      }
+    },
+    "cta": {
+      "create": "Criar Conta",
+      "haveAccount": "Já tem uma conta?",
+      "login": "Fazer login"
+    },
+    "toasts": {
+      "success": "Usuário cadastrado com sucesso",
+      "error": "Erro ao cadastrar usuário"
+    }
+  },
+
+  "validation": {
+    "email": "Digite um e-mail válido.",
+    "passwordRequired": "Digite sua senha.",
+    "passwordMin": "A senha deve ter no mínimo 6 caracteres.",
+    "passwordUpper": "A senha deve conter ao menos uma letra maiúscula.",
+    "passwordNumber": "A senha deve conter ao menos um número.",
+    "passwordsMustMatch": "As senhas devem ser iguais.",
+    "nameRequired": "Informe o nome completo",
+    "phoneRequired": "Informe o telefone",
+    "genderRequired": "Informe o gênero",
+    "zipRequired": "Informe o CEP",
+    "countryRequired": "Informe o país",
+    "addressRequired": "Endereço é obrigatório",
+
+    "cep8": "CEP deve conter 8 dígitos",
+    "cpfInvalid": "CPF inválido",
+    "rgInvalid": "RG inválido",
+    "zipInvalid": "ZIP inválido",
+    "pdfOnly": "Apenas arquivos PDF são aceitos",
+    "max20mb": "Arquivo deve ter no máximo 20MB",
+    "mustAcceptTerms": "Você deve aceitar os termos de uso",
+    "cityRequired": "Cidade é obrigatória",
+    "numberRequired": "Número é obrigatório"
+  }
+  ,
+  "footer": {
+    "contact": "Entre em contato",
+    "researchCenter": "Centro de Pesquisas PRÓ-MATA",
+    "city": "CIDADE",
+    "phone": "Telefone: (XX) XXXX-XXXX",
+    "email": "E-mail: contato@pro-mata.org",
+    "copyright": "© {{year}} PRÓ-MATA. Todos os direitos reservados."
+  }
+}
