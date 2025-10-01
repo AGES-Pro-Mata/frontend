@@ -3,8 +3,9 @@ import { Button } from "@/components/buttons/defaultButton";
 import CanvasCard from "@/components/cards/canvasCard";
 import { CalendarIcon, DollarSign, Check, Clock, X } from "lucide-react";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
 import { ModalPessoas } from "@/components/modals/peopleModal";
+import { CancelReservationModal } from "@/components/modals/cancelReservationModal";
+
 
 import {
   Dialog,
@@ -264,96 +265,68 @@ const StatusBadge = () => {
         </div>
       </CanvasCard>
 
-      <Dialog open={openModalCancel} onOpenChange={setOpenModalCancel}>
-        <DialogContent className="w-[499px] h-[268px] rounded-2xl bg-card flex flex-col justify-between p-6">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-main-dark-green">
-              Cancelar reserva?
-            </DialogTitle>
-          </DialogHeader>
-
-          <p className="text-main-dark-green text-base">
-            Tem certeza de que deseja cancelar sua reserva? <br />
-            Esta ação não poderá ser desfeita.
-          </p>
-
-          <div className="flex flex-col gap-3 mt-4 w-full">
-            <Button
-              onClick={() => setOpenModalCancel(false)}
-              variant="ghost"
-              className="w-full rounded-lg h-[48px] shadow-sm"
-              label="Manter reserva"
-            />
-            <Button
-              onClick={handleCancelarReserva}
-              variant="destructive"
-              className="w-full rounded-lg h-[48px] shadow-md"
-              label="Cancelar"
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-
-<ModalPessoas
-  open={openModalPessoas}
-  onOpenChange={handleOpenModalPessoas}
-  draftPessoas={draftPessoas}
-  setDraftPessoas={setDraftPessoas}
-  pessoas={pessoas}
-  handleSalvarPessoas={handleSalvarPessoas}
-/>
-
+      <CancelReservationModal
+        open={openModalCancel}
+        onOpenChange={setOpenModalCancel}
+        onConfirm={handleCancelarReserva}
+      />
+      <ModalPessoas
+        open={openModalPessoas}
+        onOpenChange={handleOpenModalPessoas}
+        draftPessoas={draftPessoas}
+        setDraftPessoas={setDraftPessoas}
+        pessoas={pessoas}
+        handleSalvarPessoas={handleSalvarPessoas}
+      />
 
      <Dialog open={openModalComprovante} onOpenChange={setOpenModalComprovante}>
-  <DialogContent className="w-[499px] h-[400px] rounded-2xl bg-card flex flex-col justify-between p-6">
-    <DialogHeader>
-      <DialogTitle className="text-xl font-bold text-main-dark-green">
-        Enviar Comprovante
-      </DialogTitle>
-    </DialogHeader>
+      <DialogContent className="w-[499px] h-[400px] rounded-2xl bg-card flex flex-col justify-between p-6">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold text-main-dark-green">
+            Enviar Comprovante
+          </DialogTitle>
+        </DialogHeader>
 
-    <p className="text-main-dark-green text-sm">
-      Envie o comprovante de pagamento para confirmar a reserva
-    </p>
+        <p className="text-main-dark-green text-sm">
+          Envie o comprovante de pagamento para confirmar a reserva
+        </p>
 
-    <div className="text-sm text-main-dark-green">
-      Hoje, aceitamos os seguintes comprovantes:
-      <ul className="list-disc ml-6 mt-1">
-        <li>TED: BANCO</li>
-        <li>PIX: CHAVEPIX</li>
-      </ul>
-      <p className="mt-2">
-        Envie o comprovante com o valor de{" "}
-        <span className="font-semibold">R$ {preco.toFixed(2)}</span>
-      </p>
-    </div>
+        <div className="text-sm text-main-dark-green">
+          Hoje, aceitamos os seguintes comprovantes:
+          <ul className="list-disc ml-6 mt-1">
+            <li>TED: BANCO</li>
+            <li>PIX: CHAVEPIX</li>
+          </ul>
+          <p className="mt-2">
+            Envie o comprovante com o valor de{" "}
+            <span className="font-semibold">R$ {preco.toFixed(2)}</span>
+          </p>
+        </div>
 
-    <div className="flex flex-col gap-3 mt-4">
-      <label className="text-main-dark-green font-semibold text-sm">
-        Comprovante de Pagamento
+        <div className="flex flex-col gap-3 mt-4">
+          <label className="text-main-dark-green font-semibold text-sm">
+            Comprovante de Pagamento
+          </label>
+
+    <div className="flex flex-col gap-1">
+      <label className="relative w-full cursor-pointer">
+        <span className="block w-full bg-main-dark-green text-soft-white text-center py-2 rounded-lg shadow-md">
+          Escolher ficheiro
+        </span>
+        <input
+          type="file"
+          className="absolute inset-0 opacity-0 cursor-pointer"
+          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+        />
       </label>
 
-<div className="flex flex-col gap-1">
-  <label className="relative w-full cursor-pointer">
-    <span className="block w-full bg-main-dark-green text-soft-white text-center py-2 rounded-lg shadow-md">
-      Escolher ficheiro
-    </span>
-    <input
-      type="file"
-      className="absolute inset-0 opacity-0 cursor-pointer"
-      onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-    />
-  </label>
-
-  {!selectedFile && (
-    <span className="text-xs text-gray-500">Nenhum ficheiro selecionado</span>
-  )}
-  {selectedFile && (
-    <span className="text-xs text-main-dark-green">{selectedFile.name}</span>
-  )}
-</div>
-
-
+      {!selectedFile && (
+        <span className="text-xs text-gray-500">Nenhum ficheiro selecionado</span>
+      )}
+      {selectedFile && (
+        <span className="text-xs text-main-dark-green">{selectedFile.name}</span>
+      )}
+    </div>
       <Button
         onClick={() => {
           if (!selectedFile) {
@@ -368,7 +341,6 @@ const StatusBadge = () => {
     </div>
   </DialogContent>
 </Dialog>
-
     </>
   );
 }
