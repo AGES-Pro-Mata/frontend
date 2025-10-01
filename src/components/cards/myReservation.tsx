@@ -7,14 +7,6 @@ import { ModalPessoas } from "@/components/modals/peopleModal";
 import { CancelReservationModal } from "@/components/modals/cancelReservationModal";
 import { PaymentProofModal } from "@/components/modals/paymentProofModal";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
-
 type Pessoa = {
   nome: string;
   telefone: string;
@@ -71,9 +63,8 @@ export default function ReservaCard({
   };
 
   const [openModalCancel, setOpenModalCancel] = useState(false);
-const [openModalPessoas, setOpenModalPessoas] = useState(false);
-const [openModalComprovante, setOpenModalComprovante] = useState(false);
-const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [openModalPessoas, setOpenModalPessoas] = useState(false);
+  const [openModalComprovante, setOpenModalComprovante] = useState(false);
 
 const handleOpenModalPessoas = (open: boolean) => {
   if (open) {
@@ -83,16 +74,6 @@ const handleOpenModalPessoas = (open: boolean) => {
   }
   setOpenModalPessoas(open);
 };
-
-  const handleEnviarComprovante = () => {
-    if (!selectedFile) {
-      toast.error("Selecione um ficheiro antes de enviar!");
-      return;
-    }
-    setStatus("aprovacao_pendente");
-    setOpenModalComprovante(false);
-    toast.success("Comprovante enviado com sucesso!");
-  };
 
   const handleAprovarAdm = () => {
     setStatus("concluida");
@@ -224,63 +205,63 @@ const StatusBadge = () => {
             <StatusBadge />
 
             <div className="flex gap-3">
-      {status === "cadastro_pendente" && (
-        <Button
-          onClick={() => setOpenModalPessoas(true)}
-          className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
-          label="Cadastrar Pessoas"
-        />
-      )}
+            {status === "cadastro_pendente" && (
+              <Button
+                onClick={() => setOpenModalPessoas(true)}
+                className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
+                label="Cadastrar Pessoas"
+              />
+            )}
 
-      {status === "pagamento_pendente" && (
-        <Button
-          onClick={() => setOpenModalComprovante(true)}
-          className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-          label="Enviar Comprovante"
-        />
-      )}
+            {status === "pagamento_pendente" && (
+              <Button
+                onClick={() => setOpenModalComprovante(true)}
+                className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
+                label="Enviar Comprovante"
+              />
+            )}
 
 
-        <Button
-          onClick={() => setOpenModalCancel(true)}
-          className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
-          label="Cancelar Reserva"
-        />
-          <Button
-          onClick={() => toast.info("Abrindo detalhes da reserva...")}
-          className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-          label="Visualizar Reserva"
-        />
-      </div>
+              <Button
+                onClick={() => setOpenModalCancel(true)}
+                className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
+                label="Cancelar Reserva"
+              />
+                <Button
+                onClick={() => toast.info("Abrindo detalhes da reserva...")}
+                className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
+                label="Visualizar Reserva"
+              />
+            </div>
 
-                </div>
-              </div>
-            </CanvasCard>
+                      </div>
+                    </div>
+                  </CanvasCard>
 
-            <CancelReservationModal
-              open={openModalCancel}
-              onOpenChange={setOpenModalCancel}
-              onConfirm={handleCancelarReserva}
+                  <CancelReservationModal
+                    open={openModalCancel}
+                    onOpenChange={setOpenModalCancel}
+                    onConfirm={handleCancelarReserva}
+                  />
+                  <ModalPessoas
+                    open={openModalPessoas}
+                    onOpenChange={handleOpenModalPessoas}
+                    draftPessoas={draftPessoas}
+                    setDraftPessoas={setDraftPessoas}
+                    pessoas={pessoas}
+                    handleSalvarPessoas={handleSalvarPessoas}
+                  />
+
+                <PaymentProofModal
+              open={openModalComprovante}
+              onOpenChange={setOpenModalComprovante}
+              preco={preco}
+              onConfirm={(file) => {
+                setStatus("aprovacao_pendente");
+                setOpenModalComprovante(false);
+                toast.success("Comprovante enviado com sucesso!");
+              }}
             />
-            <ModalPessoas
-              open={openModalPessoas}
-              onOpenChange={handleOpenModalPessoas}
-              draftPessoas={draftPessoas}
-              setDraftPessoas={setDraftPessoas}
-              pessoas={pessoas}
-              handleSalvarPessoas={handleSalvarPessoas}
-            />
-
-          <PaymentProofModal
-        open={openModalComprovante}
-        onOpenChange={setOpenModalComprovante}
-        preco={preco}
-        onConfirm={(file) => {
-          setStatus("aprovacao_pendente");
-          setOpenModalComprovante(false);
-          toast.success("Comprovante enviado com sucesso!");
-        }}
-      />
     </>
   );
 }

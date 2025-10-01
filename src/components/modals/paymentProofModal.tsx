@@ -15,7 +15,7 @@ export function PaymentProofModal({ open, onOpenChange, preco, onConfirm }: Paym
 
   const handleSubmit = () => {
     if (!selectedFile) {
-      toast.error("Selecione um ficheiro antes de enviar!");
+        toast.error("Selecione um arquivo antes de enviar!");
       return;
     }
     onConfirm(selectedFile);
@@ -55,7 +55,7 @@ export function PaymentProofModal({ open, onOpenChange, preco, onConfirm }: Paym
           <div className="flex flex-col gap-1">
             <label className="relative w-full cursor-pointer">
               <span className="block w-full bg-main-dark-green text-soft-white text-center py-2 rounded-lg shadow-md">
-                Escolher ficheiro
+                Escolher arquivo
               </span>
               <input
                 type="file"
@@ -65,7 +65,7 @@ export function PaymentProofModal({ open, onOpenChange, preco, onConfirm }: Paym
             </label>
 
             {!selectedFile && (
-              <span className="text-xs text-gray-500">Nenhum ficheiro selecionado</span>
+              <span className="text-xs text-gray-500">Nenhum arquivo selecionado</span>
             )}
             {selectedFile && (
               <span className="text-xs text-main-dark-green">{selectedFile.name}</span>
