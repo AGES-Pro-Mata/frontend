@@ -2,7 +2,10 @@ import { Typography } from "@/components/typography/typography";
 import { CanvasCard, CardStatus } from "@/components/cards";
 import { ShowInfo } from "@/components/display";
 import { Button } from "@/components/buttons/defaultButton";
-import type { ReservationStatus } from "@/components/cards/cardStatus";
+import {
+  getReservationStatusStyle,
+  type ReservationStatus,
+} from "@/entities/reservation-status";
 import type { RegisterUserPayload } from "@/api/user";
 import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
 import { useTranslation } from "react-i18next";
@@ -39,6 +42,9 @@ export function UserProfileCard({
 }: UserProfileCardProps) {
   const { verified } = useCurrentUserProfile();
   const { t } = useTranslation();
+  const { className: documentStatusAccent, icon: documentStatusIcon } =
+    getReservationStatusStyle(documentStatus);
+  const documentStatusLabel = t(`status.${documentStatus}`);
   return (
     <CanvasCard
       className={`w-full max-w-[clamp(40rem,82vw,760px)] mx-auto p-8 sm:p-12 bg-card shadow-md rounded-[20px] ${className}`}
@@ -85,9 +91,7 @@ export function UserProfileCard({
             {user.rg && <ShowInfo header="RG" label={user.rg} />}
             {user.zipCode && (
               <ShowInfo
-                header={
-                  t("register.fields.zip")
-                }
+                header={t("register.fields.zip")}
                 label={user.zipCode}
               />
             )}
@@ -142,7 +146,11 @@ export function UserProfileCard({
                 onClick={onSendDocument}
                 disabled={verified || disableSendDocument || !onSendDocument}
               />
-              <CardStatus status={documentStatus} />
+              <CardStatus
+                icon={documentStatusIcon}
+                label={documentStatusLabel}
+                accentClassName={documentStatusAccent}
+              />
             </div>
           </div>
         </section>

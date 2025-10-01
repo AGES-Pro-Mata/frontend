@@ -8,13 +8,15 @@ import { TextInput } from "@/components/inputs/textInput";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/buttons/defaultButton";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 const formSchema = z.object({
   email: z.email("validation.email" as unknown as string),
-  password: z.string().min(1, "validation.passwordRequired" as unknown as string),
+  password: z
+    .string()
+    .min(1, "validation.passwordRequired" as unknown as string),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -45,20 +47,20 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           onSuccess: (response) => {
             if (response.statusCode >= 200 && response.statusCode < 300) {
               form.reset();
-              toast.success(t("auth.login.toastSuccess"));
+              appToast.success(t("auth.login.toastSuccess"));
               onSuccess?.();
               navigate({ to: "/" });
             } else {
-              toast.error(response.message || t("auth.login.toastError"));
+              appToast.error(response.message || t("auth.login.toastError"));
             }
           },
           onError: () => {
-            toast.error(t("auth.login.toastErrorTryAgain"));
+            appToast.error(t("auth.login.toastErrorTryAgain"));
           },
         }
       );
     } catch (error) {
-      toast.error(t("auth.login.toastInternal"));
+      appToast.error(t("auth.login.toastInternal"));
     }
   };
 
@@ -128,11 +130,19 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
               type="submit"
               disabled={mutation.isPending}
               className="w-full sm:w-56"
-              label={mutation.isPending ? t("auth.login.submitting") : t("auth.login.submit")}
+              label={
+                mutation.isPending
+                  ? t("auth.login.submitting")
+                  : t("auth.login.submit")
+              }
             />
 
             <Link to="/auth/register" className="w-full sm:w-56">
-              <Button variant="secondary" className="w-full" label={t("auth.login.register")} />
+              <Button
+                variant="secondary"
+                className="w-full"
+                label={t("auth.login.register")}
+              />
             </Link>
           </div>
         </form>

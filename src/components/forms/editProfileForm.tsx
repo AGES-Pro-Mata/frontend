@@ -18,7 +18,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateUser } from "@/hooks/useUpdateUser";
 import { digitsOnly, maskCep, maskPhone } from "@/lib/utils";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 import { useCepQuery } from "@/hooks/useCepQuery";
 import { useTranslation } from "react-i18next";
 
@@ -199,27 +199,27 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
       mutate(formData as any, {
         onSuccess: (res) => {
           if (res.statusCode >= 200 && res.statusCode < 300) {
-            toast.success(t("profile.edit.toasts.success"));
+            appToast.success(t("profile.edit.toasts.success"));
             setTimeout(() => onBack?.(), 600);
-          } else toast.error(t("profile.edit.toasts.error"));
+          } else appToast.error(t("profile.edit.toasts.error"));
         },
-        onError: () => toast.error(t("profile.edit.toasts.error")),
+  onError: () => appToast.error(t("profile.edit.toasts.error")),
       });
       return;
     }
     mutate(payload, {
       onSuccess: (res) => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          toast.success(t("profile.edit.toasts.success"));
+          appToast.success(t("profile.edit.toasts.success"));
           // Small delay so user sees the toast, then navigate back
           setTimeout(() => {
             onBack?.();
           }, 600);
         } else {
-          toast.error(t("profile.edit.toasts.error"));
+          appToast.error(t("profile.edit.toasts.error"));
         }
       },
-      onError: () => toast.error(t("profile.edit.toasts.error")),
+  onError: () => appToast.error(t("profile.edit.toasts.error")),
     });
   };
   return (
