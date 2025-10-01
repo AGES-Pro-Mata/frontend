@@ -5,7 +5,7 @@ import { CalendarIcon, DollarSign, Check, Clock, X } from "lucide-react";
 import { toast } from "sonner";
 import { ModalPessoas } from "@/components/modals/peopleModal";
 import { CancelReservationModal } from "@/components/modals/cancelReservationModal";
-
+import { PaymentProofModal } from "@/components/modals/paymentProofModal";
 
 import {
   Dialog,
@@ -13,14 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 
 type Pessoa = {
   nome: string;
@@ -231,116 +224,63 @@ const StatusBadge = () => {
             <StatusBadge />
 
             <div className="flex gap-3">
-
-{status === "cadastro_pendente" && (
-  <Button
-    onClick={() => setOpenModalPessoas(true)}
-    className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
-    label="Cadastrar Pessoas"
-  />
-)}
-
-{status === "pagamento_pendente" && (
-  <Button
-    onClick={() => setOpenModalComprovante(true)}
-    className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-    label="Enviar Comprovante"
-  />
-)}
-
-
-  <Button
-    onClick={() => setOpenModalCancel(true)}
-    className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
-    label="Cancelar Reserva"
-  />
-    <Button
-    onClick={() => toast.info("Abrindo detalhes da reserva...")}
-    className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-    label="Visualizar Reserva"
-  />
-</div>
-
-          </div>
-        </div>
-      </CanvasCard>
-
-      <CancelReservationModal
-        open={openModalCancel}
-        onOpenChange={setOpenModalCancel}
-        onConfirm={handleCancelarReserva}
-      />
-      <ModalPessoas
-        open={openModalPessoas}
-        onOpenChange={handleOpenModalPessoas}
-        draftPessoas={draftPessoas}
-        setDraftPessoas={setDraftPessoas}
-        pessoas={pessoas}
-        handleSalvarPessoas={handleSalvarPessoas}
-      />
-
-     <Dialog open={openModalComprovante} onOpenChange={setOpenModalComprovante}>
-      <DialogContent className="w-[499px] h-[400px] rounded-2xl bg-card flex flex-col justify-between p-6">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-main-dark-green">
-            Enviar Comprovante
-          </DialogTitle>
-        </DialogHeader>
-
-        <p className="text-main-dark-green text-sm">
-          Envie o comprovante de pagamento para confirmar a reserva
-        </p>
-
-        <div className="text-sm text-main-dark-green">
-          Hoje, aceitamos os seguintes comprovantes:
-          <ul className="list-disc ml-6 mt-1">
-            <li>TED: BANCO</li>
-            <li>PIX: CHAVEPIX</li>
-          </ul>
-          <p className="mt-2">
-            Envie o comprovante com o valor de{" "}
-            <span className="font-semibold">R$ {preco.toFixed(2)}</span>
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-3 mt-4">
-          <label className="text-main-dark-green font-semibold text-sm">
-            Comprovante de Pagamento
-          </label>
-
-    <div className="flex flex-col gap-1">
-      <label className="relative w-full cursor-pointer">
-        <span className="block w-full bg-main-dark-green text-soft-white text-center py-2 rounded-lg shadow-md">
-          Escolher ficheiro
-        </span>
-        <input
-          type="file"
-          className="absolute inset-0 opacity-0 cursor-pointer"
-          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+      {status === "cadastro_pendente" && (
+        <Button
+          onClick={() => setOpenModalPessoas(true)}
+          className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
+          label="Cadastrar Pessoas"
         />
-      </label>
+      )}
 
-      {!selectedFile && (
-        <span className="text-xs text-gray-500">Nenhum ficheiro selecionado</span>
+      {status === "pagamento_pendente" && (
+        <Button
+          onClick={() => setOpenModalComprovante(true)}
+          className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
+          label="Enviar Comprovante"
+        />
       )}
-      {selectedFile && (
-        <span className="text-xs text-main-dark-green">{selectedFile.name}</span>
-      )}
-    </div>
-      <Button
-        onClick={() => {
-          if (!selectedFile) {
-            toast.error("Selecione um ficheiro antes de enviar!");
-            return;
-          }
-          handleEnviarComprovante();
+
+
+        <Button
+          onClick={() => setOpenModalCancel(true)}
+          className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
+          label="Cancelar Reserva"
+        />
+          <Button
+          onClick={() => toast.info("Abrindo detalhes da reserva...")}
+          className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
+          label="Visualizar Reserva"
+        />
+      </div>
+
+                </div>
+              </div>
+            </CanvasCard>
+
+            <CancelReservationModal
+              open={openModalCancel}
+              onOpenChange={setOpenModalCancel}
+              onConfirm={handleCancelarReserva}
+            />
+            <ModalPessoas
+              open={openModalPessoas}
+              onOpenChange={handleOpenModalPessoas}
+              draftPessoas={draftPessoas}
+              setDraftPessoas={setDraftPessoas}
+              pessoas={pessoas}
+              handleSalvarPessoas={handleSalvarPessoas}
+            />
+
+          <PaymentProofModal
+        open={openModalComprovante}
+        onOpenChange={setOpenModalComprovante}
+        preco={preco}
+        onConfirm={(file) => {
+          setStatus("aprovacao_pendente");
+          setOpenModalComprovante(false);
+          toast.success("Comprovante enviado com sucesso!");
         }}
-        className="w-full bg-contrast-green text-soft-white rounded-lg h-[40px] shadow-md"
-        label="Enviar Comprovante"
       />
-    </div>
-  </DialogContent>
-</Dialog>
     </>
   );
 }
