@@ -285,7 +285,8 @@ const StatusBadge = () => {
             />
             <Button
               onClick={handleCancelarReserva}
-              className="w-full bg-default-red text-soft-white rounded-lg h-[48px] shadow-md"
+              variant="destructive"
+              className="w-full rounded-lg h-[48px] shadow-md"
               label="Cancelar"
             />
           </div>
