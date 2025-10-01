@@ -38,7 +38,6 @@ import { ptBR } from "date-fns/locale";
 import { useCreateExperience } from "@/hooks/useCreateExperience";
 import { appToast } from "@/components/toast/toast";
 
-const { mutate } = useCreateExperience();
 const formSchema = z
   .object({
     experienceName: z.string().min(2, "Informe o nome da experiência"),
@@ -150,6 +149,7 @@ const parsePrice = (formattedValue: string) => {
 };
 
 export function CreateExperience() {
+  const { mutate } = useCreateExperience();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [priceDisplay, setPriceDisplay] = useState<string>("");
 
@@ -409,7 +409,7 @@ export function CreateExperience() {
                     <Typography className="text-foreground font-medium mb-1">
                       Dias da semana disponíveis
                     </Typography>
-                    <Select value="" onValueChange={() => {}}>
+                    <Select value="" onValueChange={() => { }}>
                       <SelectTrigger className="h-10 px-5">
                         <SelectValue placeholder="Selecione os dias da semana">
                           {field.value && field.value.length > 0 ? (
