@@ -207,20 +207,18 @@ export default function ReservaCard({
               <Button
                 onClick={() => setOpenModalComprovante(true)}
                 className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-                label={t("Enviar Comprovante")}
+                label={t("reservation.sendPaymentProof")}
               />
             )}
-
-
               <Button
                 onClick={() => setOpenModalCancel(true)}
                 className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
-                label={t("Cancelar Reserva")}
+                label={t("reservation.cancelReservation")}
               />
                 <Button
                 onClick={() => toast.info("Abrindo detalhes da reserva...")}
                 className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-                label={t("Visualizar Reserva")}
+                label={t("reservation.viewReservation")}
               />
             </div>
 
