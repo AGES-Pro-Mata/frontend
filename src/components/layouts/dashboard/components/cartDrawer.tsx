@@ -96,7 +96,7 @@ export const CartDrawer = () => {
               {t("cartDrawer.checkoutButton")}
             </Button>
             <Link
-              to="/reserve"
+              to="/reserve/finish"
               className="text-center text-sm font-semibold text-[#4D3B2A] transition-colors hover:text-[#2F271E]"
               onClick={closeCart}
             >

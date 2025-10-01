@@ -14,7 +14,9 @@
         "error": "An error occurred",
         "cart": "Cart",
         "email": "Email",
-        "function": "Role"
+        "function": "Role",
+        "next": "Next",
+        "finish": "Finish"
     },
     "cartDrawer": {
         "heading": {
@@ -247,6 +249,87 @@
         "toasts": {
             "success": "User registered successfully",
             "error": "Error registering user"
+        }
+    },
+    "reserveFlow": {
+        "steps": {
+            "people": {
+                "title": "People registration",
+                "description": "Fill in the details for every participant who will join the experience.",
+                "subtitle": "Step 1"
+            },
+            "experiences": {
+                "title": "Experience adjustments",
+                "description": "Choose the dates and set the number of people for each selected experience.",
+                "subtitle": "Step 2"
+            }
+        },
+        "peopleStep": {
+            "instructions": "Add the people who will join the reservation. You can register them now or send the information after confirmation.",
+            "buttons": {
+                "addPerson": "Add person",
+                "removePersonAria": "Remove person {{index}}"
+            },
+            "fields": {
+                "name": {
+                    "label": "Full name",
+                    "placeholder": "Enter the full name"
+                },
+                "phone": {
+                    "label": "Phone",
+                    "placeholder": "(000) 000-0000"
+                },
+                "birthDate": {
+                    "label": "Date of birth"
+                },
+                "cpf": {
+                    "label": "CPF",
+                    "placeholder": "000.000.000-00"
+                },
+                "gender": {
+                    "label": "Gender",
+                    "placeholder": "Select the gender"
+                }
+            },
+            "genderOptions": {
+                "female": "Female",
+                "male": "Male",
+                "other": "Other",
+                "notInformed": "Prefer not to say"
+            },
+            "postConfirmation": {
+                "label": "Provide the participants' details after the reservation is confirmed"
+            },
+            "notes": {
+                "label": "Reservation notes",
+                "placeholder": "Add any important notes about the reservation"
+            }
+        },
+        "experienceStep": {
+            "instructions": "Review the selected experiences, adjusting dates, group size, and any other details before completing the reservation.",
+            "selectedExperiences": "Selected experiences",
+            "error": "Error loading experiences.",
+            "fallbackExperiences": {
+                "sunriseTrail": {
+                    "title": "Sunrise Trail",
+                    "type": "Guided hike"
+                },
+                "waterfallBath": {
+                    "title": "Enchanted Waterfall Dip",
+                    "type": "Refreshing adventure"
+                },
+                "nightSky": {
+                    "title": "Rainforest Stargazing Night",
+                    "type": "Night experience"
+                }
+            },
+            "fallbackDefaults": {
+                "title": "Featured experience",
+                "type": "Tour"
+            }
+        },
+        "toast": {
+            "success": "Reservation updated successfully!"
         }
     },
     "validation": {

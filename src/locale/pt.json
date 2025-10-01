@@ -16,7 +16,9 @@
     "error": "Ocorreu um erro",
     "cart": "Carrinho",
     "email": "Email",
-    "function": "Função"
+    "function": "Função",
+    "next": "Próximo",
+    "finish": "Finalizar"
   },
   "cartDrawer": {
     "heading": {
@@ -257,6 +259,88 @@
     "toasts": {
       "success": "Usuário cadastrado com sucesso",
       "error": "Erro ao cadastrar usuário"
+    }
+  },
+
+  "reserveFlow": {
+    "steps": {
+      "people": {
+        "title": "Cadastro de pessoas",
+        "description": "Preencha os dados de todos os participantes que estarão presentes na experiência.",
+        "subtitle": "Passo 1"
+      },
+      "experiences": {
+        "title": "Ajuste de experiências",
+        "description": "Escolha datas e defina a quantidade de pessoas para cada experiência selecionada.",
+        "subtitle": "Passo 2"
+      }
+    },
+    "peopleStep": {
+      "instructions": "Adicione as pessoas que participarão da reserva. Você pode cadastrar novos participantes ou permitir o envio dos dados após a confirmação.",
+      "buttons": {
+        "addPerson": "Adicionar pessoa",
+        "removePersonAria": "Remover pessoa {{index}}"
+      },
+      "fields": {
+        "name": {
+          "label": "Nome completo",
+          "placeholder": "Digite o nome completo"
+        },
+        "phone": {
+          "label": "Telefone",
+          "placeholder": "(00) 00000-0000"
+        },
+        "birthDate": {
+          "label": "Data de nascimento"
+        },
+        "cpf": {
+          "label": "CPF",
+          "placeholder": "000.000.000-00"
+        },
+        "gender": {
+          "label": "Gênero",
+          "placeholder": "Selecione o gênero"
+        }
+      },
+      "genderOptions": {
+        "female": "Feminino",
+        "male": "Masculino",
+        "other": "Outro",
+        "notInformed": "Prefiro não informar"
+      },
+      "postConfirmation": {
+        "label": "Adicionar as pessoas após a confirmação da reserva"
+      },
+      "notes": {
+        "label": "Observações da reserva",
+        "placeholder": "Adicione observações importantes sobre a reserva"
+      }
+    },
+    "experienceStep": {
+      "instructions": "Revise as experiências selecionadas, ajustando datas, quantidade de pessoas e demais detalhes antes de finalizar a reserva.",
+      "selectedExperiences": "Experiências selecionadas",
+      "error": "Erro ao carregar experiências.",
+      "fallbackExperiences": {
+        "sunriseTrail": {
+          "title": "Trilha do Sol Nascente",
+          "type": "Caminhada guiada"
+        },
+        "waterfallBath": {
+          "title": "Banho de Cachoeira Encantada",
+          "type": "Aventura refrescante"
+        },
+        "nightSky": {
+          "title": "Noite Astronômica na Mata",
+          "type": "Experiência noturna"
+        }
+      },
+      "fallbackDefaults": {
+        "title": "Experiência X",
+        "type": "Passeio"
+      }
+    },
+    "toast": {
+      "success": "Reserva atualizada com sucesso!"
     }
   },
 
