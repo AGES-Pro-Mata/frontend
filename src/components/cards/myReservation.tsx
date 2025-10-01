@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { ModalPessoas } from "@/components/modals/peopleModal";
 import { CancelReservationModal } from "@/components/modals/cancelReservationModal";
 import { PaymentProofModal } from "@/components/modals/paymentProofModal";
+import { useTranslation } from "react-i18next";
+
 
 type Pessoa = {
   nome: string;
@@ -40,10 +42,9 @@ export default function ReservaCard({
   imagem,
   status: initialStatus = "cadastro_pendente", 
 }: ReservaCardProps) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<StatusReserva>(initialStatus);
-
   const [draftPessoas, setDraftPessoas] = useState<Pessoa[]>([]);
-
   const [pessoas, setPessoas] = useState<Pessoa[]>(
     Array.from({ length: 1 }, () => ({
       nome: "",
@@ -53,103 +54,92 @@ export default function ReservaCard({
       genero: "",
     }))
   );
-
   const fmt = (d: Date) => d.toLocaleDateString("pt-BR");
-
   const handleCancelarReserva = () => {
     setStatus("cancelada");
     setOpenModalCancel(false);
     toast.error("Solicitação de cancelamento enviada!");
   };
-
   const [openModalCancel, setOpenModalCancel] = useState(false);
   const [openModalPessoas, setOpenModalPessoas] = useState(false);
   const [openModalComprovante, setOpenModalComprovante] = useState(false);
-
-const handleOpenModalPessoas = (open: boolean) => {
-  if (open) {
-    setDraftPessoas(pessoas.map(p => ({ ...p })));
-  } else {
-    setDraftPessoas(pessoas.map(p => ({ ...p })));
-  }
-  setOpenModalPessoas(open);
-};
-
-  const handleAprovarAdm = () => {
-    setStatus("concluida");
-    toast.success("Reserva aprovada!");
+  const handleOpenModalPessoas = (open: boolean) => {
+    if (open) {
+      setDraftPessoas(pessoas.map(p => ({ ...p })));
+    } else {
+      setDraftPessoas(pessoas.map(p => ({ ...p })));
+    }
+    setOpenModalPessoas(open);
   };
-
     const handleSalvarPessoas = (novasPessoas: Pessoa[]) => {
     setPessoas(novasPessoas);
     setStatus("pagamento_pendente");
     toast.success("Pessoas cadastradas com sucesso!");
     setOpenModalPessoas(false);
   };
-
-const StatusBadge = () => {
-  if (status === "cadastro_pendente") {
-    return (
-      <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-warning">
-          <Clock className="w-3.5 h-3.5 text-soft-white" />
+  const StatusBadge = () => {
+    if (status === "cadastro_pendente") {
+      return (
+        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
+          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-warning">
+            <Clock className="w-3.5 h-3.5 text-soft-white" />
+          </div>
+          <span className="text-warning font-semibold text-xs">
+            {t("reservation.status.pendingRegister")}
+          </span>
         </div>
-        <span className="text-warning font-semibold text-xs">
-          Cadastro Pendente
-        </span>
-      </div>
-    );
-  }
-  if (status === "pagamento_pendente") {
-    return (
-      <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-warning">
-          <Clock className="w-3.5 h-3.5 text-soft-white" />
+      );
+    }
+    if (status === "pagamento_pendente") {
+      return (
+        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
+          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-warning">
+            <Clock className="w-3.5 h-3.5 text-soft-white" />
+          </div>
+          <span className="text-warning font-semibold text-xs">
+            {t("reservation.status.pendingPayment")}
+          </span>
         </div>
-        <span className="text-warning font-semibold text-xs">
-          Pagamento Pendente
-        </span>
-      </div>
-    );
-  }
-  if (status === "aprovacao_pendente") {
-    return (
-      <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-blue-500">
-          <Clock className="w-3.5 h-3.5 text-soft-white" />
+      );
+    }
+    if (status === "aprovacao_pendente") {
+      return (
+        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
+          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-blue-500">
+            <Clock className="w-3.5 h-3.5 text-soft-white" />
+          </div>
+          <span className="text-blue-500 font-semibold text-xs">
+             {t("reservation.status.pendingApproval")}
+          </span>
         </div>
-        <span className="text-blue-500 font-semibold text-xs">
-          Aprovação Pendente
-        </span>
-      </div>
-    );
-  }
-  if (status === "concluida") {
-    return (
-      <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-contrast-green">
-          <Check className="w-3 h-3 text-soft-white" />
+      );
+    }
+    if (status === "concluida") {
+      return (
+        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
+          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-contrast-green">
+            <Check className="w-3 h-3 text-soft-white" />
+          </div>
+          <span className="text-contrast-green font-semibold text-xs">
+            {t("reservation.status.completed")}
+          </span>
         </div>
-        <span className="text-contrast-green font-semibold text-xs">
-          Concluída
-        </span>
-      </div>
-    );
-  }
-  if (status === "cancelada") {
-    return (
-      <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-        <div className="w-4 h-4 flex items-center justify-center rounded-full bg-default-red">
-          <X className="w-3 h-3 text-soft-white" />
+      );
+    }
+    if (status === "cancelada") {
+      return (
+        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
+          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-default-red">
+            <X className="w-3 h-3 text-soft-white" />
+          </div>
+          <span className="text-default-red font-semibold text-xs">
+            {t("reservation.status.cancelled")}
+          </span>
         </div>
-        <span className="text-default-red font-semibold text-xs">
-          Cancelada
-        </span>
-      </div>
-    );
-  }
-  return null;
-};
+      );
+    }
+    return null;
+  };
 
 
   return (
@@ -209,7 +199,7 @@ const StatusBadge = () => {
               <Button
                 onClick={() => setOpenModalPessoas(true)}
                 className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
-                label="Cadastrar Pessoas"
+                label={t("reservation.registerPeople")}              
               />
             )}
 
@@ -217,7 +207,7 @@ const StatusBadge = () => {
               <Button
                 onClick={() => setOpenModalComprovante(true)}
                 className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-                label="Enviar Comprovante"
+                label={t("Enviar Comprovante")}
               />
             )}
 
@@ -225,12 +215,12 @@ const StatusBadge = () => {
               <Button
                 onClick={() => setOpenModalCancel(true)}
                 className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
-                label="Cancelar Reserva"
+                label={t("Cancelar Reserva")}
               />
                 <Button
                 onClick={() => toast.info("Abrindo detalhes da reserva...")}
                 className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-                label="Visualizar Reserva"
+                label={t("Visualizar Reserva")}
               />
             </div>
 
