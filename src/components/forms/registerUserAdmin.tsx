@@ -26,7 +26,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/lib/countries";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 import { useCepQuery } from "@/hooks/useCepQuery";
 import {
   isValidBrazilZip,
@@ -190,7 +190,11 @@ export function RegisterUserAdmin() {
       ...data,
       phone: sanitizedPhone,
       password: hashedPassword,
-      document: data.document ? (isForeign ? data.document : maskCpf(data.document)) : undefined,
+      document: data.document
+        ? isForeign
+          ? data.document
+          : maskCpf(data.document)
+        : undefined,
       rg: data.rg ? data.rg : undefined,
       userType: data.isAdmin
         ? "ADMIN"
@@ -204,21 +208,21 @@ export function RegisterUserAdmin() {
       onSuccess: (response) => {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           form.reset();
-          toast.success("Usuário cadastrado com sucesso", {});
+          appToast.success("Usuário cadastrado com sucesso");
           navigate({ to: "/admin/users" });
           setAutoFilled({ addressLine: false, city: false });
         } else {
-          toast.error("Erro ao cadastrar usuário", {});
+          appToast.error("Erro ao cadastrar usuário");
         }
       },
       onError: () => {
-        toast.error("Erro ao cadastrar usuário");
+        appToast.error("Erro ao cadastrar usuário");
       },
     });
   };
 
   return (
-    <div className="p-6 md:p-8 justify-items-center">
+    <div className="h-full flex flex-col px-4 overflow-x-hidden overflow-y-auto">
       <div className="space-y-2">
         <Typography className="text-2xl font-semibold text-on-banner-text">
           Cadastro de Usuário
@@ -324,8 +328,12 @@ export function RegisterUserAdmin() {
                   <TextInput
                     label={isForeign ? "Passaporte" : "CPF"}
                     required
-                    placeholder={isForeign ? "Número do passaporte" : "XXX.XXX.XXX-XX"}
-                    value={isForeign ? field.value || "" : maskCpf(field.value || "")}
+                    placeholder={
+                      isForeign ? "Número do passaporte" : "XXX.XXX.XXX-XX"
+                    }
+                    value={
+                      isForeign ? field.value || "" : maskCpf(field.value || "")
+                    }
                     onChange={(e) => {
                       if (isForeign) {
                         field.onChange(e.target.value);

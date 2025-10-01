@@ -27,6 +27,7 @@ export type CurrentUser = {
     updatedAt?: string;
   };
 };
+
 export interface LoginPayload {
   email: string;
   password: string;
@@ -197,7 +198,7 @@ export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
       isForeign: z.boolean().nullable(),
       verified: z.boolean().nullable(),
       updatedAt: z.iso.datetime().nullable(),
-      address: addressSchema
+      address: addressSchema,
     });
 
     const parsed = profileSchema.safeParse(response.data);
@@ -209,6 +210,50 @@ export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
   } catch (error) {
     return null;
   }
+}
+
+export interface GetUserByIdResponse {
+  name: string;
+  email: string;
+  phone: string;
+  document?: string
+  rg?: string;
+  gender?: string;
+  zipCode?: string;
+  country?: string;
+  userType: UserType;
+  institution?: string;
+  isForeign?: boolean;
+  addressLine?: string;
+  city?: string;
+  number?: number;
+}
+
+export async function getUserById(
+  id: string
+): Promise<HttpResponse<GetUserByIdResponse>> {
+  try {
+    const response = await api.get(`/user/${id}`, {
+      timeout: 10000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return {
+      statusCode: response.status,
+      message: "Usuário encontrado com sucesso",
+      data: response.data as GetUserByIdResponse,
+    };
+  } catch (error: any) {
+    return {
+      statusCode: error.response?.data?.statusCode || 500,
+      message: error.response?.data?.message || "REQUEST_ERROR",
+      error: error.response?.data?.error || "REQUEST_ERROR",
+    };
+  }
+}
+export async function deleteUser(id: string) {
+  return await api.delete<HttpResponse>(`/user/${id}`);
 }
 
 export interface UpdateUserPayload {

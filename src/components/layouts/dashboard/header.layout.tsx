@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { HeaderDrawerMobile } from "@/components/layouts/dashboard/components/headerDrawerMobile";
+import { CartDrawer } from "@/components/layouts/dashboard/components/cartDrawer";
 import { useCartStore } from "@/store/cartStore";
 import {
   Building2,
@@ -33,7 +34,8 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
   const isAdmin = useIsAdmin();
   const { data: user, isPending: isLoading } = useQuery(userQueryOptions);
   const isLoggedIn = !!user;
-  const cartItemCount = useCartStore((state) => state.itemCount);
+  const cartItemCount = useCartStore((state) => state.items.length);
+  const openCart = useCartStore((state) => state.openCart);
   const { logout } = useLogout();
   const handleLogoClick = (e: React.MouseEvent) => {
     if (pathname === "/") {
@@ -108,7 +110,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
               to="/user/profile"
               icon={<CircleUserRound />}
             />
-            <CartButton itemCount={cartItemCount} />
+            <CartButton itemCount={cartItemCount} handleClick={openCart} />
           </>
         ) : (
           <HeaderButton
@@ -134,6 +136,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
       </div>
 
       <HeaderDrawerMobile />
+      <CartDrawer />
       {children}
     </div>
   );

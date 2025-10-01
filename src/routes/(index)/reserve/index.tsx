@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ExperienceCategory, type Experience } from "@/types/experiences";
 
 export const Route = createFileRoute("/(index)/reserve/")({
-  component: RouteComponent,
+  
 });
 
 function RouteComponent() {

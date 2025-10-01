@@ -8,7 +8,7 @@ import { Typography } from "../typography";
 import { Form, FormField, FormItem, FormMessage } from "../ui/form";
 import { Button } from "../buttons/defaultButton";
 import { useResetPasswordMutation } from "@/hooks/useResetPasswordMutation";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
@@ -39,12 +39,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
   const navigate = useNavigate();
 
   if (mutation.isSuccess) {
-    toast.success(t("auth.reset.toastSuccess"));
+    appToast.success(t("auth.reset.toastSuccess"));
     navigate({ to: "/auth/login" });
   }
 
   if (mutation.isError) {
-    toast.error(t("auth.reset.toastError"));
+    appToast.error(t("auth.reset.toastError"));
   }
 
   const onSubmit = async (data: FormData) => {
@@ -108,7 +108,11 @@ export function ResetPasswordForm({ token }: { token: string }) {
               type="submit"
               disabled={mutation.isPending}
               className="w-full sm:w-56"
-              label={mutation.isPending ? t("auth.reset.submitting") : t("auth.reset.submit")}
+              label={
+                mutation.isPending
+                  ? t("auth.reset.submitting")
+                  : t("auth.reset.submit")
+              }
             />
           </div>
         </form>

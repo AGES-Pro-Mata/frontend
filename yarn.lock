@@ -1749,11 +1749,6 @@
   dependencies:
     undici-types "~7.10.0"
 
-"@types/prismjs@^1.26.0":
-  version "1.26.5"
-  resolved "https://registry.npmjs.org/@types/prismjs/-/prismjs-1.26.5.tgz"
-  integrity sha512-AUZTa7hQ2KY5L7AmtSiqxlhWxb4ina0yd8hNbl4TWuqnv/pFP0nDMb3YrfSBf4hJVGLh2YEIBfKaBW/9UEl6IQ==
-
 "@types/react-dom@*", "@types/react-dom@^18.0.0 || ^19.0.0", "@types/react-dom@^19.1.8", "@types/react-dom@>=16.8":
   version "19.1.9"
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.1.9.tgz"
