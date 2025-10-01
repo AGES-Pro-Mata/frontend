@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { ExperienceDTO } from "@/types/experiences";
+import type { ExperienceDTO } from "@/types/experience";
 type CartStore = {
   items: ExperienceDTO[];
   isOpen: boolean;
