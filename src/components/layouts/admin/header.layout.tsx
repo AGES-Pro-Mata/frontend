@@ -3,6 +3,7 @@ import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
 import { LogOutIcon } from "lucide-react";
 import { useLogout } from "@/hooks/useLogout";
+import { Link } from "@tanstack/react-router";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;
@@ -19,9 +20,8 @@ export function AdminLayoutHeader({ className, children }: HeaderLayoutProps) {
         className
       )}
     >
-      <a
-        href="https://www.pucrs.br/ima/pro-mata/"
-        target="_blank"
+      <Link
+        to="/"
         className="cursor-pointer"
       >
         <img
@@ -29,7 +29,7 @@ export function AdminLayoutHeader({ className, children }: HeaderLayoutProps) {
           alt="Logo Pro Mata"
           className="w-40 object-fit"
         />
-      </a>
+      </Link>
       <Typography variant="h3" className="text-black">
         Administrador
       </Typography>
