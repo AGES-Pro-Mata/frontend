@@ -1,32 +1,22 @@
-name: Discord Extended Notifications
+name: Discord Extended Notifications - Frontend
 
 on:
-  # Reviews em PRs
   pull_request_review:
     types: [submitted]
-
-  # Status de Issues
+  
   issues:
     types: [opened, closed]
-
-  # Deploys e CI/CD completados
+    
   workflow_run:
-    workflows:
-      [
-        "Frontend CI/CD Pipeline",
-        "CI/CD Pipeline",
-        "Push to Dev Branch",
-        "Push to Main branch",
-      ]
+    workflows: ["Frontend CI/CD Pipeline", "CI/CD Pipeline"]
     types: [completed]
-
-  # Push para branches principais
+    
   push:
     branches: [main, dev]
 
 jobs:
   notify-reviews:
-    if: github.event_name == 'pull_request_review'
+    if: github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested'
     runs-on: ubuntu-latest
     steps:
       - name: Post Review to Discord
@@ -35,111 +25,31 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           REVIEWER: ${{ github.event.review.user.login }}
-          REVIEW_STATE: ${{ github.event.review.state }}
-          REPO: ${{ github.repository }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
-          # Construir payload baseado no estado do review
-          case "$REVIEW_STATE" in
-            "approved")
-              EMOJI="✅"
-              COLOR=65280
-              ACTION="aprovou"
-              ;;
-            "changes_requested")
-              EMOJI="🔄"
-              COLOR=16776960
-              ACTION="solicitou alterações em"
-              ;;
-            "commented")
-              EMOJI="💬"
-              COLOR=3447003
-              ACTION="comentou em"
-              ;;
-            *)
-              EMOJI="📝"
-              COLOR=3447003
-              ACTION="revisou"
-              ;;
-          esac
+          EMOJI="🔁"
+          COLOR=16776960
+          ACTION="solicitou alterações em"
 
-          # Criar payload JSON sem interpolação complexa
+          OWNER_MENTION="@$PR_AUTHOR"
+
           cat > payload.json << EOF
           {
             "embeds": [
               {
-                "title": "$EMOJI Review: $PR_TITLE",
+                "title": "$EMOJI Review Frontend: $PR_TITLE",
                 "url": "$PR_URL",
-                "description": "$REVIEWER $ACTION este PR",
+                "description": "$REVIEWER $ACTION o Pull Request do frontend",
                 "color": $COLOR,
                 "fields": [
                   {
-                    "name": "Repositório",
-                    "value": "$REPO",
-                    "inline": true
-                  },
-                  {
-                    "name": "Reviewer", 
+                    "name": "Revisor",
                     "value": "$REVIEWER",
                     "inline": true
-                  }
-                ],
-                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-              }
-            ]
-          }
-          EOF
-
-          curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
-
-  notify-issues:
-    if: github.event_name == 'issues'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Post Issue to Discord
-        env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          ISSUE_TITLE: ${{ github.event.issue.title }}
-          ISSUE_URL: ${{ github.event.issue.html_url }}
-          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
-          REPO: ${{ github.repository }}
-          ACTION: ${{ github.event.action }}
-        run: |
-          # Construir payload baseado na ação
-          case "$ACTION" in
-            "opened")
-              EMOJI="🐛"
-              COLOR=16776960
-              ACTION_TEXT="Nova issue criada"
-              ;;
-            "closed")
-              EMOJI="✅"
-              COLOR=65280
-              ACTION_TEXT="Issue resolvida"
-              ;;
-            *)
-              EMOJI="📋"
-              COLOR=3447003
-              ACTION_TEXT="Issue atualizada"
-              ;;
-          esac
-
-          cat > payload.json << EOF
-          {
-            "embeds": [
-              {
-                "title": "$EMOJI $ISSUE_TITLE",
-                "url": "$ISSUE_URL",
-                "description": "$ACTION_TEXT por $ISSUE_AUTHOR",
-                "color": $COLOR,
-                "fields": [
-                  {
-                    "name": "Repositório",
-                    "value": "$REPO",
-                    "inline": true
                   },
                   {
                     "name": "Autor",
-                    "value": "$ISSUE_AUTHOR",
+                    "value": "$OWNER_MENTION",
                     "inline": true
                   }
                 ],
@@ -148,197 +58,5 @@ jobs:
             ]
           }
           EOF
-
-          curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
-
-  notify-build:
-    if: github.event_name == 'workflow_run'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Post CI/CD Status to Discord
-        env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          REPO: ${{ github.repository }}
-          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
-          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
-          BRANCH: ${{ github.event.workflow_run.head_branch }}
-          RUN_URL: ${{ github.event.workflow_run.html_url }}
-        run: |
-          # Determinar tipo de build baseado na branch
-          BUILD_TYPE=""
-          DOCKER_IMAGE=""
-          if [[ "$BRANCH" == "dev" ]]; then
-            BUILD_TYPE="Development Build"
-            DOCKER_IMAGE="ages-pro-mata/frontend:dev"
-          elif [[ "$BRANCH" == "main" ]]; then
-            BUILD_TYPE="Production Build"
-            DOCKER_IMAGE="ages-pro-mata/frontend:latest"
-          fi
-
-          # Determinar se é build/CI baseado no nome do workflow
-          IS_BUILD=false
-          if echo "$WORKFLOW_NAME" | grep -i "ci.*cd\|build\|pipeline"; then
-            IS_BUILD=true
-          fi
-
-          # Configurar emoji, título e cor baseado no resultado
-          MENTION=""
-          if [[ "$CONCLUSION" == "success" ]]; then
-            if [[ "$IS_BUILD" == "true" ]]; then
-              EMOJI="�"
-              TITLE="Build & Push Docker Realizado com Sucesso!"
-            else
-              EMOJI="✅"
-              TITLE="CI Pipeline Concluído"
-            fi
-            COLOR=65280
-          elif [[ "$CONCLUSION" == "failure" ]]; then
-            if [[ "$IS_BUILD" == "true" ]]; then
-              EMOJI="🚨"
-              TITLE="Build Docker Falhou!"
-              # Mencionar roles em falhas críticas
-              MENTION="<@&1399565960922402929><@&1399580242636701726>"
-            else
-              EMOJI="❌"
-              TITLE="CI Pipeline Falhou"
-            fi
-            COLOR=16711680
-          else
-            EMOJI="⚠️"
-            TITLE="Pipeline Cancelado/Timeout"
-            COLOR=16776960
-          fi
-
-          # Construir campos adicionais
-          ADDITIONAL_FIELDS=""
-          if [[ -n "$BUILD_TYPE" ]]; then
-            ADDITIONAL_FIELDS="
-            ,{
-              \"name\": \"Tipo de Build\",
-              \"value\": \"$BUILD_TYPE\",
-              \"inline\": true
-            }"
-            
-            if [[ "$CONCLUSION" == "success" && -n "$DOCKER_IMAGE" ]]; then
-              ADDITIONAL_FIELDS="$ADDITIONAL_FIELDS
-              ,{
-                \"name\": \"Imagem Docker\",
-                \"value\": \"\`$DOCKER_IMAGE\`\",
-                \"inline\": false
-              },
-              {
-                \"name\": \"DockerHub\",
-                \"value\": \"[Ver no DockerHub](https://hub.docker.com/r/ages-pro-mata/frontend)\",
-                \"inline\": false
-              }"
-            fi
-          fi
-
-          # Criar payload
-          CONTENT_FIELD=""
-          if [[ -n "$MENTION" ]]; then
-            CONTENT_FIELD="\"content\": \"$MENTION **Frontend Build Falhou**\","
-          fi
-
-          cat > payload.json << EOF
-          {
-            $CONTENT_FIELD
-            "embeds": [
-              {
-                "title": "$EMOJI $TITLE",
-                "url": "$RUN_URL",
-                "description": "Build do **frontend** $(if [[ "$CONCLUSION" == "success" ]]; then echo "executado com sucesso e enviado para DockerHub"; else echo "falhou"; fi)",
-                "color": $COLOR,
-                "fields": [
-                  {
-                    "name": "Workflow",
-                    "value": "$WORKFLOW_NAME",
-                    "inline": true
-                  },
-                  {
-                    "name": "Branch",
-                    "value": "$BRANCH",
-                    "inline": true
-                  },
-                  {
-                    "name": "Status",
-                    "value": "$CONCLUSION",
-                    "inline": true
-                  }$ADDITIONAL_FIELDS
-                ],
-                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-              }
-            ]
-          }
-          EOF
-
-          curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
-
-  notify-push:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Post Push Info to Discord
-        env:
-          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          REPO: ${{ github.repository }}
-          BRANCH: ${{ github.ref_name }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          COMMIT_AUTHOR: ${{ github.event.head_commit.author.name }}
-          COMMIT_URL: ${{ github.event.head_commit.url }}
-        run: |
-          # Só notificar pushes para branches principais
-          if [[ "$BRANCH" != "main" && "$BRANCH" != "dev" ]]; then
-            echo "Branch $BRANCH não é principal, pulando notificação"
-            exit 0
-          fi
-
-          # Configurar emoji e cor baseado na branch
-          if [[ "$BRANCH" == "main" ]]; then
-            EMOJI="🔥"
-            COLOR=16711680
-            BRANCH_DESC="branch principal"
-          else
-            EMOJI="🧪"
-            COLOR=3447003
-            BRANCH_DESC="branch de desenvolvimento"
-          fi
-
-          # Truncar mensagem se muito longa
-          COMMIT_SHORT=$(echo "$COMMIT_MESSAGE" | head -c 100)
-          if [[ ${#COMMIT_MESSAGE} -gt 100 ]]; then
-            COMMIT_SHORT="$COMMIT_SHORT..."
-          fi
-
-          cat > payload.json << EOF
-          {
-            "embeds": [
-              {
-                "title": "$EMOJI Push para $BRANCH",
-                "url": "$COMMIT_URL",
-                "description": "Novo commit na $BRANCH_DESC de **$REPO**",
-                "color": $COLOR,
-                "fields": [
-                  {
-                    "name": "Autor",
-                    "value": "$COMMIT_AUTHOR",
-                    "inline": true
-                  },
-                  {
-                    "name": "Branch",
-                    "value": "$BRANCH",
-                    "inline": true
-                  },
-                  {
-                    "name": "Mensagem",
-                    "value": "$COMMIT_SHORT",
-                    "inline": false
-                  }
-                ],
-                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-              }
-            ]
-          }
-          EOF
-
+          
           curl -sS -X POST -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"

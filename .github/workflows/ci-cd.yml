@@ -5,6 +5,8 @@ on:
     branches: [dev, main]
   pull_request:
     branches: [dev, main]
+    types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,7 +15,7 @@ permissions:
 
 env:
   DOCKER_REGISTRY: docker.io
-  IMAGE_NAME: norohim/pro-mata-frontend
+  IMAGE_NAME_BASE: norohim/pro-mata-frontend
   NODE_VERSION: "22.12.0"
   
 jobs:
@@ -47,10 +49,10 @@ jobs:
 
       - name: Build Application
         env:
-          VITE_API_URL: ${{ github.ref == 'refs/heads/main' && 'https://api.promata.duckdns.org' || 'https://api.promata-dev.duckdns.org' }}
+          VITE_API_URL: https://api.promata.com.br
           VITE_APP_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
           VITE_APP_VERSION: ${{ github.sha }}
-        run: npm run build
+        run: npm run build:ci
 
       - name: Test Build Output
         run: |
@@ -111,10 +113,15 @@ jobs:
         with:
           sarif_file: "trivy-results.sarif"
 
-  build-and-push:
+  deploy-static-site:
     needs: [test, security-scan]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main') ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION || 'us-east-2' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -130,58 +137,46 @@ jobs:
 
       - name: Build Application
         env:
-          VITE_API_URL: ${{ github.ref == 'refs/heads/main' && 'https://api.promata.duckdns.org' || 'https://api.promata-dev.duckdns.org' }}
-          VITE_APP_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+          VITE_UMAMI_WEBSITE_ID: ${{ vars.VITE_UMAMI_WEBSITE_ID }}
+          VITE_UMAMI_SCRIPT_URL: ${{ vars.VITE_UMAMI_SCRIPT_URL }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_ENABLE_DEVTOOLS: false
+          VITE_APP_ENV: production
           VITE_APP_VERSION: ${{ github.sha }}
-        run: npm run build
+        run: npm run build:ci
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ vars.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Set Docker Configuration
-        id: docker-config
+      - name: Sync artifacts to S3
+        env:
+          TARGET_BUCKET: ${{ vars.AWS_S3_BUCKET }}
         run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "dockerfile=Dockerfile.prod" >> $GITHUB_OUTPUT
-            echo "image_name=${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
-            echo "tag_suffix=" >> $GITHUB_OUTPUT
-          else
-            echo "dockerfile=Dockerfile.dev" >> $GITHUB_OUTPUT
-            echo "image_name=${{ env.IMAGE_NAME }}-dev" >> $GITHUB_OUTPUT
-            echo "tag_suffix=-dev" >> $GITHUB_OUTPUT
+          if [ -z "$TARGET_BUCKET" ]; then
+            echo "TARGET_BUCKET not configured"
+            exit 1
           fi
 
-      - name: Extract Metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ steps.docker-config.outputs.image_name }}
-          tags: |
-            type=ref,event=branch,suffix=${{ steps.docker-config.outputs.tag_suffix }}
-            type=sha,prefix=sha-,suffix=${{ steps.docker-config.outputs.tag_suffix }}
-            type=raw,value=latest,enable={{is_default_branch}}
+          aws s3 sync dist/ "s3://$TARGET_BUCKET" --delete
 
-      - name: Build and Push Image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ${{ steps.docker-config.outputs.dockerfile }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-            VCS_REF=${{ github.sha }}
-            VERSION=${{ steps.meta.outputs.version }}
-            VITE_API_URL=${{ github.ref == 'refs/heads/main' && 'https://api.promata.duckdns.org' || 'https://api.promata-dev.duckdns.org' }}
-            VITE_APP_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
-            VITE_APP_VERSION=${{ github.sha }}
+      - name: Invalidate CloudFront cache
+        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+            --paths '/*'
+        env:
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+
+      - name: Deployment Summary
+        run: |
+          echo "## 🌐 Static Site Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Bucket** | ${{ vars.AWS_S3_BUCKET }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **CloudFront Distribution** | ${{ vars.CLOUDFRONT_DISTRIBUTION_ID || 'None' }} |" >> $GITHUB_STEP_SUMMARY

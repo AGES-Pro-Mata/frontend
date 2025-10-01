@@ -1,18 +1,19 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-
-// Import the generated route tree
-
-
-import "./styles.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "./styles/globals.css";
 import reportWebVitals from "./reportWebVitals.ts";
 import { routeTree } from "./routeTree.gen.ts";
+import { AppToast } from "@/components/toast/toast";
+import "./i18n.ts";
+
+const queryClient = new QueryClient();
 
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  context: {},
+  context: { queryClient },
   defaultPreload: "intent",
   scrollRestoration: true,
   defaultStructuralSharing: true,
@@ -32,8 +33,11 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
-    </StrictMode>,
+      <QueryClientProvider client={queryClient}>
+        <AppToast position="top-center" />
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </StrictMode>
   );
 }
 
