@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Button } from "@/components/buttons/defaultButton";
 import CanvasCard from "@/components/cards/canvasCard";
-import { CalendarIcon, DollarSign, Check, Clock, X } from "lucide-react";
+import { CalendarIcon, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { ModalPessoas } from "@/components/modals/peopleModal";
 import { CancelReservationModal } from "@/components/modals/cancelReservationModal";
 import { PaymentProofModal } from "@/components/modals/paymentProofModal";
 import { useTranslation } from "react-i18next";
+import CardStatus, { StatusEnum } from "@/components/cards/cardStatus";
+
 
 
 type Pessoa = {
@@ -77,70 +79,14 @@ export default function ReservaCard({
     toast.success("Pessoas cadastradas com sucesso!");
     setOpenModalPessoas(false);
   };
-  const StatusBadge = () => {
-    if (status === "cadastro_pendente") {
-      return (
-        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-warning">
-            <Clock className="w-3.5 h-3.5 text-soft-white" />
-          </div>
-          <span className="text-warning font-semibold text-xs">
-            {t("reservation.status.pendingRegister")}
-          </span>
-        </div>
-      );
-    }
-    if (status === "pagamento_pendente") {
-      return (
-        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-warning">
-            <Clock className="w-3.5 h-3.5 text-soft-white" />
-          </div>
-          <span className="text-warning font-semibold text-xs">
-            {t("reservation.status.pendingPayment")}
-          </span>
-        </div>
-      );
-    }
-    if (status === "aprovacao_pendente") {
-      return (
-        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-blue-500">
-            <Clock className="w-3.5 h-3.5 text-soft-white" />
-          </div>
-          <span className="text-blue-500 font-semibold text-xs">
-             {t("reservation.status.pendingApproval")}
-          </span>
-        </div>
-      );
-    }
-    if (status === "concluida") {
-      return (
-        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-contrast-green">
-            <Check className="w-3 h-3 text-soft-white" />
-          </div>
-          <span className="text-contrast-green font-semibold text-xs">
-            {t("reservation.status.completed")}
-          </span>
-        </div>
-      );
-    }
-    if (status === "cancelada") {
-      return (
-        <div className="flex items-center gap-2 w-auto h-[26px] bg-popover shadow-md rounded-full px-3">
-          <div className="w-4 h-4 flex items-center justify-center rounded-full bg-default-red">
-            <X className="w-3 h-3 text-soft-white" />
-          </div>
-          <span className="text-default-red font-semibold text-xs">
-            {t("reservation.status.cancelled")}
-          </span>
-        </div>
-      );
-    }
-    return null;
-  };
 
+  const statusMap: Record<StatusReserva, typeof StatusEnum[keyof typeof StatusEnum]> = {
+    cadastro_pendente: StatusEnum.CADASTRO_PENDENTE,
+    pagamento_pendente: StatusEnum.PAGAMENTO_PENDENTE,
+    aprovacao_pendente: StatusEnum.AGUARDANDO_APROVACAO,
+    concluida: StatusEnum.CONFIRMADA,
+    cancelada: StatusEnum.CANCELADA,
+  };
 
   return (
     <>
@@ -192,8 +138,7 @@ export default function ReservaCard({
           </ul>
 
           <div className="w-full mt-6 flex items-center justify-between">
-            <StatusBadge />
-
+          <CardStatus status={statusMap[status]} />
             <div className="flex gap-3">
             {status === "cadastro_pendente" && (
               <Button
@@ -244,7 +189,7 @@ export default function ReservaCard({
               open={openModalComprovante}
               onOpenChange={setOpenModalComprovante}
               preco={preco}
-              onConfirm={(file) => {
+              onConfirm={() => {
                 setStatus("aprovacao_pendente");
                 setOpenModalComprovante(false);
                 toast.success("Comprovante enviado com sucesso!");
