@@ -140,33 +140,34 @@ export default function ReservaCard({
           <div className="w-full mt-6 flex items-center justify-between">
           <CardStatus status={statusMap[status]} />
             <div className="flex gap-3">
-            {status === "cadastro_pendente" && (
-              <Button
-                onClick={() => setOpenModalPessoas(true)}
-                className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
-                label={t("reservation.registerPeople")}              
-              />
-            )}
-
-            {status === "pagamento_pendente" && (
-              <Button
-                onClick={() => setOpenModalComprovante(true)}
-                className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-                label={t("reservation.sendPaymentProof")}
-              />
-            )}
-              <Button
-                onClick={() => setOpenModalCancel(true)}
-                className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
-                label={t("reservation.cancelReservation")}
-              />
+              {status === "cadastro_pendente" && (
                 <Button
+                  onClick={() => setOpenModalPessoas(true)}
+                  className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
+                  label={t("reservation.registerPeople")}              
+                />
+              )}
+              {status === "pagamento_pendente" && (
+                <Button
+                  onClick={() => setOpenModalComprovante(true)}
+                  className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
+                  label={t("reservation.sendPaymentProof")}
+                />
+              )}
+              {status !== "cancelada" && (
+                <Button
+                  onClick={() => setOpenModalCancel(true)}
+                  className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
+                  label={t("reservation.cancelReservation")}
+                />
+              )}
+
+              <Button
                 onClick={() => toast.info("Abrindo detalhes da reserva...")}
                 className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
                 label={t("reservation.viewReservation")}
               />
             </div>
-
                       </div>
                     </div>
                   </CanvasCard>

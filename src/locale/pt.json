@@ -18,18 +18,18 @@
     "email": "Email",
     "function": "Função"
   },
+  "status": {
+    "cadastro_pendente": "Cadastro Pendente",
+    "pagamento_pendente": "Pagamento Pendente",
+    "aguardando_aprovacao": "Aprovação Pendente",
+    "concluida": "Concluída",
+    "cancelada": "Cancelada"
+  },
   "reservation": {
     "registerPeople": "Cadastrar Pessoas",
     "sendPaymentProof": "Enviar Comprovante",
     "cancelReservation": "Cancelar Reserva",
-    "viewReservation": "Visualizar Reserva",
-    "status": {
-      "pendingRegister": "Cadastro Pendente",
-      "pendingPayment": "Pagamento Pendente",
-      "pendingApproval": "Aprovação Pendente",
-      "completed": "Concluída",
-      "cancelled": "Cancelada"
-    }
+    "viewReservation": "Visualizar Reserva"
   },
   "nav": {
     "home": "Início",

@@ -17,18 +17,18 @@
         "email": "Email",
         "function": "Role"
     },
-    "reservation": {
-        "registerPeople": "Register People",
-        "sendPaymentProof": "Send Payment Proof",
-        "cancelReservation": "Cancel Reservation",
-        "viewReservation": "View Reservation",
-        "status": {
-            "pendingRegister": "Pending Registration",
-            "pendingPayment": "Pending Payment",
-            "pendingApproval": "Pending Approval",
-            "completed": "Completed",
-            "cancelled": "Cancelled"
-        }
+  "status": {
+    "cadastro_pendente": "Pending Registration",
+    "pagamento_pendente": "Pending Payment",
+    "aprovacao_pendente": "Pending Approval",
+    "concluida": "Completed",
+    "cancelada": "Cancelled"
+  },
+  "reservation": {
+    "registerPeople": "Register People",
+    "sendPaymentProof": "Send Payment Proof",
+    "cancelReservation": "Cancel Reservation",
+    "viewReservation": "View Reservation"
     },
     "nav": {
         "home": "Home",

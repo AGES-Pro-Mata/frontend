@@ -41,13 +41,76 @@ export function ModalPessoas({
 
         <div className="mt-2 flex flex-col gap-4 flex-grow overflow-y-auto">
           {draftPessoas.map((pessoa, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-6 gap-4 border-b border-gray-300 pb-4 items-center"
-            >
-              ...
-            </div>
-          ))}
+  <div
+    key={index}
+    className="grid grid-cols-6 gap-4 border-b border-gray-300 pb-4 items-center"
+  >
+    <Input
+      placeholder="Nome"
+      value={pessoa.nome}
+      onChange={(e) => {
+        const updated = [...draftPessoas];
+        updated[index].nome = e.target.value;
+        setDraftPessoas(updated);
+      }}
+    />
+    <Input
+      placeholder="Telefone"
+      value={pessoa.telefone}
+      onChange={(e) => {
+        const updated = [...draftPessoas];
+        updated[index].telefone = e.target.value;
+        setDraftPessoas(updated);
+      }}
+    />
+    <Input
+      type="date"
+      placeholder="Nascimento"
+      value={pessoa.nascimento}
+      onChange={(e) => {
+        const updated = [...draftPessoas];
+        updated[index].nascimento = e.target.value;
+        setDraftPessoas(updated);
+      }}
+    />
+    <Input
+      placeholder="CPF"
+      value={pessoa.cpf}
+      onChange={(e) => {
+        const updated = [...draftPessoas];
+        updated[index].cpf = e.target.value;
+        setDraftPessoas(updated);
+      }}
+    />
+    <Select
+      value={pessoa.genero}
+      onValueChange={(val) => {
+        const updated = [...draftPessoas];
+        updated[index].genero = val;
+        setDraftPessoas(updated);
+      }}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Gênero" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="masculino">Masculino</SelectItem>
+        <SelectItem value="feminino">Feminino</SelectItem>
+        <SelectItem value="outro">Outro</SelectItem>
+      </SelectContent>
+    </Select>
+
+    <Button
+      onClick={() => {
+        const updated = draftPessoas.filter((_, i) => i !== index);
+        setDraftPessoas(updated);
+      }}
+      className="bg-default-red text-soft-white rounded-full w-[40px] h-[40px] flex items-center justify-center"
+      label={<Trash2 className="w-4 h-4" />}
+    />
+  </div>
+))}
+
 
           <Button
             onClick={() =>
