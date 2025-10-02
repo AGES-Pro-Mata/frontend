@@ -31,13 +31,18 @@
         "checkoutButton": "Finish Reservation",
         "browseLink": "See more experiences"
     },
-    "status": {
-        "confirmada": "Confirmed",
-        "pagamento_pendente": "Payment pending",
-        "cadastro_pendente": "Registration pending",
-        "aguardando_aprovacao": "Awaiting approval",
-        "cancelada": "Cancelled",
-        "desconhecido": "Unknown"
+  "status": {
+    "cadastro_pendente": "Pending Registration",
+    "pagamento_pendente": "Pending Payment",
+    "aprovacao_pendente": "Pending Approval",
+    "concluida": "Completed",
+    "cancelada": "Cancelled"
+  },
+  "reservation": {
+    "registerPeople": "Register People",
+    "sendPaymentProof": "Send Payment Proof",
+    "cancelReservation": "Cancel Reservation",
+    "viewReservation": "View Reservation"
     },
     "nav": {
         "home": "Home",
