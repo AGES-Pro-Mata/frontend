@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/buttons/defaultButton";
+import { useTranslation } from "react-i18next";
 
 type CancelReservationModalProps = {
   open: boolean;
@@ -8,18 +9,19 @@ type CancelReservationModalProps = {
 };
 
 export function CancelReservationModal({ open, onOpenChange, onConfirm }: CancelReservationModalProps) {
+  const { t } = useTranslation();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[499px] h-[268px] rounded-2xl bg-card flex flex-col justify-between p-6">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-main-dark-green">
-            Cancelar reserva?
+            {t("cancelReservation.title")}
           </DialogTitle>
         </DialogHeader>
 
         <p className="text-main-dark-green text-base">
-          Tem certeza de que deseja cancelar sua reserva? <br />
-          Esta ação não poderá ser desfeita.
+          {t("cancelReservation.confirmation")}
         </p>
 
         <div className="flex flex-col gap-3 mt-4 w-full">
@@ -27,13 +29,13 @@ export function CancelReservationModal({ open, onOpenChange, onConfirm }: Cancel
             onClick={() => onOpenChange(false)}
             variant="ghost"
             className="w-full rounded-lg h-[48px] shadow-sm"
-            label="Manter reserva"
+            label={t("cancelReservation.keepReservation")}
           />
           <Button
             onClick={onConfirm}
             variant="destructive"
             className="w-full rounded-lg h-[48px] shadow-md"
-            label="Cancelar"
+            label={t("common.cancel")}
           />
         </div>
       </DialogContent>

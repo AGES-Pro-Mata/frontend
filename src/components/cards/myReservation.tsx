@@ -60,7 +60,7 @@ export default function ReservaCard({
   const handleCancelarReserva = () => {
     setStatus("cancelada");
     setOpenModalCancel(false);
-    toast.error("Solicitação de cancelamento enviada!");
+    toast.error(t("reservation.cancelRequestSent"));
   };
   const [openModalCancel, setOpenModalCancel] = useState(false);
   const [openModalPessoas, setOpenModalPessoas] = useState(false);
@@ -74,11 +74,11 @@ export default function ReservaCard({
     setOpenModalPessoas(open);
   };
     const handleSalvarPessoas = (novasPessoas: Pessoa[]) => {
-    setPessoas(novasPessoas);
-    setStatus("pagamento_pendente");
-    toast.success("Pessoas cadastradas com sucesso!");
-    setOpenModalPessoas(false);
-  };
+      setPessoas(novasPessoas);
+      setStatus("pagamento_pendente");
+      toast.success(t("reservation.peopleRegisteredSuccess"));
+      setOpenModalPessoas(false);
+    };
 
   const statusMap: Record<StatusReserva, typeof StatusEnum[keyof typeof StatusEnum]> = {
     cadastro_pendente: StatusEnum.CADASTRO_PENDENTE,
@@ -130,13 +130,11 @@ export default function ReservaCard({
               </div>
             </div>
           </div>
-
-          <ul className="text-xs font-bold text-main-dark-green/70 list-disc ml-6 mt-2 space-y-1">
-            <li>Trilha Histórico-Cultural</li>
-            <li>Observação de Aves</li>
-            <li>Laboratório ao Ar Livre</li>
-          </ul>
-
+            <ul className="text-xs font-bold text-main-dark-green/70 list-disc ml-6 mt-2 space-y-1">
+              <li>{t("reservation.activities.historicalTrail")}</li>
+              <li>{t("reservation.activities.birdWatching")}</li>
+              <li>{t("reservation.activities.outdoorLab")}</li>
+            </ul>
           <div className="w-full mt-6 flex items-center justify-between">
           <CardStatus status={statusMap[status]} />
             <div className="flex gap-3">
@@ -163,7 +161,7 @@ export default function ReservaCard({
               )}
 
               <Button
-                onClick={() => toast.info("Abrindo detalhes da reserva...")}
+                onClick={() => toast.info(t("reservation.openingReservationDetails"))}
                 className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
                 label={t("reservation.viewReservation")}
               />
@@ -187,14 +185,14 @@ export default function ReservaCard({
                   />
 
                 <PaymentProofModal
-              open={openModalComprovante}
-              onOpenChange={setOpenModalComprovante}
-              preco={preco}
-              onConfirm={() => {
-                setStatus("aprovacao_pendente");
-                setOpenModalComprovante(false);
-                toast.success("Comprovante enviado com sucesso!");
-              }}
+                  open={openModalComprovante}
+                  onOpenChange={setOpenModalComprovante}
+                  preco={preco}
+                  onConfirm={() => {
+                    setStatus("aprovacao_pendente");
+                    setOpenModalComprovante(false);
+                    toast.success(t("reservation.paymentProofSent"));
+                  }}
             />
     </>
   );

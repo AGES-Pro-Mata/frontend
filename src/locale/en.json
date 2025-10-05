@@ -28,8 +28,17 @@
     "registerPeople": "Register People",
     "sendPaymentProof": "Send Payment Proof",
     "cancelReservation": "Cancel Reservation",
-    "viewReservation": "View Reservation"
-    },
+    "viewReservation": "View Reservation",
+    "cancelRequestSent": "Cancellation request sent!",
+    "peopleRegisteredSuccess": "People successfully registered!",
+    "paymentProofSent": "Payment proof sent successfully!",
+    "openingReservationDetails": "Opening reservation details...",
+    "activities": {
+        "historicalTrail": "Historical-Cultural Trail",
+        "birdWatching": "Bird Watching",
+        "outdoorLab": "Outdoor Laboratory"
+    }
+  },
     "nav": {
         "home": "Home",
         "reserve": "Reserve",
@@ -282,5 +291,34 @@
             "phone": "Phone: (XX) XXXX-XXXX",
             "email": "Email: contato@pro-mata.org",
             "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
-        }
+        },
+    "paymentProof": {
+        "selectBeforeSend": "Select a file before sending!",
+        "instructions": "Upload the payment proof to confirm your reservation",
+        "acceptedProofs": "Currently, we accept the following proofs:",
+        "ted": "Wire transfer: BANK",
+        "pix": "PIX: PIXKEY",
+        "sendProofWithValue": "Send the proof with the amount of",
+        "paymentProofLabel": "Payment Proof",
+        "chooseFile": "Choose file",
+        "noFileSelected": "No file selected"
+    },
+    "cancelReservation": {
+        "title": "Cancel reservation?",
+        "confirmation": "Are you sure you want to cancel your reservation? This action cannot be undone.",
+        "keepReservation": "Keep reservation"
+    },
+    "peopleModal": {
+        "title": "Register People",
+        "name": "Name",
+        "phone": "Phone",
+        "birth": "Birthdate",
+        "cpf": "CPF",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "addPerson": "Add another person",
+        "fillAllFields": "Please fill in all required fields"
+    }
 }

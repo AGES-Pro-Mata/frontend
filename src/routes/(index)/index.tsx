@@ -1,11 +1,11 @@
 import { Carousel } from "@/components/carousel/carousel";
 import { CardsInfoOnHover } from "@/components/cards/cardInfoOnHover";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button, DefaultButton } from "@/components/buttons/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import ReservaCard from "@/components/cards/myReservation";
 
 export const Route = createFileRoute("/(index)/")({
   component: RouteComponent,
@@ -13,25 +13,14 @@ export const Route = createFileRoute("/(index)/")({
 
 function RouteComponent() {
   const { t } = useTranslation();
-  const [heroLoaded, setHeroLoaded] = useState(false);
   return (
     <div className="w-full overflow-x-hidden">
       <div className="relative w-full h-screen bg-main-dark-green flex items-start justify-center pt-[clamp(2rem,6vh,5rem)]">
-        <picture className="absolute inset-0 w-full h-full">
-          <source srcSet="/home-page-image.avif" type="image/avif" />
-          <source srcSet="/home-page-image.webp" type="image/webp" />
-          <img
-            src="/home-page-image.avif"
-            alt="PRÓ-MATA Centro de Pesquisas"
-            className={`w-full h-full object-cover transition-opacity duration-700 ease-out ${heroLoaded ? "opacity-100" : "opacity-0"
-              }`}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            sizes="100vw"
-            onLoad={() => setHeroLoaded(true)}
-          />
-        </picture>
+        <img
+          src="home-page-image.png"
+          alt="PRÓ-MATA Centro de Pesquisas"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
 
         <div className="absolute inset-0 bg-black/20"></div>
 
@@ -57,8 +46,8 @@ function RouteComponent() {
           </Typography>
 
           <div className="flex flex-col sm:flex-row gap-[clamp(0.75rem,2vw,1rem)] justify-center items-center">
-            <Link to="/reserve/finish">
-              <Button
+            <Link to="/reserve">
+              <DefaultButton
                 label={t("homePage.ctaPrimary")}
                 variant="primary"
                 className="p-5 text-md"
@@ -69,7 +58,7 @@ function RouteComponent() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button
+              <DefaultButton
                 label={t("homePage.ctaSecondary")}
                 variant="secondary"
                 className="p-5 text-md"
@@ -83,6 +72,13 @@ function RouteComponent() {
         <InfoExperiencies />
         <CardsInfoOnHover />
         <Carousel />
+        <ReservaCard
+          titulo="Pacote personalizado"
+          preco={356.9}
+          tipo="Pacote"
+          periodo={{ inicio: new Date("2025-08-11"), fim: new Date("2025-08-15") }}
+          imagem="/home-page-image.png"
+        />
         <div className="flex flex-col items-center mb-[clamp(2rem,5vw,3.75rem)] justify-center">
           <Typography
             variant="h4"
@@ -90,7 +86,7 @@ function RouteComponent() {
           >
             {t("homePage.ctaBottomTitle")}
           </Typography>
-          <Link to="/reserve/finish">
+          <Link to="/reserve">
             <Button
               label={t("homePage.ctaBottom")}
               variant="gray"
