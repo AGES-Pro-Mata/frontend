@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ExperienceCategory, type Experience } from "@/types/experiences";
 
 export const Route = createFileRoute("/(index)/reserve/")({
-  
+  component: RouteComponent, // aqui liga a função à rota
 });
 
 function RouteComponent() {
@@ -24,14 +24,14 @@ function RouteComponent() {
       name: "Cabana Conforto",
       description: "Hospedagem rústica e aconchegante",
       category: ExperienceCategory.HOSPEDAGEM,
-      capacity: 4,
+      capacity: 1,
       price: 350,
       startDate: "2025-10-10T14:00:00.000Z",
       endDate: "2025-10-15T11:00:00.000Z",
     },
     {
       id: "3",
-      name: "Laboratório de Biologia",
+      name: "Laboratório Biologia",
       description: "Espaço equipado para estudos",
       category: ExperienceCategory.LABORATORIO,
       capacity: 20,

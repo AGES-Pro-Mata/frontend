@@ -1,8 +1,8 @@
 export enum ExperienceCategory {
-  TRILHA = "trilha",
-  HOSPEDAGEM = "hospedagem",
-  LABORATORIO = "laboratorio",
-  EVENTO = "evento"
+  TRILHA = "trail",
+  HOSPEDAGEM = "room",
+  LABORATORIO = "lab",
+  EVENTO = "event"
 }
 
 export interface Experience {
