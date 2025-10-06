@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useCreateExperience } from "@/hooks/useCreateExperience";
-import { ExperienceCategory } from "@/types/experience";
+import { ExperienceCategory } from "@/types/experiences";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -100,8 +100,6 @@ const formSchema = z
       }
     }
   });
-
-type FormData = z.infer<typeof formSchema>;
 
 const WEEK_DAYS = [
   { value: "monday", label: "Segunda-feira" },

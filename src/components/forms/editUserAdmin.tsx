@@ -20,14 +20,12 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import type { TEditUserAdminResponse } from "@/entities/edit-user-admin-response";
 import { useGetAdminUser } from "@/hooks/use-get-admin-user";
 import { useCepQuery } from "@/hooks/useCepQuery";
 import { useRegisterAdmin } from "@/hooks/useRegisterAdmin";
 import { COUNTRIES } from "@/lib/countries";
 import {
   digitsOnly,
-  generateRandomPassword,
   hashPassword,
   isValidBrazilZip,
   isValidCpf,
