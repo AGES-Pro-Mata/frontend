@@ -2,7 +2,7 @@
 import { api } from "@/core/api";
 import axios from "axios";
 import type { ExperienceCategory, Experience } from "@/types/experiences";
-import type { HttpResponse } from "@/types/http-response";
+
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
