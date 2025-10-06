@@ -2,7 +2,6 @@ import { Button } from "@/components/buttons/defaultButton";
 import type { Experience } from "@/types/experiences";
 // import Map from "/card-experience-icons/map-icon.svg";
 import {Map, DollarSign, Timer, CalendarClock, User} from "lucide-react"
-import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 
