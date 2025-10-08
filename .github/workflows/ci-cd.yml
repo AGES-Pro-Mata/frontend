@@ -70,6 +70,14 @@ jobs:
         run: |
           npm test || echo "No tests found, continuing..."
 
+      - name: Upload coverage to Codecov (non-blocking)
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          flags: vitest
+          name: vitest-report
+          fail_ci_if_error: false
+
       - name: Upload Build Artifacts
         if: always()
         uses: actions/upload-artifact@v4

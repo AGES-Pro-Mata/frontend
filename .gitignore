@@ -24,6 +24,9 @@ build/Release
 .temp/
 .tmp/
 
+# TanStack router plugin cache
+.tanstack/
+
 # Testing
 /coverage
 /.nyc_output
@@ -31,6 +34,7 @@ build/Release
 /playwright-report/
 /playwright/.cache/
 *.lcov
+playwright/.lock
 
 # Environment variables
 .env

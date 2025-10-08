@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import type { ElementType, HTMLAttributes } from "react";
 
 const variants = {
   h1: "text-4xl font-bold",
@@ -12,7 +13,7 @@ const variants = {
 
   h4: "text-xl font-bold",
   h4_light: "text-xl font-bold text-white",
-  
+
   h5: "text-lg font-bold",
   h5_light: "text-lg font-bold text-white",
 
@@ -25,7 +26,24 @@ const variants = {
 
 type Variant = keyof typeof variants;
 
-type TypographyProps = React.ComponentPropsWithoutRef<"p"> & {
+const variantElements: Record<Variant, ElementType> = {
+  h1: "h1",
+  h1_light: "h1",
+  h2: "h2",
+  h2_light: "h2",
+  h3: "h3",
+  h3_light: "h3",
+  h4: "h4",
+  h4_light: "h4",
+  h5: "h5",
+  h5_light: "h5",
+  h6: "h6",
+  h6_light: "h6",
+  body: "p",
+  body_light: "p",
+};
+
+type TypographyProps = HTMLAttributes<HTMLElement> & {
   variant?: Variant;
 };
 
@@ -34,8 +52,10 @@ export function Typography({
   variant = "body",
   ...props
 }: TypographyProps) {
+  const Component = variantElements[variant] ?? "p";
+
   return (
-    <p
+    <Component
       className={cn(
         `text-base leading-6 text-${variant.includes("light") ? "white" : "muted-foreground"}`,
         variants[variant],

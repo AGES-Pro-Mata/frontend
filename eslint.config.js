@@ -5,6 +5,18 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import react from "eslint-plugin-react";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
+import testingLibrary from "eslint-plugin-testing-library";
+import jestDom from "eslint-plugin-jest-dom";
+
+const testingLibraryRules =
+  testingLibrary.configs?.["flat/react"]?.rules ??
+  testingLibrary.configs?.react?.rules ??
+  {};
+
+const jestDomRules =
+  jestDom.configs?.["flat/recommended"]?.rules ??
+  jestDom.configs?.recommended?.rules ??
+  {};
 
 export default [
   {
@@ -188,8 +200,14 @@ export default [
         afterAll: "readonly",
       },
     },
+    plugins: {
+      "testing-library": testingLibrary,
+      "jest-dom": jestDom,
+    },
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+      ...testingLibraryRules,
+      ...jestDomRules,
       "no-console": "off",
     },
   },
