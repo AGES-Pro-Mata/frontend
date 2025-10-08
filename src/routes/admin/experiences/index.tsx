@@ -26,7 +26,7 @@ function RouteComponent() {
       page: 0,
     },
   });
-  const { items, meta } = useFetchAdminExperiences({ filters });
+  const { items, meta, isLoading , isError} = useFetchAdminExperiences({ filters });
 
   const columns = [
     {
