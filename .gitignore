@@ -35,6 +35,7 @@ build/Release
 /playwright/.cache/
 *.lcov
 playwright/.lock
+public/mockServiceWorker.js
 
 # Environment variables
 .env
