@@ -101,8 +101,6 @@ const formSchema = z
     }
   });
 
-type FormData = z.infer<typeof formSchema>;
-
 const WEEK_DAYS = [
   { value: "monday", label: "Segunda-feira" },
   { value: "tuesday", label: "Terça-feira" },

@@ -1,9 +1,5 @@
 import { api } from "@/core/api";
 import type { ExperienceCategory } from "@/types/experience";
-import type { HttpResponse } from "@/types/http-response";
-import axios from "axios";
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 interface CreateExperiencePayload {
   experienceName: string;
