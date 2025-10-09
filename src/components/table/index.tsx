@@ -85,9 +85,8 @@ export function DataTable<
   });
 
   const disableMorePages =
-    meta.page === Math.ceil(Number(meta?.total) / Number(meta.limit)) - 1;
+    meta.page === Math.ceil(Number(meta?.total) / Number(meta.limit));
   const disableLessPages = meta.page === 0;
-  console.log(Math.ceil(Number(meta?.total) / Number(meta.limit)));
   return (
     <div className="h-full w-full flex flex-col overflow-hidden rounded-md border border-slate-300 bg-white">
       <Table className="w-full table-fixed">
