@@ -7,7 +7,12 @@ import { ModalPessoas } from "@/components/modals/peopleModal";
 import { CancelReservationModal } from "@/components/modals/cancelReservationModal";
 import { PaymentProofModal } from "@/components/modals/paymentProofModal";
 import { useTranslation } from "react-i18next";
-import CardStatus, { StatusEnum } from "@/components/cards/cardStatus";
+import CardStatus from "@/components/cards/cardStatus";
+import {
+  type ReservationStatus,
+  StatusEnum,
+  getReservationStatusStyle,
+} from "@/entities/reservation-status";
 
 
 
@@ -80,13 +85,18 @@ export default function ReservaCard({
       setOpenModalPessoas(false);
     };
 
-  const statusMap: Record<StatusReserva, typeof StatusEnum[keyof typeof StatusEnum]> = {
+  const statusMap: Record<StatusReserva, ReservationStatus> = {
     cadastro_pendente: StatusEnum.CADASTRO_PENDENTE,
     pagamento_pendente: StatusEnum.PAGAMENTO_PENDENTE,
     aprovacao_pendente: StatusEnum.AGUARDANDO_APROVACAO,
     concluida: StatusEnum.CONFIRMADA,
     cancelada: StatusEnum.CANCELADA,
   };
+
+  const reservationStatus = statusMap[status] ?? StatusEnum.DESCONHECIDO;
+  const { className: statusAccent, icon: statusIcon } =
+    getReservationStatusStyle(reservationStatus);
+  const statusLabel = t(`status.${reservationStatus}`);
 
   return (
     <>
@@ -136,7 +146,11 @@ export default function ReservaCard({
               <li>{t("reservation.activities.outdoorLab")}</li>
             </ul>
           <div className="w-full mt-6 flex items-center justify-between">
-          <CardStatus status={statusMap[status]} />
+          <CardStatus
+            icon={statusIcon}
+            label={statusLabel}
+            accentClassName={statusAccent}
+          />
             <div className="flex gap-3">
               {status === "cadastro_pendente" && (
                 <Button
