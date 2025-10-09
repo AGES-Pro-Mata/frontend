@@ -27,7 +27,7 @@ function RouteComponent() {
       page: 0,
     },
   });
-  const { items, meta, isFetching } = useFetchAdminExperiences({ filters });
+  const { items, meta, isFetching, isLoading } = useFetchAdminExperiences({ filters });
 
   const columns = [
     {
@@ -75,14 +75,6 @@ function RouteComponent() {
     navigate({ to: '/admin/experiences/create' });
   };
 
-  if (isFetching) {
-    return (
-      <div className="p-6 flex justify-center items-center min-h-[200px]">
-        <MoonLoader size={40} color="#22c55e" />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col w-full h-full p-4 gap-6">
       <div className="flex justify-end items-center">
@@ -95,6 +87,12 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
+      <div className="relative">
+      {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+            <MoonLoader size={35} color="#22c55e" />
+          </div>
+          )}
       <DataTable
         data={items}
         columns={columns}
@@ -102,6 +100,7 @@ function RouteComponent() {
         meta={meta}
         setFilter={setFilter}
       />
+      </div>
     </div>
   );
 }

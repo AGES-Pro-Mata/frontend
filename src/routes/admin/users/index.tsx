@@ -46,7 +46,7 @@ function RouteComponent() {
       page: 0,
     },
   });
-  const { items, meta, isFetching } = useFetchAdminUsers({ filters });
+  const { items, meta, isLoading } = useFetchAdminUsers({ filters });
   const { handleDeleteUser } = useDeleteUser();
   const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -72,6 +72,8 @@ function RouteComponent() {
   const navigateToCreateUser = () => {
     navigate({ to: "/admin/users/create" });
   };
+
+  const loading = isLoading;
 
   const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
   const columns = [
@@ -126,14 +128,6 @@ function RouteComponent() {
     },
   ];
 
-  if (isFetching) {
-    return (
-      <div className="p-6 flex justify-center items-center min-h-[200px]">
-        <MoonLoader size={40} color="#22c55e" />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col w-full h-full p-4 gap-6">
       <div className="flex justify-between items-center">
@@ -179,6 +173,12 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
+      <div className="relative">
+      {loading && (
+          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+            <MoonLoader size={35} color="#22c55e" />
+          </div>
+          )}
       <DataTable
         data={items}
         columns={columns}
@@ -186,6 +186,7 @@ function RouteComponent() {
         meta={meta}
         setFilter={setFilter}
       />
+      </div>
     </div>
   );
 }
