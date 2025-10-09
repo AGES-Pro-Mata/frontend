@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { MdMoreVert, MdVisibility } from "react-icons/md";
 import { useCallback } from "react";
 import { useAdminRequests } from "@/hooks/useAdminRequests";
+import { MoonLoader } from "react-spinners";
 
 type Request = {
   id: string;
@@ -161,8 +162,13 @@ export default function AdminRequests() {
     }
   });
 
+
   if (loading) {
-    return <div className="p-6">Loading...</div>;
+    return (
+      <div className="p-6 flex justify-center items-center min-h-[200px]">
+        <MoonLoader size={40} color="#22c55e" />
+      </div>
+    );
   }
   if (error) {
     return <div className="p-6 text-red-500">Error loading requests.</div>;

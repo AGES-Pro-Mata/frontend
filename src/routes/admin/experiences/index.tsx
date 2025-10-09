@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useFetchAdminExperiences } from '@/hooks/use-fetch-admin-experiences';
 import type { TExperienceAdminRequestFilters } from '@/entities/experiences-admin-filters';
+import { MoonLoader } from "react-spinners";
 
 export const Route = createFileRoute('/admin/experiences/')({
   component: RouteComponent,
@@ -26,7 +27,7 @@ function RouteComponent() {
       page: 0,
     },
   });
-  const { items, meta } = useFetchAdminExperiences({ filters });
+  const { items, meta, isFetching } = useFetchAdminExperiences({ filters });
 
   const columns = [
     {
@@ -73,6 +74,14 @@ function RouteComponent() {
   const navigateToCreateExperience = () => {
     navigate({ to: '/admin/experiences/create' });
   };
+
+  if (isFetching) {
+    return (
+      <div className="p-6 flex justify-center items-center min-h-[200px]">
+        <MoonLoader size={40} color="#22c55e" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full h-full p-4 gap-6">

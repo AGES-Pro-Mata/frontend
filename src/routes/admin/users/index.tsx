@@ -17,6 +17,7 @@ import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDeleteUser } from "@/hooks/use-delete-users";
 import { useState } from "react";
+import { MoonLoader } from "react-spinners";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
   ["name"]: "Nome",
@@ -45,7 +46,7 @@ function RouteComponent() {
       page: 0,
     },
   });
-  const { items, meta } = useFetchAdminUsers({ filters });
+  const { items, meta, isFetching } = useFetchAdminUsers({ filters });
   const { handleDeleteUser } = useDeleteUser();
   const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -124,6 +125,14 @@ function RouteComponent() {
       },
     },
   ];
+
+  if (isFetching) {
+    return (
+      <div className="p-6 flex justify-center items-center min-h-[200px]">
+        <MoonLoader size={40} color="#22c55e" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full h-full p-4 gap-6">
