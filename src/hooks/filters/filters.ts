@@ -1,4 +1,4 @@
-import { useEffect, useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { useFilterStore } from "./store";
 
 export type UseFiltersParams<F> = {
@@ -38,11 +38,22 @@ export function useFilters<F>(
     setFilters: setStoreFilters,
     applyValues: applyStoreValues,
     deleteFilter,
+    initFilterState,
   } = useFilterStore();
+
+  const initialFiltersRef = useRef(params.initialFilters as Record<string, unknown>);
+
+  useEffect(() => {
+    initFilterState({
+      key,
+      initialFilters: initialFiltersRef.current,
+      setQueryOnChange,
+    });
+  }, [key, initFilterState, setQueryOnChange]);
 
   const { values, filters, query } = getFilterState({
     key,
-    initialFilters: params.initialFilters as Record<string, unknown>,
+    initialFilters: initialFiltersRef.current,
     setQueryOnChange,
   });
 
@@ -78,7 +89,7 @@ export function useFilters<F>(
     deleteFilter(key);
     getFilterState({
       key,
-      initialFilters: params.initialFilters as Record<string, unknown>,
+      initialFilters: initialFiltersRef.current,
       setQueryOnChange,
     });
   };

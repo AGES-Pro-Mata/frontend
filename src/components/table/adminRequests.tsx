@@ -122,7 +122,7 @@ export default function AdminRequests() {
   const [tab, setTab] = useState<"professor" | "reservation">("professor");
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
   const [filters, setFilters] = useState({
-    page: 1,
+    page: 0,
     limit: 10,
     status: undefined as string | undefined,
     sort: undefined as string | undefined,
@@ -178,11 +178,10 @@ export default function AdminRequests() {
     <div className="p-6 bg-white rounded-xl shadow flex flex-col gap-4">
       <div className="flex gap-2 mb-4">
         <button
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
-            tab === "professor"
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${tab === "professor"
               ? "bg-green-500 text-white"
               : "bg-gray-200 text-gray-700"
-          }`}
+            }`}
           onClick={() => {
             setTab("professor");
             setSelectedStatus([]);
@@ -191,11 +190,10 @@ export default function AdminRequests() {
           <FaUser size={24} /> Professor Requests
         </button>
         <button
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
-            tab === "reservation"
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${tab === "reservation"
               ? "bg-green-500 text-white"
               : "bg-gray-200 text-gray-700"
-          }`}
+            }`}
           onClick={() => {
             setTab("reservation");
             setSelectedStatus([]);
@@ -226,10 +224,10 @@ export default function AdminRequests() {
         setFilter={(key, value) =>
           setFilters((prev) => ({ ...prev, [key]: value }))
         }
-        meta={{ 
-          page: filters.page, 
-          limit: filters.limit, 
-          total: filteredRequests.length 
+        meta={{
+          page: filters.page,
+          limit: filters.limit,
+          total: filteredRequests.length
         }}
       />
     </div>
