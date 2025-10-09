@@ -30,10 +30,16 @@ export function TextInput({
 
   return (
     <div className={cn("flex flex-col gap-0.7", className)}>
-      <Typography className={cn("text-foreground font-medium mb-1")}>
-        {label}
-        {required && <span> *</span>}
-      </Typography>
+      {label && (
+        <Typography
+          className={cn(
+            "mb-1 flex flex-wrap items-center gap-1 text-foreground font-medium leading-tight"
+          )}
+        >
+          <span className="whitespace-pre-wrap">{label}</span>
+          {required && <span>*</span>}
+        </Typography>
+      )}
       <Input
         placeholder={placeholder}
         className={cn(

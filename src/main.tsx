@@ -1,17 +1,21 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-
-// Import the generated route tree
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./styles/globals.css";
 import reportWebVitals from "./reportWebVitals.ts";
 import { routeTree } from "./routeTree.gen.ts";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "sonner";
+import { AppToast } from "@/components/toast/toast";
 import "./i18n.ts";
+import { injectUmamiAnalytics } from "@/lib/analytics";
 
 const queryClient = new QueryClient();
+
+if (import.meta.env.DEV && import.meta.env.VITE_USE_MSW === "true") {
+  void import("@/test/msw").then(({ startBrowserMocking }) =>
+    startBrowserMocking()
+  );
+}
 
 // Create a new router instance
 const router = createRouter({
@@ -32,17 +36,21 @@ declare module "@tanstack/react-router" {
 
 // Render the app
 const rootElement = document.getElementById("app");
+
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
+  
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <Toaster position="top-center"/>
+        <AppToast position="top-center" />
         <RouterProvider router={router} />
       </QueryClientProvider>
     </StrictMode>
   );
 }
+
+injectUmamiAnalytics();
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

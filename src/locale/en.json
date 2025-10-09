@@ -1,22 +1,36 @@
 {
-    "home": "Home",
-    "reserve": "Reserve",
-    "myReservations": "My Reservations",
-
-    "common": {
-        "menu": "Menu",
-        "back": "Back",
-        "save": "Save",
-        "saving": "Saving...",
-        "cancel": "Cancel",
-        "confirm": "Confirm",
-        "send": "Send",
-        "loading": "Loading...",
-        "error": "An error occurred",
-        "cart": "Cart",
-        "email": "Email",
-        "function": "Role"
+  "home": "Home",
+  "reserve": "Reserve",
+  "myReservations": "My Reservations",
+  "common": {
+    "menu": "Menu",
+    "back": "Back",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "send": "Send",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "cart": "Cart",
+    "email": "Email",
+    "function": "Role",
+    "next": "Next",
+    "finish": "Finish"
+  },
+  "cartDrawer": {
+    "heading": {
+      "empty": "Your cart is empty",
+      "single": "You have 1 experience ready to reserve",
+      "plural": "You have {{count}} experiences ready to reserve"
     },
+    "emptyState": {
+      "title": "Your cart is empty right now.",
+      "subtitle": "Add experiences to your cart to finish your reservation."
+    },
+    "checkoutButton": "Finish Reservation",
+    "browseLink": "See more experiences"
+  },
   "status": {
     "cadastro_pendente": "Pending Registration",
     "pagamento_pendente": "Pending Payment",
@@ -34,291 +48,389 @@
     "paymentProofSent": "Payment proof sent successfully!",
     "openingReservationDetails": "Opening reservation details...",
     "activities": {
-        "historicalTrail": "Historical-Cultural Trail",
-        "birdWatching": "Bird Watching",
-        "outdoorLab": "Outdoor Laboratory"
+      "historicalTrail": "Historical-Cultural Trail",
+      "birdWatching": "Bird Watching",
+      "outdoorLab": "Outdoor Laboratory"
     }
   },
-    "nav": {
-        "home": "Home",
-        "reserve": "Reserve",
-        "myReservations": "My Reservations",
-        "profile": "My Profile",
-        "login": "Login",
-        "logout": "Logout",
-        "register": "Register"
+  "nav": {
+    "home": "Home",
+    "reserve": "Reserve",
+    "myReservations": "My Reservations",
+    "profile": "My Profile",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register"
+  },
+  "profile": {
+    "card": {
+      "title": "My Profile",
+      "sections": {
+        "personal": "Personal Information",
+        "professional": "Professional Information"
+      },
+      "docency": {
+        "sendReceipt": "Send receipt",
+        "receiptSent": "Receipt sent"
+      },
+      "editButton": "Edit Profile"
     },
-    "profile": {
-        "card": {
-            "title": "My Profile",
-            "sections": {
-                "personal": "Personal Information",
-                "professional": "Professional Information"
-            },
-            "docency": {
-                "sendReceipt": "Send receipt",
-                "receiptSent": "Receipt sent"
-            },
-            "editButton": "Edit Profile"
-        },
-        "edit": {
-            "title": "Edit Profile",
-            "subtitle": "Fill in the fields below to edit your account",
-            "docency": {
-                "canUploadHint": "Send a PDF up to 20MB.",
-                "alreadyVerified": "Already verified and institution has not changed."
-            },
-            "toasts": {
-                "success": "Profile updated successfully",
-                "error": "Error updating profile"
-            }
-        }
-    },
-
-    "homePage": {
-        "welcome": "Welcome to",
-        "subtitle": "Center for Research and Nature Conservation",
-        "ctaPrimary": "Reserve",
-        "ctaSecondary": "Come visit us!",
-        "ctaBottomTitle": "Don't waste time — come live this unique experience!",
-        "ctaBottom": "Make a Reservation"
-    },
-
-    "experiences": {
-        "title": "Experiences!",
-        "headline": "Live unforgettable moments connected with the preserved nature of Serra Gaúcha!",
-        "list": {
-            "accommodations": "Multiple accommodations",
-            "labs": "Laboratories",
-            "trails": "Trails",
-            "events": "Events"
-        },
-        "bookNow": "Book now!",
-        "book": "Make a Reservation"
-    },
-
-    "experienceCard": {
-        "package": "Package",
-        "currencySymbol": "$",
-        "currencyPrefix": "$",
-        "dateRange": "{{from}} to {{to}}",
-        "editInfo": "Edit information",
-        "selectDateAndPeople": "Select date and number of people",
-        "men": "Men",
-        "women": "Women",
-        "selectedDate": "Selected date",
-        "chooseDate": "Choose a Date",
-        "selectPeriodOnCalendar": "Select the period on the calendar",
-        "selectAmountOfPeople": "Select the amount of people",
-        "malePeople": "Number of male individuals",
-        "femalePeople": "Number of female individuals"
-    },
-
-    "homeCards": {
-        "cta": "Learn more",
-        "labs": {
-            "title": "Laboratories",
-            "description": "Spaces equipped for scientific research and academic projects."
-        },
-        "rooms": {
-            "title": "Rooms",
-            "description": "Comfortable spaces for academic and tourist lodging."
-        },
-        "events": {
-            "title": "Events",
-            "description": "Facilities for lectures, seminars, and conferences."
-        },
-        "trails": {
-            "title": "Trails",
-            "description": "Ecological paths for exploration and learning."
-        }
-    },
-
-    "carousel": {
-        "title": "Discover your destination!",
-        "subtitle": "Explore some of the stunning views you'll find at {{brand}}",
-        "prev": "Previous",
-        "next": "Next",
-        "imageAlt": "{{brand}} scenery {{index}}"
-    },
-
-    "auth": {
-        "login": {
-            "title": "Login",
-            "email": "Email",
-            "password": "Password",
-            "emailPlaceholder": "your@email.com",
-            "passwordPlaceholder": "Your password",
-            "forgot": "Forgot password",
-            "submit": "Login",
-            "submitting": "Logging in...",
-            "register": "Sign up",
-            "toastSuccess": "Logged in successfully!",
-            "toastError": "Error logging in",
-            "toastErrorTryAgain": "Error logging in. Please try again.",
-            "toastInternal": "Internal error. Please try again.",
-            "invalidCredentials": "Invalid credentials. Please try again."
-        },
-        "forgot": {
-            "title": "Forgot password",
-            "email": "Email",
-            "emailPlaceholder": "your@email.com",
-            "helper": "You'll receive an email to reset your password if an account exists.",
-            "submit": "Send",
-            "submitting": "Sending...",
-            "back": "Back",
-            "resultSuccess": "Email sent successfully. Check your inbox.",
-            "resultError": "There was an error sending the email. Please try again."
-        },
-        "reset": {
-            "title": "Reset password",
-            "newPassword": "New password",
-            "newPasswordPlaceholder": "New password",
-            "confirmPassword": "Confirm password",
-            "confirmPasswordPlaceholder": "Confirm password",
-            "submit": "Confirm",
-            "submitting": "Confirming...",
-            "toastSuccess": "Password reset successfully",
-            "toastError": "Error resetting password"
-        },
-        "common": {
-            "login": "Login",
-            "logout": "Logout",
-            "register": "Register",
-            "createAccount": "Create Account",
-            "haveAccount": "Already have an account?",
-            "goToLogin": "Log in"
-        }
-    },
-
-    "register": {
-        "title": "Sign up",
-        "subtitle": "Fill in the fields below to create your account",
-        "sections": {
-            "personal": "Personal Information",
-            "security": "Security",
-            "professional": "Professional Information"
-        },
-        "fields": {
-            "notBrazilian": "I'm not Brazilian",
-            "fullName": "Full name",
-            "phone": "Phone",
-            "document": {
-                "cpf": "CPF",
-                "passport": "Passport",
-                "passportNumber": "Passport number"
-            },
-            "gender": {
-                "label": "Gender",
-                "select": "Select gender",
-                "female": "Female",
-                "male": "Male",
-                "other": "Other"
-            },
-            "rg": "RG",
-            "zip":  "ZIP CODE",
-            "country": "Country",
-            "selectCountry": "Select country",
-            "address": "Address",
-            "addressPlaceholder": "Street",
-            "city": "City",
-            "number": "Number",
-            "password": "Password",
-            "confirmPassword": "Confirm password",
-            "institution": "Institution",
-            "institutionPlaceholder": "University/Company",
-            "function": {
-                "label": "Select your Role",
-                "select": "Select your Role",
-                "student": "Student",
-                "teacher": "Professor",
-                "researcher": "Researcher",
-                "employee": "Employee",
-                "other": "Other"
-            },
-            "docency": {
-                "ask": "I would like to request a professor registration",
-                "receiptLabel": "Teaching Receipt (PDF) - Optional",
-                "receiptHint": "You can upload the receipt now or later when editing your profile. Max 20MB.",
-                "uploaded": "✓ {{name}}"
-            },
-            "terms": {
-                "accept": "I accept the {{terms}} and the {{privacy}} of PRÓ-MATA*",
-                "terms": "Terms of Use",
-                "privacy": "Privacy Policy"
-            }
-        },
-        "cta": {
-            "create": "Create Account",
-            "haveAccount": "Already have an account?",
-            "login": "Log in"
-        },
-        "toasts": {
-            "success": "User registered successfully",
-            "error": "Error registering user"
-        }
-    },
-
-    "validation": {
-        "email": "Enter a valid email.",
-        "passwordRequired": "Enter your password.",
-        "passwordMin": "Password must be at least 6 characters.",
-        "passwordUpper": "Password must contain at least one uppercase letter.",
-        "passwordNumber": "Password must contain at least one number.",
-        "passwordsMustMatch": "Passwords must match.",
-        "nameRequired": "Enter your full name",
-        "phoneRequired": "Enter your phone number",
-        "genderRequired": "Select your gender",
-    "zipRequired": "Enter ZIP code",
-        "countryRequired": "Enter the country",
-        "addressRequired": "Address is required",
-        
-        "cep8": "CEP must contain 8 digits",
-        "cpfInvalid": "Invalid CPF",
-        "rgInvalid": "Invalid RG",
-        "zipInvalid": "Invalid ZIP",
-        "pdfOnly": "Only PDF files are accepted",
-        "max20mb": "File must be at most 20MB",
-        "mustAcceptTerms": "You must accept the terms of use",
-        "cityRequired": "City is required",
-        "numberRequired": "Number is required"
+    "edit": {
+      "title": "Edit Profile",
+      "subtitle": "Fill in the fields below to edit your account",
+      "docency": {
+        "canUploadHint": "Send a PDF up to 20MB.",
+        "alreadyVerified": "Already verified and institution has not changed."
+      },
+      "toasts": {
+        "success": "Profile updated successfully",
+        "error": "Error updating profile"
+      }
     }
-        ,
-        "footer": {
-            "contact": "Contact us",
-            "researchCenter": "PRÓ-MATA Research Center",
-            "city": "CITY",
-            "phone": "Phone: (XX) XXXX-XXXX",
-            "email": "Email: contato@pro-mata.org",
-            "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
+  },
+  "homePage": {
+    "welcome": "Welcome to",
+    "subtitle": "Center for Research and Nature Conservation",
+    "ctaPrimary": "Reserve",
+    "ctaSecondary": "Come visit us!",
+    "ctaBottomTitle": "Don't waste time — come live this unique experience!",
+    "ctaBottom": "Make a Reservation"
+  },
+  "experiences": {
+    "title": "Experiences!",
+    "headline": "Live unforgettable moments connected with the preserved nature of Serra Gaúcha!",
+    "list": {
+      "accommodations": "Multiple accommodations",
+      "labs": "Laboratories",
+      "trails": "Trails",
+      "events": "Events"
+    },
+    "bookNow": "Book now!",
+    "book": "Make a Reservation"
+  },
+  "experienceCard": {
+    "package": "Package",
+    "currencySymbol": "$",
+    "currencyPrefix": "$",
+    "dateRange": "{{from}} to {{to}}",
+    "editInfo": "Edit information",
+    "selectDateAndPeople": "Select date and number of people",
+    "men": "Men",
+    "women": "Women",
+    "selectedDate": "Selected date",
+    "chooseDate": "Choose a Date",
+    "selectPeriodOnCalendar": "Select the period on the calendar",
+    "selectAmountOfPeople": "Select the amount of people",
+    "malePeople": "Number of male individuals",
+    "femalePeople": "Number of female individuals"
+  },
+  "homeCards": {
+    "cta": "Learn more",
+    "labs": {
+      "title": "Laboratories",
+      "description": "Spaces equipped for scientific research and academic projects."
+    },
+    "rooms": {
+      "title": "Rooms",
+      "description": "Comfortable spaces for academic and tourist lodging."
+    },
+    "events": {
+      "title": "Events",
+      "description": "Facilities for lectures, seminars, and conferences."
+    },
+    "trails": {
+      "title": "Trails",
+      "description": "Ecological paths for exploration and learning."
+    }
+  },
+  "carousel": {
+    "title": "Discover your destination!",
+    "subtitle": "Explore some of the stunning views you'll find at {{brand}}",
+    "prev": "Previous",
+    "next": "Next",
+    "imageAlt": "{{brand}} scenery {{index}}"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "your@email.com",
+      "passwordPlaceholder": "Your password",
+      "forgot": "Forgot password",
+      "submit": "Login",
+      "submitting": "Logging in...",
+      "register": "Sign up",
+      "toastSuccess": "Logged in successfully!",
+      "toastError": "Error logging in",
+      "toastErrorTryAgain": "Error logging in. Please try again.",
+      "toastInternal": "Internal error. Please try again.",
+      "invalidCredentials": "Invalid credentials. Please try again."
+    },
+    "forgot": {
+      "title": "Forgot password",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "helper": "You'll receive an email to reset your password if an account exists.",
+      "submit": "Send",
+      "submitting": "Sending...",
+      "back": "Back",
+      "resultSuccess": "Email sent successfully. Check your inbox.",
+      "resultError": "There was an error sending the email. Please try again."
+    },
+    "reset": {
+      "title": "Reset password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "New password",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Confirm password",
+      "submit": "Confirm",
+      "submitting": "Confirming...",
+      "toastSuccess": "Password reset successfully",
+      "toastError": "Error resetting password"
+    },
+    "common": {
+      "login": "Login",
+      "logout": "Logout",
+      "register": "Register",
+      "createAccount": "Create Account",
+      "haveAccount": "Already have an account?",
+      "goToLogin": "Log in"
+    }
+  },
+  "register": {
+    "title": "Sign up",
+    "subtitle": "Fill in the fields below to create your account",
+    "sections": {
+      "personal": "Personal Information",
+      "security": "Security",
+      "professional": "Professional Information"
+    },
+    "fields": {
+      "notBrazilian": "I'm not Brazilian",
+      "fullName": "Full name",
+      "phone": "Phone",
+      "document": {
+        "cpf": "CPF",
+        "passport": "Passport",
+        "passportNumber": "Passport number"
+      },
+      "gender": {
+        "label": "Gender",
+        "select": "Select gender",
+        "female": "Female",
+        "male": "Male",
+        "other": "Other"
+      },
+      "rg": "RG",
+      "zip": "ZIP CODE",
+      "country": "Country",
+      "selectCountry": "Select country",
+      "address": "Address",
+      "addressPlaceholder": "Street",
+      "city": "City",
+      "number": "Number",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "institution": "Institution",
+      "institutionPlaceholder": "University/Company",
+      "function": {
+        "label": "Select your Role",
+        "select": "Select your Role",
+        "student": "Student",
+        "teacher": "Professor",
+        "researcher": "Researcher",
+        "employee": "Employee",
+        "other": "Other"
+      },
+      "docency": {
+        "ask": "I would like to request a professor registration",
+        "receiptLabel": "Teaching Receipt (PDF) - Optional",
+        "receiptHint": "You can upload the receipt now or later when editing your profile. Max 20MB.",
+        "uploaded": "✓ {{name}}"
+      },
+      "terms": {
+        "accept": "I accept the {{terms}} and the {{privacy}} of PRÓ-MATA*",
+        "terms": "Terms of Use",
+        "privacy": "Privacy Policy"
+      }
+    },
+    "cta": {
+      "create": "Create Account",
+      "haveAccount": "Already have an account?",
+      "login": "Log in"
+    },
+    "toasts": {
+      "success": "User registered successfully",
+      "error": "Error registering user"
+    }
+  },
+  "reserveFlow": {
+    "steps": {
+      "people": {
+        "title": "People registration",
+        "description": "Fill in the details for every participant who will join the experience.",
+        "subtitle": "Step 1"
+      },
+      "experiences": {
+        "title": "Experience adjustments",
+        "description": "Choose the dates and set the number of people for each selected experience.",
+        "subtitle": "Step 2"
+      }
+    },
+    "peopleStep": {
+      "instructions": "Add the people who will join the reservation. You can register them now or send the information after confirmation.",
+      "buttons": {
+        "addPerson": "Add person",
+        "removePersonAria": "Remove person {{index}}"
+      },
+      "fields": {
+        "name": {
+          "label": "Full name",
+          "placeholder": "Enter the full name"
         },
-    "paymentProof": {
-        "selectBeforeSend": "Select a file before sending!",
-        "instructions": "Upload the payment proof to confirm your reservation",
-        "acceptedProofs": "Currently, we accept the following proofs:",
-        "ted": "Wire transfer: BANK",
-        "pix": "PIX: PIXKEY",
-        "sendProofWithValue": "Send the proof with the amount of",
-        "paymentProofLabel": "Payment Proof",
-        "chooseFile": "Choose file",
-        "noFileSelected": "No file selected"
+        "phone": {
+          "label": "Phone",
+          "placeholder": "(000) 000-0000"
+        },
+        "birthDate": {
+          "label": "Date of birth"
+        },
+        "cpf": {
+          "label": "CPF",
+          "placeholder": "000.000.000-00"
+        },
+        "gender": {
+          "label": "Gender",
+          "placeholder": "Select the gender"
+        }
+      },
+      "genderOptions": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "notInformed": "Prefer not to say"
+      },
+      "postConfirmation": {
+        "label": "Provide the participants' details after the reservation is confirmed"
+      },
+      "notes": {
+        "label": "Reservation notes",
+        "placeholder": "Add any important notes about the reservation"
+      }
     },
-    "cancelReservation": {
-        "title": "Cancel reservation?",
-        "confirmation": "Are you sure you want to cancel your reservation? This action cannot be undone.",
-        "keepReservation": "Keep reservation"
+    "experienceStep": {
+      "instructions": "Review the selected experiences, adjusting dates, group size, and any other details before completing the reservation.",
+      "selectedExperiences": "Selected experiences",
+      "error": "Error loading experiences.",
+      "fallbackExperiences": {
+        "sunriseTrail": {
+          "title": "Sunrise Trail",
+          "type": "Guided hike"
+        },
+        "waterfallBath": {
+          "title": "Enchanted Waterfall Dip",
+          "type": "Refreshing adventure"
+        },
+        "nightSky": {
+          "title": "Rainforest Stargazing Night",
+          "type": "Night experience"
+        }
+      },
+      "fallbackDefaults": {
+        "title": "Featured experience",
+        "type": "Tour"
+      }
     },
-    "peopleModal": {
-        "title": "Register People",
+    "toast": {
+      "success": "Reservation updated successfully!"
+    }
+  },
+  "reserveSummary": {
+    "page": {
+      "title": "Reservation overview",
+      "description": "Review participant information and confirm the details of each selected experience."
+    },
+    "people": {
+      "title": "Participants",
+      "personBadge": "Participant {{index}}",
+      "fields": {
         "name": "Name",
         "phone": "Phone",
-        "birth": "Birthdate",
+        "birthDate": "Date of birth",
         "cpf": "CPF",
-        "gender": "Gender",
-        "male": "Male",
-        "female": "Female",
-        "other": "Other",
-        "addPerson": "Add another person",
-        "fillAllFields": "Please fill in all required fields"
+        "gender": "Gender"
+      },
+      "notes": "Reservation notes"
+    },
+    "experiences": {
+      "title": "Experiences",
+      "period": "{{from}} to {{to}}",
+      "peopleCount_one": "{{count}} person",
+      "peopleCount_other": "{{count}} people"
+    },
+    "actions": {
+      "back": "Back"
     }
+  },
+  "validation": {
+    "email": "Enter a valid email.",
+    "passwordRequired": "Enter your password.",
+    "passwordMin": "Password must be at least 6 characters.",
+    "passwordUpper": "Password must contain at least one uppercase letter.",
+    "passwordNumber": "Password must contain at least one number.",
+    "passwordsMustMatch": "Passwords must match.",
+    "nameRequired": "Enter your full name",
+    "phoneRequired": "Enter your phone number",
+    "genderRequired": "Select your gender",
+    "zipRequired": "Enter ZIP code",
+    "countryRequired": "Enter the country",
+    "addressRequired": "Address is required",
+    "cep8": "CEP must contain 8 digits",
+    "cpfInvalid": "Invalid CPF",
+    "rgInvalid": "Invalid RG",
+    "zipInvalid": "Invalid ZIP",
+    "pdfOnly": "Only PDF files are accepted",
+    "max20mb": "File must be at most 20MB",
+    "mustAcceptTerms": "You must accept the terms of use",
+    "cityRequired": "City is required",
+    "numberRequired": "Number is required"
+  },
+  "footer": {
+    "contact": "Contact us",
+    "researchCenter": "PRÓ-MATA Research Center",
+    "city": "CITY",
+    "phone": "Phone: (XX) XXXX-XXXX",
+    "email": "Email: contato@pro-mata.org",
+    "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
+  },
+  "paymentProof": {
+    "selectBeforeSend": "Select a file before sending!",
+    "instructions": "Upload the payment proof to confirm your reservation",
+    "acceptedProofs": "Currently, we accept the following proofs:",
+    "ted": "Wire transfer: BANK",
+    "pix": "PIX: PIXKEY",
+    "sendProofWithValue": "Send the proof with the amount of",
+    "paymentProofLabel": "Payment Proof",
+    "chooseFile": "Choose file",
+    "noFileSelected": "No file selected"
+  },
+  "cancelReservation": {
+    "title": "Cancel reservation?",
+    "confirmation": "Are you sure you want to cancel your reservation? This action cannot be undone.",
+    "keepReservation": "Keep reservation"
+  },
+  "peopleModal": {
+    "title": "Register People",
+    "name": "Name",
+    "phone": "Phone",
+    "birth": "Birthdate",
+    "cpf": "CPF",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "addPerson": "Add another person",
+    "fillAllFields": "Please fill in all required fields"
+  }
 }

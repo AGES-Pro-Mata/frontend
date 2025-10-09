@@ -23,13 +23,17 @@ export function InfoExperiencies() {
             <li>{t("experiences.list.events")}</li>
           </ul>
         </div>
-    <div className="flex flex-col gap-[clamp(0.5rem,2vw,0.625rem)] items-start sm:items-center mt-[clamp(0.75rem,2.5vw,1.25rem)]">
+        <div className="flex flex-col gap-[clamp(0.5rem,2vw,0.625rem)] items-start sm:items-center mt-[clamp(0.75rem,2.5vw,1.25rem)]">
           <Typography className="text-black font-bold text-[clamp(1.125rem,2.5vw,1.375rem)]">
             {t("experiences.bookNow")}
           </Typography>
-      <Link to="/reserve">
-    <Button label={t("experiences.book")} variant="gray" className="p-5 text-md w-full sm:w-auto"/>
-      </Link>
+          <Link to="/reserve/finish">
+            <Button
+              label={t("experiences.book")}
+              variant="gray"
+              className="p-5 text-md w-full sm:w-auto"
+            />
+          </Link>
         </div>
       </div>
     </div>
