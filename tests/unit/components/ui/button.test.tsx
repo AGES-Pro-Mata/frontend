@@ -9,6 +9,7 @@ describe("Button", () => {
     renderWithProviders(<Button>Confirmar</Button>);
 
     const button = screen.getByRole("button", { name: /confirmar/i });
+
     expect(button).toBeInTheDocument();
     expect(button).toHaveClass("bg-primary");
   });
@@ -21,6 +22,7 @@ describe("Button", () => {
     );
 
     const button = screen.getByTestId("cta");
+    
     expect(button).toHaveAttribute("data-slot", "button");
     expect(button).toHaveClass("border");
   });

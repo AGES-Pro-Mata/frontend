@@ -1,19 +1,18 @@
-import { render, renderHook } from "@testing-library/react";
-import type { RenderHookOptions, RenderOptions } from "@testing-library/react";
+import { type RenderHookOptions, type RenderOptions, render, renderHook} from "@testing-library/react";
 import {
   QueryClient,
-  QueryClientProvider,
   type QueryClientConfig,
+  QueryClientProvider,
 } from "@tanstack/react-query";
 import {
   Outlet,
   RootRoute,
   Route,
+  type Router,
   RouterProvider,
   createMemoryHistory,
   createRouter,
 } from "@tanstack/react-router";
-import type { Router } from "@tanstack/react-router";
 import type { ReactElement, ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
 
