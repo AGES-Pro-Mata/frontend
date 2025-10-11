@@ -1,20 +1,47 @@
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, useMemo, useEffect } from "react";
 import { Typography } from "@/components/typography/typography";
 import { Button } from "@/components/buttons/defaultButton";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import type { HighlightResponse } from "@/api/highlights";
 
-export function Carousel() {
+type CarouselProps = {
+  highlights?: HighlightResponse[];
+};
+
+export function Carousel({ highlights }: CarouselProps) {
   const { t } = useTranslation();
-  const recursos = [
-    "/mock/infrastructure-0.jpg",
-    "/mock/trail-1.webp",
-    "/mock/landscape-2.webp",
-    "/mock/landscape-3.webp",
-    "/mock/landscape-4.webp",
-    "/mock/landscape-5.jpg",
-    "/mock/landscape-6.jpg",
-  ];
+  const fallbackSlides = useMemo(
+    () => [
+      "/mock/infrastructure-0.jpg",
+      "/mock/trail-1.webp",
+      "/mock/landscape-2.webp",
+      "/mock/landscape-3.webp",
+      "/mock/landscape-4.webp",
+      "/mock/landscape-5.jpg",
+      "/mock/landscape-6.jpg",
+    ],
+    []
+  );
+
+  const slides = useMemo(() => {
+    if (highlights && highlights.length > 0) {
+      return highlights
+        .slice()
+        .sort((a, b) => a.order - b.order)
+        .map((item) => ({
+          key: item.id,
+          imageUrl: item.imageUrl,
+          title: item.title,
+        }));
+    }
+
+    return fallbackSlides.map((src, index) => ({
+      key: `fallback-${index}`,
+      imageUrl: src,
+      title: t("carousel.imageAlt", { brand: "PRÓ-MATA", index: index + 1 }),
+    }));
+  }, [fallbackSlides, highlights, t]);
 
   const [selected, setSelected] = useState(0);
   const [firstIndex, setFirstIndex] = useState(0);
@@ -63,9 +90,14 @@ export function Carousel() {
     };
   }, []);
 
+  useEffect(() => {
+    setSelected(0);
+    setFirstIndex(0);
+  }, [slides.length]);
+
   const prev = () => setFirstIndex((i) => Math.max(0, i - 1));
   const next = () =>
-    setFirstIndex((i) => Math.min(Math.max(recursos.length - tiles, 0), i + 1));
+    setFirstIndex((i) => Math.min(Math.max(slides.length - tiles, 0), i + 1));
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     startXRef.current = e.clientX;
@@ -95,8 +127,8 @@ export function Carousel() {
       <div className="flex bg-card h-[clamp(14rem,60vw,28rem)] sm:h-[clamp(22rem,50vw,33.8125rem)] rounded-[clamp(0.75rem,2vw,1.125rem)] w-full sm:w-[clamp(40rem,90vw,60.625rem)] mb-[clamp(1.5rem,4vw,2.5rem)] p-[clamp(1rem,3.5vw,1.5625rem)] justify-center items-center">
         <div className="flex flex-1 h-full rounded-[clamp(0.625rem,1.8vw,0.9375rem)] overflow-hidden">
           <img
-            src={recursos[selected]}
-            alt={t("carousel.imageAlt", { brand: "PRÓ-MATA", index: selected + 1 })}
+            src={slides[selected]?.imageUrl}
+            alt={slides[selected]?.title}
             className="h-full w-full object-cover object-center box-border select-none"
             loading="lazy"
             decoding="async"
@@ -132,7 +164,7 @@ export function Carousel() {
             className="flex gap-[var(--gap)] transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${firstIndex * stepPx}px)` }}
           >
-            {recursos.map((src, i) => (
+            {slides.map((slide, i) => (
               <div
                 key={i}
                 // width fixo para que caibam exatamente 2 por viewport (50% - metade do gap)
@@ -141,8 +173,8 @@ export function Carousel() {
                 ref={i === 0 ? itemRef : null}
               >
                 <img
-                  src={src}
-                  alt={t("carousel.imageAlt", { brand: "PRÓ-MATA", index: i + 1 })}
+                  src={slide.imageUrl}
+                  alt={slide.title}
                   className="h-full w-full object-cover object-center box-border select-none"
                   loading={i <= 1 ? "eager" : "lazy"}
                   decoding="async"

@@ -26,17 +26,30 @@ function RouteComponent() {
           Acesse nosso serviço de analytics para visualizar métricas detalhadas
           e relatórios avançados.
         </Typography>
-        <a
-          href="https://analytics.promata.com.br/share/jI46gjjTnDAhsNic/d35sqdoewd98mb.cloudfront.net"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button className="bg-contrast-green hover:bg-contrast-green/90 active:bg-contrast-green/70">
-            <Typography className="text-white" variant="body">
-              Acessar Analytics
-            </Typography>
-          </Button>
-        </a>
+        <div className="flex gap-4">
+          <a
+            href="http://ec2-3-139-75-61.us-east-2.compute.amazonaws.com:5050/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="bg-contrast-green hover:bg-contrast-green/90 active:bg-contrast-green/70">
+              <Typography className="text-white" variant="body">
+                Acessar Analytics
+              </Typography>
+            </Button>
+          </a>
+          <a
+            href="http://ec2-3-139-75-61.us-east-2.compute.amazonaws.com:3001/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="bg-contrast-green hover:bg-contrast-green/90 active:bg-contrast-green/70">
+              <Typography className="text-white" variant="body">
+                Acessar Relatórios
+              </Typography>
+            </Button>
+          </a>
+        </div>
       </div>
     </div>
   );

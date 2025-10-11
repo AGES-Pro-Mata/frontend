@@ -4,8 +4,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/buttons/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useFetchPublicHighlightsByCategories } from "@/hooks/useHighlights";
+import { HighlightCategory } from "@/entities/highlights";
+import type { HighlightResponse } from "@/api/highlights";
 
 export const Route = createFileRoute("/(index)/")({
   component: RouteComponent,
@@ -14,6 +17,30 @@ export const Route = createFileRoute("/(index)/")({
 function RouteComponent() {
   const { t } = useTranslation();
   const [heroLoaded, setHeroLoaded] = useState(false);
+  const { data: highlightsData } = useFetchPublicHighlightsByCategories();
+
+  const sortByOrder = useMemo(
+    () =>
+      (items?: HighlightResponse[]) =>
+        items ? [...items].sort((a, b) => a.order - b.order) : [],
+    []
+  );
+
+  const carouselHighlights = useMemo(() => {
+    const items = highlightsData?.[HighlightCategory.CARROSSEL];
+    return items && items.length > 0 ? sortByOrder(items) : undefined;
+  }, [highlightsData, sortByOrder]);
+
+  const cardsHighlights = useMemo(() => {
+    if (!highlightsData) return undefined;
+
+    return {
+      labs: sortByOrder(highlightsData[HighlightCategory.LABORATORIO]),
+      rooms: sortByOrder(highlightsData[HighlightCategory.QUARTO]),
+      events: sortByOrder(highlightsData[HighlightCategory.EVENTO]),
+      trails: sortByOrder(highlightsData[HighlightCategory.TRILHA]),
+    };
+  }, [highlightsData, sortByOrder]);
   return (
     <div className="w-full overflow-x-hidden">
       <div className="relative w-full h-screen bg-main-dark-green flex items-start justify-center pt-[clamp(2rem,6vh,5rem)]">
@@ -81,8 +108,8 @@ function RouteComponent() {
       <div className="h-[clamp(2.5rem,6vh,5rem)] w-full bg-main-dark-green" />
       <div className="px-4 sm:px-6 lg:px-8 py-[clamp(2rem,6vw,5rem)] flex flex-col items-center">
         <InfoExperiencies />
-        <CardsInfoOnHover />
-        <Carousel />
+        <CardsInfoOnHover highlights={cardsHighlights} />
+        <Carousel highlights={carouselHighlights} />
         <div className="flex flex-col items-center mb-[clamp(2rem,5vw,3.75rem)] justify-center">
           <Typography
             variant="h4"
