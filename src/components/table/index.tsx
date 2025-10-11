@@ -1,4 +1,15 @@
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import type { TApiDefaultFilters } from "@/entities/api-default-filters";
+import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
+import { cn } from "@/lib/utils";
+import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
@@ -9,28 +20,17 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { cn } from "@/lib/utils";
-import {
   IoIosArrowBack,
   IoIosArrowDown,
   IoIosArrowForward,
   IoIosArrowUp,
 } from "react-icons/io";
 import { Button } from "../ui/button";
-import type { TApiDefaultFilters } from "@/entities/api-default-filters";
-import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
 
 type DataTableProps<
   TData,
   TValue,
-  F extends TApiDefaultFilters = TApiDefaultFilters
+  F extends TApiDefaultFilters = TApiDefaultFilters,
 > = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -43,7 +43,7 @@ type DataTableProps<
 export function DataTable<
   TData,
   TValue,
-  F extends TApiDefaultFilters = TApiDefaultFilters
+  F extends TApiDefaultFilters = TApiDefaultFilters,
 >({
   columns,
   data,
@@ -84,6 +84,9 @@ export function DataTable<
     state: tableState,
   });
 
+  const disableMorePages =
+    meta.page === Math.floor(Number(meta?.total) / Number(meta.limit));
+  const disableLessPages = meta.page === 0;
   return (
     <div className="h-full w-full flex flex-col overflow-hidden rounded-md border border-slate-300 bg-white">
       <Table className="w-full table-fixed">
@@ -93,7 +96,10 @@ export function DataTable<
               {headerGroup.headers.map((header) => {
                 const canSort = header.column.getCanSort();
                 return (
-                  <TableHead key={header.id} style={{ width: header.column.columnDef.size || "auto" }}>
+                  <TableHead
+                    key={header.id}
+                    style={{ width: header.column.columnDef.size || "auto" }}
+                  >
                     <div
                       className={cn("flex items-center gap-1 select-none", {
                         "cursor-pointer": canSort,
@@ -179,15 +185,15 @@ export function DataTable<
         <div className="flex items-center gap-2">
           <Button
             size="icon"
-            className={cn("shadow-none", {
-              "cursor-pointer": meta.page !== 0,
+            className={cn("shadow-none cursor-pointer", {
+              "cursor-auto": disableLessPages,
             })}
-            disabled={meta.page === 0}
+            disabled={disableLessPages}
             onClick={() => setFilter("page", Math.max(0, meta.page - 1))}
           >
             <IoIosArrowBack
               className={cn("size-5", {
-                "opacity-50": meta.page === 0,
+                "opacity-50": disableLessPages,
               })}
             />
           </Button>
@@ -201,19 +207,15 @@ export function DataTable<
 
           <Button
             size="icon"
-            className={cn("shadow-none", {
-              "cursor-pointer":
-                meta.page !==
-                Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1,
+            className={cn("shadow-none cursor-pointer", {
+              "cursor-auto": disableMorePages,
             })}
-            disabled={meta.page === Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1}
+            disabled={disableMorePages}
             onClick={() => setFilter("page", meta.page + 1)}
           >
             <IoIosArrowForward
               className={cn("size-5", {
-                "opacity-50":
-                  meta.page ===
-                  Number(Math.ceil(Number(meta?.total) / Number(meta.limit))) - 1,
+                "opacity-50": disableMorePages,
               })}
             />
           </Button>

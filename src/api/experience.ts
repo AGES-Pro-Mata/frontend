@@ -1,8 +1,5 @@
-import type { ExperienceCategory } from "@/types/experiences";
-import type { HttpResponse } from "@/types/http-response";
-import axios from "axios";
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+import { api } from "@/core/api";
+import type { ExperienceCategory } from "@/types/experience";
 
 interface CreateExperiencePayload {
   experienceName: string;
@@ -19,14 +16,6 @@ interface CreateExperiencePayload {
   trailLength?: string;
 }
 
-export async function createExperience(
-  payload: CreateExperiencePayload
-): Promise<HttpResponse> {
-  return await axios.post(`${BACKEND_URL}/experiences`, payload, {
-    timeout: 10000,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+export async function createExperience(payload: CreateExperiencePayload) {
+  return await api.post(`/experience`, payload);
 }

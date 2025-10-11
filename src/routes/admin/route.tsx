@@ -3,12 +3,33 @@ import AdminLayout from "@/components/layouts/admin";
 import { AdminSideBar } from "@/components/navigation/sideBar";
 import type { QueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
+import z from "zod";
+import i18n from "@/i18n";
+import { userQueryOptions } from "@/api/user";
 
 export const Route = createFileRoute("/admin")({
   component: RouteComponent,
-  beforeLoad: async ({ context }) => {
+  validateSearch: z
+    .object({
+      lang: z.enum(["pt", "en"]).optional(),
+    })
+    .optional(),
+  beforeLoad: async ({ context, search }) => {
     const { queryClient } = context as { queryClient: QueryClient };
     await requireAdminUser(queryClient);
+
+    // Language change logic
+    const lang = (search as any)?.lang as "pt" | "en" | undefined;
+    if (lang && i18n.language !== lang) {
+      i18n.changeLanguage(lang);
+    }
+  },
+  loader: async ({ context }) => {
+    const user = await (
+      context as unknown as { queryClient: QueryClient }
+    ).queryClient.ensureQueryData(userQueryOptions);
+    const isAdmin = user?.userType === "ADMIN" || user?.userType === "ROOT";
+    return { isAdmin };
   },
 });
 

@@ -18,8 +18,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateUser } from "@/hooks/useUpdateUser";
 import { digitsOnly, maskCep, maskPhone } from "@/lib/utils";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 import { useCepQuery } from "@/hooks/useCepQuery";
+import { useTranslation } from "react-i18next";
 
 // Normalize multiple backend gender variants into consistent internal values
 function normalizeGender(raw?: string | null): string {
@@ -44,12 +45,12 @@ function normalizeGender(raw?: string | null): string {
 
 const schema = z
   .object({
-    name: z.string().min(2, "Nome obrigatório"),
+    name: z.string().min(2, "validation.nameRequired"),
     addressLine: z.string().optional().default(""),
-    country: z.string().min(1, "País obrigatório"),
-    phone: z.string().min(8, "Telefone obrigatório"),
-    zipCode: z.string().min(4, "CEP/ZIP obrigatório"),
-    gender: z.string().min(1, "Informe o gênero"),
+    country: z.string().min(1, "validation.countryRequired"),
+    phone: z.string().min(8, "validation.phoneRequired"),
+    zipCode: z.string().min(4, "validation.zipRequired"),
+    gender: z.string().min(1, "validation.genderRequired"),
     number: z.string().optional().default(""),
     city: z.string().optional().default(""),
     institution: z.string().optional(),
@@ -63,21 +64,21 @@ const schema = z
       if (!data.addressLine || data.addressLine.length < 2) {
         ctx.addIssue({
           code: "custom",
-          message: "Endereço é obrigatório",
+          message: "validation.addressRequired",
           path: ["addressLine"],
         });
       }
       if (!data.city || data.city.length < 2) {
         ctx.addIssue({
           code: "custom",
-          message: "Cidade é obrigatória",
+          message: "validation.cityRequired",
           path: ["city"],
         });
       }
       if (!data.number || data.number.length < 1) {
         ctx.addIssue({
           code: "custom",
-          message: "Número é obrigatório",
+          message: "validation.numberRequired",
           path: ["number"],
         });
       }
@@ -92,8 +93,9 @@ export interface EditProfileLayoutProps {
 export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
   const { mapped, verified } = useCurrentUserProfile();
   const { mutate, isPending } = useUpdateUser();
+  const { t } = useTranslation();
   const form = useForm<z.input<typeof schema>, any, z.output<typeof schema>>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema.transform((d) => d)),
     defaultValues: {
       name: mapped?.name || "",
       addressLine: mapped?.addressLine || "",
@@ -197,27 +199,27 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
       mutate(formData as any, {
         onSuccess: (res) => {
           if (res.statusCode >= 200 && res.statusCode < 300) {
-            toast.success("Perfil atualizado com sucesso");
+            appToast.success(t("profile.edit.toasts.success"));
             setTimeout(() => onBack?.(), 600);
-          } else toast.error("Erro ao atualizar perfil");
+          } else appToast.error(t("profile.edit.toasts.error"));
         },
-        onError: () => toast.error("Erro ao atualizar perfil"),
+  onError: () => appToast.error(t("profile.edit.toasts.error")),
       });
       return;
     }
     mutate(payload, {
       onSuccess: (res) => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          toast.success("Perfil atualizado com sucesso");
+          appToast.success(t("profile.edit.toasts.success"));
           // Small delay so user sees the toast, then navigate back
           setTimeout(() => {
             onBack?.();
           }, 600);
         } else {
-          toast.error("Erro ao atualizar perfil");
+          appToast.error(t("profile.edit.toasts.error"));
         }
       },
-      onError: () => toast.error("Erro ao atualizar perfil"),
+  onError: () => appToast.error(t("profile.edit.toasts.error")),
     });
   };
   return (
@@ -230,13 +232,13 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
         >
           <header className="flex flex-col items-center gap-2">
             <Typography className="text-[clamp(1.9rem,4vw,2.4rem)] font-bold text-on-banner-text m-0">
-              Editar Cadastro
+              {t("profile.edit.title")}
             </Typography>
             <Typography
               variant="body"
               className="text-center text-foreground/80"
             >
-              Preencha os dados abaixo para editar sua conta
+              {t("profile.edit.subtitle")}
             </Typography>
           </header>
 
@@ -245,7 +247,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-start gap-4 flex-wrap">
                 <Typography className="text-[clamp(1.05rem,2.2vw,1.35rem)] font-semibold text-on-banner-text m-0 select-none">
-                  Informações pessoais
+                  {t("register.sections.personal")}
                 </Typography>
                 <FormField
                   control={form.control}
@@ -273,7 +275,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                           htmlFor="isForeignEdit"
                           className="text-sm text-foreground cursor-pointer"
                         >
-                          Não sou brasileiro
+                          {t("register.fields.notBrazilian")}
                         </label>
                       </div>
                     </FormItem>
@@ -289,9 +291,9 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="Nome Completo"
+                      label={t("register.fields.fullName")}
                       required
-                      placeholder="Seu nome completo"
+                      placeholder={t("register.fields.fullName")}
                       {...field}
                     />
                     <FormMessage className="text-default-red text-xs" />
@@ -305,19 +307,19 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                   <FormItem>
                     <div className="flex flex-col gap-0">
                       <Typography className="text-foreground font-medium mb-1">
-                        Gênero *
+                        {t("register.fields.gender.label")} *
                       </Typography>
                       <Select
                         value={field.value}
                         onValueChange={(v) => field.onChange(v)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione seu gênero" />
+                          <SelectValue placeholder={t("register.fields.gender.select")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="female">Feminino</SelectItem>
-                          <SelectItem value="male">Masculino</SelectItem>
-                          <SelectItem value="other">Outro</SelectItem>
+                          <SelectItem value="female">{t("register.fields.gender.female")}</SelectItem>
+                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
+                          <SelectItem value="other">{t("register.fields.gender.other")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -331,7 +333,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="Telefone"
+                      label={t("register.fields.phone")}
                       required
                       placeholder="(51) 99999-9999"
                       value={maskPhone(field.value || "")}
@@ -352,7 +354,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                   return (
                     <FormItem>
                       <TextInput
-                        label={isForeign ? "ZIP CODE" : "CEP"}
+                        label={t("register.fields.zip")}
                         required
                         placeholder={isForeign ? "12345" : "00000-000"}
                         value={maskCep(digitsOnly(field.value || ""))}
@@ -378,9 +380,9 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                   return (
                     <FormItem>
                       <TextInput
-                        label="Endereço"
+                        label={t("register.fields.address")}
                         required={!isForeign}
-                        placeholder="Rua / Logradouro"
+                        placeholder={t("register.fields.addressPlaceholder")}
                         disabled={
                           isForeign || autoFilled.addressLine || isFetchingCep
                         }
@@ -399,9 +401,9 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                   return (
                     <FormItem>
                       <TextInput
-                        label="País"
+                        label={t("register.fields.country")}
                         required
-                        placeholder={isForeign ? "País" : "Brasil"}
+                        placeholder={isForeign ? t("register.fields.country") : "Brasil"}
                         value={field.value || (isForeign ? "" : "Brasil")}
                         disabled={!isForeign}
                         onChange={(e) => field.onChange(e.target.value)}
@@ -419,9 +421,9 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                   return (
                     <FormItem>
                       <TextInput
-                        label="Número"
+                        label={t("register.fields.number")}
                         required={!isForeign}
-                        placeholder="Número"
+                        placeholder={t("register.fields.number")}
                         disabled={isForeign}
                         {...field}
                       />
@@ -438,9 +440,9 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                   return (
                     <FormItem>
                       <TextInput
-                        label="Cidade"
+                        label={t("register.fields.city")}
                         required={!isForeign}
-                        placeholder="Cidade"
+                        placeholder={t("register.fields.city")}
                         disabled={isForeign || autoFilled.city || isFetchingCep}
                         {...field}
                       />
@@ -452,11 +454,11 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
             </div>
           </section>
 
-          {/* Informações Profissionais */}
+          {/* Professional Information */}
           <section className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <Typography className="text-[clamp(1.05rem,2.2vw,1.35rem)] font-semibold text-on-banner-text">
-                Informações Profissionais
+                {t("register.sections.professional")}
               </Typography>
               <div className="w-full h-px bg-on-banner-text/60" />
             </div>
@@ -467,8 +469,8 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="Instituição"
-                      placeholder="Universidade/Empresa"
+                      label={t("register.fields.institution")}
+                      placeholder={t("register.fields.institutionPlaceholder")}
                       {...field}
                     />
                     <FormMessage className="text-default-red text-xs" />
@@ -482,23 +484,21 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                   <FormItem>
                     <div className="flex flex-col gap-0">
                       <Typography className="text-foreground font-medium mb-1">
-                        Função
+                        {t("register.fields.function.label")}
                       </Typography>
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione sua Função" />
+                          <SelectValue placeholder={t("register.fields.function.select")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="student">Estudante</SelectItem>
-                          <SelectItem value="teacher">Professor</SelectItem>
-                          <SelectItem value="researcher">
-                            Pesquisador
-                          </SelectItem>
-                          <SelectItem value="employee">Funcionário</SelectItem>
-                          <SelectItem value="other">Outro</SelectItem>
+                          <SelectItem value="student">{t("register.fields.function.student")}</SelectItem>
+                          <SelectItem value="teacher">{t("register.fields.function.teacher")}</SelectItem>
+                          <SelectItem value="researcher">{t("register.fields.function.researcher")}</SelectItem>
+                          <SelectItem value="employee">{t("register.fields.function.employee")}</SelectItem>
+                          <SelectItem value="other">{t("register.fields.function.other")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -522,7 +522,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                       htmlFor="docency"
                       className="text-sm text-foreground"
                     >
-                      Gostaria de solicitar um cadastro de docente
+                      {t("register.fields.docency.ask")}
                     </label>
                   </div>
                   <FormMessage className="text-default-red text-xs" />
@@ -542,12 +542,12 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                     <FormItem>
                       <div className="flex flex-col gap-2">
                         <Typography className="text-foreground font-medium">
-                          Comprovante de Docência (PDF) - Opcional
+                          {t("register.fields.docency.receiptLabel")}
                         </Typography>
                         <Typography className="text-sm text-muted-foreground">
                           {canUpload
-                            ? "Envie um PDF de até 20MB."
-                            : "Já verificado e instituição não mudou."}
+                            ? t("profile.edit.docency.canUploadHint")
+                            : t("profile.edit.docency.alreadyVerified")}
                         </Typography>
                         <div className="flex items-center gap-4">
                           <input
@@ -559,11 +559,11 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                               const file = e.target.files?.[0];
                               onChange(file);
                             }}
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-900 hover:file:bg-yellow-100 disabled:opacity-60"
+                            className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-900 hover:file:bg-yellow-100 disabled:opacity-60"
                           />
                           {value && (
-                            <Typography className="text-sm text-green-600">
-                              ✓ {(value as File).name}
+                            <Typography className="text-sm text-contrast-green">
+                              {t("register.fields.docency.uploaded", { name: (value as File).name })}
                             </Typography>
                           )}
                         </div>
@@ -581,13 +581,13 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
             <Button
               type="button"
               variant="gray"
-              label="Voltar"
+              label={t("common.back")}
               onClick={onBack}
               className="min-w-[100px]"
             />
             <Button
               type="submit"
-              label={isPending ? "Salvando..." : "Salvar"}
+              label={isPending ? t("common.saving") : t("common.save")}
               disabled={isPending}
             />
           </div>

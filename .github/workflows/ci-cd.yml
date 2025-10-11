@@ -70,6 +70,14 @@ jobs:
         run: |
           npm test || echo "No tests found, continuing..."
 
+      - name: Upload coverage to Codecov (non-blocking)
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          flags: vitest
+          name: vitest-report
+          fail_ci_if_error: false
+
       - name: Upload Build Artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -113,13 +121,12 @@ jobs:
         with:
           sarif_file: "trivy-results.sarif"
 
-  build-and-push:
+  deploy-static-site:
     needs: [test, security-scan]
-    if: |
-      (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')) ||
-      (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true) ||
-      github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION || 'us-east-2' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -135,129 +142,46 @@ jobs:
 
       - name: Build Application
         env:
-          VITE_API_URL: https://api.promata.com.br
-          VITE_APP_ENV: ${{ (github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main')) && 'production' || 'development' }}
+          VITE_UMAMI_WEBSITE_ID: ${{ vars.VITE_UMAMI_WEBSITE_ID }}
+          VITE_UMAMI_SCRIPT_URL: ${{ vars.VITE_UMAMI_SCRIPT_URL }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_ENABLE_DEVTOOLS: false
+          VITE_APP_ENV: production
           VITE_APP_VERSION: ${{ github.sha }}
         run: npm run build:ci
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          registry: docker.io
-          username: ${{ vars.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Set Docker Configuration
-        id: docker-config
+      - name: Sync artifacts to S3
+        env:
+          TARGET_BUCKET: ${{ vars.AWS_S3_BUCKET }}
         run: |
-          # Determinar a branch de destino para PRs mergeados ou branch atual para push
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
-          else
-            TARGET_BRANCH="${{ github.ref_name }}"
-          fi
-          
-          echo "target_branch=${TARGET_BRANCH}" >> $GITHUB_OUTPUT
-          
-          # Always use production dockerfile and single domain
-          echo "dockerfile=Dockerfile.prod" >> $GITHUB_OUTPUT
-          if [ "${TARGET_BRANCH}" = "main" ]; then
-            echo "image_name=${{ env.IMAGE_NAME_BASE }}" >> $GITHUB_OUTPUT
-            echo "environment=production" >> $GITHUB_OUTPUT
-          else
-            echo "image_name=${{ env.IMAGE_NAME_BASE }}-dev" >> $GITHUB_OUTPUT
-            echo "environment=development" >> $GITHUB_OUTPUT
+          if [ -z "$TARGET_BUCKET" ]; then
+            echo "TARGET_BUCKET not configured"
+            exit 1
           fi
 
-      - name: Extract Metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ steps.docker-config.outputs.image_name }}
-          tags: |
-            type=raw,value=latest
+          aws s3 sync dist/ "s3://$TARGET_BUCKET" --delete
 
-      - name: Build and Push Image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ${{ steps.docker-config.outputs.dockerfile }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-            VCS_REF=${{ github.sha }}
-            VERSION=${{ steps.meta.outputs.version }}
-            VITE_API_URL=https://api.promata.com.br
-            VITE_APP_ENV=${{ steps.docker-config.outputs.environment }}
-            VITE_APP_VERSION=${{ github.sha }}
-
-      - name: Build Summary
+      - name: Invalidate CloudFront cache
+        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
         run: |
-          echo "## 🐳 Docker Build Summary" >> $GITHUB_STEP_SUMMARY
+          aws cloudfront create-invalidation \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+            --paths '/*'
+        env:
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+
+      - name: Deployment Summary
+        run: |
+          echo "## 🌐 Static Site Deployment" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| **Target Branch** | ${{ steps.docker-config.outputs.target_branch }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Image Name** | ${{ steps.docker-config.outputs.image_name }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Environment** | ${{ steps.docker-config.outputs.environment }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Dockerfile** | ${{ steps.docker-config.outputs.dockerfile }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Event Type** | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Tags** | ${{ steps.meta.outputs.tags }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Deploy Event** | ${{ steps.docker-config.outputs.target_branch == 'main' && 'deploy-prod-frontend' || 'deploy-dev-frontend' }} |" >> $GITHUB_STEP_SUMMARY
-
-  trigger-deploy:
-    name: 🚀 Trigger Infrastructure Deployment
-    needs: [build-and-push]
-    runs-on: ubuntu-latest
-    if: success() && (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
-    steps:
-      - name: Determine deployment configuration
-        id: deploy-config
-        run: |
-          # Determine target branch for deployment
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TARGET_BRANCH="${{ github.ref_name }}"
-          else
-            TARGET_BRANCH="${{ github.ref_name }}"
-          fi
-          
-          echo "target_branch=${TARGET_BRANCH}" >> $GITHUB_OUTPUT
-          
-          # Set deployment event type and image based on target branch
-          if [ "${TARGET_BRANCH}" = "main" ]; then
-            echo "event_type=deploy-prod-frontend" >> $GITHUB_OUTPUT
-            echo "image_name=norohim/pro-mata-frontend" >> $GITHUB_OUTPUT
-          else
-            echo "event_type=deploy-dev-frontend" >> $GITHUB_OUTPUT
-            echo "image_name=norohim/pro-mata-frontend-dev" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Dispatch to Infrastructure Repository
-        uses: peter-evans/repository-dispatch@v3
-        continue-on-error: true
-        with:
-          token: ${{ secrets.PAT_INFRASTRUCTURE_REPO }}
-          repository: AGES-Pro-Mata/infrastructure
-          event-type: ${{ steps.deploy-config.outputs.event_type }}
-          client-payload: |
-            {
-              "image": "${{ steps.deploy-config.outputs.image_name }}:latest",
-              "commit": "${{ github.sha }}",
-              "branch": "${{ steps.deploy-config.outputs.target_branch }}",
-              "triggered_by": "frontend"
-            }
-      
-      - name: Infrastructure Dispatch Status
-        run: |
-          if [ -z "${{ secrets.PAT_INFRASTRUCTURE_REPO }}" ]; then
-            echo "⚠️ PAT_INFRASTRUCTURE_REPO secret not configured"
-            echo "Skipping infrastructure deployment trigger"
-          else
-            echo "✅ Infrastructure deployment triggered successfully"
-          fi
+          echo "| **Branch** | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Bucket** | ${{ vars.AWS_S3_BUCKET }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **CloudFront Distribution** | ${{ vars.CLOUDFRONT_DISTRIBUTION_ID || 'None' }} |" >> $GITHUB_STEP_SUMMARY

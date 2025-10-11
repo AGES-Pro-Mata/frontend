@@ -1,3 +1,3 @@
 import { AxiosHttpClient } from "./http/axios/axios.client";
-
-export const api = new AxiosHttpClient("http://localhost:3000");
+const API_URL =import.meta.env.VITE_API_URL;
+export const api = new AxiosHttpClient(API_URL);

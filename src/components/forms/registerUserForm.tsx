@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/lib/countries";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 import { useCepQuery } from "@/hooks/useCepQuery";
 import {
   isValidBrazilZip,
@@ -33,115 +33,121 @@ import {
 import type { RegisterUserPayload } from "@/api/user";
 import { CanvasCard } from "@/components/cards";
 import { Link, useNavigate } from "@tanstack/react-router";
-
-const formSchema = z
-  .object({
-    name: z.string().min(2, "Informe o nome completo"),
-    email: z.email("Digite um e-mail válido"),
-    phone: z.string().min(8, "Informe o telefone"),
-    cpf: z.string().optional().default(""),
-    rg: z.string().optional().default(""),
-    gender: z.string().min(1, "Informe o gênero"),
-    zipCode: z.string().min(5, "Informe o CEP/ZIP"),
-    country: z.string().min(2, "Informe o país"),
-    isForeign: z.boolean().default(false),
-    addressLine: z.string().optional().default(""),
-    city: z.string().optional(),
-    number: z.string().optional(),
-    password: z.string().min(6, "Senha mínima de 6 caracteres"),
-    confirmPassword: z.string().min(6, "Confirme a senha"),
-    institution: z.string().optional().default(""),
-    function: z.string().optional().default(""),
-    wantsDocencyRegistration: z.boolean().default(false),
-    docencyDocument: z.instanceof(File).optional(),
-    acceptTerms: z.boolean().refine((val) => val === true, {
-      message: "Você deve aceitar os termos de uso",
-    }),
-  })
-  .superRefine((data, ctx) => {
-    if (data.password !== data.confirmPassword) {
-      ctx.addIssue({
-        code: "custom",
-        message: "As senhas não coincidem",
-        path: ["confirmPassword"],
-      });
-    }
-
-    if (data.docencyDocument) {
-      if (data.docencyDocument.type !== "application/pdf") {
-        ctx.addIssue({
-          code: "custom",
-          message: "Apenas arquivos PDF são aceitos",
-          path: ["docencyDocument"],
-        });
-      }
-      if (data.docencyDocument.size > 20 * 1024 * 1024) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Arquivo deve ter no máximo 20MB",
-          path: ["docencyDocument"],
-        });
-      }
-    }
-
-    if (!data.isForeign) {
-      if (!data.city || data.city.length < 2) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Cidade e número são obrigatórios para brasileiros",
-          path: ["city"],
-        });
-      }
-      if (!data.number || data.number.length < 1) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Cidade e número são obrigatórios para brasileiros",
-          path: ["number"],
-        });
-      }
-      if (!data.addressLine || data.addressLine.length < 2) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Endereço é obrigatório",
-          path: ["addressLine"],
-        });
-      }
-      if (!isValidBrazilZip(data.zipCode)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "CEP deve conter 8 dígitos",
-          path: ["zipCode"],
-        });
-      }
-      if (!data.cpf || !isValidCpf(data.cpf)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "CPF inválido",
-          path: ["cpf"],
-        });
-      }
-      if (!data.rg || digitsOnly(data.rg).length < 5) {
-        ctx.addIssue({
-          code: "custom",
-          message: "RG inválido",
-          path: ["rg"],
-        });
-      }
-    } else {
-      if (!isValidForeignZip(data.zipCode)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "ZIP inválido",
-          path: ["zipCode"],
-        });
-      }
-    }
-  });
-
-type FormData = z.infer<typeof formSchema>;
+import { useTranslation } from "react-i18next";
 
 export function RegisterUser() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const formSchema = useMemo(
+    () =>
+      z
+        .object({
+          name: z.string().min(2, t("validation.nameRequired")),
+          email: z.email(t("validation.email")),
+          phone: z.string().min(8, t("validation.phoneRequired")),
+          document: z.string().optional().default(""),
+          rg: z.string().optional().default(""),
+          gender: z.string().min(1, t("validation.genderRequired")),
+          zipCode: z.string().min(5, t("validation.zipRequired")),
+          country: z.string().min(2, t("validation.countryRequired")),
+          isForeign: z.boolean().default(false),
+          addressLine: z.string().optional().default(""),
+          city: z.string().optional(),
+          number: z.string().optional(),
+          password: z.string().min(6, t("validation.passwordMin")),
+          confirmPassword: z.string().min(6, t("validation.passwordMin")),
+          institution: z.string().optional().default(""),
+          function: z.string().optional().default(""),
+          wantsDocencyRegistration: z.boolean().default(false),
+          docencyDocument: z.instanceof(File).optional(),
+          acceptTerms: z.boolean().refine((val) => val === true, {
+            message: t("validation.mustAcceptTerms"),
+          }),
+        })
+        .superRefine((data, ctx) => {
+          if (data.password !== data.confirmPassword) {
+            ctx.addIssue({
+              code: "custom",
+              message: t("validation.passwordsMustMatch"),
+              path: ["confirmPassword"],
+            });
+          }
+
+          if (data.docencyDocument) {
+            if (data.docencyDocument.type !== "application/pdf") {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.pdfOnly"),
+                path: ["docencyDocument"],
+              });
+            }
+            if (data.docencyDocument.size > 20 * 1024 * 1024) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.max20mb"),
+                path: ["docencyDocument"],
+              });
+            }
+          }
+
+          if (!data.isForeign) {
+            if (!data.city || data.city.length < 2) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.cityRequired"),
+                path: ["city"],
+              });
+            }
+            if (!data.number || data.number.length < 1) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.numberRequired"),
+                path: ["number"],
+              });
+            }
+            if (!data.addressLine || data.addressLine.length < 2) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.addressRequired"),
+                path: ["addressLine"],
+              });
+            }
+            if (!isValidBrazilZip(data.zipCode)) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.cep8"),
+                path: ["zipCode"],
+              });
+            }
+            if (!data.document || !isValidCpf(data.document)) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.cpfInvalid"),
+                path: ["document"],
+              });
+            }
+            if (!data.rg || digitsOnly(data.rg).length < 5) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.rgInvalid"),
+                path: ["rg"],
+              });
+            }
+          } else {
+            if (!isValidForeignZip(data.zipCode)) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("validation.zipInvalid"),
+                path: ["zipCode"],
+              });
+            }
+          }
+        }),
+    // Recreate schema when language changes so messages are translated
+    [i18n.language]
+  );
+
+  type FormData = z.infer<typeof formSchema>;
   const [autoFilled, setAutoFilled] = useState({
     addressLine: false,
     city: false,
@@ -153,11 +159,13 @@ export function RegisterUser() {
     z.output<typeof formSchema>
   >({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       name: "",
       email: "",
       phone: "",
-      cpf: "",
+      document: "",
       rg: "",
       gender: "",
       zipCode: "",
@@ -178,6 +186,20 @@ export function RegisterUser() {
 
   const isForeign = form.watch("isForeign");
   const watchedZip = form.watch("zipCode");
+
+  // Re-run validation on language change only for fields that already have errors, and skip on initial mount
+  const didMountLang = useRef(false);
+  useEffect(() => {
+    if (!didMountLang.current) {
+      didMountLang.current = true;
+      return;
+    }
+    const errorFields = Object.keys(form.formState.errors || {});
+    if (errorFields.length > 0) {
+      // retrigger only errored fields to refresh message language
+      void form.trigger(errorFields as any);
+    }
+  }, [i18n.language]);
 
   const {
     isLoading: isFetchingCep,
@@ -224,7 +246,11 @@ export function RegisterUser() {
       confirmPassword: hashedConfirmPassword,
       phone: sanitizedPhone,
       gender: data.gender,
-      cpf: data.cpf ? maskCpf(data.cpf) : undefined,
+      document: data.document
+        ? isForeign
+          ? data.document
+          : maskCpf(data.document)
+        : undefined,
       rg: data.rg || undefined,
       country: data.country,
       userType: data.wantsDocencyRegistration ? "PROFESSOR" : "GUEST",
@@ -241,15 +267,15 @@ export function RegisterUser() {
       onSuccess: (response) => {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           form.reset();
-          toast.success("Usuário cadastrado com sucesso", {});
+          appToast.success(t("register.toasts.success"));
           setAutoFilled({ addressLine: false, city: false });
           navigate({ to: "/auth/login" });
         } else {
-          toast.error("Erro ao cadastrar usuário", {});
+          appToast.error(t("register.toasts.error"));
         }
       },
       onError: () => {
-        toast.error("Erro ao cadastrar usuário");
+        appToast.error(t("register.toasts.error"));
       },
     });
   };
@@ -259,11 +285,9 @@ export function RegisterUser() {
       <CanvasCard className="w-full max-w-[1180px] p-6 sm:p-10 lg:p-12">
         <div className="text-center space-y-2">
           <Typography variant="h2" className="pb-2 text-on-banner-text">
-            Cadastro
+            {t("register.title")}
           </Typography>
-          <Typography variant="body">
-            Preencha os dados abaixo para criar sua conta
-          </Typography>
+          <Typography variant="body">{t("register.subtitle")}</Typography>
         </div>
 
         <Form {...form}>
@@ -273,7 +297,7 @@ export function RegisterUser() {
           >
             <div className="flex flex-wrap items-center justify-start gap-4">
               <Typography className="font-medium text-foreground text-lg">
-                Informações pessoais
+                {t("register.sections.personal")}
               </Typography>
 
               <FormField
@@ -290,17 +314,31 @@ export function RegisterUser() {
                           if (checked) {
                             form.setValue("city", "");
                             form.setValue("number", "");
-                            form.setValue("cpf", "");
+                            form.setValue("document", "");
                             form.setValue("rg", "");
                             form.setValue("country", "");
                           } else {
                             form.setValue("country", "Brasil");
                           }
+                          // Re-run validation to clear/set field errors according to new mode
+                          setTimeout(
+                            () =>
+                              form.trigger([
+                                "city",
+                                "number",
+                                "zipCode",
+                                "document",
+                                "rg",
+                                "addressLine",
+                                "country",
+                              ]),
+                            0
+                          );
                         }}
                       />
                       <Label htmlFor="isForeign">
                         <Typography variant="body" className="text-foreground">
-                          Não sou brasileiro
+                          {t("register.fields.notBrazilian")}
                         </Typography>
                       </Label>
                     </div>
@@ -317,12 +355,13 @@ export function RegisterUser() {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="Nome completo"
+                      label={t("register.fields.fullName")}
                       required
-                      placeholder="Nome completo"
+                      placeholder={t("register.fields.fullName")}
                       {...field}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -333,13 +372,14 @@ export function RegisterUser() {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="Email"
+                      label={t("auth.login.email")}
                       required
                       type="email"
-                      placeholder="email@email.com"
+                      placeholder={t("auth.login.emailPlaceholder")}
                       {...field}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -350,7 +390,7 @@ export function RegisterUser() {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="Telefone"
+                      label={t("register.fields.phone")}
                       required
                       placeholder="(51) 99999-9999"
                       value={maskPhone(field.value || "")}
@@ -358,29 +398,50 @@ export function RegisterUser() {
                         const digits = digitsOnly(e.target.value).slice(0, 11);
                         field.onChange(maskPhone(digits));
                       }}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
 
               <FormField
                 control={form.control}
-                name="cpf"
+                name="document"
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="CPF"
-                      placeholder="XXX.XXX.XXX-XX"
-                      disabled={isForeign}
-                      value={maskCpf(field.value || "")}
+                      label={
+                        isForeign
+                          ? t("register.fields.document.passport")
+                          : t("register.fields.document.cpf")
+                      }
+                      required
+                      placeholder={
+                        isForeign
+                          ? t("register.fields.document.passportNumber")
+                          : "XXX.XXX.XXX-XX"
+                      }
+                      value={
+                        isForeign
+                          ? field.value || ""
+                          : maskCpf(field.value || "")
+                      }
                       onChange={(e) => {
-                        const digits = digitsOnly(e.target.value).slice(0, 11);
-                        const masked = maskCpf(digits);
-                        field.onChange(masked);
+                        if (isForeign) {
+                          field.onChange(e.target.value);
+                        } else {
+                          const digits = digitsOnly(e.target.value).slice(
+                            0,
+                            11
+                          );
+                          const masked = maskCpf(digits);
+                          field.onChange(masked);
+                        }
                       }}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -392,23 +453,31 @@ export function RegisterUser() {
                   <FormItem>
                     <div className="flex flex-col gap-0">
                       <Typography className="text-foreground font-medium mb-1">
-                        Gênero
+                        {t("register.fields.gender.label")}
                       </Typography>
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione o gênero" />
+                          <SelectValue
+                            placeholder={t("register.fields.gender.select")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="female">Feminino</SelectItem>
-                          <SelectItem value="male">Masculino</SelectItem>
-                          <SelectItem value="other">Outro</SelectItem>
+                          <SelectItem value="female">
+                            {t("register.fields.gender.female")}
+                          </SelectItem>
+                          <SelectItem value="male">
+                            {t("register.fields.gender.male")}
+                          </SelectItem>
+                          <SelectItem value="other">
+                            {t("register.fields.gender.other")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -428,8 +497,9 @@ export function RegisterUser() {
                         const digits = digitsOnly(e.target.value).slice(0, 15);
                         field.onChange(digits);
                       }}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -440,7 +510,7 @@ export function RegisterUser() {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label={isForeign ? "ZIP CODE" : "CEP"}
+                      label={t("register.fields.zip")}
                       required
                       placeholder={isForeign ? "12345" : "98460-000"}
                       value={maskCep(field.value || "")}
@@ -452,8 +522,9 @@ export function RegisterUser() {
                         }
                         field.onChange(masked);
                       }}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -465,7 +536,7 @@ export function RegisterUser() {
                   <FormItem>
                     <div className="flex flex-col gap-0">
                       <Typography className="text-foreground font-medium">
-                        País
+                        {t("register.fields.country")}
                       </Typography>
                       {isForeign ? (
                         <Select
@@ -473,7 +544,9 @@ export function RegisterUser() {
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione o país" />
+                            <SelectValue
+                              placeholder={t("register.fields.selectCountry")}
+                            />
                           </SelectTrigger>
                           <SelectContent>
                             {COUNTRIES.map((c) => (
@@ -493,7 +566,7 @@ export function RegisterUser() {
                         />
                       )}
                     </div>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -504,15 +577,16 @@ export function RegisterUser() {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="Endereço"
+                      label={t("register.fields.address")}
                       required
-                      placeholder="Rua"
+                      placeholder={t("register.fields.addressPlaceholder")}
                       disabled={
                         isForeign || autoFilled.addressLine || isFetchingCep
                       }
                       {...field}
+                      onBlur={field.onBlur}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -523,13 +597,13 @@ export function RegisterUser() {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="Cidade"
+                      label={t("register.fields.city")}
                       required={!isForeign}
-                      placeholder="Cidade"
+                      placeholder={t("register.fields.city")}
                       disabled={isForeign || autoFilled.city || isFetchingCep}
                       {...field}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -540,13 +614,13 @@ export function RegisterUser() {
                 render={({ field }) => (
                   <FormItem>
                     <TextInput
-                      label="Número"
+                      label={t("register.fields.number")}
                       required
-                      placeholder="Número"
+                      placeholder={t("register.fields.number")}
                       disabled={isForeign}
                       {...field}
                     />
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -555,7 +629,7 @@ export function RegisterUser() {
             {/* Seção de Segurança */}
             <div className="space-y-4">
               <Typography className="font-medium text-foreground text-lg">
-                Segurança
+                {t("register.sections.security")}
               </Typography>
               <Separator />
 
@@ -566,13 +640,13 @@ export function RegisterUser() {
                   render={({ field }) => (
                     <FormItem>
                       <TextInput
-                        label="Senha"
+                        label={t("register.fields.password")}
                         required
                         type="password"
-                        placeholder="Senha"
+                        placeholder={t("register.fields.password")}
                         {...field}
                       />
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -583,13 +657,13 @@ export function RegisterUser() {
                   render={({ field }) => (
                     <FormItem>
                       <TextInput
-                        label="Confirmar senha"
+                        label={t("register.fields.confirmPassword")}
                         required
                         type="password"
-                        placeholder="Confirmar senha"
+                        placeholder={t("register.fields.confirmPassword")}
                         {...field}
                       />
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -599,7 +673,7 @@ export function RegisterUser() {
             {/* Seção de Informações Profissionais */}
             <div className="space-y-4">
               <Typography className="font-medium text-foreground text-lg">
-                Informações Profissionais
+                {t("register.sections.professional")}
               </Typography>
               <Separator />
 
@@ -610,11 +684,13 @@ export function RegisterUser() {
                   render={({ field }) => (
                     <FormItem>
                       <TextInput
-                        label="Instituição"
-                        placeholder="Universidade/Empresa"
+                        label={t("register.fields.institution")}
+                        placeholder={t(
+                          "register.fields.institutionPlaceholder"
+                        )}
                         {...field}
                       />
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -626,29 +702,37 @@ export function RegisterUser() {
                     <FormItem>
                       <div className="flex flex-col gap-0">
                         <Typography className="text-foreground font-medium mb-1">
-                          Selecione sua Função
+                          {t("register.fields.function.label")}
                         </Typography>
                         <Select
                           value={field.value}
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione sua Função" />
+                            <SelectValue
+                              placeholder={t("register.fields.function.select")}
+                            />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="student">Estudante</SelectItem>
-                            <SelectItem value="teacher">Professor</SelectItem>
+                            <SelectItem value="student">
+                              {t("register.fields.function.student")}
+                            </SelectItem>
+                            <SelectItem value="teacher">
+                              {t("register.fields.function.teacher")}
+                            </SelectItem>
                             <SelectItem value="researcher">
-                              Pesquisador
+                              {t("register.fields.function.researcher")}
                             </SelectItem>
                             <SelectItem value="employee">
-                              Funcionário
+                              {t("register.fields.function.employee")}
                             </SelectItem>
-                            <SelectItem value="other">Outro</SelectItem>
+                            <SelectItem value="other">
+                              {t("register.fields.function.other")}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -667,11 +751,11 @@ export function RegisterUser() {
                       />
                       <Label htmlFor="wantsDocencyRegistration">
                         <Typography variant="body" className="text-foreground">
-                          Gostaria de solicitar um cadastro de docente
+                          {t("register.fields.docency.ask")}
                         </Typography>
                       </Label>
                     </div>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -684,11 +768,10 @@ export function RegisterUser() {
                     <FormItem>
                       <div className="flex flex-col gap-2">
                         <Typography className="text-foreground font-medium">
-                          Comprovante de Docência (PDF) - Opcional
+                          {t("register.fields.docency.receiptLabel")}
                         </Typography>
                         <Typography className="text-sm text-muted-foreground">
-                          Você pode enviar o comprovante agora ou posteriormente
-                          na edição do perfil. Máximo 20MB.
+                          {t("register.fields.docency.receiptHint")}
                         </Typography>
                         <div className="flex items-center gap-4">
                           <input
@@ -699,16 +782,18 @@ export function RegisterUser() {
                               const file = e.target.files?.[0];
                               onChange(file);
                             }}
-                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-900 hover:file:bg-yellow-100"
+                            className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-900 hover:file:bg-yellow-100"
                           />
                           {value && (
-                            <Typography className="text-sm text-green-600">
-                              ✓ {value.name}
+                            <Typography className="text-sm text-contrast-green">
+                              {t("register.fields.docency.uploaded", {
+                                name: value.name,
+                              })}
                             </Typography>
                           )}
                         </div>
                       </div>
-                      <FormMessage className="text-red-400" />
+                      <FormMessage className="text-default-red" />
                     </FormItem>
                   )}
                 />
@@ -730,22 +815,14 @@ export function RegisterUser() {
                       />
                       <Label htmlFor="acceptTerms">
                         <Typography variant="body" className="text-foreground">
-                          Eu aceito os{" "}
-                          <Link to="/terms" className="text-blue-600 underline">
-                            Termos de Uso
-                          </Link>{" "}
-                          e a{" "}
-                          <Link
-                            to="/privacy"
-                            className="text-blue-600 underline"
-                          >
-                            Política de Privacidade
-                          </Link>{" "}
-                          do PRÓ-MATA *
+                          {t("register.fields.terms.accept", {
+                            terms: t("register.fields.terms.terms"),
+                            privacy: t("register.fields.terms.privacy"),
+                          })}
                         </Typography>
                       </Label>
                     </div>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -756,13 +833,13 @@ export function RegisterUser() {
                 type="submit"
                 variant="primary"
                 className="w-full max-w-xs"
-                label="Criar Conta"
+                label={t("register.cta.create")}
                 disabled={isPending}
               />
               <Typography className="text-sm text-muted-foreground">
-                Já tem uma conta?{" "}
+                {t("register.cta.haveAccount")}{" "}
                 <Link to="/auth/login" className="text-primary underline">
-                  Fazer login
+                  {t("register.cta.login")}
                 </Link>
               </Typography>
             </div>

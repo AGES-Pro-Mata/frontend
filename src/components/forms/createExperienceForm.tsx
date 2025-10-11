@@ -1,13 +1,17 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { TextInput } from "@/components/inputs/textInput";
-import { Typography } from "@/components/typography/typography";
 import { Button } from "@/components/buttons/defaultButton";
+import { TextInput } from "@/components/inputs/textInput";
+import { appToast } from "@/components/toast/toast";
+import { Typography } from "@/components/typography/typography";
 import { Button as ShadcnButton } from "@/components/ui/button";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -16,29 +20,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { ExperienceCategory } from "@/types/experiences";
-import React, { useEffect, useState } from "react";
-import {
-  Upload,
-  FlaskConical,
-  Calendar,
-  Mountain,
-  Building2,
-  Bed,
-  CalendarIcon,
-} from "lucide-react";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { useCreateExperience } from "@/hooks/useCreateExperience";
+import { ExperienceCategory } from "@/types/experience";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useCreateExperience } from "@/hooks/useCreateExperience";
-import { toast } from "sonner";
+import {
+  Bed,
+  Building2,
+  Calendar,
+  CalendarIcon,
+  FlaskConical,
+  Mountain,
+  Upload,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-const { mutate } = useCreateExperience();
 const formSchema = z
   .object({
     experienceName: z.string().min(2, "Informe o nome da experiência"),
@@ -102,8 +101,6 @@ const formSchema = z
     }
   });
 
-type FormData = z.infer<typeof formSchema>;
-
 const WEEK_DAYS = [
   { value: "monday", label: "Segunda-feira" },
   { value: "tuesday", label: "Terça-feira" },
@@ -150,6 +147,7 @@ const parsePrice = (formattedValue: string) => {
 };
 
 export function CreateExperience() {
+  const { mutate } = useCreateExperience();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [priceDisplay, setPriceDisplay] = useState<string>("");
 
@@ -228,16 +226,16 @@ export function CreateExperience() {
     }
   };
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = form.handleSubmit((data) => {
     mutate(data, {
       onSuccess: () => {
-        toast.success("Experiência criada com sucesso");
+        appToast.success("Experiência criada com sucesso");
       },
       onError: () => {
-        toast.error("Erro ao criar experiência");
+        appToast.error("Erro ao criar experiência");
       },
     });
-  };
+  });
 
   return (
     <div className="pb-8 pt-6 justify-items-center">
@@ -248,7 +246,7 @@ export function CreateExperience() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form className="space-y-6">
           <FormField
             control={form.control}
             name="experienceImage"
@@ -409,24 +407,35 @@ export function CreateExperience() {
                     <Typography className="text-foreground font-medium mb-1">
                       Dias da semana disponíveis
                     </Typography>
-                    <Select value="" onValueChange={() => {}}>
-                      <SelectTrigger className="h-10 px-5">
-                        <SelectValue placeholder="Selecione os dias da semana">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <ShadcnButton
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal h-10 px-3"
+                        >
                           {field.value && field.value.length > 0 ? (
-                            <Typography>
+                            <Typography className="text-sm">
                               {field.value.length} dia(s) selecionado(s)
                             </Typography>
                           ) : (
-                            "Selecione os dias da semana"
+                            <Typography className="text-sm text-muted-foreground">
+                              Selecione os dias da semana
+                            </Typography>
                           )}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {WEEK_DAYS.map((day) => (
-                          <SelectItem key={day.value} value={day.value}>
-                            <div className="flex items-center space-x-2">
+                        </ShadcnButton>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0" align="start">
+                        <div className="p-4 space-y-2">
+                          {WEEK_DAYS.map((day) => (
+                            <div
+                              key={day.value}
+                              className="flex items-center space-x-2"
+                            >
                               <Checkbox
-                                checked={field.value?.includes(day.value)}
+                                id={day.value}
+                                checked={
+                                  field.value?.includes(day.value) || false
+                                }
                                 onCheckedChange={(checked) => {
                                   const currentDays = field.value || [];
                                   if (checked) {
@@ -438,14 +447,17 @@ export function CreateExperience() {
                                   }
                                 }}
                               />
-                              <Label className="text-sm cursor-pointer">
+                              <Label
+                                htmlFor={day.value}
+                                className="text-sm cursor-pointer font-normal"
+                              >
                                 {day.label}
                               </Label>
                             </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <FormMessage className="text-red-500" />
                 </FormItem>
@@ -667,6 +679,7 @@ export function CreateExperience() {
               type="submit"
               variant="primary"
               className="w-36"
+              onClick={onSubmit}
               label="Criar"
             />
           </div>

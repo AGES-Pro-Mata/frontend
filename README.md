@@ -53,6 +53,8 @@ APP_SECRET=APP_SECRET // Apenas para rodar o umami local
 VITE_UMAMI_WEBSITE_ID=VITE_UMAMI_WEBSITE_ID // Não precisa estar preenchida, apenas existir no .env
 VITE_UMAMI_SCRIPT_URL=VITE_UMAMI_SCRIPT_URL // Não precisa estar preenchida, apenas existir no .env
 VITE_API_URL=VITE_API_URL // URL do backend
+VITE_USE_MSW=false // Ative "true" para usar MSW no desenvolvimento local
+VITE_ENABLE_ANALYTICS=true // Defina como "false" para desabilitar o Umami
 ```
 
 ---
@@ -144,12 +146,38 @@ O script do Umami é injetado automaticamente no `index.html` e coleta métricas
 
 ## Scripts úteis
 
-- `npm run dev` — inicia servidor de desenvolvimento
-- `npm run start` — alias para `dev`
-- `npm run build` — build de produção (Vite + TypeScript)
-- `npm run serve` — preview do build
-- `npm test` — executa testes com Vitest (se houver testes configurados)
+- `npm run test` — executa a suíte de testes unitários (Vitest)
+- `npm run test:integration` — executa somente os testes de integração (Vitest + MSW)
+- `npm run test:watch` — roda os testes em modo watch (útil para desenvolvimento)
+- `npm run test:ui` — abre a interface gráfica do Vitest
+- `npm run test -- --coverage` — gera relatório de cobertura (V8)
+- `npm run test:e2e` — roda a suíte de E2E com Playwright (headless por padrão)
+- `npm run test:e2e:headed` — roda os testes E2E com o navegador aberto
+- `npm run msw:init` — (re)gera o service worker do MSW em `public/`
+- `scripts/test.sh --suite <tipo>` — runner unificado (`unit`, `integration`, `e2e` ou `all`)
 
+> Dica: rode `npx playwright install --with-deps` ao configurar o ambiente pela primeira vez ou sempre que atualizar o Playwright.
+
+---
+
+## Testes e convenções
+
+- **Onde ficam os testes?**
+  - `tests/unit/**` — pequenos testes de componentes/funções. Exemplos: `utils.test.ts`, `button.test.tsx`.
+  - `tests/integration/**` — valida fluxos que conversam com a API via TanStack Query/axios. Usa **MSW** para mockar HTTP (ver `src/test/msw`).
+  - `tests/e2e/**` — cenários ponta-a-ponta com Playwright. A configuração está em `playwright.config.ts`.
+- **Utilitários compartilhados:** use `renderWithProviders` e `renderHookWithProviders` de `src/test/test-utils.tsx` para prover QueryClient, i18n e Router nos testes de React.
+- **Mocks de rede:** Vitest usa o `server` do MSW automaticamente (configurado em `vitest.setup.ts`). Para desenvolvimento de UI, basta definir `VITE_USE_MSW=true` no `.env` e rodar `npm run msw:init` uma vez para gerar o `mockServiceWorker.js`.
+- **Linting específico:** `eslint-plugin-testing-library` e `eslint-plugin-jest-dom` já estão habilitados para qualquer arquivo `*.test.ts(x)`/`*.spec.ts(x)`.
+- **Cobertura:** o padrão mínimo configurado no `vite.config.ts` é 80% (linhas/funções) e 70% (branches). Ajuste conforme a necessidade do projeto.
+
+### Fluxo sugerido
+
+1. Rode `npm run test:watch` durante o desenvolvimento das unidades.
+2. Execute `npm run test:integration` antes de abrir PRs para garantir que os contratos HTTP ainda batem.
+3. Utilize `npm run test:e2e` ou `scripts/test.sh --suite e2e` para validar fluxos críticos (checkout, aprovação admin, etc.).
+
+> Há casos de teste marcados com `test.fixme` em `tests/e2e/auth.spec.ts`. Use-os como ponto de partida para cobrir os fluxos de autenticação completos.
 ---
 
 ## Estrutura do projeto (simplificada)
@@ -160,12 +188,18 @@ frontend/
 │  ├─ components/
 │  │  └─ ui/               # Componentes Shadcn/UI
 │  ├─ lib/                 # Utilitários e configurações
+│  ├─ test/                # MSW + helpers `renderWithProviders`
 │  ├─ routes/              # Rotas (file-based, Router)
-│  ├─ styles/globals.css           # Tailwind base + tokens
+│  ├─ styles/globals.css   # Tailwind base + tokens
 │  └─ main.tsx             # Bootstrap da aplicação
-├─ index.html              # Entrada Vite
+├─ tests/
+│  ├─ unit/                # Testes de unidade (Vitest)
+│  ├─ integration/         # Testes de integração (Vitest + MSW)
+│  └─ e2e/                 # Testes E2E (Playwright)
+├─ playwright.config.ts
+├─ index.html
 ├─ tailwind.config.js
-├─ vite.config.ts          # Inclui o plugin tanstack
+├─ vite.config.ts
 └─ package.json
 ```
 

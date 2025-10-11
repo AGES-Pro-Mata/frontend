@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { userQueryOptions, type CurrentUser } from "@/api/user";
 import type { RegisterUserPayload } from "@/api/user";
-import { StatusEnum } from "@/components/cards/cardStatus";
+import { StatusEnum } from "@/entities/reservation-status";
 
 function mapCurrentUserToProfile(
   user: CurrentUser
@@ -14,7 +14,7 @@ function mapCurrentUserToProfile(
     name: user.name,
     email: user.email,
     phone: user.phone,
-    cpf: user.cpf,
+    document: user.document,
     gender: user.gender,
     rg: user.rg,
     zipCode: user.address?.zip,
@@ -23,7 +23,8 @@ function mapCurrentUserToProfile(
     number: parsedNumber,
     institution: user.institution,
     country: user.address?.country,
-  function: (user as any).function || (user as any).role || undefined,
+    isForeign: user.isForeign ?? undefined,
+    function: (user as any).function || (user as any).role || undefined,
   };
 }
 

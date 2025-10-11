@@ -16,6 +16,32 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
   ],
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./vitest.setup.ts"],
+    include: [
+      "src/**/*.{test,spec}.{ts,tsx}",
+      "tests/**/*.{test,spec}.{ts,tsx}"
+    ],
+    exclude: [
+      "tests/e2e/**",
+    ],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json-summary", "lcov"],
+      reportsDirectory: "./coverage",
+      thresholds: {
+        statements: 80,
+        branches: 70,
+        functions: 80,
+        lines: 80,
+      },
+    },
+    css: {
+      include: [/.*/],
+    },
+  },
   build: {
     rollupOptions: {
       output: {
@@ -47,6 +73,7 @@ export default defineConfig({
       ".promata.com.br", // Allow all subdomains
       "*.azure.com", // Azure domains
       "*.azurewebsites.net", // Azure App Service domains
+      "ec2-3-139-75-61.us-east-2.compute.amazonaws.com",
     ],
     cors: {
       origin: [
@@ -54,6 +81,7 @@ export default defineConfig({
         "https://promata.com.br",
         "https://www.promata.com.br",
         "https://api.promata.com.br",
+        "http://ec2-3-139-75-61.us-east-2.compute.amazonaws.com",
         /^https:\/\/.*\.promata\.com\.br$/,
         /^https:\/\/.*\.azure\.com$/,
         /^https:\/\/.*\.azurewebsites\.net$/,
