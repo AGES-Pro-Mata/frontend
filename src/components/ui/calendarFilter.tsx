@@ -29,7 +29,7 @@ export function Calendar22({
     value ? new Date(value) : undefined
   )
 
-    React.useEffect(() => {
+  React.useEffect(() => {
     if (value) {
       setDate(new Date(value));
     }
@@ -38,7 +38,7 @@ export function Calendar22({
   const handleSelect = (selectedDate: Date | undefined) => {
     setDate(selectedDate);
     if (selectedDate && onChange) {
-      onChange(selectedDate); // Formato YYYY-MM-DD
+      onChange(selectedDate);
     }
     setOpen(false);
   };
@@ -50,7 +50,7 @@ export function Calendar22({
           <Button
             variant="outline"
             id="date"
-            className="w-48 justify-between font-normal"
+            className={`w-48 justify-between font-normal ${className || ""}`}
           >
             {date ? date.toLocaleDateString() : placeholder}
             <ChevronDownIcon />
@@ -61,10 +61,7 @@ export function Calendar22({
             mode="single"
             selected={date}
             captionLayout="dropdown"
-            onSelect={(date) => {
-              setDate(date)
-              setOpen(false)
-            }}
+            onSelect={handleSelect}
           />
         </PopoverContent>
       </Popover>
