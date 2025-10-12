@@ -49,6 +49,7 @@
     "cpf-cnpj-validator": "^1.0.3",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
+    "embla-carousel-react": "^8.6.0",
     "i18next": "^25.4.2",
     "joi": "^18.0.1",
     "lucide-react": "^0.476.0",

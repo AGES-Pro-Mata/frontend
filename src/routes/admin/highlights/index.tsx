@@ -131,8 +131,8 @@ function RouteComponent() {
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Arquivo muito grande. Tamanho máximo: 5MB");
+      if (file.size > 10 * 1024 * 1024) {
+        alert("Arquivo muito grande. Tamanho máximo: 10MB");
         return;
       }
 
@@ -428,7 +428,7 @@ function RouteComponent() {
                   )}
                 </label>
                 <Typography className="text-xs text-muted-foreground mt-2">
-                  Formatos: .PNG, .JPG, .JPEG (máx. 5MB)
+                  Formatos: .PNG, .JPG, .JPEG (máx. 10MB)
                 </Typography>
               </div>
             </div>
@@ -467,7 +467,12 @@ function RouteComponent() {
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!formData.title || (!editingImage && !formData.image)}
+              disabled={
+                !formData.title ||
+                (!editingImage && !formData.image) ||
+                createMutation.isPending ||
+                updateMutation.isPending
+              }
               className="bg-contrast-green hover:bg-contrast-green/90"
             >
               <Typography variant="body" className="text-white">

@@ -1,7 +1,6 @@
 const calendarIcon = "/calendar-icon.svg";
 const priceIcon = "/price-icon.svg";
 const personIcon = "/person-icon.svg";
-const xpImage = "/xp-image.png";
 import { Typography } from "@/components/typography/typography";
 import type { Locale } from "@/types/locale";
 
@@ -12,6 +11,7 @@ type summaryXpProps = {
   price: number;
   capacity: number;
   locale: Locale;
+  imageUrl: string;
 };
 
 type infoItemProps = {
@@ -26,6 +26,7 @@ export const SummaryExperience = ({
   price,
   capacity,
   locale,
+  imageUrl,
 }: summaryXpProps) => {
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: "short" });
 
@@ -35,7 +36,7 @@ export const SummaryExperience = ({
   return (
     <div className="flex gap-4 p-4 pr-16 bg-card-background w-fit rounded-2xl items-center shadow-xl">
       <div>
-        <img src={xpImage} alt="" className="rounded-2xl" />
+        <img src={imageUrl} alt="" className="rounded-2xl" />
       </div>
       <div className="flex flex-col gap-1">
         <Typography variant="h4" className="text-main-dark-green mb-2">
