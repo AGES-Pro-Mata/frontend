@@ -28,7 +28,7 @@ function RouteComponent() {
         </Typography>
         <div className="flex gap-4">
           <a
-            href="http://ec2-3-139-75-61.us-east-2.compute.amazonaws.com:5050/"
+            href="http://ec2-3-139-75-61.us-east-2.compute.amazonaws.com:5050"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -39,7 +39,7 @@ function RouteComponent() {
             </Button>
           </a>
           <a
-            href="http://ec2-3-139-75-61.us-east-2.compute.amazonaws.com:3001/"
+            href="http://ec2-3-139-75-61.us-east-2.compute.amazonaws.com:3001"
             target="_blank"
             rel="noopener noreferrer"
           >
