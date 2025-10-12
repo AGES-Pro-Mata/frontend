@@ -10,7 +10,6 @@ import { ReserveParticipantInputs } from "@/components/layouts/reserve/ReservePa
 import { Textarea } from "@/components/ui/textarea";
 import { ReservationsLayout } from "@/components/display/reservationEvents";
 
-
 import type {
   ReserveParticipant,
   ReserveSummaryExperience,
@@ -40,7 +39,7 @@ export function ReserveInfo({
 }: ReserveInfoProps) {
   const { t } = useTranslation();
 
-  const headerTitle = title ?? "Reserve Information";
+  const headerTitle = title ?? t("reservationInfo.title");
   const genderCounts = useMemo(() => {
     const counts = { men: 0, women: 0, other: 0 };
     (participants || []).forEach((p) => {
@@ -67,13 +66,13 @@ export function ReserveInfo({
             <div className="hidden sm:flex items-center gap-5 text-sm text-foreground/80">
               <span className="inline-flex items-center gap-2">
                 <HiUsers className="h-5 w-5 text-main-dark-green" />
-                <span className="font-medium">Homens:</span>&nbsp;{genderCounts.men}
+                <span className="font-medium">{t("reservationInfo.counts.men")}:</span>&nbsp;{genderCounts.men}
               </span>
               <span className="inline-flex items-center gap-2">
-                <span className="font-medium">Mulheres:</span>&nbsp;{genderCounts.women}
+                <span className="font-medium">{t("reservationInfo.counts.women")}:</span>&nbsp;{genderCounts.women}
               </span>
               <span className="inline-flex items-center gap-2">
-                <span className="font-medium">Outros:</span>&nbsp;{genderCounts.other}
+                <span className="font-medium">{t("reservationInfo.counts.other")}:</span>&nbsp;{genderCounts.other}
               </span>
             </div>
           </div>

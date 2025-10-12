@@ -371,7 +371,15 @@
       "back": "Voltar"
     }
   },
-
+  "reservationInfo": {
+    "title": "Reservation information",
+    "counts": {
+      "men": "Men",
+      "women": "Women",
+      "other": "Other",
+      "summary": "Men: {{men}} - Women: {{women}} - Other: {{other}}"
+    }
+  },
   "validation": {
     "email": "Digite um e-mail válido.",
     "passwordRequired": "Digite sua senha.",
@@ -395,8 +403,7 @@
     "mustAcceptTerms": "Você deve aceitar os termos de uso",
     "cityRequired": "Cidade é obrigatória",
     "numberRequired": "Número é obrigatório"
-  }
-  ,
+  },
   "footer": {
     "contact": "Entre em contato",
     "researchCenter": "Centro de Pesquisas PRÓ-MATA",

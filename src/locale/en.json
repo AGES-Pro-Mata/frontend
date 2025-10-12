@@ -359,6 +359,15 @@
             "back": "Back"
         }
     },
+    "reservationInfo": {
+        "title": "Reservation information",
+        "counts": {
+            "men": "Men",
+            "women": "Women",
+            "other": "Other",
+            "summary": "Men: {{men}} - Women: {{women}} - Other: {{other}}"
+        }
+    },
     "validation": {
         "email": "Enter a valid email.",
         "passwordRequired": "Enter your password.",
