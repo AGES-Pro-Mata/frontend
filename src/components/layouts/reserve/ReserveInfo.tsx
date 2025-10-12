@@ -3,10 +3,13 @@ import { ChevronLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/buttons/defaultButton";
+import { HiUsers } from "react-icons/hi";
 import CanvasCard from "@/components/cards/canvasCard";
 import { ReserveSummaryExperienceCard } from "@/components/cards/reserveSummaryExperienceCard";
 import { ReserveParticipantInputs } from "@/components/layouts/reserve/ReserveParticipantInputs";
 import { Textarea } from "@/components/ui/textarea";
+import { ReservationsLayout } from "@/components/display/reservationEvents";
+
 
 import type {
   ReserveParticipant,
@@ -14,11 +17,13 @@ import type {
 } from "@/types/reserve";
 import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
+import type { ReservationEvent } from "@/components/display/reservationEvents";
 
 export type ReserveInfoProps = {
   title?: string;
   participants: ReserveParticipant[];
   experiences: ReserveSummaryExperience[];
+  events?: ReservationEvent[];
   notes?: string;
   onBack?: () => void;
   className?: string;
@@ -28,6 +33,7 @@ export function ReserveInfo({
   title,
   participants,
   experiences,
+  events,
   notes,
   onBack,
   className,
@@ -35,17 +41,41 @@ export function ReserveInfo({
   const { t } = useTranslation();
 
   const headerTitle = title ?? "Reserve Information";
+  const genderCounts = useMemo(() => {
+    const counts = { men: 0, women: 0, other: 0 };
+    (participants || []).forEach((p) => {
+      const g = String((p as any).gender || "").toUpperCase();
+      if (g === "MALE" || g === "M") counts.men += 1;
+      else if (g === "FEMALE" || g === "F") counts.women += 1;
+      else counts.other += 1;
+    });
+    return counts;
+  }, [participants]);
 
   const experiencesToRender = useMemo(() => experiences ?? [], [experiences]);
+  const eventsToRender = useMemo(() => events ?? [], [events]);
 
   return (
-    <section className={cn("min-h-screen py-10", className)}>
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
+    <section className={cn("min-h-screen py-5", className)}>
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-2 sm:px-6 lg:px-8">
+        <header className="flex items-center gap-6">
+          <div className="flex items-center gap-6">
             <Typography variant="h1" className="text-3xl font-bold text-main-dark-green md:text-4xl">
               {headerTitle}
             </Typography>
+
+            <div className="hidden sm:flex items-center gap-5 text-sm text-foreground/80">
+              <span className="inline-flex items-center gap-2">
+                <HiUsers className="h-5 w-5 text-main-dark-green" />
+                <span className="font-medium">Homens:</span>&nbsp;{genderCounts.men}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <span className="font-medium">Mulheres:</span>&nbsp;{genderCounts.women}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <span className="font-medium">Outros:</span>&nbsp;{genderCounts.other}
+              </span>
+            </div>
           </div>
         </header>
 
@@ -85,7 +115,6 @@ export function ReserveInfo({
               </div>
             ) : null}
 
-            {/* Experiences block */}
             <div className="flex flex-col gap-3">
               <Typography variant="h3" className="text-2xl font-semibold text-main-dark-green">
               </Typography>
@@ -98,6 +127,10 @@ export function ReserveInfo({
             </div>
           </div>
         </CanvasCard>
+
+        {eventsToRender && eventsToRender.length > 0 ? (
+          <ReservationsLayout events={eventsToRender} />
+        ) : null}
 
         <div className="flex justify-end">
           <Button

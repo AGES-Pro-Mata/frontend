@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { ReserveInfo } from "@/components/layouts/reserve/ReserveInfo";
+import type { ReservationEvent } from "@/components/display/reservationEvents";
 import type {
   ReserveParticipant,
   ReserveSummaryExperience,
@@ -67,10 +68,30 @@ const mockExperiences: ReserveSummaryExperience[] = [
 function ReserveInfoPage() {
   const navigate = useNavigate();
 
+  const mockEvents: ReservationEvent[] = [
+    {
+      id: "e1",
+      user: "Usuário",
+      status: "Solicitação enviada\nAguardando confirmação",
+      date: "12/10/2025",
+      time: "14:00",
+      avatarUrl: undefined,
+    },
+    {
+      id: "e2",
+      user: "Você",
+      status: "Reserva aceita\nInstruções enviadas",
+      date: "13/10/2025",
+      time: "09:30",
+      avatarUrl: undefined,
+    },
+  ];
+
   return (
     <ReserveInfo
       participants={mockPeople}
       experiences={mockExperiences}
+      events={mockEvents}
       notes="Sem observações"
       onBack={() => navigate({ to: "/" })}
     />
