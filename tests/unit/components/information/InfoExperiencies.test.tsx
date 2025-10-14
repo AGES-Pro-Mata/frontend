@@ -30,7 +30,6 @@ vi.mock("react-i18next", async (importOriginal) => {
 });
 
 
-// Mock do TanStack Router Link
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ to, children }: { to: string; children: React.ReactNode }) => (
     <a href={to} data-testid="link">
@@ -39,7 +38,6 @@ vi.mock("@tanstack/react-router", () => ({
   ),
 }));
 
-// Mock do botão usado dentro do componente
 vi.mock("@/components/buttons/defaultButton", () => ({
   Button: ({ label, variant, className }: any) => (
     <button
@@ -52,7 +50,6 @@ vi.mock("@/components/buttons/defaultButton", () => ({
   ),
 }));
 
-// Mock do Typography (usado várias vezes)
 vi.mock("@/components/typography/typography", () => ({
   Typography: ({ children, className }: any) => (
     <p data-testid="typography" className={className}>
