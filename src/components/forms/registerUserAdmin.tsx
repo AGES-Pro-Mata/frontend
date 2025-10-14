@@ -556,7 +556,7 @@ export function RegisterUserAdmin() {
                   <TextInput
                     label="Senha"
                     required
-                    type="password"
+                    type="text"
                     placeholder="Senha"
                     {...field}
                   />
