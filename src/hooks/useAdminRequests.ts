@@ -16,7 +16,6 @@ const reservationStatus = [
 ];
 
 async function fetchRequests({ page = 1, limit = 10, status }: { page?: number; limit?: number; status?: string }) {
-  //await new Promise(r => setTimeout(r, 5000));
   const params: any = { page, limit };
   if (status) params.status = status;
   const response = await axios.get("/api/requests", { params });
@@ -28,8 +27,7 @@ export function useAdminRequests(filters: { page?: number; limit?: number; statu
 
   const requestsQuery = useQuery({
     queryKey: ["adminRequests", filters],
-    queryFn: () => { // Simula um atraso de 500ms
-      return fetchRequests(filters)},
+    queryFn: () => fetchRequests(filters)
   });
 
   // Exemplo de mutation para aprovar (ajuste endpoint se necessário)

@@ -20,7 +20,6 @@ export const useFetchAdminUsers = ({ filters }: useFetchAdminUsersParams) => {
   const { data, isFetching, refetch, isLoading } = useQuery({
     queryKey: [ADMIN_USERS_QUERY_KEY, filters],
     queryFn: async () => {
-      //await new Promise(r => setTimeout(r, 5000));
       const response = await api.get<
         {
           items: TUserAdminResponse[];

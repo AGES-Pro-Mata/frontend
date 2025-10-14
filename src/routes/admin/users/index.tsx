@@ -73,8 +73,6 @@ function RouteComponent() {
     navigate({ to: "/admin/users/create" });
   };
 
-  const loading = isLoading;
-
   const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
   const columns = [
     {
@@ -174,7 +172,7 @@ function RouteComponent() {
         </Button>
       </div>
       <div className="relative">
-      {loading && (
+      {isLoading && (
           <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
             <MoonLoader size={35} color="#22c55e" />
           </div>
