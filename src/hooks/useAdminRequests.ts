@@ -27,7 +27,7 @@ export function useAdminRequests(filters: { page?: number; limit?: number; statu
 
   const requestsQuery = useQuery({
     queryKey: ["adminRequests", filters],
-    queryFn: () => fetchRequests(filters),
+    queryFn: () => fetchRequests(filters)
   });
 
   // Exemplo de mutation para aprovar (ajuste endpoint se necessário)

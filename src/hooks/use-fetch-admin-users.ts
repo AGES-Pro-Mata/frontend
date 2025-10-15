@@ -17,7 +17,7 @@ type useFetchAdminUsersParams = {
 };
 
 export const useFetchAdminUsers = ({ filters }: useFetchAdminUsersParams) => {
-  const { data, isFetching, refetch } = useQuery({
+  const { data, isFetching, refetch, isLoading } = useQuery({
     queryKey: [ADMIN_USERS_QUERY_KEY, filters],
     queryFn: async () => {
       const response = await api.get<
@@ -41,6 +41,7 @@ export const useFetchAdminUsers = ({ filters }: useFetchAdminUsersParams) => {
     meta,
     data,
     isFetching,
+    isLoading,
     refetch,
   };
 };

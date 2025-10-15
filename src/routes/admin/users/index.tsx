@@ -16,8 +16,8 @@ import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDeleteUser } from "@/hooks/use-delete-users";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { MoonLoader } from "react-spinners";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
   ["name"]: "Nome",
@@ -46,8 +46,7 @@ function RouteComponent() {
       page: 0,
     },
   });
-
-  const { items, meta } = useFetchAdminUsers({ filters });
+  const { items, meta, isLoading } = useFetchAdminUsers({ filters });
   const { handleDeleteUser } = useDeleteUser();
 
   const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,6 +172,12 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
+      <div className="relative">
+      {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+            <MoonLoader size={35} color="#22c55e" />
+          </div>
+          )}
       <DataTable
         data={items}
         columns={columns}
@@ -180,6 +185,7 @@ function RouteComponent() {
         meta={meta}
         setFilter={setFilter}
       />
+      </div>
     </div>
   );
 }
