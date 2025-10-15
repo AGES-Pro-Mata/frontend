@@ -4,6 +4,9 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/typography';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useEffect, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +23,7 @@ export const Route = createFileRoute('/admin/experiences/')({
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
   const { filters, setFilter } = useFilters<TExperienceAdminRequestFilters>({
     key: 'get-admin-experience',
     initialFilters: {
@@ -28,6 +32,16 @@ function RouteComponent() {
     },
   });
   const { items, meta, isFetching, isLoading } = useFetchAdminExperiences({ filters });
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  useEffect(() => {
+    setFilter('name', debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
+
+  const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   const columns = [
     {
@@ -77,7 +91,13 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col w-full h-full p-4 gap-6">
-      <div className="flex justify-end items-center">
+      <div className="flex justify-between items-center">
+        <Input
+          value={searchTerm}
+          className="w-1/3 h-12"
+          placeholder="Buscar por nome"
+          onChange={onChangeSearch}
+        />
         <Button
           onClick={navigateToCreateExperience}
           className="bg-contrast-green h-12 hover:bg-contrast-green/90 active:bg-contrast-green/70"
