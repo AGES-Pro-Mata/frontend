@@ -54,8 +54,8 @@ const schema = z
     number: z.string().optional().default(""),
     city: z.string().optional().default(""),
     institution: z.string().optional(),
-  function: z.string().optional(),
-  docencyDocument: z.instanceof(File).optional(),
+    function: z.string().optional(),
+    docencyDocument: z.instanceof(File).optional(),
     wantsDocencyRegistration: z.boolean().default(false),
     isForeign: z.boolean().default(false),
   })
@@ -105,8 +105,8 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
       gender: normalizeGender(mapped?.gender),
       number: mapped?.number ? String(mapped.number) : "",
       city: mapped?.city || "",
-  institution: mapped?.institution || "",
-  function: (mapped as any)?.function || "",
+      institution: mapped?.institution || "",
+      function: (mapped as any)?.function || "",
       wantsDocencyRegistration: false,
       isForeign: !!mapped?.isForeign,
     },
@@ -203,7 +203,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
             setTimeout(() => onBack?.(), 600);
           } else appToast.error(t("profile.edit.toasts.error"));
         },
-  onError: () => appToast.error(t("profile.edit.toasts.error")),
+        onError: () => appToast.error(t("profile.edit.toasts.error")),
       });
       return;
     }
@@ -219,7 +219,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
           appToast.error(t("profile.edit.toasts.error"));
         }
       },
-  onError: () => appToast.error(t("profile.edit.toasts.error")),
+      onError: () => appToast.error(t("profile.edit.toasts.error")),
     });
   };
   return (
@@ -314,12 +314,20 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                         onValueChange={(v) => field.onChange(v)}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder={t("register.fields.gender.select")} />
+                          <SelectValue
+                            placeholder={t("register.fields.gender.select")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="female">{t("register.fields.gender.female")}</SelectItem>
-                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
-                          <SelectItem value="other">{t("register.fields.gender.other")}</SelectItem>
+                          <SelectItem value="female">
+                            {t("register.fields.gender.female")}
+                          </SelectItem>
+                          <SelectItem value="male">
+                            {t("register.fields.gender.male")}
+                          </SelectItem>
+                          <SelectItem value="other">
+                            {t("register.fields.gender.other")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -403,7 +411,9 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                       <TextInput
                         label={t("register.fields.country")}
                         required
-                        placeholder={isForeign ? t("register.fields.country") : "Brasil"}
+                        placeholder={
+                          isForeign ? t("register.fields.country") : "Brasil"
+                        }
                         value={field.value || (isForeign ? "" : "Brasil")}
                         disabled={!isForeign}
                         onChange={(e) => field.onChange(e.target.value)}
@@ -491,14 +501,26 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder={t("register.fields.function.select")} />
+                          <SelectValue
+                            placeholder={t("register.fields.function.select")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="student">{t("register.fields.function.student")}</SelectItem>
-                          <SelectItem value="teacher">{t("register.fields.function.teacher")}</SelectItem>
-                          <SelectItem value="researcher">{t("register.fields.function.researcher")}</SelectItem>
-                          <SelectItem value="employee">{t("register.fields.function.employee")}</SelectItem>
-                          <SelectItem value="other">{t("register.fields.function.other")}</SelectItem>
+                          <SelectItem value="student">
+                            {t("register.fields.function.student")}
+                          </SelectItem>
+                          <SelectItem value="teacher">
+                            {t("register.fields.function.teacher")}
+                          </SelectItem>
+                          <SelectItem value="researcher">
+                            {t("register.fields.function.researcher")}
+                          </SelectItem>
+                          <SelectItem value="employee">
+                            {t("register.fields.function.employee")}
+                          </SelectItem>
+                          <SelectItem value="other">
+                            {t("register.fields.function.other")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -563,7 +585,9 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                           />
                           {value && (
                             <Typography className="text-sm text-contrast-green">
-                              {t("register.fields.docency.uploaded", { name: (value as File).name })}
+                              {t("register.fields.docency.uploaded", {
+                                name: (value as File).name,
+                              })}
                             </Typography>
                           )}
                         </div>
