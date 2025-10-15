@@ -57,7 +57,7 @@ export function ApproveProfessorCard({ professor }: ApproveProfessorCardProps) {
         },
       });
     },
-    [mutation, professor]
+    [mutation, professor],
   );
 
   const [openReceipt, setOpenReceipt] = useState(false);

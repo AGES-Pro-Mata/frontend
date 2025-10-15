@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/core/api";
 const reservationStatus = [
@@ -14,14 +13,28 @@ const reservationStatus = [
   "PAYMENT_SENT",
 ];
 
-async function fetchRequests({ page = 1, limit = 10, status }: { page?: number; limit?: number; status?: string }) {
-  const params: any = { page, limit };
+async function fetchRequests({
+  page = 1,
+  limit = 10,
+  status,
+}: {
+  page?: number;
+  limit?: number;
+  status?: string;
+}) {
+  const params = { page, limit, status };
+
   if (status) params.status = status;
   const response = await api.get("/api/requests", { params });
-  return response.data; 
+
+  return response.data;
 }
 
-export function useAdminRequests(filters: { page?: number; limit?: number; status?: string }) {
+export function useAdminRequests(filters: {
+  page?: number;
+  limit?: number;
+  status?: string;
+}) {
   const queryClient = useQueryClient();
 
   const requestsQuery = useQuery({
@@ -33,10 +46,11 @@ export function useAdminRequests(filters: { page?: number; limit?: number; statu
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
       const response = await api.post(`/api/requests/${id}/approve`);
+
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adminRequests"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["adminRequests"] });
     },
   });
 
@@ -46,3 +60,4 @@ export function useAdminRequests(filters: { page?: number; limit?: number; statu
     reservationStatus,
   };
 }
+
