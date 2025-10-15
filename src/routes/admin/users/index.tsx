@@ -50,15 +50,10 @@ function RouteComponent() {
   const { items, meta } = useFetchAdminUsers({ filters });
   const { handleDeleteUser } = useDeleteUser();
 
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
-  useEffect(() => {
-    setFilter(selectedFilter, debouncedSearchTerm);
-  }, [debouncedSearchTerm, selectedFilter]);
-
   const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
+    setFilter(selectedFilter, value);
   };
 
   const onChangeFilter = (value: FilterKey) => {
