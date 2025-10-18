@@ -43,25 +43,25 @@ describe("CartItem", () => {
       />
     );
 
-    // 1. Encontra todos os elementos com a role "button"
+    //encontra todos os elementos com a role "button"
     const allButtons = screen.getAllByRole("button");
 
-    // 2. O botão do card é o que tem o título da experiência como conteúdo
+    //  botão do card é o que tem o título da experiência como conteúdo
     const cardButton = allButtons.find((button) =>
       button.textContent.includes("Experiência Teste")
     );
 
-    // 3. O botão de remover é o que NÃO tem conteúdo de texto
+    // botão de remover é o que NÃO tem conteúdo de texto
     const removeBtn = allButtons.find((button) => button.textContent === "");
 
-    // Assegura que ambos os botões foram encontrados antes de prosseguir
+    // assegura que ambos os botões foram encontrados antes de prosseguir
     if (!cardButton || !removeBtn) {
       throw new Error(
         "Não foi possível encontrar os botões necessários para o teste."
       );
     }
 
-    // Clica no card e verifica a chamada de onSelect
+    // clica no card e verifica a chamada de onSelect
     await user.click(cardButton);
     expect(onSelect).toHaveBeenCalledWith(
       expect.objectContaining({ id: "exp-1" })
