@@ -1,12 +1,18 @@
-import { Carousel } from "@/components/carousel/carousel";
+import { Carousel } from "@/components/carousel";
 import { renderWithProviders } from "@/test/test-utils";
 import { fireEvent, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
-global.ResizeObserver = class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+globalThis.ResizeObserver = class ResizeObserver {
+  observe() {
+    return;
+  }
+  unobserve() {
+    return;
+  }
+  disconnect() {
+    return;
+  }
 };
 
 describe("Carousel", () => {
@@ -14,11 +20,13 @@ describe("Carousel", () => {
     renderWithProviders(<Carousel></Carousel>);
 
     const titulo = screen.getByText("Conheça seu Destino!");
+
     expect(titulo).toBeInTheDocument();
 
     const subtitulo = screen.getByText(
       "Conheça alguns dos cenários deslumbrantes que você encontrará no PRÓ-MATA"
     );
+
     expect(subtitulo).toBeInTheDocument();
   });
 
@@ -26,6 +34,7 @@ describe("Carousel", () => {
     renderWithProviders(<Carousel></Carousel>);
 
     const imgs = screen.getAllByRole("img");
+
     expect(imgs).toHaveLength(8);
   });
 
@@ -33,6 +42,7 @@ describe("Carousel", () => {
     renderWithProviders(<Carousel></Carousel>);
 
     const buttons = screen.getAllByRole("button");
+
     expect(buttons).toHaveLength(2);
   });
 
@@ -46,7 +56,7 @@ describe("Carousel", () => {
 
     fireEvent.click(thirdImg);
 
-    expect(imgs[0].getAttribute("src")).toBe(thirdImgSrc);
+    expect(imgs[0]).toHaveAttribute("src", thirdImgSrc);
   });
 
   it("navigates carousel forward with next button", () => {
