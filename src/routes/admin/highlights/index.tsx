@@ -4,16 +4,16 @@ import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader } from "@/components/ui/card";
 import { HighlightCategory } from "@/entities/highlights";
 import {
-  FlaskConical,
   Bed,
   Calendar,
-  Mountain,
-  Images,
-  Upload,
-  Trash2,
   Edit,
+  FlaskConical,
+  Images,
+  Mountain,
+  Trash2,
+  Upload,
 } from "lucide-react";
-import { useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,10 +24,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import {
-  useFetchHighlightsByCategories,
   useCreateHighlight,
-  useUpdateHighlight,
   useDeleteHighlight,
+  useFetchHighlightsByCategories,
+  useUpdateHighlight,
 } from "@/hooks/useHighlights";
 import { appToast } from "@/components/toast/toast";
 import { CanvasCard } from "@/components/cards";
@@ -45,7 +45,7 @@ type HighlightImage = {
   order: number;
 };
 
-function RouteComponent() {
+export function RouteComponent() {
   const [activeCategory, setActiveCategory] = useState<HighlightCategory>(
     HighlightCategory.LABORATORIO
   );
@@ -60,6 +60,9 @@ function RouteComponent() {
     image: null as File | null,
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [highlightToDelete, setHighlightToDelete] =
+    useState<HighlightImage | null>(null);
 
   const {
     data: highlightsData,
@@ -78,7 +81,7 @@ function RouteComponent() {
     [HighlightCategory.CARROSSEL]: [],
   };
 
-  const getCategoryInfo = (category: string) => {
+  const getCategoryInfo = (category: HighlightCategory) => {
     switch (category) {
       case HighlightCategory.LABORATORIO:
         return { icon: FlaskConical, label: "Laboratórios", maxImages: 3 };
@@ -123,32 +126,39 @@ function RouteComponent() {
     setImagePreview(null);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Por favor, selecione apenas arquivos de imagem");
-        return;
-      }
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
 
-      if (file.size > 10 * 1024 * 1024) {
-        alert("Arquivo muito grande. Tamanho máximo: 10MB");
-        return;
-      }
-
-      setFormData({ ...formData, image: file });
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) {
+      return;
     }
+
+    if (!file.type.startsWith("image/")) {
+      appToast.error("Por favor, selecione apenas arquivos de imagem");
+
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      appToast.error("Arquivo muito grande. Tamanho máximo: 10MB");
+
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, image: file }));
+
+    const reader = new FileReader();
+
+    reader.onload = (readerEvent) => {
+      setImagePreview(readerEvent.target?.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = () => {
     if (!formData.title || (!editingImage && !formData.image)) {
       appToast.error("Preencha todos os campos obrigatórios");
+
       return;
     }
 
@@ -167,7 +177,7 @@ function RouteComponent() {
           onSuccess: () => {
             appToast.success("Destaque atualizado com sucesso!");
             handleCloseDialog();
-            refetch();
+            void refetch();
           },
           onError: () => {
             appToast.error("Erro ao atualizar destaque");
@@ -190,7 +200,7 @@ function RouteComponent() {
           onSuccess: () => {
             appToast.success("Destaque criado com sucesso!");
             handleCloseDialog();
-            refetch();
+            void refetch();
           },
           onError: () => {
             appToast.error("Erro ao criar destaque");
@@ -200,18 +210,31 @@ function RouteComponent() {
     }
   };
 
-  const handleDelete = (imageId: string) => {
-    if (confirm("Tem certeza que deseja excluir esta imagem?")) {
-      deleteMutation.mutate(imageId, {
-        onSuccess: () => {
-          appToast.success("Destaque excluído com sucesso!");
-          refetch();
-        },
-        onError: () => {
-          appToast.error("Erro ao excluir destaque");
-        },
-      });
+  const handleRequestDelete = (image: HighlightImage) => {
+    setHighlightToDelete(image);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setHighlightToDelete(null);
+    setIsDeleteDialogOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!highlightToDelete) {
+      return;
     }
+
+    deleteMutation.mutate(highlightToDelete.id, {
+      onSuccess: () => {
+        appToast.success("Destaque excluído com sucesso!");
+        handleCloseDeleteDialog();
+        void refetch();
+      },
+      onError: () => {
+        appToast.error("Erro ao excluir destaque");
+      },
+    });
   };
 
   const renderCategoryContent = (category: HighlightCategory) => {
@@ -292,7 +315,7 @@ function RouteComponent() {
                       size="icon"
                       variant="secondary"
                       className="h-8 w-8 bg-white/90 hover:bg-white"
-                      onClick={() => handleDelete(image.id)}
+                      onClick={() => handleRequestDelete(image)}
                     >
                       <Trash2 className="h-4 w-4 text-contrast-green" />
                     </Button>
@@ -385,7 +408,16 @@ function RouteComponent() {
       {/* Category Content */}
       <div className="mt-4">{renderCategoryContent(activeCategory)}</div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog
+        open={isDialogOpen}
+  onOpenChange={(open: boolean) => {
+          if (!open) {
+            handleCloseDialog();
+          } else {
+            setIsDialogOpen(true);
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <Typography variant="h3" className="text-lg font-semibold">
@@ -439,8 +471,11 @@ function RouteComponent() {
                 id="title"
                 placeholder="Digite o título da imagem"
                 value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    title: event.target.value,
+                  }))
                 }
               />
             </div>
@@ -453,8 +488,11 @@ function RouteComponent() {
                 id="description"
                 placeholder="Digite uma descrição para a imagem"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
+                onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: event.target.value,
+                  }))
                 }
                 rows={3}
               />
@@ -477,6 +515,50 @@ function RouteComponent() {
             >
               <Typography variant="body" className="text-white">
                 {editingImage ? "Salvar" : "Adicionar"}
+              </Typography>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isDeleteDialogOpen}
+        onOpenChange={(open: boolean) => {
+          if (!open) {
+            handleCloseDeleteDialog();
+          } else {
+            setIsDeleteDialogOpen(true);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <Typography variant="h3" className="text-lg font-semibold">
+              Confirmar exclusão
+            </Typography>
+            <Typography className="text-sm text-muted-foreground">
+              Tem certeza que deseja excluir o destaque{" "}
+              <span className="font-semibold">
+                {highlightToDelete?.title ?? "selecionado"}
+              </span>
+              ?
+            </Typography>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="secondary"
+              onClick={handleCloseDeleteDialog}
+              disabled={deleteMutation.isPending}
+            >
+              <Typography variant="body">Cancelar</Typography>
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              className="bg-default-red hover:bg-default-red/90"
+              disabled={deleteMutation.isPending}
+            >
+              <Typography variant="body" className="text-white">
+                Excluir
               </Typography>
             </Button>
           </DialogFooter>

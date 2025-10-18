@@ -1,6 +1,6 @@
 import { HighlightsCarousel } from "@/components/carousel";
 import { CardsInfoOnHover } from "@/components/cards/cardInfoOnHover";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/buttons/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/(index)/")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+export function RouteComponent() {
   const { t } = useTranslation();
   const [heroLoaded, setHeroLoaded] = useState(false);
   const { data: highlightsData, isLoading } =
@@ -29,10 +29,10 @@ function RouteComponent() {
 
   const carouselHighlights = useMemo(() => {
     const items = highlightsData?.[HighlightCategory.CARROSSEL];
+
     return sortByOrder(items);
   }, [highlightsData, sortByOrder]);
 
-  console.log(carouselHighlights);
   const cardsHighlights = useMemo(() => {
     if (!highlightsData) return undefined;
 
@@ -43,6 +43,7 @@ function RouteComponent() {
       trails: sortByOrder(highlightsData[HighlightCategory.TRILHA]),
     };
   }, [highlightsData, sortByOrder]);
+
   return (
     <div className="w-full overflow-x-hidden">
       <div className="relative w-full h-screen bg-main-dark-green/70 flex items-start justify-center pt-[clamp(2rem,6vh,5rem)]">

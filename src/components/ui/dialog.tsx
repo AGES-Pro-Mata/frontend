@@ -63,6 +63,10 @@ function DialogContent({
         )}
         {...props}
       >
+        <DialogPrimitive.Title
+          className="absolute top-4 left-4 text-sm font-medium"
+          data-slot="dialog-accessibility-title"
+        />
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close

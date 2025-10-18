@@ -14,10 +14,12 @@ const ImageLoader = memo(function ImageLoader({
   src,
   alt,
   className,
+  isDecorative = false,
 }: {
   src: string;
   alt: string;
   className?: string;
+  isDecorative?: boolean;
 }) {
   const [loaded, setLoaded] = useState(false);
 
@@ -25,7 +27,8 @@ const ImageLoader = memo(function ImageLoader({
     <div className={cn("relative overflow-hidden", className)}>
       <img
         src={src}
-        alt={alt}
+        alt={isDecorative ? "" : alt}
+        aria-hidden={isDecorative ? true : undefined}
         className={cn(
           "h-full w-full object-cover transition-opacity duration-300",
           loaded ? "opacity-100" : "opacity-0"
@@ -36,7 +39,7 @@ const ImageLoader = memo(function ImageLoader({
       {!loaded && (
         <div
           className="absolute inset-0 animate-pulse bg-muted"
-          aria-hidden="true"
+          aria-hidden={true}
         />
       )}
     </div>
@@ -159,11 +162,12 @@ export function HighlightsCarousel({
                 src={highlight.imageUrl}
                 alt={highlight.title}
                 className="h-full w-full"
+                isDecorative={true}
               />
               {index === selectedIndex && (
                 <div
                   className="absolute inset-0 border-2 border-main-dark-green"
-                  aria-hidden="true"
+                  aria-hidden={true}
                 />
               )}
             </button>
