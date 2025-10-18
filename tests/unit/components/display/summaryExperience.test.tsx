@@ -1,43 +1,45 @@
-import { SummaryExperience } from "@/components/display";
-import { renderWithProviders } from "@/test/test-utils";
-import { screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { SummaryExperience } from "@/components/display/summaryExperience";
 
-describe("SummaryExperience",()=>{
+describe("SummaryExperience", () => {
+  it("renders formatted experience information", () => {
+    render(
+      <SummaryExperience
+        experience="Workshop de Robótica"
+        startDate="2025-01-01"
+        endDate="2025-01-05"
+        price={199.9}
+        capacity={20}
+        locale="pt-BR"
+        imageUrl="/workshop.png"
+      />
+    );
 
-  const experienceInfo = {
-    experience: "Trilha Teste",
-    startDate: "2025-10-12",
-    endDate: "2025-10-20",
-    price: 1500,
-    capacity: 10,
-    locale: "pt-BR" as const,
-  };
+    expect(screen.getByText("Workshop de Robótica")).toBeInTheDocument();
+    expect(screen.getByText("R$ 199.9")).toBeInTheDocument();
+    expect(screen.getByText("20 pessoas")).toBeInTheDocument();
+    expect(
+      screen.getByAltText("Workshop de Robótica")
+    ).toHaveAttribute("src", "/workshop.png");
+    expect(screen.getByText(/01\/01\/2025/)).toBeInTheDocument();
+  });
 
-  it("renders summaryExperience with basic info",()=>{
-    renderWithProviders(<SummaryExperience {...experienceInfo}></SummaryExperience>)
+  it("falls back to original date string when formatting fails", () => {
+    render(
+      <SummaryExperience
+        experience="Visita Técnica"
+        startDate="sem-data"
+        endDate="2025-01-05"
+        price={0}
+        capacity={10}
+        locale="pt-BR"
+        imageUrl="/visit.png"
+      />
+    );
 
-    const titulo = screen.getByText("Trilha Teste");
-    expect(titulo).toBeInTheDocument();
-
-    const preco = screen.getByText("R$ 1500");
-    expect(preco).toBeInTheDocument();
-
-    const capacity = screen.getByText("10 pessoas");
-    expect(capacity).toBeInTheDocument();
-  })
-
-  // it("formats date according to locale",()=>{
-  //   renderWithProviders(<SummaryExperience {...experienceInfo}></SummaryExperience>)
-    
-  //   const datas = screen.getByText("12/10/2025 a 20/10/2025");
-  //   expect(datas).toBeInTheDocument();
-  // })
-
-  it("renders all images",()=>{
-    renderWithProviders(<SummaryExperience {...experienceInfo}></SummaryExperience>)
-
-    const imgs = screen.getAllByRole("presentation");
-    expect(imgs).toHaveLength(4);
-  })
-
-})
+    expect(
+      screen.getByText("sem-data a 05/01/2025")
+    ).toBeInTheDocument();
+  });
+});

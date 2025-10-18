@@ -1,4 +1,4 @@
-import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ShowInfo } from "@/components/display/showInfo";
 import { Typography } from "@/components/typography/typography";
