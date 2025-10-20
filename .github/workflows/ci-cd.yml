@@ -68,7 +68,7 @@ jobs:
 
       - name: Run Tests (Vitest)
         run: |
-          npm test || echo "No tests found, continuing..."
+          npm test
 
       - name: Upload coverage to Codecov (non-blocking)
         uses: codecov/codecov-action@v4
@@ -167,15 +167,6 @@ jobs:
           fi
 
           aws s3 sync dist/ "s3://$TARGET_BUCKET" --delete
-
-      - name: Invalidate CloudFront cache
-        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-            --paths '/*'
-        env:
-          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
 
       - name: Deployment Summary
         run: |

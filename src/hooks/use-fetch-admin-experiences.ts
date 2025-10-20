@@ -27,11 +27,11 @@ export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesPa
     },
   });
 
-  const { items = [] } = data || {};
+  const { items = [] } = query.data || {};
   const meta = {
-    total: data?.total ?? 0,
-    page: data?.page ?? 0,
-    limit: data?.limit ?? 10,
+    total: query.data?.total ?? 0,
+    page: query.data?.page ?? 0,
+    limit: query.data?.limit ?? 10,
   };
 
   const parsedItems = items.map((e) => {

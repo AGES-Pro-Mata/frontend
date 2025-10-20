@@ -1,12 +1,12 @@
-import DataTable from '@/components/table';
-import { useFilters } from '@/hooks/filters/filters';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/typography';
-import { Edit, MoreHorizontal, Trash } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useEffect, useState } from 'react';
+import DataTable from "@/components/table";
+import { useFilters } from "@/hooks/filters/filters";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/typography";
+import { Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,15 +17,15 @@ import { useFetchAdminExperiences } from '@/hooks/use-fetch-admin-experiences';
 import type { TExperienceAdminRequestFilters } from '@/entities/experiences-admin-filters';
 import { MoonLoader } from "react-spinners";
 
-export const Route = createFileRoute('/admin/experiences/')({
+export const Route = createFileRoute("/admin/experiences/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const { filters, setFilter } = useFilters<TExperienceAdminRequestFilters>({
-    key: 'get-admin-experience',
+    key: "get-admin-experience",
     initialFilters: {
       limit: 10,
       page: 0,
@@ -36,7 +36,7 @@ function RouteComponent() {
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   useEffect(() => {
-    setFilter('name', debouncedSearchTerm);
+    setFilter("name", debouncedSearchTerm);
   }, [debouncedSearchTerm]);
 
   const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,22 +45,22 @@ function RouteComponent() {
 
   const columns = [
     {
-      accessorKey: 'name',
-      header: 'Name',
+      accessorKey: "name",
+      header: "Name",
       enableSorting: true,
     },
     {
-      accessorKey: 'description',
-      header: 'Descrição',
+      accessorKey: "description",
+      header: "Descrição",
       enableSorting: true,
     },
     {
-      accessorKey: 'date',
-      header: 'Data',
+      accessorKey: "date",
+      header: "Data",
       enableSorting: true,
     },
     {
-      id: 'actions',
+      id: "actions",
       enableHiding: false,
       size: 50,
       cell: () => {
@@ -71,11 +71,11 @@ function RouteComponent() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem className="cursor-pointer gap-4">
-                {'Editar'}
+                {"Editar"}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer text-red-500 gap-3">
-                {'Excluir'}
+                {"Excluir"}
                 <Trash className="size-4 text-red-500" />
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -86,7 +86,7 @@ function RouteComponent() {
   ];
 
   const navigateToCreateExperience = () => {
-    navigate({ to: '/admin/experiences/create' });
+    navigate({ to: "/admin/experiences/create" });
   };
 
   return (

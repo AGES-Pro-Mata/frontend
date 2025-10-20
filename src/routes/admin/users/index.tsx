@@ -49,8 +49,9 @@ function RouteComponent() {
   const { items, meta, isLoading } = useFetchAdminUsers({ filters });
   const { handleDeleteUser } = useDeleteUser();
 
-  const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
     setSearchTerm(value);
     setFilter(selectedFilter, value);
   };
