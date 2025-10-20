@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { Typography } from "@/components/typography/typography";
 import { homeCards, type HomeCard } from "@/content/cardsInfo";
 import { cn } from "@/lib/utils";

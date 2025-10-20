@@ -10,9 +10,9 @@ import {
   FormDescription,
   FormLabel,
 } from "@/components/ui/form";
-import { TextInput } from "@/components/inputs/textInput";
+import { TextInput } from "@/components/input/textInput";
 import { Typography } from "@/components/typography/typography";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { useRegisterAdmin } from "@/hooks/useRegisterAdmin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import ExperienceCard from "@/components/cards/experienceTuningCard";
+import ExperienceCard from "@/components/card/experienceTuningCard";
 import { useExperienceAdjustments } from "@/hooks/useExperienceAdjustments";
 import { cn } from "@/lib/utils";
 

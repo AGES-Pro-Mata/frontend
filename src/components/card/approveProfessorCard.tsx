@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { ReceiptPreview } from "@/components/dialogs/receiptPreview";
-import { ProfessorProfileCard } from "@/components/cards/professorProfileCard";
+import { ReceiptPreview } from "@/components/dialog/receiptPreview";
+import { ProfessorProfileCard } from "@/components/card/professorProfileCard";
 import {
   approveOrRejectProfessor,
   type ProfessorApprovalDetails,
@@ -8,7 +8,7 @@ import {
 } from "@/api/professor";
 import { appToast } from "@/components/toast/toast";
 import ProfessorApproval from "@/components/text-areas/reviewProfessorRequest";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import type { HttpResponse } from "@/types/http-response";

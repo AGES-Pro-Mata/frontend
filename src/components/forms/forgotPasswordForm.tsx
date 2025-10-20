@@ -10,10 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForgotPasswordMutation } from "@/hooks/useForgotPasswordMutation";
-import { TextInput } from "@/components/inputs/textInput";
+import { TextInput } from "@/components/input/textInput";
 import { Link } from "@tanstack/react-router";
 import { AuthCard } from "@/components/auth/authcard";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { useTranslation } from "react-i18next";
 import { appToast } from "@/components/toast/toast";
 

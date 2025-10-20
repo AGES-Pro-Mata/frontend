@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import UserProfileCard from "@/components/cards/userProfileCard";
+import UserProfileCard from "@/components/card/userProfileCard";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
 

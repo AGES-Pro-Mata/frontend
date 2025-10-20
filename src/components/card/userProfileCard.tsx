@@ -1,7 +1,7 @@
 import { Typography } from "@/components/typography/typography";
-import { CanvasCard, CardStatus } from "@/components/cards";
+import { CanvasCard, CardStatus } from "@/components/card";
 import { ShowInfo } from "@/components/display";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import {
   getReservationStatusStyle,
   type ReservationStatus,

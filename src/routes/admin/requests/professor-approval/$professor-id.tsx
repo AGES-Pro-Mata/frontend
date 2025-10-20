@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ApproveProfessorCard } from "@/components/cards/approveProfessorCard";
+import { ApproveProfessorCard } from "@/components/card/approveProfessorCard";
 import { appToast } from "@/components/toast/toast";
 import { useEffect } from "react";
 import type { ProfessorApprovalDetails } from "@/api/professor";

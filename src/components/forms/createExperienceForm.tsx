@@ -1,5 +1,5 @@
-import { Button } from "@/components/buttons/defaultButton";
-import { TextInput } from "@/components/inputs/textInput";
+import { Button } from "@/components/button/defaultButton";
+import { TextInput } from "@/components/input/textInput";
 import { appToast } from "@/components/toast/toast";
 import { Typography } from "@/components/typography/typography";
 import { Button as ShadcnButton } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
+import type { CreateExperiencePayload } from "@/api/experience";
 import {
   Popover,
   PopoverContent,
@@ -21,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useCreateExperience } from "@/hooks/useCreateExperience";
-import { ExperienceCategory } from "@/types/experiences";
+import { ExperienceCategory } from "@/types/experience";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -44,7 +45,7 @@ const formSchema = z
     experienceDescription: z
       .string()
       .min(2, "Informe a descrição da experiência"),
-    experienceCategory: z.enum(ExperienceCategory),
+    experienceCategory: z.nativeEnum(ExperienceCategory),
     experienceCapacity: z.coerce
       .number()
       .min(1, "Informe a quantidade de pessoas"),
@@ -102,20 +103,20 @@ const formSchema = z
   });
 
 const WEEK_DAYS = [
-  { value: "monday", label: "Segunda-feira" },
-  { value: "tuesday", label: "Terça-feira" },
-  { value: "wednesday", label: "Quarta-feira" },
-  { value: "thursday", label: "Quinta-feira" },
-  { value: "friday", label: "Sexta-feira" },
-  { value: "saturday", label: "Sábado" },
-  { value: "sunday", label: "Domingo" },
+  { value: "MONDAY", label: "Segunda-feira" },
+  { value: "TUESDAY", label: "Terça-feira" },
+  { value: "WEDNESDAY", label: "Quarta-feira" },
+  { value: "THURSDAY", label: "Quinta-feira" },
+  { value: "FRIDAY", label: "Sexta-feira" },
+  { value: "SATURDAY", label: "Sábado" },
+  { value: "SUNDAY", label: "Domingo" },
 ];
 
 const DIFFICULTY_LEVELS = [
-  { value: "leve", label: "Leve" },
-  { value: "moderado", label: "Moderado" },
-  { value: "pesado", label: "Pesado" },
-  { value: "extremo", label: "Extremo" },
+  { value: "LIGHT", label: "Leve" },
+  { value: "MEDIUM", label: "Moderado" },
+  { value: "HARD", label: "Pesado" },
+  { value: "EXTREME", label: "Extremo" },
 ];
 
 const getCategoryIcon = (category: string) => {
@@ -227,7 +228,14 @@ export function CreateExperience() {
   };
 
   const onSubmit = form.handleSubmit((data) => {
-    mutate(data, {
+    const payload: CreateExperiencePayload = {
+      ...data,
+      experienceWeekDays: (data.experienceWeekDays ?? []).map((day) =>
+        day.toUpperCase()
+      ),
+    };
+
+    mutate(payload, {
       onSuccess: () => {
         appToast.success("Experiência criada com sucesso");
       },

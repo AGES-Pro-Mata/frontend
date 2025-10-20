@@ -1,7 +1,12 @@
 
 import { api } from "@/core/api";
 import axios from "axios";
-import type { ExperienceCategory, Experience } from "@/types/experiences";
+import {
+  ExperienceCategory,
+  type Experience,
+  type ExperienceApiResponse,
+  mapExperienceApiResponseToDTO,
+} from "@/types/experience";
 
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -37,14 +42,18 @@ export interface SearchExperienceParams {
 }
 
 export async function getExperiences(
-  params: SearchExperienceParams
+  params: SearchExperienceParams,
 ): Promise<Experience[]> {
-  const res = await axios.get<Experience[]>(`${BACKEND_URL}/experiences/search`, {
-    params,
-    timeout: 10000,
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+  const res = await axios.get<ExperienceApiResponse[]>(
+    `${BACKEND_URL}/experiences/search`,
+    {
+      params,
+      timeout: 10000,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     },
-  });
-  return res.data;
+  );
+
+  return res.data.map(mapExperienceApiResponseToDTO);
 }

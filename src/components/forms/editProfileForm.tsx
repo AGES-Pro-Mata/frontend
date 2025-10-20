@@ -1,7 +1,7 @@
-import { CanvasCard } from "@/components/cards";
+import { CanvasCard } from "@/components/card";
 import { Typography } from "@/components/typography/typography";
-import { TextInput } from "@/components/inputs/textInput";
-import { Button } from "@/components/buttons/defaultButton";
+import { TextInput } from "@/components/input/textInput";
+import { Button } from "@/components/button/defaultButton";
 import {
   Select,
   SelectContent,

@@ -1,6 +1,6 @@
 import { useState, useRef, useLayoutEffect } from "react";
 import { Typography } from "@/components/typography/typography";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

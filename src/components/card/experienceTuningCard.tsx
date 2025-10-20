@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import CanvasCard from "@/components/cards/canvasCard";
+import CanvasCard from "@/components/card/canvasCard";
 import { CalendarIcon, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useExperienceTuning } from "@/hooks/useExperienceTuning";

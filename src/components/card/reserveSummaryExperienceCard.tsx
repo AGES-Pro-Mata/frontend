@@ -2,7 +2,7 @@ import { Calendar, DollarSign, UsersRound } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import CanvasCard from "@/components/cards/canvasCard";
+import CanvasCard from "@/components/card/canvasCard";
 import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
 import type { ReserveSummaryExperience } from "@/types/reserve";

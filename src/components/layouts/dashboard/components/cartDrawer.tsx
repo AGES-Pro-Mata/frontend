@@ -1,5 +1,5 @@
 import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import CartItem from "@/components/cards/CartItem";
+import CartItem from "@/components/card/CartItem";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cartStore";
 import { X } from "lucide-react";
