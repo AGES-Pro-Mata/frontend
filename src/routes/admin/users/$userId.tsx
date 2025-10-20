@@ -7,5 +7,6 @@ export const Route = createFileRoute("/admin/users/$userId")({
 
 function RouteComponent() {
   const { userId } = Route.useParams();
+
   return <EditUserAdmin userId={userId} />;
 }

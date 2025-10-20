@@ -1,15 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  getHighlights,
-  getHighlightById,
+  type CreateHighlightPayload,
+  type GetHighlightsParams,
+  type UpdateHighlightPayload,
   createHighlight,
-  updateHighlight,
   deleteHighlight,
+  getHighlightById,
+  getHighlights,
   getHighlightsByCategories,
   getPublicHighlightsByCategories,
-  type GetHighlightsParams,
-  type CreateHighlightPayload,
-  type UpdateHighlightPayload,
+  updateHighlight,
 } from "@/api/highlights";
 import type { HighlightCategory } from "@/entities/highlights";
 

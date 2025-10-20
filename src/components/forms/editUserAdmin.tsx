@@ -233,7 +233,9 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
   };
 
   const handleSubmit = form.handleSubmit(onSubmit);
+
   if (isFetching) return;
+
   return (
     <div className="h-full flex flex-col px-4 overflow-x-hidden overflow-y-auto">
       <div className="space-y-2">
@@ -353,6 +355,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                       } else {
                         const digits = digitsOnly(e.target.value).slice(0, 11);
                         const masked = maskCpf(digits);
+
                         field.onChange(masked);
                       }
                     }}
@@ -367,6 +370,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               name="gender"
               render={({ field }) => {
                 console.log("field.value", field.value);
+
                 return (
                   <FormItem>
                     <div className="flex flex-col gap-0">
@@ -431,6 +435,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                     onChange={(e) => {
                       const digits = digitsOnly(e.target.value).slice(0, 8);
                       const masked = maskCep(digits);
+
                       if (autoFilled.addressLine || autoFilled.city) {
                         setAutoFilled({ addressLine: false, city: false });
                       }

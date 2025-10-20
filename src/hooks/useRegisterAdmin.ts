@@ -8,6 +8,7 @@ export function useRegisterAdmin() {
     mutationFn: registerUserAdminRequest,
     onError: (error: AxiosError<{ message?: string }>) => {
       const message = error.response?.data?.message ?? "Erro inesperado";
+
       appToast.error(message);
     },
   });

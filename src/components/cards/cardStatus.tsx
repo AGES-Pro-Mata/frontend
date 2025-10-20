@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { cloneElement, isValidElement, type JSX, type ReactNode } from "react";
+import { type JSX, type ReactNode, cloneElement, isValidElement } from "react";
 
 export type CardStatusProps = {
   icon?: ReactNode;
