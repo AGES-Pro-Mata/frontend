@@ -22,8 +22,23 @@ describe("Button", () => {
     );
 
     const button = screen.getByTestId("cta");
-    
+
     expect(button).toHaveAttribute("data-slot", "button");
     expect(button).toHaveClass("border");
+  });
+
+  it("renders children in place when asChild is enabled", () => {
+    renderWithProviders(
+      <Button asChild>
+        <a href="/documentacao" data-testid="button-link">
+          Documentação
+        </a>
+      </Button>
+    );
+
+    const link = screen.getByTestId("button-link");
+
+    expect(link.tagName).toBe("A");
+    expect(link).toHaveAttribute("data-slot", "button");
   });
 });

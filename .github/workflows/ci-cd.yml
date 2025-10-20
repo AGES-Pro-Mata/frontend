@@ -68,7 +68,7 @@ jobs:
 
       - name: Run Tests (Vitest)
         run: |
-          npm test || echo "No tests found, continuing..."
+          npm test
 
       - name: Upload coverage to Codecov (non-blocking)
         uses: codecov/codecov-action@v4
