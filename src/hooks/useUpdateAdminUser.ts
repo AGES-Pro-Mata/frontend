@@ -1,8 +1,4 @@
-import {
-  registerUserRequest,
-  updateUserRequest,
-  type UpdateUserAdminPayload,
-} from "@/api/user";
+import { type UpdateUserAdminPayload, updateUserRequest } from "@/api/user";
 import { useMutation } from "@tanstack/react-query";
 
 export function useUpdateAdminUser() {

@@ -4,7 +4,6 @@ import { Typography } from "@/components/typography/typography";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -40,6 +39,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { useForm } from "../form";
 import { t } from "i18next";
+import type { UpdateUserAdminPayload } from "@/api/user";
 
 const EditUserAdminSchema = z
   .object({
@@ -130,7 +130,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
   const { mutate, isPending } = useUpdateAdminUser();
   const form = useForm<
     z.input<typeof EditUserAdminSchema>,
-    any,
+    unknown,
     z.output<typeof EditUserAdminSchema>
   >({
     resolver: zodResolver(EditUserAdminSchema),
@@ -151,7 +151,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
         isAdmin: data?.isAdmin,
         isProfessor: data?.isProfessor,
       }),
-      [data]
+      [data],
     ),
   });
 
@@ -164,7 +164,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
   } = useCepQuery(watchedZip || "", {
     enabled: !isForeign,
   });
-  console.log(form.watch());
+
   useEffect(() => {
     if (isSuccessCep) {
       if (cepData?.addressLine) {
@@ -213,7 +213,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
     };
 
     mutate(
-      { id: userId, payload: payload as any },
+      { id: userId, payload: payload as UpdateUserAdminPayload },
       {
         onSuccess: (response) => {
           if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -228,7 +228,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
         onError: () => {
           toast.error("Erro ao cadastrar usuário");
         },
-      }
+      },
     );
   };
 

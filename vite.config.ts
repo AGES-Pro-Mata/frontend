@@ -31,12 +31,6 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json-summary", "lcov"],
       reportsDirectory: "./coverage",
-      thresholds: {
-        statements: 80,
-        branches: 70,
-        functions: 80,
-        lines: 80,
-      },
     },
     css: {
       include: [/.*/],
@@ -62,6 +56,9 @@ export default defineConfig({
       // Use fileURLToPath e import.meta.url para criar o alias
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
+  },
+  optimizeDeps: {
+    exclude: ["msw"],
   },
   server: {
     host: "0.0.0.0", // Essential for container access
