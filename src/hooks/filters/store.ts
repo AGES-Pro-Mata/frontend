@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-/* eslint-disable indent */
+ 
+ 
 import { create } from 'zustand'
 
 interface FilterStateValue {
@@ -39,11 +39,13 @@ type FilterStore = {
 
 const createSearchParams = (obj: Record<string, unknown>): string => {
   const params = new URLSearchParams()
+
   Object.entries(obj).forEach(([key, value]) => {
     if (value !== null) {
       params.append(key, String(value))
     }
   })
+
   return params.toString()
 }
 
@@ -104,6 +106,7 @@ export const useFilterStore = create<FilterStore>()((set, get) => ({
   applyValues: (key) => {
     set((state) => {
       const currentState = state.filterStates[key] ?? DEFAULT_STATE
+
       return {
         filterStates: {
           ...state.filterStates,
@@ -143,6 +146,7 @@ export const useFilterStore = create<FilterStore>()((set, get) => ({
   },
   getFilterState: ({ key, initialFilters = {}, setQueryOnChange = true }) => {
     const state = get().filterStates[key]
+
     if (state) return state
 
     return {

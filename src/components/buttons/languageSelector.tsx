@@ -25,6 +25,7 @@ export default function LanguageSelect({
   // Normalize current language to our UI values
   const current = useMemo<"PT" | "EN">(() => {
     const lng = (urlLang ?? i18n.language ?? "pt").toLowerCase();
+
     return lng.startsWith("pt") ? "PT" : "EN";
   }, [i18n.language, urlLang]);
 
@@ -38,6 +39,7 @@ export default function LanguageSelect({
 
   const setLanguage = (newLang: "PT" | "EN") => {
     const code = newLang === "PT" ? "pt" : "en";
+
     if (i18n.language !== code) {
       i18n.changeLanguage(code);
     }

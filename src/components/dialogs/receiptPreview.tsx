@@ -1,12 +1,12 @@
 import React from "react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/buttons/defaultButton";
 import { cn } from "@/lib/utils";
@@ -61,10 +61,12 @@ export function ReceiptPreview({
   async function handleDownload() {
     try {
       const response = await fetch(src);
+
       if (!response.ok) throw new Error("Falha ao baixar o PDF");
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
+
       a.href = url;
       a.download = `${downloadFileName || "documento"}.pdf`;
       document.body.appendChild(a);

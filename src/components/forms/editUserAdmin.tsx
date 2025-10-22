@@ -4,7 +4,6 @@ import { Typography } from "@/components/typography/typography";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,7 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useGetAdminUser } from "@/hooks/use-get-admin-user";
 import { useCepQuery } from "@/hooks/useCepQuery";
-import { useRegisterAdmin } from "@/hooks/useRegisterAdmin";
+import { useUpdateAdminUser } from "@/hooks/useUpdateAdminUser";
 import { COUNTRIES } from "@/lib/countries";
 import {
   digitsOnly,
@@ -39,15 +38,17 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useForm } from "../form";
+import { t } from "i18next";
+import type { UpdateUserAdminPayload } from "@/api/user";
 
-export const EditUserAdminSchema = z
+const EditUserAdminSchema = z
   .object({
     name: z.string().min(2, "Informe o nome completo"),
     email: z.email("Digite um e-mail válido"),
     phone: z.string().min(8, "Informe o telefone"),
     document: z.string().optional().default(""),
     rg: z.string().optional().default(""),
-    gender: z.string().min(1, "Informe o gênero"),
+    gender: z.string(),
     zipCode: z.string().min(5, "Informe o CEP/ZIP"),
     country: z.string().min(2, "Informe o país"),
     isForeign: z.boolean().default(false),
@@ -120,38 +121,38 @@ type EditUserAdminProps = {
 };
 export function EditUserAdmin({ userId }: EditUserAdminProps) {
   const { data, isFetching } = useGetAdminUser({ id: userId });
-    console.log(data);
-  const defaultValues = React.useMemo(() => {
-    return {
-      name: data?.name,
-      email: data?.email,
-      phone: data?.phone,
-      document: data?.document,
-      rg: data?.rg,
-      gender: data?.gender,
-      zipCode: data?.zipCode,
-      country: data?.country,
-      isForeign: data?.isForeign,
-      addressLine: data?.addressLine,
-      city: data?.city,
-      number: data?.number?.toString(),
-      isAdmin: data?.isAdmin,
-      isProfessor: data?.isProfessor,
-    };
-  }, [data]);
+
   const navigate = useNavigate();
   const [autoFilled, setAutoFilled] = useState({
     addressLine: false,
     city: false,
   });
-  const { mutate: registerAdmin, isPending } = useRegisterAdmin();
+  const { mutate, isPending } = useUpdateAdminUser();
   const form = useForm<
     z.input<typeof EditUserAdminSchema>,
-    any,
+    unknown,
     z.output<typeof EditUserAdminSchema>
   >({
     resolver: zodResolver(EditUserAdminSchema),
-    defaultValues: defaultValues,
+    defaultValues: React.useMemo(
+      () => ({
+        name: data?.name,
+        email: data?.email,
+        phone: data?.phone,
+        document: data?.document,
+        rg: data?.rg ?? undefined,
+        gender: data?.gender,
+        zipCode: data?.zipCode,
+        country: data?.country,
+        isForeign: data?.isForeign,
+        addressLine: data?.addressLine,
+        city: data?.city,
+        number: data?.number?.toString(),
+        isAdmin: data?.isAdmin,
+        isProfessor: data?.isProfessor,
+      }),
+      [data],
+    ),
   });
 
   const isForeign = form.watch("isForeign");
@@ -211,23 +212,30 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
       institution: data.isProfessor ? "PUCRS" : "",
     };
 
-    registerAdmin(payload as any, {
-      onSuccess: (response) => {
-        if (response.statusCode >= 200 && response.statusCode < 300) {
-          form.reset();
-          toast.success("Usuário cadastrado com sucesso", {});
-          navigate({ to: "/admin/users" });
-          setAutoFilled({ addressLine: false, city: false });
-        } else {
-          toast.error("Erro ao cadastrar usuário", {});
-        }
+    mutate(
+      { id: userId, payload: payload as UpdateUserAdminPayload },
+      {
+        onSuccess: (response) => {
+          if (response.statusCode >= 200 && response.statusCode < 300) {
+            form.reset();
+            toast.success("Usuário cadastrado com sucesso", {});
+            navigate({ to: "/admin/users" });
+            setAutoFilled({ addressLine: false, city: false });
+          } else {
+            toast.error("Erro ao cadastrar usuário", {});
+          }
+        },
+        onError: () => {
+          toast.error("Erro ao cadastrar usuário");
+        },
       },
-      onError: () => {
-        toast.error("Erro ao cadastrar usuário");
-      },
-    });
+    );
   };
+
+  const handleSubmit = form.handleSubmit(onSubmit);
+
   if (isFetching) return;
+
   return (
     <div className="h-full flex flex-col px-4 overflow-x-hidden overflow-y-auto">
       <div className="space-y-2">
@@ -237,7 +245,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-3">
+        <div className="mt-6 space-y-3">
           <div className="flex items-center justify-start gap-4">
             <Typography className="font-medium text-foreground text-lg">
               Informações pessoais
@@ -347,6 +355,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                       } else {
                         const digits = digitsOnly(e.target.value).slice(0, 11);
                         const masked = maskCpf(digits);
+
                         field.onChange(masked);
                       }
                     }}
@@ -359,26 +368,41 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
             <FormField
               control={form.control}
               name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
-                      Gênero
-                    </Typography>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o gênero" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="female">Feminino</SelectItem>
-                        <SelectItem value="male">Masculino</SelectItem>
-                        <SelectItem value="other">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                console.log("field.value", field.value);
+
+                return (
+                  <FormItem>
+                    <div className="flex flex-col gap-0">
+                      <Typography className="text-foreground font-medium mb-1">
+                        {t("register.fields.gender.label")} *
+                      </Typography>
+                      <Select
+                        value={field.value}
+                        onValueChange={(v) => field.onChange(v)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("register.fields.gender.select")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="female">
+                            {t("register.fields.gender.female")}
+                          </SelectItem>
+                          <SelectItem value="male">
+                            {t("register.fields.gender.male")}
+                          </SelectItem>
+                          <SelectItem value="other">
+                            {t("register.fields.gender.other")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <FormMessage className="text-default-red text-xs" />
+                  </FormItem>
+                );
+              }}
             />
 
             <FormField
@@ -411,6 +435,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                     onChange={(e) => {
                       const digits = digitsOnly(e.target.value).slice(0, 8);
                       const masked = maskCep(digits);
+
                       if (autoFilled.addressLine || autoFilled.city) {
                         setAutoFilled({ addressLine: false, city: false });
                       }
@@ -452,7 +477,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                         label=""
                         required={false}
                         placeholder=""
-                        value={field.value}
+                        value={field.value || "Brasil"}
                         disabled
                       />
                     )}
@@ -554,29 +579,6 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <TextInput
-                    label="Senha"
-                    required
-                    type="password"
-                    placeholder="Senha"
-                    {...field}
-                  />
-                  <FormDescription className="text-sm text-red-400">
-                    A senha foi gerada automaticamente. No primeiro acesso será
-                    solicitado que o usuário a altere.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
           <div className="flex justify-end pt-2 gap-2">
             <Link to="/admin/users">
               <Button
@@ -587,14 +589,14 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               />
             </Link>
             <Button
-              type="submit"
+              onClick={handleSubmit}
               variant="primary"
               className="w-36"
-              label="Criar"
+              label="Salvar"
               disabled={isPending}
             />
           </div>
-        </form>
+        </div>
       </Form>
     </div>
   );

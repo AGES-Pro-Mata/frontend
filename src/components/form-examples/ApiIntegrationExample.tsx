@@ -136,16 +136,19 @@ export function ApiIntegrationExample() {
     field: any
   ) => {
     const file = e.target.files?.[0];
+
     if (file) {
       // Validar tipo e tamanho do arquivo
       if (!file.type.startsWith("image/")) {
         alert("Por favor, selecione apenas arquivos de imagem");
+
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB
-        alert("Arquivo muito grande. Tamanho máximo: 5MB");
+      if (file.size > 10 * 1024 * 1024) {
+        // 10MB
+        alert("Arquivo muito grande. Tamanho máximo: 10MB");
+
         return;
       }
 

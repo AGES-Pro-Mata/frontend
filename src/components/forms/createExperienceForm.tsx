@@ -143,6 +143,7 @@ const formatPrice = (value: string) => {
 
 const parsePrice = (formattedValue: string) => {
   const numbers = formattedValue.replace(/\D/g, "");
+
   return parseInt(numbers) || 0;
 };
 
@@ -188,37 +189,44 @@ export function CreateExperience() {
 
   const getDisabledDates = (isStartDate: boolean) => {
     const today = new Date();
+
     today.setHours(0, 0, 0, 0);
 
     if (isStartDate) {
       return { before: today };
     } else {
       const startDate = watchedStartDate;
+
       if (startDate) {
         return {
           before: startDate > today ? startDate : today,
         };
       }
+
       return { before: today };
     }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
       if (!file.type.startsWith("image/")) {
         alert("Por favor, selecione apenas arquivos de imagem");
+
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Arquivo muito grande. Tamanho máximo: 5MB");
+      if (file.size > 10 * 1024 * 1024) {
+        alert("Arquivo muito grande. Tamanho máximo: 10MB");
+
         return;
       }
 
       form.setValue("experienceImage", file);
 
       const reader = new FileReader();
+
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
       };
@@ -284,7 +292,7 @@ export function CreateExperience() {
                   </label>
                   <Typography className="text-sm text-muted-foreground mt-2">
                     Sua imagem deve ser dimensionada em 400x200, nos formatos
-                    .PNG, .JPG e .JPEG, com limite de tamanho de 5mb
+                    .PNG, .JPG e .JPEG, com limite de tamanho de 10MB
                   </Typography>
                 </div>
                 <FormMessage className="text-red-500" />
@@ -438,6 +446,7 @@ export function CreateExperience() {
                                 }
                                 onCheckedChange={(checked) => {
                                   const currentDays = field.value || [];
+
                                   if (checked) {
                                     field.onChange([...currentDays, day.value]);
                                   } else {
@@ -577,6 +586,7 @@ export function CreateExperience() {
                     value={priceDisplay}
                     onChange={(e) => {
                       const formatted = formatPrice(e.target.value);
+
                       setPriceDisplay(formatted);
                       field.onChange(parsePrice(formatted));
                     }}

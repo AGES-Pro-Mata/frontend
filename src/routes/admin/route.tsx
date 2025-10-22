@@ -16,10 +16,12 @@ export const Route = createFileRoute("/admin")({
     .optional(),
   beforeLoad: async ({ context, search }) => {
     const { queryClient } = context as { queryClient: QueryClient };
+
     await requireAdminUser(queryClient);
 
     // Language change logic
     const lang = (search as any)?.lang as "pt" | "en" | undefined;
+
     if (lang && i18n.language !== lang) {
       i18n.changeLanguage(lang);
     }
@@ -29,6 +31,7 @@ export const Route = createFileRoute("/admin")({
       context as unknown as { queryClient: QueryClient }
     ).queryClient.ensureQueryData(userQueryOptions);
     const isAdmin = user?.userType === "ADMIN" || user?.userType === "ROOT";
+
     return { isAdmin };
   },
 });

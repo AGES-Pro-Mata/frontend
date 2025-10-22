@@ -3,8 +3,8 @@ import { CanvasCard, CardStatus } from "@/components/cards";
 import { ShowInfo } from "@/components/display";
 import { Button } from "@/components/buttons/defaultButton";
 import {
-  getReservationStatusStyle,
   type ReservationStatus,
+  getReservationStatusStyle,
 } from "@/entities/reservation-status";
 import type { RegisterUserPayload } from "@/api/user";
 import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
@@ -14,12 +14,14 @@ import { useTranslation } from "react-i18next";
 export function genderLabel(g?: string, t?: (k: string) => string) {
   if (!g) return "-";
   const v = g.toLowerCase();
+
   if (["male", "m", "masculino"].includes(v))
     return t ? t("register.fields.gender.male") : "Masculino";
   if (["female", "f", "feminino"].includes(v))
     return t ? t("register.fields.gender.female") : "Feminino";
   if (["other", "outro", "o", "não-binário", "nao-binario"].includes(v))
     return t ? t("register.fields.gender.other") : "Outro";
+
   return g;
 }
 
@@ -45,6 +47,7 @@ export function UserProfileCard({
   const { className: documentStatusAccent, icon: documentStatusIcon } =
     getReservationStatusStyle(documentStatus);
   const documentStatusLabel = t(`status.${documentStatus}`);
+
   return (
     <CanvasCard
       className={`w-full max-w-[clamp(40rem,82vw,760px)] mx-auto p-8 sm:p-12 bg-card shadow-md rounded-[20px] ${className}`}

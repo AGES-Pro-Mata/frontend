@@ -1,10 +1,10 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { ReceiptPreview } from "@/components/dialogs/receiptPreview";
 import { ProfessorProfileCard } from "@/components/cards/professorProfileCard";
 import {
-  approveOrRejectProfessor,
   type ProfessorApprovalDetails,
   type ProfessorApprovalRequestPayload,
+  approveOrRejectProfessor,
 } from "@/api/professor";
 import { appToast } from "@/components/toast/toast";
 import ProfessorApproval from "@/components/text-areas/reviewProfessorRequest";
@@ -31,6 +31,7 @@ export function ApproveProfessorCard({ professor }: ApproveProfessorCardProps) {
     mutationFn: ({ id, data }) => approveOrRejectProfessor(id, data),
     onSuccess: (res, variables) => {
       const ok = res.statusCode >= 200 && res.statusCode < 300;
+
       if (ok) {
         appToast.success("Operação realizada com sucesso!");
         setProfessorState((prev) => ({
@@ -57,7 +58,7 @@ export function ApproveProfessorCard({ professor }: ApproveProfessorCardProps) {
         },
       });
     },
-    [mutation, professor]
+    [mutation, professor],
   );
 
   const [openReceipt, setOpenReceipt] = useState(false);

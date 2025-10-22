@@ -22,7 +22,9 @@ export const useInterval = (
   useEffect(() => {
     if (delay === null || delay === false) return;
     const tick = () => savedCallback.current();
+
     intervalId.current = setInterval(tick, delay);
+
     return () => {
       if (intervalId.current !== null) {
         clearInterval(intervalId.current);
@@ -36,5 +38,6 @@ export const useInterval = (
       intervalId.current = null;
     }
   };
+
   return clear;
 };

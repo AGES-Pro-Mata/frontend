@@ -14,9 +14,11 @@ export type ReserveSummaryExperienceCardProps = ReserveSummaryExperience & {
 function parseDate(value: Date | string) {
   if (value instanceof Date) return value;
   const parsed = new Date(value);
+
   if (Number.isNaN(parsed.getTime())) {
     return new Date();
   }
+
   return parsed;
 }
 

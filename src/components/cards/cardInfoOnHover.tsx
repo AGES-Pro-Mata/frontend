@@ -2,8 +2,9 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/buttons/defaultButton";
 import { Typography } from "@/components/typography/typography";
-import { homeCards, type HomeCard } from "@/content/cardsInfo";
+import { type HomeCard, type HomeCardId, homeCards } from "@/content/cardsInfo";
 import { cn } from "@/lib/utils";
+import type { HighlightResponse } from "@/api/highlights";
 
 interface TranslatedCard extends HomeCard {
   title: string;
@@ -143,6 +144,7 @@ const MobileNavigation = memo(function MobileNavigation({
       <div className="-mx-4 flex snap-x snap-mandatory gap-[clamp(0.5rem,3vw,0.75rem)] overflow-x-auto px-4 pb-2">
         {cards.map((card, index) => {
           const selected = index === activeIndex;
+
           return (
             <button
               key={card.id}
@@ -180,7 +182,11 @@ const MobileNavigation = memo(function MobileNavigation({
 
 MobileNavigation.displayName = "MobileNavigation";
 
-const ImagesStrip = memo(function ImagesStrip({ card }: { card: TranslatedCard }) {
+const ImagesStrip = memo(function ImagesStrip({
+  card,
+}: {
+  card: TranslatedCard;
+}) {
   return (
     <div className="-mx-4 flex snap-x snap-mandatory gap-[clamp(0.5rem,2vw,0.625rem)] overflow-x-auto px-4 sm:mx-[clamp(0.75rem,3vw,1.5rem)] sm:gap-[var(--gap)] sm:overflow-visible sm:[--gap:clamp(0.5rem,2vw,0.625rem)]">
       {card.images.map((src, index) => (
@@ -188,11 +194,7 @@ const ImagesStrip = memo(function ImagesStrip({ card }: { card: TranslatedCard }
           key={`${card.id}-${index}`}
           className="relative flex aspect-[3/2] w-[calc(100%_-_0.75rem)] shrink-0 snap-center overflow-hidden rounded-[clamp(0.75rem,2vw,1.25rem)] sm:h-[clamp(12rem,28vw,17.5rem)] sm:w-full sm:flex-1"
         >
-          <ImageTile
-            src={src}
-            alt={card.title}
-            priority={index === 0}
-          />
+          <ImageTile src={src} alt={card.title} priority={index === 0} />
         </div>
       ))}
     </div>
@@ -201,7 +203,11 @@ const ImagesStrip = memo(function ImagesStrip({ card }: { card: TranslatedCard }
 
 ImagesStrip.displayName = "ImagesStrip";
 
-export function CardsInfoOnHover() {
+type CardsInfoOnHoverProps = {
+  highlights?: Partial<Record<HomeCardId, HighlightResponse[]>>;
+};
+
+export function CardsInfoOnHover({ highlights }: CardsInfoOnHoverProps) {
   const { t, i18n } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -210,10 +216,13 @@ export function CardsInfoOnHover() {
     () =>
       homeCards.map((card) => ({
         ...card,
+        images: highlights?.[card.id]?.length
+          ? highlights[card.id]!.map((item) => item.imageUrl).filter(Boolean)
+          : card.images,
         title: t(`homeCards.${card.id}.title`),
         description: t(`homeCards.${card.id}.description`),
       })),
-    [t, i18n.language]
+    [highlights, t, i18n.language]
   );
 
   const ctaLabel = useMemo(
@@ -236,7 +245,10 @@ export function CardsInfoOnHover() {
   }
 
   return (
-    <section className="mx-auto my-[clamp(2.5rem,6vw,4.375rem)] flex w-full max-w-[clamp(60rem,90vw,72rem)] flex-col gap-[clamp(1rem,3vw,2rem)] px-4 sm:px-0" aria-labelledby="cards-info-heading">
+    <section
+      className="mx-auto my-[clamp(2.5rem,6vw,4.375rem)] flex w-full max-w-[clamp(60rem,90vw,72rem)] flex-col gap-[clamp(1rem,3vw,2rem)] px-4 sm:px-0"
+      aria-labelledby="cards-info-heading"
+    >
       <h2 id="cards-info-heading" className="sr-only">
         {t("homeCards.sectionTitle", { defaultValue: "Recursos em destaque" })}
       </h2>
