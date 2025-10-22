@@ -10,7 +10,7 @@ export const omitBy = <T extends AnyObject>(
     if (!predicate(obj[key], key)) {
       result[key] = obj[key]
     }
-
+    
     return result
   }, initialValue)
 }

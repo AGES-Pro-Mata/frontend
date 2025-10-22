@@ -1,7 +1,18 @@
-import { api } from "@/core/api";
-import type { ExperienceCategory } from "@/types/experience";
 
-interface CreateExperiencePayload {
+import { api } from "@/core/api";
+import axios from "axios";
+import {
+  type Experience,
+  type ExperienceApiResponse,
+  ExperienceCategory,
+  mapExperienceApiResponseToDTO,
+} from "@/types/experience";
+
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+
+export interface CreateExperiencePayload {
   experienceName: string;
   experienceDescription: string;
   experienceCategory: ExperienceCategory;
@@ -18,4 +29,31 @@ interface CreateExperiencePayload {
 
 export async function createExperience(payload: CreateExperiencePayload) {
   return await api.post(`/experience`, payload);
+}
+
+export interface SearchExperienceParams {
+  name?: string;
+  description?: string;
+  date?: string;
+  sort?: "name" | "startDate" | "endDate" | "price" | "capacity";
+  dir?: "asc" | "desc";
+  page?: number;
+  limit?: number;
+}
+
+export async function getExperiences(
+  params: SearchExperienceParams,
+): Promise<Experience[]> {
+  const res = await axios.get<ExperienceApiResponse[]>(
+    `${BACKEND_URL}/experiences/search`,
+    {
+      params,
+      timeout: 10000,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    },
+  );
+
+  return res.data.map(mapExperienceApiResponseToDTO);
 }

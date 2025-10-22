@@ -1,11 +1,9 @@
 import { Typography } from "@/components/typography/typography";
 import type { Locale } from "@/types/locale";
+import { CalendarDays, CircleDollarSign, User } from "lucide-react";
+import type { ComponentType } from "react";
 
-const calendarIcon = "/calendar-icon.svg";
-const priceIcon = "/price-icon.svg";
-const personIcon = "/person-icon.svg";
-
-type summaryXpProps = {
+type SummaryXpProps = {
   experience: string;
   startDate: string;
   endDate: string;
@@ -15,8 +13,8 @@ type summaryXpProps = {
   imageUrl: string;
 };
 
-type infoItemProps = {
-  img: string;
+type InfoItemProps = {
+  icon: ComponentType<{ className?: string }>;
   text: string;
 };
 
@@ -28,7 +26,7 @@ export const SummaryExperience = ({
   capacity,
   locale,
   imageUrl,
-}: summaryXpProps) => {
+}: SummaryXpProps) => {
   const formatDate = (isoDate: string) => {
     const [year, month, day] = isoDate.split("-");
 
@@ -43,8 +41,15 @@ export const SummaryExperience = ({
     }).format(new Date(Number(year), Number(month) - 1, Number(day)));
   };
 
+  const currencyFormatter = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 2,
+  });
+
   const formattedStartDate = formatDate(startDate);
   const formattedEndDate = formatDate(endDate);
+  const formattedPrice = currencyFormatter.format(price);
 
   return (
     <div className="flex gap-4 p-4 pr-16 bg-card-background w-fit rounded-2xl items-center shadow-xl">
@@ -56,20 +61,20 @@ export const SummaryExperience = ({
           {experience}
         </Typography>
         <InfoItem
-          img={calendarIcon}
+          icon={CalendarDays}
           text={`${formattedStartDate} a ${formattedEndDate}`}
-        ></InfoItem>
-        <InfoItem img={priceIcon} text={`R$ ${price}`}></InfoItem>
-        <InfoItem img={personIcon} text={`${capacity} pessoas`}></InfoItem>
+        />
+        <InfoItem icon={CircleDollarSign} text={formattedPrice} />
+        <InfoItem icon={User} text={`${capacity} pessoas`} />
       </div>
     </div>
   );
 };
 
-const InfoItem = ({ img, text }: infoItemProps) => {
+const InfoItem = ({ icon: Icon, text }: InfoItemProps) => {
   return (
     <div className="flex items-center gap-2 bg-soft-white rounded-2xl shadow-[inset_0_0_0_2px_rgba(0,0,0,0.15)]">
-      <img src={img} alt="" className="w-7" aria-hidden={true} />
+      <Icon className="h-6 w-6 text-main-dark-green" />
       <Typography variant="h6" className="text-main-dark-green pr-6">
         {text}
       </Typography>

@@ -31,7 +31,22 @@
       "subtitle": "Adicione experiências ao seu carrinho para finalizar a reserva."
     },
     "checkoutButton": "Finalizar Reserva",
-    "browseLink": "Ver mais experiências"
+    "browseLink": "Ver mais experiências",
+    "closeButtonAria": "Fechar carrinho"
+  },
+  "cartItem": {
+    "capacity_one": "{{count}} pessoa",
+    "capacity_other": "{{count}} pessoas",
+    "length": "{{length}} km",
+    "duration": "{{value}} h",
+    "difficulty": {
+      "light": "Leve",
+      "easy": "Fácil",
+      "medium": "Moderada",
+      "hard": "Difícil",
+      "extreme": "Extrema"
+    },
+    "eventDateRange": "{{from}} – {{to}}"
   },
   "status": {
     "confirmada": "Confirmada",
@@ -114,7 +129,8 @@
     "selectPeriodOnCalendar": "Selecione o período no calendário",
     "selectAmountOfPeople": "Selecione a quantidade de pessoas",
     "malePeople": "Número de pessoas do gênero masculino",
-    "femalePeople": "Número de pessoas do gênero feminino"
+    "femalePeople": "Número de pessoas do gênero feminino",
+    "addToCart": "Adicionar ao carrinho"
   },
 
   "homeCards": {

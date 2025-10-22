@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { HighlightResponse } from "@/api/highlights";
 import type { HomeCard, HomeCardId } from "@/content/cardsInfo";
-import { CardsInfoOnHover } from "@/components/cards/cardInfoOnHover";
+import { CardsInfoOnHover } from "@/components/card/cardInfoOnHover";
 
 const { createHomeCardsFixture, homeCardsFixture } = vi.hoisted(() => {
   const createHomeCardsFixture = (): HomeCard[] => [

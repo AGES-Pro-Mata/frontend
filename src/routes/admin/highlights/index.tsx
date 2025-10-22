@@ -30,7 +30,7 @@ import {
   useUpdateHighlight,
 } from "@/hooks/useHighlights";
 import { appToast } from "@/components/toast/toast";
-import { CanvasCard } from "@/components/cards";
+import { CanvasCard } from "@/components/card";
 import { MoonLoader } from "react-spinners";
 
 export const Route = createFileRoute("/admin/highlights/")({

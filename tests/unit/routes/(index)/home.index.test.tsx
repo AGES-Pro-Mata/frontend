@@ -20,7 +20,7 @@ vi.mock("@tanstack/react-router", () => ({
   ),
 }));
 
-vi.mock("@/components/cards/cardInfoOnHover", () => ({
+vi.mock("@/components/card/cardInfoOnHover", () => ({
   CardsInfoOnHover: cardsInfoMock,
 }));
 

@@ -14,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/api/user";
 import { useLogout } from "@/hooks/useLogout";
 import { useTranslation } from "react-i18next";
-import LanguageSelect from "@/components/buttons/languageSelector";
+import LanguageSelect from "@/components/button/languageSelector";
 import { useCartStore } from "@/store/cartStore";
 
 export function HeaderDrawerMobile() {

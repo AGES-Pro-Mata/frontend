@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 
-import { Button as DefaultButton } from "@/components/buttons/defaultButton";
+import { Button as DefaultButton } from "@/components/button/defaultButton";
 import { renderWithProviders } from "@/test/test-utils";
 
 describe("DefaultButton", () => {
