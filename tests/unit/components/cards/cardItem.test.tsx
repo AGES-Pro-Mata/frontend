@@ -123,7 +123,7 @@ describe("CartItem", () => {
 
   // Verifica exibição de datas quando a categoria é EVENT
   it("renders event date when category is EVENT", () => {
-    renderWithProviders(
+    const { container } = renderWithProviders(
       <CartItem
         experience={makeExperience({
           category: "EVENT",
@@ -135,13 +135,12 @@ describe("CartItem", () => {
 
     // O componente possui um bug de fuso horário que converte a data '2025-10-10' para o dia 09.
     // o teste é ajustado para verificar o comportamento atual.
-    const dateElement = screen.getByText(/09\s+de\+out\.\s+de\s+2025/);
-    expect(dateElement).toBeInTheDocument();
+    expect(container).toHaveTextContent(/09 de out\. de 2025/);
   });
 
   // Verifica se um intervalo de datas é exibido corretamente
   it("renders a single event date if only startDate is provided", () => {
-    renderWithProviders(
+    const { container } = renderWithProviders(
       <CartItem
         experience={makeExperience({
           category: "EVENT",
@@ -152,8 +151,7 @@ describe("CartItem", () => {
     );
 
     // Verifica a data única renderizada corretamente
-    const dateElement = screen.getByText(/13\s+de\s+out\.\s+de\s+2025/);
-    expect(dateElement).toBeInTheDocument();
+    expect(container).toHaveTextContent(/13 de out\. de 2025/);
 
     // Garante que não há um hífen de intervalo de datas
     expect(screen.queryByText("–")).not.toBeInTheDocument();
@@ -177,7 +175,7 @@ describe("CartItem", () => {
 
   // Verifica se um único rótulo de data de evento é exibido quando apenas endDate é fornecido
   it("renders a single event date if only endDate is provided", () => {
-    renderWithProviders(
+    const { container } = renderWithProviders(
       <CartItem
         experience={makeExperience({
           category: "EVENT",
@@ -186,7 +184,9 @@ describe("CartItem", () => {
         })}
       />
     );
-    expect( screen.getByText(/14\s+de\s+out\.\s+de\s+2025/)).toBeInTheDocument();
+    
+    // Verifica a data renderizada
+    expect(container).toHaveTextContent(/14 de out\. de 2025/);
   });
 
   // Verifica se a imagem placeholder é usada quando a imagem da experiência é null
