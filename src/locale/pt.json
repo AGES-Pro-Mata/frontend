@@ -340,7 +340,13 @@
       }
     },
     "toast": {
-      "success": "Reserva atualizada com sucesso!"
+      "success": "Reserva atualizada com sucesso!",
+      "error": "Não foi possível enviar a reserva. Tenta novamente."
+    },
+    "validation": {
+      "fillRequired": "Preenche os campos obrigatórios.",
+      "personIssue": "Pessoa {{index}} — {{message}}",
+      "completeBeforeEnablePostConfirmation": "Termina os dados iniciados antes de ativar 'Adicionar depois'."
     }
   },
 
@@ -394,9 +400,14 @@
     "max20mb": "Arquivo deve ter no máximo 20MB",
     "mustAcceptTerms": "Você deve aceitar os termos de uso",
     "cityRequired": "Cidade é obrigatória",
-    "numberRequired": "Número é obrigatório"
-  }
-  ,
+    "numberRequired": "Número é obrigatório",
+
+    "nameTooShort": "Por favor, insira o nome completo.",
+    "phoneInvalid": "Telefone inválido.",
+    "birthRequired": "Data de nascimento obrigatória.",
+    "birthInvalid": "Data de nascimento inválida."
+  },
+  
   "footer": {
     "contact": "Entre em contato",
     "researchCenter": "Centro de Pesquisas PRÓ-MATA",
