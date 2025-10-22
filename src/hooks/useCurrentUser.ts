@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { type CurrentUser, userQueryOptions } from "@/api/user";
-import type { RegisterUserPayload } from "@/api/user";
+import { type CurrentUser, type RegisterUserPayload, userQueryOptions } from "@/api/user";
 import { StatusEnum } from "@/entities/reservation-status";
 
 function mapCurrentUserToProfile(
