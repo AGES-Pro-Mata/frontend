@@ -1,9 +1,5 @@
-import { api } from "@/core/api";
+import { getUserById } from "@/api/user";
 
-import {
-  EditUserAdminResponse,
-  type TEditUserAdminResponse,
-} from "@/entities/edit-user-admin-response";
 import { useQuery } from "@tanstack/react-query";
 
 export const ADMIN_USER_QUERY_KEY = "admin-user";
@@ -13,17 +9,20 @@ type useGetAdminUserParams = {
 };
 
 export const useGetAdminUser = ({ id }: useGetAdminUserParams) => {
-  const { data, isFetching, refetch } = useQuery({
+  const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: [ADMIN_USER_QUERY_KEY, id],
     queryFn: async () => {
-      const response = await api.get<TEditUserAdminResponse>("/user/" + id);
-      return (await EditUserAdminResponse.safeParseAsync(response.data)).data;
+      const response = await getUserById(id);
+      return response;
     },
   });
 
   return {
     data,
     isFetching,
+    isLoading,
+    isError,
+    error,
     refetch,
   };
 };

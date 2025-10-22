@@ -1,17 +1,17 @@
 import { CardExperience } from "@/components/card/card-experience";
-import { createFileRoute } from "@tanstack/react-router";
 import {
-  ExperienceCategory,
   type Experience,
   type ExperienceApiResponse,
+  ExperienceCategory,
   mapExperienceApiResponseToDTO,
 } from "@/types/experience";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(index)/reserve/")({
-  component: RouteComponent,
+  component: ReservePage,
 });
 
-function RouteComponent() {
+function ReservePage() {
   const mockApiResponse: ExperienceApiResponse[] = [
     {
       experienceId: "1",
@@ -19,7 +19,7 @@ function RouteComponent() {
       experienceDescription: "Passeio guiado pela reserva",
       experienceCategory: ExperienceCategory.TRILHA,
       experienceCapacity: "12",
-      experienceImage: "./mock/mock-trail.png",
+      experienceImage: "./logo-pro-mata-invertida.svg",
       experienceStartDate: "2025-10-01T08:00:00.000Z",
       experienceEndDate: "2025-10-01T12:00:00.000Z",
       experiencePrice: "150",
@@ -34,7 +34,7 @@ function RouteComponent() {
       experienceDescription: "Hospedagem rústica e aconchegante",
       experienceCategory: ExperienceCategory.HOSPEDAGEM,
       experienceCapacity: 4,
-      experienceImage: "./mock/mock-room.png",
+      experienceImage: "./logo-pro-mata-invertida.svg",
       experienceStartDate: "2025-10-10T14:00:00.000Z",
       experienceEndDate: "2025-10-15T11:00:00.000Z",
       experiencePrice: 350,
@@ -46,7 +46,7 @@ function RouteComponent() {
       experienceDescription: "Espaço equipado para estudos",
       experienceCategory: ExperienceCategory.LABORATORIO,
       experienceCapacity: "20",
-      experienceImage: "./mock/mock-lab.png",
+      experienceImage: "./logo-pro-mata-invertida.svg",
       experienceStartDate: "2025-11-01T09:00:00.000Z",
       experienceEndDate: "2025-11-01T17:00:00.000Z",
       experiencePrice: "100",
@@ -60,23 +60,19 @@ function RouteComponent() {
       experienceStartDate: "2025-11-20T10:00:00.000Z",
       experienceEndDate: "2025-11-20T18:00:00.000Z",
       experienceWeekDays: ["SATURDAY"],
+      experienceImage: "./logo-pro-mata-invertida.svg",
     },
   ];
 
   const experiences: Experience[] = mockApiResponse.map(
-    mapExperienceApiResponseToDTO,
+    mapExperienceApiResponseToDTO
   );
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-10 pt-6 sm:px-6 lg:px-8">
-      <h1 className="mb-6 text-center text-2xl font-semibold text-main-dark-green sm:text-3xl">
-        Reserve uma experiência
-      </h1>
-      <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-2">
-        {experiences.map((exp) => (
-          <CardExperience key={exp.id} experience={exp} />
-        ))}
-      </div>
+    <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-2">
+      {experiences.map((exp) => (
+        <CardExperience key={exp.id} experience={exp} />
+      ))}
     </div>
   );
 }

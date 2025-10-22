@@ -3,8 +3,6 @@ import type { Locale } from "@/types/locale";
 import { CalendarDays, CircleDollarSign, User } from "lucide-react";
 import type { ComponentType } from "react";
 
-const xpImage = "/xp-image.png";
-
 type SummaryXpProps = {
   experience: string;
   startDate: string;
@@ -12,6 +10,7 @@ type SummaryXpProps = {
   price: number;
   capacity: number;
   locale: Locale;
+  imageUrl: string;
 };
 
 type InfoItemProps = {
@@ -26,22 +25,36 @@ export const SummaryExperience = ({
   price,
   capacity,
   locale,
+  imageUrl,
 }: SummaryXpProps) => {
-  const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: "short" });
+  const formatDate = (isoDate: string) => {
+    const [year, month, day] = isoDate.split("-");
+
+    if (!year || !month || !day) {
+      return isoDate;
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(new Date(Number(year), Number(month) - 1, Number(day)));
+  };
+
   const currencyFormatter = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "BRL",
     maximumFractionDigits: 2,
   });
 
-  const formattedStartDate = dateFormatter.format(new Date(startDate));
-  const formattedEndDate = dateFormatter.format(new Date(endDate));
+  const formattedStartDate = formatDate(startDate);
+  const formattedEndDate = formatDate(endDate);
   const formattedPrice = currencyFormatter.format(price);
 
   return (
     <div className="flex gap-4 p-4 pr-16 bg-card-background w-fit rounded-2xl items-center shadow-xl">
       <div>
-        <img src={xpImage} alt={experience} className="rounded-2xl" />
+        <img src={imageUrl} alt={experience} className="rounded-2xl" />
       </div>
       <div className="flex flex-col gap-1">
         <Typography variant="h4" className="text-main-dark-green mb-2">

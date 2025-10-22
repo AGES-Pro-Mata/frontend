@@ -4,6 +4,11 @@ import type { HttpResponse } from "@/types/http-response";
 import { api } from "@/core/api";
 import { QueryClient, queryOptions, useQuery } from "@tanstack/react-query";
 import { redirect } from "@tanstack/react-router";
+import {
+  EditUserAdminResponse,
+  type TEditUserAdminResponse,
+} from "@/entities/edit-user-admin-response";
+import { safeApiCall } from "@/core/http/safe-api-caller";
 
 export type CurrentUser = {
   id?: string;
@@ -76,11 +81,43 @@ export interface RegisterUserPayload {
   function?: string; // professional role
 }
 
+export interface UpdateUserAdminPayload {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  gender: string;
+  document?: string;
+  rg?: string;
+  country: string;
+  userType: UserType;
+  institution?: string;
+  isForeign: boolean;
+  addressLine?: string;
+  city?: string;
+  zipCode: string;
+  number?: number;
+  teacherDocument?: File;
+  function?: string; // professional role
+}
+
+export async function getUserById(
+  userId: string,
+): Promise<TEditUserAdminResponse> {
+  const result = await safeApiCall(
+    api.get(`/user/${userId}`),
+    EditUserAdminResponse,
+  );
+
+  return result;
+}
+
 export async function registerUserAdminRequest(
-  payload: RegisterUserAdminPayload
+  payload: RegisterUserAdminPayload,
 ): Promise<HttpResponse> {
-  const response = await api.post(`/auth/admin/signUp`, {
+  const response = await api.post(`/user`, {
     confirmPassword: payload.password,
+    number: Number.parseInt(payload.number ?? ""),
     ...payload,
   });
   return {
@@ -90,8 +127,40 @@ export async function registerUserAdminRequest(
   };
 }
 
+export async function updateUserRequest(
+  payload: UpdateUserAdminPayload,
+  userId: string,
+): Promise<HttpResponse> {
+  const formData = new FormData();
+
+  formData.append("name", payload.name);
+  formData.append("email", payload.email);
+  formData.append("phone", payload.phone);
+  formData.append("gender", payload.gender);
+  formData.append("country", payload.country);
+  formData.append("userType", payload.userType);
+  formData.append("isForeign", payload.isForeign.toString());
+  formData.append("zipCode", payload.zipCode);
+  formData.append("addressLine", payload.addressLine || "");
+  formData.append("institution", payload.institution || "");
+  formData.append("city", payload.city || "");
+
+  if (payload.document) formData.append("document", payload.document);
+  if (payload.number) formData.append("number", payload.number.toString());
+  if (payload.rg) formData.append("rg", payload.rg);
+  if (payload.teacherDocument)
+    formData.append("teacherDocument", payload.teacherDocument);
+
+  const response = await api.post(`/user/` + userId, formData);
+  return {
+    statusCode: response.status,
+    message: "Usuário atualizado com sucesso",
+    data: response.data,
+  };
+}
+
 export async function registerUserRequest(
-  payload: RegisterUserPayload
+  payload: RegisterUserPayload,
 ): Promise<HttpResponse> {
   const formData = new FormData();
 
@@ -124,7 +193,7 @@ export async function registerUserRequest(
 }
 
 export async function loginRequest(
-  payload: LoginPayload
+  payload: LoginPayload,
 ): Promise<HttpResponse> {
   const response = await api.post(`/auth/signIn`, payload);
   return {
@@ -135,7 +204,7 @@ export async function loginRequest(
 }
 
 export async function forgotPasswordRequest(
-  payload: ForgotPasswordPayload
+  payload: ForgotPasswordPayload,
 ): Promise<HttpResponse> {
   const response = await api.post(`/auth/forgot`, payload);
   return {
@@ -161,7 +230,7 @@ export interface ResetPasswordPayload {
 }
 
 export async function resetPasswordRequest(
-  payload: ResetPasswordPayload
+  payload: ResetPasswordPayload,
 ): Promise<HttpResponse> {
   const response = await api.patch(`/auth/forgot`, payload);
   return {
@@ -216,7 +285,7 @@ export interface GetUserByIdResponse {
   name: string;
   email: string;
   phone: string;
-  document?: string
+  document?: string;
   rg?: string;
   gender?: string;
   zipCode?: string;
@@ -229,29 +298,6 @@ export interface GetUserByIdResponse {
   number?: number;
 }
 
-export async function getUserById(
-  id: string
-): Promise<HttpResponse<GetUserByIdResponse>> {
-  try {
-    const response = await api.get(`/user/${id}`, {
-      timeout: 10000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return {
-      statusCode: response.status,
-      message: "Usuário encontrado com sucesso",
-      data: response.data as GetUserByIdResponse,
-    };
-  } catch (error: any) {
-    return {
-      statusCode: error.response?.data?.statusCode || 500,
-      message: error.response?.data?.message || "REQUEST_ERROR",
-      error: error.response?.data?.error || "REQUEST_ERROR",
-    };
-  }
-}
 export async function deleteUser(id: string) {
   return await api.delete<HttpResponse>(`/user/${id}`);
 }
@@ -271,7 +317,7 @@ export interface UpdateUserPayload {
 }
 
 export async function updateCurrentUserRequest(
-  payload: UpdateUserPayload
+  payload: UpdateUserPayload,
 ): Promise<HttpResponse> {
   const body: Record<string, unknown> = { ...payload };
   if (typeof body.isForeign === "boolean") {

@@ -36,7 +36,7 @@ export type TrailDifficulty =
   | "MEDIUM"
   | "HARD"
   | "EXTREME"
-  | string;
+  | (string & { _?: never });
 
 type RawNumber = number | string | null | undefined;
 
@@ -97,11 +97,13 @@ const toNumberOrNull = (value: RawNumber): number | null => {
 
   if (typeof value === "string") {
     const trimmed = value.trim();
+
     if (trimmed.length === 0) {
       return null;
     }
 
     const parsed = Number(trimmed);
+
     return Number.isNaN(parsed) ? null : parsed;
   }
 

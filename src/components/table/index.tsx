@@ -54,6 +54,9 @@ export function DataTable<
 }: DataTableProps<TData, TValue, F>) {
   const { dir, sort } = filters;
 
+  const pageIndex = Number(meta?.page ?? 0);
+  const pageSize = Number(meta?.limit ?? 10);
+
   const handleSortColumn = (columnId: string) => {
     if (sort === columnId) {
       if (dir === "asc") setFilter("dir", "desc");
@@ -69,10 +72,10 @@ export function DataTable<
 
   const tableState: Partial<TableState> = React.useMemo(
     () => ({
-      pagination: { pageIndex: meta.page, pageSize: meta.limit },
+      pagination: { pageIndex, pageSize },
       sorting: sort ? [{ id: sort, desc: dir === "desc" }] : [],
     }),
-    [meta.page, meta.limit, sort, dir]
+    [pageIndex, pageSize, sort, dir]
   );
 
   const table = useReactTable({
@@ -81,13 +84,14 @@ export function DataTable<
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: tableState,
+    initialState: tableState,
   });
 
-  const disableMorePages =
-    meta.page === Math.ceil(Number(meta?.total) / Number(meta.limit)) - 1;
-  const disableLessPages = meta.page === 0;
-  console.log(Math.ceil(Number(meta?.total) / Number(meta.limit)));
+  const total = Number(meta?.total ?? 0);
+  const lastPageIndex = Math.max(0, Math.ceil(total / pageSize) - 1);
+  const disableMorePages = pageIndex >= lastPageIndex;
+  const disableLessPages = pageIndex <= 0;
+
   return (
     <div className="h-full w-full flex flex-col overflow-hidden rounded-md border border-slate-300 bg-white">
       <Table className="w-full table-fixed">
@@ -102,15 +106,21 @@ export function DataTable<
                     style={{ width: header.column.columnDef.size || "auto" }}
                   >
                     <div
-                      className={cn("flex items-center gap-1 select-none", {
-                        "cursor-pointer": canSort,
-                      })}
+                      className={cn(
+                        "flex items-center gap-1 select-none min-w-0",
+                        {
+                          "cursor-pointer": canSort,
+                        }
+                      )}
                       onClick={() => handleSortColumn(header.column.id)}
                     >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      <div className="truncate overflow-hidden whitespace-nowrap">
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </div>
+
                       {canSort && sort === header.column.id && (
                         <>
                           {dir === "desc" && <IoIosArrowDown />}
@@ -142,10 +152,17 @@ export function DataTable<
                       className="px-4 py-4"
                       style={{ width: cell.column.columnDef.size || "auto" }}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      <div className="min-w-0">
+                        <div
+                          className="truncate overflow-hidden whitespace-nowrap"
+                          title={String(cell.getValue() ?? "")}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
+                      </div>
                     </TableCell>
                   ))}
                 </TableRow>

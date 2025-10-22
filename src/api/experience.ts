@@ -2,9 +2,9 @@
 import { api } from "@/core/api";
 import axios from "axios";
 import {
-  ExperienceCategory,
   type Experience,
   type ExperienceApiResponse,
+  ExperienceCategory,
   mapExperienceApiResponseToDTO,
 } from "@/types/experience";
 

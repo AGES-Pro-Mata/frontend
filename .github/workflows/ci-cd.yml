@@ -68,7 +68,15 @@ jobs:
 
       - name: Run Tests (Vitest)
         run: |
-          npm test || echo "No tests found, continuing..."
+          npm test
+
+      - name: Upload coverage to Codecov (non-blocking)
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          flags: vitest
+          name: vitest-report
+          fail_ci_if_error: false
 
       - name: Upload Build Artifacts
         if: always()
@@ -115,10 +123,7 @@ jobs:
 
   deploy-static-site:
     needs: [test, security-scan]
-    if: |
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main') ||
-      github.event_name == 'workflow_dispatch'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ${{ vars.AWS_REGION || 'us-east-2' }}
@@ -162,15 +167,6 @@ jobs:
           fi
 
           aws s3 sync dist/ "s3://$TARGET_BUCKET" --delete
-
-      - name: Invalidate CloudFront cache
-        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-            --paths '/*'
-        env:
-          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
 
       - name: Deployment Summary
         run: |

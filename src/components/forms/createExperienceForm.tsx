@@ -212,8 +212,8 @@ export function CreateExperience() {
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Arquivo muito grande. Tamanho máximo: 5MB");
+      if (file.size > 10 * 1024 * 1024) {
+        alert("Arquivo muito grande. Tamanho máximo: 10MB");
         return;
       }
 
@@ -292,7 +292,7 @@ export function CreateExperience() {
                   </label>
                   <Typography className="text-sm text-muted-foreground mt-2">
                     Sua imagem deve ser dimensionada em 400x200, nos formatos
-                    .PNG, .JPG e .JPEG, com limite de tamanho de 5mb
+                    .PNG, .JPG e .JPEG, com limite de tamanho de 10MB
                   </Typography>
                 </div>
                 <FormMessage className="text-red-500" />
