@@ -1,11 +1,10 @@
-import { requireAdminUser } from "@/api/user";
+import { requireAdminUser, userQueryOptions } from "@/api/user";
 import AdminLayout from "@/components/layouts/admin";
 import { AdminSideBar } from "@/components/navigation/sideBar";
 import type { QueryClient } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import z from "zod";
 import i18n from "@/i18n";
-import { userQueryOptions } from "@/api/user";
 
 export const Route = createFileRoute("/admin")({
   component: RouteComponent,

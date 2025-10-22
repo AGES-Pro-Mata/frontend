@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { ShowInfo } from "@/components/display/showInfo";
 import { Typography } from "@/components/typography/typography";
 import type { ProfessorApprovalDetails } from "@/api/professor";
-import CanvasCard from "@/components/cards/canvasCard";
+import CanvasCard from "@/components/card/canvasCard";
 
 export interface ProfessorProfileCardProps {
   professor: ProfessorApprovalDetails;

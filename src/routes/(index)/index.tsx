@@ -1,7 +1,7 @@
 import { HighlightsCarousel } from "@/components/carousel";
-import { CardsInfoOnHover } from "@/components/cards/cardInfoOnHover";
+import { CardsInfoOnHover } from "@/components/card/cardInfoOnHover";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
 import { useMemo, useState } from "react";

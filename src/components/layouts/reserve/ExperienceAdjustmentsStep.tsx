@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
-import CanvasCard from "@/components/cards/canvasCard";
-import ExperienceAdjustmentsCard from "@/components/cards/experienceAdjustmentsCard";
+import CanvasCard from "@/components/card/canvasCard";
+import ExperienceAdjustmentsCard from "@/components/card/experienceAdjustmentsCard";
 import { Typography } from "@/components/typography/typography";
 
 type ExperienceAdjustmentsStepProps = {
