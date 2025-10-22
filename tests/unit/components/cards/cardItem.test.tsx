@@ -133,9 +133,9 @@ describe("CartItem", () => {
       />
     );
 
-    // O componente possui um bug de fuso horário que converte a data '2025-10-10' para o dia 09.
-    // o teste é ajustado para verificar o comportamento atual.
-    expect(container).toHaveTextContent(/09 de out\. de 2025/);
+    // Verifica que as datas são renderizadas corretamente
+    expect(container).toHaveTextContent(/10 de out\. de 2025/);
+    expect(container).toHaveTextContent(/12 de out\. de 2025/);
   });
 
   // Verifica se um intervalo de datas é exibido corretamente
@@ -151,7 +151,7 @@ describe("CartItem", () => {
     );
 
     // Verifica a data única renderizada corretamente
-    expect(container).toHaveTextContent(/13 de out\. de 2025/);
+    expect(container).toHaveTextContent(/14 de out\. de 2025/);
 
     // Garante que não há um hífen de intervalo de datas
     expect(screen.queryByText("–")).not.toBeInTheDocument();
@@ -186,7 +186,7 @@ describe("CartItem", () => {
     );
     
     // Verifica a data renderizada
-    expect(container).toHaveTextContent(/14 de out\. de 2025/);
+    expect(container).toHaveTextContent(/15 de out\. de 2025/);
   });
 
   // Verifica se a imagem placeholder é usada quando a imagem da experiência é null
