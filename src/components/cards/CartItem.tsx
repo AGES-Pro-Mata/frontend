@@ -23,8 +23,10 @@ const dateRangeLabel = (start?: string | null, end?: string | null) => {
     month: "short",
     year: "numeric",
   });
+
   if (start && end) return `${formatter.format(new Date(start))} – ${formatter.format(new Date(end))}`;
   const date = start ?? end!;
+
   return formatter.format(new Date(date));
 };
 

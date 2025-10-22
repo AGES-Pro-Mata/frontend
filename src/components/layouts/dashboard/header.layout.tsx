@@ -7,9 +7,9 @@ import {
   CalendarDays,
   CircleUserRound,
   LayoutDashboard,
-  Mountain,
   LogIn,
   LogOut,
+  Mountain,
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useIsAdmin, userQueryOptions } from "@/api/user";

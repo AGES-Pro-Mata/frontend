@@ -88,6 +88,7 @@ function RouteComponent() {
       enableSorting: true,
       cell: ({ row }: any) => {
         const createdBy = row.original.createdBy;
+
         return createdBy?.name || "-";
       },
     },

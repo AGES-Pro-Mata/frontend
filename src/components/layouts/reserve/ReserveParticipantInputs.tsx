@@ -57,11 +57,13 @@ export function ReserveParticipantInputs({
 
   const handlePhoneChange = (value: string) => {
     const digits = digitsOnly(value).slice(0, 11);
+
     handleChange("phone", maskPhone(digits));
   };
 
   const handleCpfChange = (value: string) => {
     const digits = digitsOnly(value).slice(0, 11);
+
     handleChange("cpf", maskCpf(digits));
   };
 
@@ -139,7 +141,7 @@ export function ReserveParticipantInputs({
           required
           value={
             person.gender && person.gender in genderOptions
-              ? genderOptions[person.gender as ReserveParticipantGender]
+              ? genderOptions[person.gender]
               : ""
           }
           readOnly

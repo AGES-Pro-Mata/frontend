@@ -520,7 +520,7 @@ describe("Admin Highlights Route", () => {
 
     fireEvent.change(descriptionInput, { target: { value: "Nova descrição" } });
 
-    // eslint-disable-next-line testing-library/no-node-access
+     
     const fileInput = document.querySelector<HTMLInputElement>(
       'input[type="file"][id="image-upload-dialog"]'
     );

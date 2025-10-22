@@ -11,11 +11,11 @@ import type { TApiPaginationMetaResult } from "@/entities/api-pagination-respons
 import { cn } from "@/lib/utils";
 import {
   type ColumnDef,
+  type TableState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type TableState,
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
@@ -100,21 +100,28 @@ export function DataTable<
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 const canSort = header.column.getCanSort();
+
                 return (
                   <TableHead
                     key={header.id}
                     style={{ width: header.column.columnDef.size || "auto" }}
                   >
                     <div
-                      className={cn("flex items-center gap-1 select-none", {
-                        "cursor-pointer": canSort,
-                      })}
+                      className={cn(
+                        "flex items-center gap-1 select-none min-w-0",
+                        {
+                          "cursor-pointer": canSort,
+                        }
+                      )}
                       onClick={() => handleSortColumn(header.column.id)}
                     >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      <div className="truncate overflow-hidden whitespace-nowrap">
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </div>
+
                       {canSort && sort === header.column.id && (
                         <>
                           {dir === "desc" && <IoIosArrowDown />}
@@ -146,10 +153,17 @@ export function DataTable<
                       className="px-4 py-4"
                       style={{ width: cell.column.columnDef.size || "auto" }}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      <div className="min-w-0">
+                        <div
+                          className="truncate overflow-hidden whitespace-nowrap"
+                          title={String(cell.getValue() ?? "")}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
+                      </div>
                     </TableCell>
                   ))}
                 </TableRow>

@@ -100,6 +100,7 @@ export function useFilters<F>(
         deleteFilter(key);
       };
     }
+
     return undefined;
   }, [persist, key, deleteFilter]);
 
