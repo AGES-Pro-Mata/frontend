@@ -69,10 +69,14 @@ function ReservePage() {
   );
 
   return (
-    <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-2">
-      {experiences.map((exp) => (
-        <CardExperience key={exp.id} experience={exp} />
-      ))}
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-16 pt-8 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2">
+          {experiences.map((exp) => (
+            <CardExperience key={exp.id} experience={exp} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
