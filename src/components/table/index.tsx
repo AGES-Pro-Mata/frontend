@@ -11,11 +11,11 @@ import type { TApiPaginationMetaResult } from "@/entities/api-pagination-respons
 import { cn } from "@/lib/utils";
 import {
   type ColumnDef,
+  type TableState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type TableState,
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
@@ -100,6 +100,7 @@ export function DataTable<
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 const canSort = header.column.getCanSort();
+
                 return (
                   <TableHead
                     key={header.id}

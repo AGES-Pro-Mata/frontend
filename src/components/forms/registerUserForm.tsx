@@ -21,13 +21,13 @@ import { COUNTRIES } from "@/lib/countries";
 import { appToast } from "@/components/toast/toast";
 import { useCepQuery } from "@/hooks/useCepQuery";
 import {
+  digitsOnly,
+  hashPassword,
   isValidBrazilZip,
   isValidCpf,
-  digitsOnly,
   isValidForeignZip,
-  maskCpf,
   maskCep,
-  hashPassword,
+  maskCpf,
   maskPhone,
 } from "@/lib/utils";
 import type { RegisterUserPayload } from "@/api/user";
@@ -189,12 +189,15 @@ export function RegisterUser() {
 
   // Re-run validation on language change only for fields that already have errors, and skip on initial mount
   const didMountLang = useRef(false);
+
   useEffect(() => {
     if (!didMountLang.current) {
       didMountLang.current = true;
+
       return;
     }
     const errorFields = Object.keys(form.formState.errors || {});
+
     if (errorFields.length > 0) {
       // retrigger only errored fields to refresh message language
       void form.trigger(errorFields as any);
@@ -396,6 +399,7 @@ export function RegisterUser() {
                       value={maskPhone(field.value || "")}
                       onChange={(e) => {
                         const digits = digitsOnly(e.target.value).slice(0, 11);
+
                         field.onChange(maskPhone(digits));
                       }}
                       onBlur={field.onBlur}
@@ -436,6 +440,7 @@ export function RegisterUser() {
                             11
                           );
                           const masked = maskCpf(digits);
+
                           field.onChange(masked);
                         }
                       }}
@@ -495,6 +500,7 @@ export function RegisterUser() {
                       value={digitsOnly(field.value || "")}
                       onChange={(e) => {
                         const digits = digitsOnly(e.target.value).slice(0, 15);
+
                         field.onChange(digits);
                       }}
                       onBlur={field.onBlur}
@@ -517,6 +523,7 @@ export function RegisterUser() {
                       onChange={(e) => {
                         const digits = digitsOnly(e.target.value).slice(0, 8);
                         const masked = maskCep(digits);
+
                         if (autoFilled.addressLine || autoFilled.city) {
                           setAutoFilled({ addressLine: false, city: false });
                         }
@@ -780,6 +787,7 @@ export function RegisterUser() {
                             accept=".pdf"
                             onChange={(e) => {
                               const file = e.target.files?.[0];
+
                               onChange(file);
                             }}
                             className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-900 hover:file:bg-yellow-100"

@@ -29,7 +29,22 @@
             "subtitle": "Add experiences to your cart to finish your reservation."
         },
         "checkoutButton": "Finish Reservation",
-        "browseLink": "See more experiences"
+        "browseLink": "See more experiences",
+        "closeButtonAria": "Close cart"
+    },
+    "cartItem": {
+        "capacity_one": "{{count}} person",
+        "capacity_other": "{{count}} people",
+        "length": "{{length}} km",
+        "duration": "{{value}} h",
+        "difficulty": {
+            "light": "Light",
+            "easy": "Easy",
+            "medium": "Moderate",
+            "hard": "Hard",
+            "extreme": "Extreme"
+        },
+        "eventDateRange": "{{from}} – {{to}}"
     },
     "status": {
         "confirmada": "Confirmed",

@@ -12,7 +12,7 @@ export class AxiosHttpClient implements IHttpClient {
 
   constructor(baseURL: string) {
     this.client = axios.create({
-      baseURL: baseURL,
+      baseURL,
       timeout: 3000,
       headers: {
         "Content-Type": "application/json",

@@ -57,6 +57,7 @@ export async function getHighlights(params?: GetHighlightsParams) {
 
 export async function getHighlightById(id: string) {
   const response = await api.get<HighlightResponse>(`/highlights/${id}`);
+
   return response.data;
 }
 
@@ -114,6 +115,7 @@ export async function updateHighlight(id: string, payload: UpdateHighlightPayloa
 
 export async function deleteHighlight(id: string) {
   const response = await api.delete(`/highlights/${id}`);
+
   return response.data;
 }
 

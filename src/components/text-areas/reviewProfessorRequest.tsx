@@ -56,6 +56,7 @@ export default function ProfessorApproval({
   const statusKey = useMemo(() => {
     if (userType === "PROFESSOR") return "approved" as const;
     if (userType === "GUEST") return "rejected" as const;
+
     return null;
   }, [userType]);
 
@@ -67,6 +68,7 @@ export default function ProfessorApproval({
 
   const statusConfig = useMemo(() => {
     if (!statusKey) return null;
+
     return statusMap[statusKey];
   }, [statusKey]);
 

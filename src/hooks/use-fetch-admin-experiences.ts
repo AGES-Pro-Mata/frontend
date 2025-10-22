@@ -21,7 +21,8 @@ export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesPa
         {
           items: TExperienceAdminResponse[];
         } & TApiPaginationMetaResult
-      >("/experience" + safeParseFilters(filters, ExperienceAdminRequestFilters));
+      >(`/experience${safeParseFilters(filters, ExperienceAdminRequestFilters)}`);
+
       return response.data;
     },
   });

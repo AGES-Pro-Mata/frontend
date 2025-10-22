@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/button/defaultButton";
 import { Typography } from "@/components/typography/typography";
-import { homeCards, type HomeCard, type HomeCardId } from "@/content/cardsInfo";
+import { type HomeCard, type HomeCardId, homeCards } from "@/content/cardsInfo";
 import { cn } from "@/lib/utils";
 import type { HighlightResponse } from "@/api/highlights";
 
@@ -144,6 +144,7 @@ const MobileNavigation = memo(function MobileNavigation({
       <div className="-mx-4 flex snap-x snap-mandatory gap-[clamp(0.5rem,3vw,0.75rem)] overflow-x-auto px-4 pb-2">
         {cards.map((card, index) => {
           const selected = index === activeIndex;
+
           return (
             <button
               key={card.id}
@@ -207,7 +208,7 @@ type CardsInfoOnHoverProps = {
 };
 
 export function CardsInfoOnHover({ highlights }: CardsInfoOnHoverProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
@@ -221,12 +222,12 @@ export function CardsInfoOnHover({ highlights }: CardsInfoOnHoverProps) {
         title: t(`homeCards.${card.id}.title`),
         description: t(`homeCards.${card.id}.description`),
       })),
-    [highlights, t, i18n.language]
+    [highlights, t]
   );
 
   const ctaLabel = useMemo(
     () => t("homeCards.cta", { defaultValue: "Saiba mais" }),
-    [t, i18n.language]
+    [t]
   );
 
   const handleSelect = useCallback((index: number) => {

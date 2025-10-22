@@ -1,3 +1,4 @@
+import { resolveImageUrl } from "@/utils/resolveImageUrl";
 export enum ExperienceCategory {
   TRILHA = "TRAIL",
   EVENTO = "EVENT",
@@ -115,15 +116,13 @@ const mapImage = (image: ExperienceApiImage): { url: string } | null => {
     return null;
   }
 
-  if (typeof image === "string") {
-    return { url: image };
+  const rawUrl = typeof image === "string" ? image : image.url;
+
+  if (!rawUrl) {
+    return null;
   }
 
-  if (typeof image === "object" && image.url) {
-    return { url: image.url };
-  }
-
-  return null;
+  return { url: resolveImageUrl(rawUrl) };
 };
 
 export const mapExperienceApiResponseToDTO = (

@@ -73,6 +73,7 @@ export default function ExperienceCard({
         setMen(savedMen.toString());
         setWomen(savedWomen.toString());
       }
+
       return !prev;
     });
   };
@@ -82,23 +83,28 @@ export default function ExperienceCard({
     setter: (val: string) => void
   ) => {
     const raw = e.target.value.replace(/,/g, "");
+
     if (raw === "") {
       setter("");
+
       return;
     }
     if (!/^\d+$/.test(raw)) return;
     const clamped = Math.min(Number(raw), 1000).toString();
+
     setter(clamped);
   };
 
   const handleDayClick = (day: Date) => {
     if (range?.from && range?.to) {
       setRange({ from: day, to: undefined });
+
       return;
     }
     if (range?.from && !range?.to) {
       if (day.getTime() === range.from.getTime()) {
         setRange({ from: day, to: day });
+
         return;
       }
       if (day > range.from) {
@@ -106,6 +112,7 @@ export default function ExperienceCard({
       } else {
         setRange({ from: day, to: undefined });
       }
+
       return;
     }
     if (!range?.from) {
@@ -197,15 +204,19 @@ export default function ExperienceCard({
                   onSelect={(value) => {
                     if (!value) {
                       setRange({ from: undefined, to: undefined });
+
                       return;
                     }
                     const { from, to } = value;
+
                     if (from && to && from.getTime() === to.getTime()) {
                       if (range.from && !range.to && range.from.getTime() === from.getTime()) {
                         setRange({ from, to });
+
                         return;
                       }
                       setRange({ from, to: undefined });
+
                       return;
                     }
                     setRange(value);

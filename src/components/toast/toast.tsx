@@ -1,5 +1,5 @@
-import { toast, type ExternalToast, Toaster, type ToasterProps } from "sonner";
-import { Check, Info, AlertTriangle, XOctagon } from "lucide-react";
+import { type ExternalToast, Toaster, type ToasterProps, toast } from "sonner";
+import { AlertTriangle, Check, Info, XOctagon } from "lucide-react";
 import React from "react";
 
 interface AppToastOptions extends Omit<ExternalToast, "description"> {

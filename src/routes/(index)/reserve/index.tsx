@@ -1,4 +1,4 @@
-import { CardExperience } from "@/components/card/card-experience";
+import { CardExperience } from "@/components/card/experienceCard";
 import {
   type Experience,
   type ExperienceApiResponse,

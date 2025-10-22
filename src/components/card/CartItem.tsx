@@ -1,8 +1,10 @@
-import React, { Fragment, type ReactElement } from "react";
+import React, { Fragment, type ReactElement, useMemo } from "react";
 import { BsSpeedometer2 } from "react-icons/bs";
-import { Trash2 } from "lucide-react";
-import type { ExperienceDTO } from "@/types/experience";
+import { CalendarClock, Map, Timer, Trash2, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ExperienceCategoryCard, type ExperienceDTO } from "@/types/experience";
+import { resolveImageUrl } from "@/utils/resolveImageUrl";
+import { useTranslation } from "react-i18next";
 
 export interface CartItemProps {
   experience: ExperienceDTO;
@@ -11,62 +13,118 @@ export interface CartItemProps {
   className?: string;
 }
 
-const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
-const fmtBRL = (value?: number | null) => BRL.format(value ?? 0);
 const minutesToHours = (m?: number | null) => (m ? +(m / 60).toFixed(1) : 0);
-const difficultyLabel = (d?: string | null) =>
-  d === "EASY" ? "Fácil" : d === "MEDIUM" ? "Moderada" : d === "HARD" ? "Difícil" : undefined;
-const dateRangeLabel = (start?: string | null, end?: string | null) => {
-  if (!start && !end) return undefined;
-  const formatter = new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-  if (start && end) return `${formatter.format(new Date(start))} – ${formatter.format(new Date(end))}`;
-  const date = start ?? end!;
-  return formatter.format(new Date(date));
-};
-
-const Line: React.FC<{ iconSrc?: string; icon?: React.ReactNode; children: React.ReactNode }> = ({
-  iconSrc,
-  icon,
-  children,
-}) => (
+const Line: React.FC<{ icon?: React.ReactNode; children: React.ReactNode }> = ({ icon, children }) => (
   <div className="inline-flex items-center gap-2 text-[13px] font-bold leading-none text-foreground">
-    {icon ?? (iconSrc ? <img src={iconSrc} alt="" className="w-5 h-5" /> : null)}
+    {icon ?? null}
     {children}
   </div>
 );
 
 const PriceBlock: React.FC<{ price: string }> = ({ price }) => (
-  <div className="inline-flex items-center justify-center rounded-full bg-[#F6EDE4] px-3 py-1 shadow-sm">
-    <span className="font-extrabold text-[13px] leading-none text-[#2F3A27]">{price}</span>
+  <div className="inline-flex items-center justify-center rounded-full bg-banner px-3 py-1 shadow-sm">
+    <span className="font-extrabold text-[13px] leading-none text-main-dark-green">{price}</span>
   </div>
 );
 
 const CartItem: React.FC<CartItemProps> = ({ experience: e, onSelect, onRemove, className }) => {
-  const imageUrl = e.image?.url ?? "/placeholder.png";
+  const { t, i18n } = useTranslation();
+  const locale = useMemo(() => (i18n.language?.startsWith("pt") ? "pt-BR" : "en-US"), [i18n.language]);
+  const currencyFormatter = useMemo(
+    () => new Intl.NumberFormat(locale, { style: "currency", currency: "BRL" }),
+    [locale],
+  );
+  const decimalFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(locale, {
+        maximumFractionDigits: 1,
+        minimumFractionDigits: 0,
+      }),
+    [locale],
+  );
+  const dateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+    [locale],
+  );
+  const imageUrl = resolveImageUrl(e.image?.url);
   const title = e.name;
-  const price = fmtBRL(e.price);
+  const price = currencyFormatter.format(e.price ?? 0);
 
-  const capacityLine = <Line iconSrc="/capacity.svg">{e.capacity} pessoas</Line>;
+  const capacityLabel = t("cartItem.capacity", {
+    count: e.capacity ?? 0,
+  });
+  const capacityLine = (
+    <Line icon={<Users className="h-5 w-5 text-foreground" />}>{capacityLabel}</Line>
+  );
+
+  const lengthLabel =
+    e.category === ExperienceCategoryCard.TRAIL && e.trailLength != null
+      ? t("cartItem.length", { length: decimalFormatter.format(e.trailLength) })
+      : undefined;
+
   const lengthLine =
-    e.category === "TRAIL" && e.trailLength != null ? (
-      <Line iconSrc="/trailLength.svg">{e.trailLength} km</Line>
+    e.category === ExperienceCategoryCard.TRAIL && lengthLabel ? (
+      <Line icon={<Map className="h-5 w-5 text-foreground" />}>{lengthLabel}</Line>
     ) : null;
+  const durationLabel =
+    e.category === ExperienceCategoryCard.TRAIL && e.durationMinutes != null
+      ? t("cartItem.duration", {
+          value: decimalFormatter.format(minutesToHours(e.durationMinutes)),
+        })
+      : undefined;
   const durationLine =
-    e.category === "TRAIL" ? (
-      <Line iconSrc="/trailDuration.svg">{minutesToHours(e.durationMinutes)} h</Line>
+    e.category === ExperienceCategoryCard.TRAIL && durationLabel ? (
+      <Line icon={<Timer className="h-5 w-5 text-foreground" />}>{durationLabel}</Line>
     ) : null;
-  const difficultyText = difficultyLabel(e.trailDifficulty);
+
+  const difficultyLabel = (() => {
+    switch (e.trailDifficulty) {
+      case "LIGHT":
+        return t("cartItem.difficulty.light");
+      case "EASY":
+        return t("cartItem.difficulty.easy");
+      case "MEDIUM":
+        return t("cartItem.difficulty.medium");
+      case "HARD":
+        return t("cartItem.difficulty.hard");
+      case "EXTREME":
+        return t("cartItem.difficulty.extreme");
+      default:
+        return undefined;
+    }
+  })();
+
   const difficultyLine =
-    e.category === "TRAIL" && difficultyText ? (
-      <Line icon={<BsSpeedometer2 className="w-5 h-5 text-foreground" />}>{difficultyText}</Line>
+    e.category === ExperienceCategoryCard.TRAIL && difficultyLabel ? (
+      <Line icon={<BsSpeedometer2 className="w-5 h-5 text-foreground" />}>{difficultyLabel}</Line>
     ) : null;
-  const eventDateLabel = e.category === "EVENT" ? dateRangeLabel(e.startDate, e.endDate) : undefined;
+
+  const eventDateLabel = (() => {
+    if (e.category !== ExperienceCategoryCard.EVENT) {
+      return undefined;
+    }
+
+    if (e.startDate && e.endDate) {
+      return t("cartItem.eventDateRange", {
+        from: dateFormatter.format(new Date(e.startDate)),
+        to: dateFormatter.format(new Date(e.endDate)),
+      });
+    }
+
+    const singleDate = e.startDate ?? e.endDate;
+
+    return singleDate ? dateFormatter.format(new Date(singleDate)) : undefined;
+  })();
+
   const eventDateLine =
-    e.category === "EVENT" && eventDateLabel ? <Line iconSrc="/weekDays.svg">{eventDateLabel}</Line> : null;
+    e.category === ExperienceCategoryCard.EVENT && eventDateLabel ? (
+      <Line icon={<CalendarClock className="h-5 w-5 text-foreground" />}>{eventDateLabel}</Line>
+    ) : null;
 
   const handleSelect = () => {
     if (onSelect) onSelect(e);
