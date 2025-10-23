@@ -470,7 +470,7 @@ describe("AdminRequests Component", () => {
         requestsQuery: {
           isLoading: false,
           error: null,
-          data: { data: [{ id: "9", name: "User9", email: "a@a.com", status: "Approved" }] },
+          data: [{ id: "9", name: "User9", email: "a@a.com", status: "Approved" }],
         },
       });
       render(<AdminRequests />);
@@ -478,18 +478,19 @@ describe("AdminRequests Component", () => {
     });
 
     it("handles requestsQuery.data.results array", async () => {
-      setMockUseAdminRequests({
-        requestsQuery: {
-          isLoading: false,
-          error: null,
-          data: {
-            results: [{ id: "10", name: "User10", email: "b@b.com", status: "Approved" }],
-          },
-        },
-      });
-      render(<AdminRequests />);
-      expect(await screen.findByText((t) => t.includes("User10"))).toBeInTheDocument();
-    });
+  setMockUseAdminRequests({
+    requestsQuery: {
+      isLoading: false,
+      error: null,
+      data: [
+        { id: "10", name: "User10", email: "b@b.com", status: "Approved" },
+      ],
+    },
+  });
+  render(<AdminRequests />);
+  expect(await screen.findByText((t) => t.includes("User10"))).toBeInTheDocument();
+});
+
   });
 
   describe("DataTable setFilter integration", () => {
