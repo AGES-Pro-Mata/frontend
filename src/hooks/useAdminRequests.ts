@@ -39,7 +39,7 @@ export function useAdminRequests(filters: {
 
   const requestsQuery = useQuery({
     queryKey: ["adminRequests", filters],
-    queryFn: () => fetchRequests(filters),
+    queryFn: () => fetchRequests(filters)
   });
 
   // Exemplo de mutation para aprovar (ajuste endpoint se necessário)

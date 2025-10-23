@@ -14,9 +14,10 @@ type useFetchAdminExperiencesParams = {
 };
 
 export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesParams) => {
-  const query = useQuery({
+  const { data, isFetching, refetch, isLoading } = useQuery({
     queryKey: [ADMIN_EXPERIENCES_QUERY_KEY, filters],
     queryFn: async () => {
+      //await new Promise(r => setTimeout(r, 5000));
       const response = await api.get<
         {
           items: TExperienceAdminResponse[];
@@ -60,6 +61,9 @@ export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesPa
   return {
     items: parsedItems,
     meta,
-    ...query,
+    data,
+    isFetching,
+    isLoading,
+    refetch,
   };
 };
