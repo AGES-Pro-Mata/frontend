@@ -5,10 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useLogin } from "@/hooks/useLogin";
 import { TextInput } from "@/components/input/textInput";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
-import { appToast } from "@/components/toast/toast";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
@@ -21,13 +20,8 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-interface LoginFormProps {
-  onSuccess?: () => void;
-}
-
-export function LoginForm({ onSuccess }: LoginFormProps) {
+export function LoginForm() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,7 +47,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={(event) => void form.handleSubmit(onSubmit)(event)} className="space-y-4">
           <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs">
               <FormField

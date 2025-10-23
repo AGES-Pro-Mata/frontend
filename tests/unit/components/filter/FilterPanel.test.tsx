@@ -17,7 +17,7 @@ const calendarNextValues = new Map<string, Date | undefined>();
 const sanitizeLabel = (label: string) => label.trim().replace(/\s+/g, "-").toLowerCase();
 let toggleHandler: ((value: string) => void) | undefined;
 
-vi.mock("@/components/ui/calendarFilter", () => {
+vi.mock("@/components/filter/calendarFilter", () => {
   type CalendarProps = {
     placeholder?: string;
     onChange?: (date?: Date) => void;
@@ -157,7 +157,7 @@ import {
   type FilterPanelProps,
   type FilterWithDateRange,
 } from "@/components/filter/FilterPanel";
-import * as calendarModule from "@/components/ui/calendarFilter";
+import * as calendarModule from "@/components/filter/calendarFilter";
 import * as toggleGroupModule from "@/components/ui/toggle-group";
 
 type CalendarMockApi = {

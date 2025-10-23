@@ -5,7 +5,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import CartItem from "@/components/card/CartItem";
+import CartItem from "@/components/card/cartItem";
 import { Button } from "@/components/button/defaultButton";
 import { useCartStore } from "@/store/cartStore";
 import { X } from "lucide-react";

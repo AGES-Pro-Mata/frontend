@@ -14,9 +14,9 @@ export interface CartItemProps {
 }
 
 const minutesToHours = (m?: number | null) => (m ? +(m / 60).toFixed(1) : 0);
-const Line: React.FC<{ icon?: React.ReactNode; children: React.ReactNode }> = ({ icon, children }) => (
+const Line: React.FC<{ icon?: React.ReactNode; children: React.ReactNode }> = ({ icon = null, children }) => (
   <div className="inline-flex items-center gap-2 text-[13px] font-bold leading-none text-foreground">
-    {icon ?? null}
+    {icon}
     {children}
   </div>
 );
