@@ -1,9 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { MyReservationsFilter } from "@/components/filter/MyReservationsFilter";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute('/(index)/user/my-reservations/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>Hello "/(index)/user/my-reservations/"!</div>
+  return (
+    <main className="mx-auto flex w-full max-w-[1180px] flex-col gap-12 px-4 py-10 md:px-8">
+      <MyReservationsFilter />
+
+    </main>
+  );
 }

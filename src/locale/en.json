@@ -54,6 +54,13 @@
         "cancelada": "Cancelled",
         "desconhecido": "Unknown"
     },
+    "myReservationsFilter": {
+        "searchPlaceholder": "Search reservations...",
+        "searchAriaLabel": "Search reservations",
+        "status": {
+            "all": "All"
+        }
+    },
     "nav": {
         "home": "Home",
         "reserve": "Reserve",
@@ -109,6 +116,20 @@
         "bookNow": "Book now!",
         "book": "Make a Reservation"
     },
+        "reserveFilter": {
+            "arrivalDateLabel": "Check-in date",
+            "arrivalDatePlaceholder": "Check-in",
+            "departureDateLabel": "Check-out date",
+            "departureDatePlaceholder": "Check-out",
+            "experienceTypes": {
+                "rooms": "Rooms",
+                "events": "Events",
+                "labs": "Laboratories",
+                "trails": "Trails"
+            },
+            "searchPlaceholder": "Search...",
+            "searchAriaLabel": "Search experiences"
+        },
     "experienceCard": {
       "package": "Package",
       "currencySymbol": "$",

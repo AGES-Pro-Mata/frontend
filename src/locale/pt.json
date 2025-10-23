@@ -56,6 +56,13 @@
     "cancelada": "Cancelada",
     "desconhecido": "Desconhecido"
   },
+  "myReservationsFilter": {
+    "searchPlaceholder": "Buscar reservas...",
+    "searchAriaLabel": "Buscar reservas",
+    "status": {
+      "all": "Todas"
+    }
+  },
 
   "nav": {
     "home": "Início",
@@ -113,6 +120,21 @@
     },
     "bookNow": "Faça sua reserva agora!",
     "book": "Fazer Reserva"
+  },
+
+  "reserveFilter": {
+    "arrivalDateLabel": "Data de entrada",
+    "arrivalDatePlaceholder": "Entrada",
+    "departureDateLabel": "Data de saída",
+    "departureDatePlaceholder": "Saída",
+    "experienceTypes": {
+      "rooms": "Quartos",
+      "events": "Eventos",
+      "labs": "Laboratórios",
+      "trails": "Trilhas"
+    },
+    "searchPlaceholder": "Buscar...",
+    "searchAriaLabel": "Buscar experiências"
   },
 
   "experienceCard": {
