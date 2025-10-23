@@ -3,7 +3,7 @@ import type { HighlightResponse } from "@/api/highlights";
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/typography/typography";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { CanvasCard } from "../cards";
+import { CanvasCard } from "@/components/card";
 
 interface HighlightsCarouselProps {
   highlights: HighlightResponse[];

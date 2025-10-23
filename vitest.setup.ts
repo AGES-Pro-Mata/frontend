@@ -1,8 +1,12 @@
+import process from "node:process";
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import "@/i18n";
 import { server } from "@/test/msw/server";
+
+
+process.env.TZ = "America/Sao_Paulo";
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: "error" });

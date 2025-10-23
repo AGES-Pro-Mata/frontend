@@ -1,4 +1,4 @@
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { Typography } from "@/components/typography/typography";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";

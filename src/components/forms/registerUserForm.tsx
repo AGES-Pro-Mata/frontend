@@ -3,9 +3,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { TextInput } from "@/components/inputs/textInput";
+import { TextInput } from "@/components/input/textInput";
 import { Typography } from "@/components/typography/typography";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { useRegisterUser } from "@/hooks/useRegisterUser";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -31,7 +31,7 @@ import {
   maskPhone,
 } from "@/lib/utils";
 import type { RegisterUserPayload } from "@/api/user";
-import { CanvasCard } from "@/components/cards";
+import { CanvasCard } from "@/components/card";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 

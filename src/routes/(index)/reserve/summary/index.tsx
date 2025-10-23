@@ -72,7 +72,9 @@ function ReserveSummaryPage() {
       participants={mockPeople}
       experiences={mockExperiences}
       notes="Sem observações"
-      onBack={() => navigate({ to: "/" })}
+      onBack={() => {
+        void navigate({ to: "/" });
+      }}
     />
   );
 }

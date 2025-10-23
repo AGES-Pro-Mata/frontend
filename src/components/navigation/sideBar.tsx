@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { cva } from "class-variance-authority";
-import type { VariantProps } from "class-variance-authority";
-import { Building2, PanelLeftIcon, Presentation } from "lucide-react";
+import { type VariantProps, cva} from "class-variance-authority";
+import { Building2, FileText, Inbox, PanelLeftIcon, Presentation, UserPlus } from "lucide-react";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -25,7 +24,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { FileText, Inbox, UserPlus } from "lucide-react";
 import { Typography } from "../typography";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";

@@ -8,7 +8,7 @@ export const useInterval = (
   immediate?: boolean
 ) => {
   const savedCallback = useRef(noop);
-  const intervalId = useRef<NodeJS.Timeout | null>(null);
+  const intervalId = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     savedCallback.current = callback;
@@ -17,7 +17,7 @@ export const useInterval = (
   useEffect(() => {
     if (!immediate || delay === null || delay === false) return;
     savedCallback.current();
-  }, [immediate]);
+  }, [immediate, delay]);
 
   useEffect(() => {
     if (delay === null || delay === false) return;

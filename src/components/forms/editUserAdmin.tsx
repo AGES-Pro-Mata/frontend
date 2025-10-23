@@ -1,5 +1,5 @@
-import { Button } from "@/components/buttons/defaultButton";
-import { TextInput } from "@/components/inputs/textInput";
+import { Button } from "@/components/button/defaultButton";
+import { TextInput } from "@/components/input/textInput";
 import { Typography } from "@/components/typography/typography";
 import { Checkbox } from "@/components/ui/checkbox";
 import {

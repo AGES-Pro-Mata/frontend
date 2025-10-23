@@ -30,7 +30,7 @@ import {
   useUpdateHighlight,
 } from "@/hooks/useHighlights";
 import { appToast } from "@/components/toast/toast";
-import { CanvasCard } from "@/components/cards";
+import { CanvasCard } from "@/components/card";
 import { MoonLoader } from "react-spinners";
 
 export const Route = createFileRoute("/admin/highlights/")({
@@ -186,12 +186,10 @@ export function RouteComponent() {
       );
     } else {
       // Adicionar nova imagem
-      if (!formData.image) return;
-
       createMutation.mutate(
         {
           category: selectedCategory,
-          image: formData.image,
+          image: formData.image!,
           title: formData.title,
           description: formData.description,
           order: highlights[selectedCategory].length + 1,

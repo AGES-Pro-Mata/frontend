@@ -246,22 +246,22 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
               remarkPlugins={[remarkGfm, remarkBreaks]}
               components={{
                 blockquote: () => null,
-                h1: ({ node, ...props }) => (
+                h1: ({ ...props }) => (
                   <h1 className="text-2xl font-bold mt-2 mb-2" {...props} />
                 ),
-                h2: ({ node, ...props }) => (
+                h2: ({ ...props }) => (
                   <h2 className="text-xl font-bold mt-2 mb-2" {...props} />
                 ),
-                h3: ({ node, ...props }) => (
+                h3: ({ ...props }) => (
                   <h3 className="text-lg font-bold mt-2 mb-2" {...props} />
                 ),
-                ul: ({ node, ...props }) => (
+                ul: ({ ...props }) => (
                   <ul className="list-disc ml-6 my-2" {...props} />
                 ),
-                ol: ({ node, ...props }) => (
+                ol: ({ ...props }) => (
                   <ol className="list-decimal ml-6 my-2" {...props} />
                 ),
-                li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                li: ({ ...props }) => <li className="mb-1" {...props} />,
               }}
             >
               {value || "Nada para visualizar."}
