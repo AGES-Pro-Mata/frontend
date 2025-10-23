@@ -39,30 +39,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   const mutation = useLogin();
 
   const onSubmit = async (data: FormData) => {
-    try {
-      const hashedPassword = await hashPassword(data.password);
-      
-      mutation.mutate(
-        { ...data, password: hashedPassword },
-        {
-          onSuccess: (response) => {
-            if (response.statusCode >= 200 && response.statusCode < 300) {
-              form.reset();
-              appToast.success(t("auth.login.toastSuccess"));
-              onSuccess?.();
-              navigate({ to: "/" });
-            } else {
-              appToast.error(response.message || t("auth.login.toastError"));
-            }
-          },
-          onError: () => {
-            appToast.error(t("auth.login.toastErrorTryAgain"));
-          },
-        }
-      );
-    } catch (error) {
-      appToast.error(t("auth.login.toastInternal"));
-    }
+    const hashedPassword = await hashPassword(data.password);
+
+    mutation.mutate({ ...data, password: hashedPassword });
   };
 
   return (

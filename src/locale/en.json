@@ -148,6 +148,7 @@
             "submitting": "Logging in...",
             "register": "Sign up",
             "toastSuccess": "Logged in successfully!",
+            "toastWarning": "Attention: You must change your password on first access.",
             "toastError": "Error logging in",
             "toastErrorTryAgain": "Error logging in. Please try again.",
             "toastInternal": "Internal error. Please try again.",

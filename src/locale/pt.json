@@ -158,6 +158,7 @@
       "register": "Cadastre-se",
       "toastSuccess": "Login realizado com sucesso!",
       "toastError": "Erro ao fazer login",
+      "toastWarning": "Atenção: Você deve mudar a sua senha no primeiro acesso.",
       "toastErrorTryAgain": "Erro ao fazer login. Tente novamente.",
       "toastInternal": "Erro interno. Tente novamente.",
       "invalidCredentials": "Credenciais inválidas. Tente novamente."
