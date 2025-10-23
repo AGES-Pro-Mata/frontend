@@ -3,7 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { screen , within } from "@testing-library/react";
-import ExperienceCard from "@/components/cards/experienceTuningCard"; 
+import ExperienceCard from "@/components/card/experienceTuningCard";
 import { renderWithProviders } from "@/test/test-utils";
 
 vi.mock("react-i18next", async (importOriginal) => {
@@ -268,7 +268,7 @@ it("renderiza corretamente quando saved=false e savedRange indefinido", async ()
     }),
   }));
 
-  const { default: CardNoSaved } = await import("@/components/cards/experienceTuningCard");
+  const { default: CardNoSaved } = await import("@/components/card/experienceTuningCard");
   
   renderWithProviders(<CardNoSaved {...baseProps} />);
 
@@ -291,7 +291,7 @@ it("desabilita o botão salvar quando range incompleto", async () => {
     }),
   }));
 
-  const { default: Card } = await import("@/components/cards/experienceTuningCard");
+  const { default: Card } = await import("@/components/card/experienceTuningCard");
   
   renderWithProviders(<Card {...baseProps} />);
 
@@ -393,7 +393,7 @@ it("abre e fecha modo de edição corretamente", async () => {
       }),
     }));
 
-    const { default: IncompleteCard } = await import("@/components/cards/experienceTuningCard");
+    const { default: IncompleteCard } = await import("@/components/card/experienceTuningCard");
     
     renderWithProviders(<IncompleteCard {...baseProps} />);
 
@@ -419,7 +419,7 @@ it("abre e fecha modo de edição corretamente", async () => {
       }),
     }));
 
-    const { default: Card } = await import("@/components/cards/experienceTuningCard");
+    const { default: Card } = await import("@/components/card/experienceTuningCard");
     
     renderWithProviders(<Card {...baseProps} />);
 
