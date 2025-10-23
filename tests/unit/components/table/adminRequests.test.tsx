@@ -76,17 +76,59 @@ vi.mock("@/components/ui/button", () => ({
 vi.mock("@/components/table/index", () => {
   const DataTable: React.FC<{
     data: Request[];
+    columns?: Array<Record<string, unknown>>;
     setFilter?: (key: string, value: unknown) => void;
     filters?: Record<string, unknown>;
     meta?: Record<string, unknown>;
-  }> = ({ 
-    data, 
+  }> = ({
+    data,
+    columns,
     setFilter,
-    filters 
+    filters,
   }) => {
-    const { approveMutation } = mockUseAdminRequests({}) as unknown as {
-      approveMutation: { mutate: (id: string) => void; isPending: boolean };
-    };
+
+    React.useEffect(() => {
+      if (!columns || columns.length === 0) {
+        return;
+      }
+
+      const rowsToProcess =
+        data.length > 0
+          ? data
+          : [
+              {
+                id: "sample",
+                name: "",
+                email: "",
+                status: "",
+              } as Request,
+            ];
+
+      columns.forEach((column) => {
+        const header = column.header as undefined | ((ctx: unknown) => unknown);
+        const cell = column.cell as undefined | ((ctx: any) => unknown);
+        const accessorKey = column.accessorKey as string | undefined;
+
+        if (typeof header === "function") {
+          header({ column } as unknown);
+        }
+
+        if (typeof cell === "function") {
+          rowsToProcess.forEach((row) => {
+            const rowRecord = row as unknown as Record<string, unknown>;
+
+            cell({
+              row: {
+                original: row,
+                getValue: (key: string) => rowRecord[key],
+              },
+              getValue: () =>
+                accessorKey ? rowRecord[accessorKey] : undefined,
+            });
+          });
+        }
+      });
+    }, [columns, data]);
 
     React.useEffect(() => {
       if (setFilter && filters) {
@@ -96,18 +138,49 @@ vi.mock("@/components/table/index", () => {
 
     return (
       <div data-testid="datatable">
-        {data.map((row) => (
-          <div key={row.id} data-testid="row">
-            {row.name} - {row.status}
-            {approveMutation.isPending ? (
-              <div data-testid="spinner">Loading...</div>
-            ) : (
-              <button onClick={() => approveMutation.mutate(row.id)}>
-                Approve
-              </button>
-            )}
-          </div>
-        ))}
+        {data.map((row, rowIndex) => {
+          const rowRecord = row as unknown as Record<string, unknown>;
+
+          return (
+            <div key={row.id ?? rowIndex} data-testid="row">
+              {columns?.map((column, columnIndex) => {
+                const accessorKey = column.accessorKey as string | undefined;
+                const cell = column.cell as undefined | ((ctx: any) => React.ReactNode);
+                let content: React.ReactNode = null;
+                const columnKey =
+                  typeof column.id === "string" || typeof column.id === "number"
+                    ? String(column.id)
+                    : accessorKey ?? `col-${columnIndex}`;
+
+                if (typeof cell === "function") {
+                  content = cell({
+                    row: {
+                      original: row,
+                      getValue: (key: string) => rowRecord[key],
+                    },
+                    getValue: () =>
+                      accessorKey ? rowRecord[accessorKey] : undefined,
+                  });
+                } else if (accessorKey) {
+                  content = rowRecord[accessorKey] as React.ReactNode;
+                }
+
+                if (content == null && accessorKey) {
+                  content = rowRecord[accessorKey] as React.ReactNode;
+                }
+
+                return (
+                  <div
+                    key={columnKey}
+                    data-testid={`cell-${columnKey}`}
+                  >
+                    {content}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
         {setFilter && (
           <button 
             data-testid="trigger" 
@@ -260,10 +333,20 @@ describe("AdminRequests Component", () => {
 
   it("renders spinner when mutation is pending", () => {
     const pendingMock: ApproveMutation = { mutate: vi.fn(), isPending: true };
-    
+
     setMockUseAdminRequests({ approveMutation: pendingMock });
     render(<AdminRequests />);
-    expect(screen.getAllByTestId("spinner")).toHaveLength(2);
+
+    const buttons = screen.getAllByRole("button", { name: /approve/i });
+
+    expect(buttons).toHaveLength(2);
+    buttons.forEach((button) => {
+      expect(button).toBeDisabled();
+    });
+
+    const loadingIndicators = screen.getAllByText("⏳");
+
+    expect(loadingIndicators).toHaveLength(2);
   });
 
   it("renders DataTable correctly", () => {
@@ -390,8 +473,8 @@ describe("AdminRequests Component", () => {
 
   it("renders loading spinner when approveMutation is pending inside ApproveButton", () => {
     const approveMock: ApproveMutation = { mutate: vi.fn(), isPending: true };
-    
-    setMockUseAdminRequests({ 
+
+    setMockUseAdminRequests({
       approveMutation: approveMock,
       requestsQuery: {
         isLoading: false,
@@ -401,12 +484,12 @@ describe("AdminRequests Component", () => {
         ],
       },
     });
-    
+
     render(<AdminRequests />);
-    const spinners = screen.getAllByTestId("spinner");
-    
-    expect(spinners.length).toBeGreaterThan(0);
-    expect(spinners[0]).toHaveTextContent("Loading");
+
+    const loadingIndicators = screen.getAllByText("⏳");
+
+    expect(loadingIndicators.length).toBeGreaterThan(0);
   });
 
   describe("ApproveButton internal behavior", () => {
@@ -432,11 +515,11 @@ describe("AdminRequests Component", () => {
       
       render(<AdminRequests />);
       
-      const spinners = screen.getAllByTestId("spinner");
-    
-      expect(spinners.length).toBeGreaterThan(0);
+      const loadingIndicators = screen.getAllByText("⏳");
+
+      expect(loadingIndicators.length).toBeGreaterThan(0);
       
-      const approveButtons = screen.queryAllByText("Approve");
+      const approveButtons = screen.getAllByRole("button", { name: /approve/i });
   
       approveButtons.forEach(button => {
         expect(button).toBeDisabled();
@@ -458,9 +541,9 @@ describe("AdminRequests Component", () => {
 
       render(<AdminRequests />);
       
-      const spinners = screen.getAllByTestId("spinner");
-  
-      expect(spinners).toHaveLength(2);
+      const loadingIndicators = screen.getAllByText("⏳");
+
+      expect(loadingIndicators).toHaveLength(2);
     });
   });
 
