@@ -483,6 +483,42 @@ describe("Admin Highlights Route", () => {
     expect(createMutation.mutate).not.toHaveBeenCalled();
   });
 
+  it("requires a title when adding a new highlight", () => {
+    const dataset = buildFetchResponse({
+      [HighlightCategory.QUARTO]: [],
+    });
+
+    fetchHighlightsMock.mockReturnValue(dataset);
+
+    const { createMutation } = buildMutations();
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Quartos/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Adicionar Primeira Imagem/i })
+    );
+
+    const fileInput = screen.getByLabelText(/Clique para selecionar uma imagem/i);
+    const addButton = screen.getByRole("button", { name: /Adicionar$/i });
+
+  const image = new File(["content"], "room.png", { type: "image/png" });
+
+  Object.defineProperty(image, "size", { value: 1024 });
+
+    fireEvent.change(fileInput, { target: { files: [image] } });
+
+    toastErrorMock.mockClear();
+    addButton.removeAttribute("data-disabled");
+    addButton.removeAttribute("aria-disabled");
+    fireEvent.click(addButton);
+
+    expect(toastErrorMock).toHaveBeenCalledWith(
+      "Preencha todos os campos obrigatórios"
+    );
+    expect(createMutation.mutate).not.toHaveBeenCalled();
+  });
+
   it("updates an existing highlight", () => {
     const refetch = vi.fn();
     const dataset = buildFetchResponse(
@@ -520,7 +556,7 @@ describe("Admin Highlights Route", () => {
 
     fireEvent.change(descriptionInput, { target: { value: "Nova descrição" } });
 
-    // eslint-disable-next-line testing-library/no-node-access
+     
     const fileInput = document.querySelector<HTMLInputElement>(
       'input[type="file"][id="image-upload-dialog"]'
     );

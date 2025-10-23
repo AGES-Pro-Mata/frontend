@@ -13,5 +13,6 @@ export const useDeleteUser = () => {
       queryClient.refetchQueries({ queryKey: [ADMIN_USERS_QUERY_KEY] });
     },
   });
+
   return { handleDeleteUser: mutateAsync };
 };

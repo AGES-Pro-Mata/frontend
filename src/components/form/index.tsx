@@ -23,6 +23,7 @@ export function useForm<
     TContext,
     TTransformedValues
   >(props)
+
   useEffect(() => {
     if (defaultValues) {
       reset(defaultValues as TFieldValues, {

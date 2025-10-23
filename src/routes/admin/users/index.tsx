@@ -16,7 +16,7 @@ import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDeleteUser } from "@/hooks/use-delete-users";
-import { useState, type ChangeEvent } from "react";
+import { type ChangeEvent, useState } from "react";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
   ["name"]: "Nome",
@@ -88,6 +88,7 @@ function RouteComponent() {
       enableSorting: true,
       cell: ({ row }: any) => {
         const createdBy = row.original.createdBy;
+
         return createdBy?.name || "-";
       },
     },

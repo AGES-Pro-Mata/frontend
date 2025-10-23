@@ -7,6 +7,7 @@ export const Route = createFileRoute("/(index)/user")({
   beforeLoad: async ({ context }) => {
     const qc = (context as { queryClient: QueryClient }).queryClient;
     let user = qc.getQueryData(userQueryOptions.queryKey);
+
     if (!user) {
       user = await qc.fetchQuery(userQueryOptions);
     }

@@ -8,6 +8,7 @@ export const Route = createFileRoute("/(index)/auth/redefine/$token")({
   beforeLoad: async ({ params }) => {
     try {
       const response = await verifyTokenRequest(params.token);
+
       if (response.statusCode !== 200) {
         throw redirect({
           to: "/auth/login",

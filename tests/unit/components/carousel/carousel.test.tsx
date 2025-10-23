@@ -1,7 +1,14 @@
-import { Carousel } from "@/components/carousel";
-import { renderWithProviders } from "@/test/test-utils";
 import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+
+import { Carousel } from "@/components/carousel";
+import {
+  DESTINATIONS,
+  getDestinationByIndex,
+  getNextIndex,
+  getPreviousIndex,
+} from "@/components/carousel/destinations";
+import { renderWithProviders } from "@/test/test-utils";
 
 globalThis.ResizeObserver = class ResizeObserver {
   observe() {
@@ -15,98 +22,101 @@ globalThis.ResizeObserver = class ResizeObserver {
   }
 };
 
+const renderCarousel = () => renderWithProviders(<Carousel />);
+
 describe("Carousel", () => {
-  it("renders carousel with title and subtitle", () => {
-    renderWithProviders(<Carousel></Carousel>);
+  it("displays the carousel heading and subtitle", () => {
+    renderCarousel();
 
-    const titulo = screen.getByText("Conheça seu Destino!");
-
-    expect(titulo).toBeInTheDocument();
-
-    const subtitulo = screen.getByText(
-      "Conheça alguns dos cenários deslumbrantes que você encontrará no PRÓ-MATA"
-    );
-
-    expect(subtitulo).toBeInTheDocument();
+    expect(screen.getByText("Conheça seu Destino!")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Conheça alguns dos cenários deslumbrantes que você encontrará no PRÓ-MATA"
+      )
+    ).toBeInTheDocument();
   });
 
-  it("renders main image and all thumbnails", () => {
-    renderWithProviders(<Carousel></Carousel>);
+  it("renders the main image and all thumbnails", () => {
+    renderCarousel();
 
-    const imgs = screen.getAllByRole("img");
+    const images = screen.getAllByRole("img");
 
-    expect(imgs).toHaveLength(8);
+    expect(images).toHaveLength(8);
+    expect(images[0]).toHaveAttribute("src", "/images/destino-01.jpg");
   });
 
-  it("renders navigation buttons", () => {
-    renderWithProviders(<Carousel></Carousel>);
+  it("updates the main image when selecting a thumbnail", () => {
+    renderCarousel();
 
-    const buttons = screen.getAllByRole("button");
+    const images = screen.getAllByRole("img");
+    const thirdThumbnail = images[3];
+    const expectedSrc = thirdThumbnail.getAttribute("src");
 
-    expect(buttons).toHaveLength(2);
+    fireEvent.click(thirdThumbnail);
+
+    expect(images[0]).toHaveAttribute("src", expectedSrc ?? undefined);
   });
 
-  it("changes main image when clicking on thumbnail", () => {
-    renderWithProviders(<Carousel></Carousel>);
+  it("navigates forward and backward with the controls", () => {
+    renderCarousel();
 
-    const imgs = screen.getAllByRole("img");
+    const next = screen.getByRole("button", { name: /Próxima imagem/i });
+    const previous = screen.getByRole("button", { name: /Imagem anterior/i });
 
-    const thirdImg = imgs[3];
-    const thirdImgSrc = thirdImg.getAttribute("src");
+    fireEvent.click(next);
+    fireEvent.click(previous);
 
-    fireEvent.click(thirdImg);
-
-    expect(imgs[0]).toHaveAttribute("src", thirdImgSrc);
+    expect(previous).toBeInTheDocument();
   });
 
-  it("navigates carousel forward with next button", () => {
-    renderWithProviders(<Carousel></Carousel>);
+  it("keeps the first image when previous triggers at index zero", () => {
+    renderCarousel();
 
-    const buttons = screen.getAllByRole("button");
-    const nextButton = buttons[1];
+    const mainImage = screen.getAllByRole("img")[0];
+    const previous = screen.getByRole("button", { name: /Imagem anterior/i });
+    const firstSrc = mainImage.getAttribute("src");
 
-    fireEvent.click(nextButton);
+    expect(previous).toBeDisabled();
 
-    expect(nextButton).toBeInTheDocument();
+    previous.removeAttribute("disabled");
+    fireEvent.click(previous);
+
+    expect(mainImage).toHaveAttribute("src", firstSrc ?? undefined);
   });
 
-  it("navigates carousel backward with prev button", () => {
-    renderWithProviders(<Carousel></Carousel>);
+  it("keeps the last image when next triggers at the end", () => {
+    renderCarousel();
 
-    const buttons = screen.getAllByRole("button");
-    const prevButton = buttons[0];
-    const nextButton = buttons[1];
+    const mainImage = screen.getAllByRole("img")[0];
+    const next = screen.getByRole("button", { name: /Próxima imagem/i });
 
-    // Avança primeiro para poder voltar
-    fireEvent.click(nextButton);
-    fireEvent.click(prevButton);
-
-    expect(prevButton).toBeInTheDocument();
-  });
-
-  it("does not go beyond first position when clicking prev", () => {
-    renderWithProviders(<Carousel></Carousel>);
-
-    const buttons = screen.getAllByRole("button");
-    const prevButton = buttons[0];
-
-    // Clica prev quando já está no início
-    fireEvent.click(prevButton);
-    fireEvent.click(prevButton);
-
-    expect(prevButton).toBeInTheDocument();
-  });
-
-  it("does not go beyond last position when clicking next", () => {
-    renderWithProviders(<Carousel></Carousel>);
-
-    const buttons = screen.getAllByRole("button");
-    const nextButton = buttons[1];
-
-    for (let i = 0; i < 10; i++) {
-      fireEvent.click(nextButton);
+    for (let index = 0; index < 6; index += 1) {
+      fireEvent.click(next);
     }
 
-    expect(nextButton).toBeInTheDocument();
+    const lastSrc = mainImage.getAttribute("src");
+
+    expect(next).toBeDisabled();
+
+    next.removeAttribute("disabled");
+    fireEvent.click(next);
+
+    expect(mainImage).toHaveAttribute("src", lastSrc ?? undefined);
   });
-});''
+
+  it("falls back to the first destination when the active index is invalid", () => {
+    expect(getDestinationByIndex(42).src).toBe("/images/destino-01.jpg");
+  });
+
+  it("clamps the previous index helper", () => {
+    expect(getPreviousIndex(0)).toBe(0);
+    expect(getPreviousIndex(3)).toBe(2);
+  });
+
+  it("clamps the next index helper", () => {
+    const lastIndex = DESTINATIONS.length - 1;
+
+    expect(getNextIndex(0)).toBe(1);
+    expect(getNextIndex(lastIndex)).toBe(lastIndex);
+  });
+});

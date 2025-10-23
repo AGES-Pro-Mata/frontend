@@ -31,7 +31,22 @@
       "subtitle": "Adicione experiências ao seu carrinho para finalizar a reserva."
     },
     "checkoutButton": "Finalizar Reserva",
-    "browseLink": "Ver mais experiências"
+    "browseLink": "Ver mais experiências",
+    "closeButtonAria": "Fechar carrinho"
+  },
+  "cartItem": {
+    "capacity_one": "{{count}} pessoa",
+    "capacity_other": "{{count}} pessoas",
+    "length": "{{length}} km",
+    "duration": "{{value}} h",
+    "difficulty": {
+      "light": "Leve",
+      "easy": "Fácil",
+      "medium": "Moderada",
+      "hard": "Difícil",
+      "extreme": "Extrema"
+    },
+    "eventDateRange": "{{from}} – {{to}}"
   },
   "status": {
     "confirmada": "Confirmada",
@@ -40,6 +55,13 @@
     "aguardando_aprovacao": "Aguardando aprovação",
     "cancelada": "Cancelada",
     "desconhecido": "Desconhecido"
+  },
+  "myReservationsFilter": {
+    "searchPlaceholder": "Buscar reservas...",
+    "searchAriaLabel": "Buscar reservas",
+    "status": {
+      "all": "Todas"
+    }
   },
 
   "nav": {
@@ -100,6 +122,21 @@
     "book": "Fazer Reserva"
   },
 
+  "reserveFilter": {
+    "arrivalDateLabel": "Data de entrada",
+    "arrivalDatePlaceholder": "Entrada",
+    "departureDateLabel": "Data de saída",
+    "departureDatePlaceholder": "Saída",
+    "experienceTypes": {
+      "rooms": "Quartos",
+      "events": "Eventos",
+      "labs": "Laboratórios",
+      "trails": "Trilhas"
+    },
+    "searchPlaceholder": "Buscar...",
+    "searchAriaLabel": "Buscar experiências"
+  },
+
   "experienceCard": {
     "package": "Pacote",
     "currencySymbol": "$",
@@ -114,7 +151,8 @@
     "selectPeriodOnCalendar": "Selecione o período no calendário",
     "selectAmountOfPeople": "Selecione a quantidade de pessoas",
     "malePeople": "Número de pessoas do gênero masculino",
-    "femalePeople": "Número de pessoas do gênero feminino"
+    "femalePeople": "Número de pessoas do gênero feminino",
+    "addToCart": "Adicionar ao carrinho"
   },
 
   "homeCards": {

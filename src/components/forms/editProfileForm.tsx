@@ -1,7 +1,7 @@
-import { CanvasCard } from "@/components/cards";
+import { CanvasCard } from "@/components/card";
 import { Typography } from "@/components/typography/typography";
-import { TextInput } from "@/components/inputs/textInput";
-import { Button } from "@/components/buttons/defaultButton";
+import { TextInput } from "@/components/input/textInput";
+import { Button } from "@/components/button/defaultButton";
 import {
   Select,
   SelectContent,
@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 function normalizeGender(raw?: string | null): string {
   if (!raw) return "";
   const g = raw.toString().trim().toLowerCase();
+
   if (["m", "male", "masculino"].includes(g)) return "male";
   if (["f", "female", "feminino"].includes(g)) return "female";
   if (
@@ -40,6 +41,7 @@ function normalizeGender(raw?: string | null): string {
     ].includes(g)
   )
     return "other";
+
   return ""; // unknown -> let user select
 }
 
@@ -84,6 +86,7 @@ const schema = z
       }
     }
   });
+
 type FormData = z.infer<typeof schema>;
 
 export interface EditProfileLayoutProps {
@@ -123,6 +126,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
     isSuccess: cepSuccess,
     isLoading: isFetchingCep,
   } = useCepQuery(watchedZip || "", { enabled: true });
+
   useEffect(() => {
     if (cepSuccess) {
       if (cepData?.addressLine) {
@@ -145,6 +149,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
 
   // When mapped user data loads (async), sync it into the form
   const didSetInitialValues = useRef(false);
+
   useEffect(() => {
     if (!mapped) return;
     // Avoid unnecessary reset if already synced
@@ -189,9 +194,11 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
     const institutionChanged =
       (data.institution || "") !== (originalInstitutionRef.current || "");
     const file = (data as any).docencyDocument as File | undefined;
+
     if (wantsDocency && file && (institutionChanged || !verified)) {
       // Build multipart form data manually
       const formData = new FormData();
+
       Object.entries(payload).forEach(([k, v]) => {
         if (v !== undefined && v !== null) formData.append(k, String(v));
       });
@@ -205,6 +212,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
         },
         onError: () => appToast.error(t("profile.edit.toasts.error")),
       });
+
       return;
     }
     mutate(payload, {
@@ -222,11 +230,12 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
       onError: () => appToast.error(t("profile.edit.toasts.error")),
     });
   };
+
   return (
     <CanvasCard className="w-full max-w-[clamp(40rem,82vw,980px)] mx-auto p-8 sm:p-12 bg-card shadow-md rounded-[20px]">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit((data) => submit(data as FormData))}
+          onSubmit={form.handleSubmit((data) => submit(data))}
           className="flex flex-col gap-8"
           noValidate
         >
@@ -347,6 +356,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                       value={maskPhone(field.value || "")}
                       onChange={(e) => {
                         const digits = digitsOnly(e.target.value).slice(0, 11);
+
                         field.onChange(maskPhone(digits));
                       }}
                     />
@@ -359,6 +369,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                 name="zipCode"
                 render={({ field }) => {
                   const isForeign = form.watch("isForeign");
+
                   return (
                     <FormItem>
                       <TextInput
@@ -369,6 +380,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                         onChange={(e) => {
                           const digits = digitsOnly(e.target.value).slice(0, 8);
                           const masked = maskCep(digits);
+
                           if (autoFilled.addressLine || autoFilled.city) {
                             setAutoFilled({ addressLine: false, city: false });
                           }
@@ -385,6 +397,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                 name="addressLine"
                 render={({ field }) => {
                   const isForeign = form.watch("isForeign");
+
                   return (
                     <FormItem>
                       <TextInput
@@ -406,6 +419,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                 name="country"
                 render={({ field }) => {
                   const isForeign = form.watch("isForeign");
+
                   return (
                     <FormItem>
                       <TextInput
@@ -428,6 +442,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                 name="number"
                 render={({ field }) => {
                   const isForeign = form.watch("isForeign");
+
                   return (
                     <FormItem>
                       <TextInput
@@ -447,6 +462,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                 name="city"
                 render={({ field }) => {
                   const isForeign = form.watch("isForeign");
+
                   return (
                     <FormItem>
                       <TextInput
@@ -560,6 +576,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                     (form.watch("institution") || "") !==
                     (originalInstitutionRef.current || "");
                   const canUpload = institutionChanged || !verified;
+
                   return (
                     <FormItem>
                       <div className="flex flex-col gap-2">
@@ -579,6 +596,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                             disabled={!canUpload}
                             onChange={(e) => {
                               const file = e.target.files?.[0];
+
                               onChange(file);
                             }}
                             className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-900 hover:file:bg-yellow-100 disabled:opacity-60"
@@ -586,7 +604,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                           {value && (
                             <Typography className="text-sm text-contrast-green">
                               {t("register.fields.docency.uploaded", {
-                                name: (value as File).name,
+                                name: (value).name,
                               })}
                             </Typography>
                           )}

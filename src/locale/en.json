@@ -29,7 +29,22 @@
             "subtitle": "Add experiences to your cart to finish your reservation."
         },
         "checkoutButton": "Finish Reservation",
-        "browseLink": "See more experiences"
+        "browseLink": "See more experiences",
+        "closeButtonAria": "Close cart"
+    },
+    "cartItem": {
+        "capacity_one": "{{count}} person",
+        "capacity_other": "{{count}} people",
+        "length": "{{length}} km",
+        "duration": "{{value}} h",
+        "difficulty": {
+            "light": "Light",
+            "easy": "Easy",
+            "medium": "Moderate",
+            "hard": "Hard",
+            "extreme": "Extreme"
+        },
+        "eventDateRange": "{{from}} – {{to}}"
     },
     "status": {
         "confirmada": "Confirmed",
@@ -38,6 +53,13 @@
         "aguardando_aprovacao": "Awaiting approval",
         "cancelada": "Cancelled",
         "desconhecido": "Unknown"
+    },
+    "myReservationsFilter": {
+        "searchPlaceholder": "Search reservations...",
+        "searchAriaLabel": "Search reservations",
+        "status": {
+            "all": "All"
+        }
     },
     "nav": {
         "home": "Home",
@@ -94,21 +116,36 @@
         "bookNow": "Book now!",
         "book": "Make a Reservation"
     },
+        "reserveFilter": {
+            "arrivalDateLabel": "Check-in date",
+            "arrivalDatePlaceholder": "Check-in",
+            "departureDateLabel": "Check-out date",
+            "departureDatePlaceholder": "Check-out",
+            "experienceTypes": {
+                "rooms": "Rooms",
+                "events": "Events",
+                "labs": "Laboratories",
+                "trails": "Trails"
+            },
+            "searchPlaceholder": "Search...",
+            "searchAriaLabel": "Search experiences"
+        },
     "experienceCard": {
-        "package": "Package",
-        "currencySymbol": "$",
-        "currencyPrefix": "$",
-        "dateRange": "{{from}} to {{to}}",
-        "editInfo": "Edit information",
-        "selectDateAndPeople": "Select date and number of people",
-        "men": "Men",
-        "women": "Women",
-        "selectedDate": "Selected date",
-        "chooseDate": "Choose a Date",
-        "selectPeriodOnCalendar": "Select the period on the calendar",
-        "selectAmountOfPeople": "Select the amount of people",
-        "malePeople": "Number of male individuals",
-        "femalePeople": "Number of female individuals"
+      "package": "Package",
+      "currencySymbol": "$",
+      "currencyPrefix": "$",
+      "dateRange": "{{from}} to {{to}}",
+      "editInfo": "Edit information",
+      "selectDateAndPeople": "Select date and number of people",
+      "men": "Men",
+      "women": "Women",
+      "selectedDate": "Selected date",
+      "chooseDate": "Choose a Date",
+      "selectPeriodOnCalendar": "Select the period on the calendar",
+      "selectAmountOfPeople": "Select the amount of people",
+      "malePeople": "Number of male individuals",
+      "femalePeople": "Number of female individuals",
+      "addToCart": "Add to cart"
     },
     "homeCards": {
         "cta": "Learn more",

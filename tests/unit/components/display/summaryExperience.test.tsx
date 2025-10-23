@@ -17,7 +17,7 @@ describe("SummaryExperience", () => {
     );
 
     expect(screen.getByText("Workshop de Robótica")).toBeInTheDocument();
-    expect(screen.getByText("R$ 199.9")).toBeInTheDocument();
+  expect(screen.getByText(/R\$\s?199,90/)).toBeInTheDocument();
     expect(screen.getByText("20 pessoas")).toBeInTheDocument();
     expect(
       screen.getByAltText("Workshop de Robótica")

@@ -1,7 +1,7 @@
 import { HighlightsCarousel } from "@/components/carousel";
-import { CardsInfoOnHover } from "@/components/cards/cardInfoOnHover";
+import { CardsInfoOnHover } from "@/components/card/cardInfoOnHover";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
 import { useMemo, useState } from "react";
@@ -45,7 +45,7 @@ export function RouteComponent() {
   }, [highlightsData, sortByOrder]);
 
   return (
-    <div className="w-full overflow-x-hidden">
+    <div className="w-full overflow-x-hidden bg-soft-white">
       <div className="relative w-full h-screen bg-main-dark-green/70 flex items-start justify-center pt-[clamp(2rem,6vh,5rem)]">
         <picture className="absolute inset-0 w-full h-full">
           <img
