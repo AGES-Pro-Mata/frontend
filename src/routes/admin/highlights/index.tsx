@@ -186,12 +186,10 @@ export function RouteComponent() {
       );
     } else {
       // Adicionar nova imagem
-      if (!formData.image) return;
-
       createMutation.mutate(
         {
           category: selectedCategory,
-          image: formData.image,
+          image: formData.image!,
           title: formData.title,
           description: formData.description,
           order: highlights[selectedCategory].length + 1,

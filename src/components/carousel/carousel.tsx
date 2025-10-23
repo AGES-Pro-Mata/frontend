@@ -1,21 +1,14 @@
 import { useCallback, useState } from "react";
+
 import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
 
-type Destination = {
-  src: string;
-  alt: string;
-};
-
-const DESTINATIONS: Destination[] = [
-  { src: "/images/destino-01.jpg", alt: "Cabana Pró-Mata" },
-  { src: "/images/destino-02.jpg", alt: "Trilha na Mata" },
-  { src: "/images/destino-03.jpg", alt: "Laboratório em campo" },
-  { src: "/images/destino-04.jpg", alt: "Observatório" },
-  { src: "/images/destino-05.jpg", alt: "Sala de estudos" },
-  { src: "/images/destino-06.jpg", alt: "Vista panorâmica" },
-  { src: "/images/destino-07.jpg", alt: "Equipe em atividade" },
-];
+import {
+  DESTINATIONS,
+  getDestinationByIndex,
+  getNextIndex,
+  getPreviousIndex,
+} from "./destinations";
 
 export function Carousel() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -25,16 +18,14 @@ export function Carousel() {
   }, []);
 
   const handlePrevious = useCallback(() => {
-    setActiveIndex((current) => (current === 0 ? current : current - 1));
+    setActiveIndex((current) => getPreviousIndex(current));
   }, []);
 
   const handleNext = useCallback(() => {
-    setActiveIndex((current) =>
-      current === DESTINATIONS.length - 1 ? current : current + 1
-    );
+    setActiveIndex((current) => getNextIndex(current));
   }, []);
 
-  const activeDestination = DESTINATIONS[activeIndex] ?? DESTINATIONS[0];
+  const activeDestination = getDestinationByIndex(activeIndex);
 
   return (
     <section

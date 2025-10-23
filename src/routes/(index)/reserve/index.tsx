@@ -1,4 +1,5 @@
 import { CardExperience } from "@/components/card/experienceCard";
+import { ExperienceFilter } from "@/components/filter/ExperienceFilter";
 import {
   type Experience,
   type ExperienceApiResponse,
@@ -69,8 +70,9 @@ function ReservePage() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-16 pt-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-16 pt-12 sm:px-6 lg:px-8">
+        <ExperienceFilter />
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2">
           {experiences.map((exp) => (
             <CardExperience key={exp.id} experience={exp} />
