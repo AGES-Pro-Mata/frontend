@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { type CSSProperties, type ChangeEvent, useState } from "react";
 import { Button } from "@/components/button/defaultButton";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -49,6 +49,7 @@ export default function ExperienceCard({
   } = useExperienceTuning({ experienceId, persist, onSave });
 
   const fmt = (d: Date) => d.toLocaleDateString("pt-BR");
+  const calendarStyles = { "--rdp-cell-size": "1.75rem" } as CSSProperties;
 
   // Live input values (men, women) are only reflected in summary after save.
 
@@ -79,7 +80,7 @@ export default function ExperienceCard({
   };
 
   const handleNumberInput = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: ChangeEvent<HTMLInputElement>,
     setter: (val: string) => void
   ) => {
     const raw = e.target.value.replace(/,/g, "");
@@ -222,9 +223,8 @@ export default function ExperienceCard({
                     setRange(value);
                   }}
                   onDayClick={handleDayClick}
-                  defaultMonth={range.from ?? period.start}
                   disabled={[{ before: period.start }, { after: period.end }]}
-                  style={{ ["--rdp-cell-size" as any]: "1.75rem" }}
+                  style={calendarStyles}
                   classNames={{
                     root: "m-0",
                     day_selected: "bg-main-dark-green text-white",
