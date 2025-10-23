@@ -11,7 +11,7 @@ import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
 import { useTranslation } from "react-i18next";
 
 // Mapeia códigos internos de gênero para rótulos exibidos ao usuário
-function genderLabel(g?: string, t?: (k: string) => string) {
+export function genderLabel(g?: string, t?: (k: string) => string) {
   if (!g) return "-";
   const v = g.toLowerCase();
 

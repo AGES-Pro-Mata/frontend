@@ -105,7 +105,7 @@ describe("AxiosHttpClient", () => {
 
     expect(axiosCreateMock).toHaveBeenCalledWith({
       baseURL,
-      timeout: 3000,
+      timeout: 30000,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",

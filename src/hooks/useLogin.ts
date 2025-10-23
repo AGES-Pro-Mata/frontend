@@ -8,22 +8,24 @@ export function useLogin() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const handleChangePassword = (token: string) => {
-    navigate({ to: `/auth/redefine/${token}` });
+    void navigate({ to: `/auth/redefine/${token}` });
   };
+
   return useMutation({
     mutationFn: loginRequest,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         if (response.data?.isFirstAccess) {
           appToast.warning(t("auth.login.toastWarning"));
+
           return handleChangePassword(response.data.token);
         }
         if (response.data?.token) {
           localStorage.setItem("token", response.data.token);
-          queryClient.invalidateQueries({ queryKey: ["me"] });
-          queryClient.refetchQueries({ queryKey: ["me"] });
+          await queryClient.invalidateQueries({ queryKey: ["me"] });
+          await queryClient.refetchQueries({ queryKey: ["me"] });
           appToast.success(t("auth.login.toastSuccess"));
-          navigate({ to: "/" });
+          void navigate({ to: "/" });
         }
       } else {
         appToast.error(response.message || t("auth.login.toastError"));

@@ -1,7 +1,7 @@
 import { useFilters } from "@/hooks/filters/filters";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar22 } from "@/components/ui/calendarFilter";
+import { Calendar22 } from "@/components/filter/calendarFilter";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
