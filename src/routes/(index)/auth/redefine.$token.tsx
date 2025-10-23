@@ -8,6 +8,7 @@ export const Route = createFileRoute("/(index)/auth/redefine/$token")({
   beforeLoad: async ({ params }) => {
     try {
       const response = await verifyTokenRequest(params.token);
+
       if (response.statusCode !== 200) {
         throw redirect({
           to: "/auth/login",
@@ -15,10 +16,9 @@ export const Route = createFileRoute("/(index)/auth/redefine/$token")({
         });
       }
     } catch (error) {
-      appToast.error("Erro ao verificar token");
+      appToast.error("Token inválido ou expirado");
       throw redirect({
         to: "/auth/login",
-        search: { error: "Erro ao verificar token" },
       });
     }
   },

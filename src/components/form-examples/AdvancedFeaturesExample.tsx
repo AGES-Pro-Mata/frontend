@@ -92,6 +92,7 @@ export function AdvancedFeaturesExample() {
 
   const handleCustomValidation = () => {
     const idade = Number(form.getValues("idade"));
+
     if (idade < 25) {
       form.setError("idade", {
         type: "manual",

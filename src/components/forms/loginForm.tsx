@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useLogin } from "@/hooks/useLogin";
-import { TextInput } from "@/components/inputs/textInput";
+import { TextInput } from "@/components/input/textInput";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AuthCard } from "@/components/auth/authcard";
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { appToast } from "@/components/toast/toast";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -39,29 +39,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   const mutation = useLogin();
 
   const onSubmit = async (data: FormData) => {
-    try {
-      const hashedPassword = await hashPassword(data.password);
-      mutation.mutate(
-        { ...data, password: hashedPassword },
-        {
-          onSuccess: (response) => {
-            if (response.statusCode >= 200 && response.statusCode < 300) {
-              form.reset();
-              appToast.success(t("auth.login.toastSuccess"));
-              onSuccess?.();
-              navigate({ to: "/" });
-            } else {
-              appToast.error(response.message || t("auth.login.toastError"));
-            }
-          },
-          onError: () => {
-            appToast.error(t("auth.login.toastErrorTryAgain"));
-          },
-        }
-      );
-    } catch (error) {
-      appToast.error(t("auth.login.toastInternal"));
-    }
+    const hashedPassword = await hashPassword(data.password);
+
+    mutation.mutate({ ...data, password: hashedPassword });
   };
 
   return (

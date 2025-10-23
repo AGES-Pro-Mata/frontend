@@ -13,7 +13,9 @@ export async function fetchAddressByZip(
     `https://viacep.com.br/ws/${zipDigits}/json/`
   );
   const data: ViaCepResponse = response.data;
+
   if (data?.erro) return null;
+
   return {
     addressLine: data.logradouro || undefined,
     city: data.localidade || undefined,
