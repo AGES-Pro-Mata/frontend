@@ -1,8 +1,4 @@
-import {
-  EditUserAdmin,
-  type TEditUserAdminSchema,
-} from "@/components/forms/editUserAdmin";
-import { useGetAdminUser } from "@/hooks/use-get-admin-user";
+import { EditUserAdmin } from "@/components/forms/editUserAdmin";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/users/$userId")({
@@ -11,7 +7,6 @@ export const Route = createFileRoute("/admin/users/$userId")({
 
 function RouteComponent() {
   const { userId } = Route.useParams();
-  return (
-    <EditUserAdmin userId={userId} />
-  );
+
+  return <EditUserAdmin userId={userId} />;
 }

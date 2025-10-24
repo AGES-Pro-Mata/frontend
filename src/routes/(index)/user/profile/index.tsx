@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import UserProfileCard from "@/components/cards/userProfileCard";
+import UserProfileCard from "@/components/card/userProfileCard";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
 
@@ -22,6 +22,7 @@ function RouteComponent() {
 
   if (status === "error" || !data || !mapped) {
     console.error("Profile load error", error);
+
     return (
       <div className="w-full min-h-screen flex justify-center items-center bg-background">
         <span className="text-default-red text-sm">{t("common.error")}</span>

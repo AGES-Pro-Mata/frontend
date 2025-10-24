@@ -7,8 +7,15 @@ import reportWebVitals from "./reportWebVitals.ts";
 import { routeTree } from "./routeTree.gen.ts";
 import { AppToast } from "@/components/toast/toast";
 import "./i18n.ts";
+import { injectUmamiAnalytics } from "@/lib/analytics";
 
 const queryClient = new QueryClient();
+
+if (import.meta.env.DEV && import.meta.env.VITE_USE_MSW === "true") {
+  void import("@/test/msw").then(({ startBrowserMocking }) =>
+    startBrowserMocking()
+  );
+}
 
 // Create a new router instance
 const router = createRouter({
@@ -29,8 +36,10 @@ declare module "@tanstack/react-router" {
 
 // Render the app
 const rootElement = document.getElementById("app");
+
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
+
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
@@ -40,6 +49,8 @@ if (rootElement && !rootElement.innerHTML) {
     </StrictMode>
   );
 }
+
+injectUmamiAnalytics();
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

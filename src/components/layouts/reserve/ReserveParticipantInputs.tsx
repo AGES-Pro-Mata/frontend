@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Calendar as CalendarIcon } from "lucide-react";
 
-import { TextInput } from "@/components/inputs/textInput";
+import { TextInput } from "@/components/input/textInput";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -109,11 +109,13 @@ export function ReserveParticipantInputs({
 
   const handlePhoneChange = (value: string) => {
     const digits = digitsOnly(value).slice(0, 11);
+
     handleChange("phone", maskPhone(digits));
   };
 
   const handleCpfChange = (value: string) => {
     const digits = digitsOnly(value).slice(0, 11);
+
     handleChange("cpf", maskCpf(digits));
   };
 
@@ -252,7 +254,7 @@ export function ReserveParticipantInputs({
           required
           value={
             person.gender && person.gender in genderOptions
-              ? genderOptions[person.gender as ReserveParticipantGender]
+              ? genderOptions[person.gender]
               : ""
           }
           readOnly

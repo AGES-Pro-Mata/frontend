@@ -11,7 +11,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 code {
   font-family:
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -33,6 +32,7 @@ code {
   --color-card: #E7DED4;
   --color-card-background: #E7DED4;
   --color-popover: #FFFFFF;
+  --color-card-label: #F6EDE4
 }
 
 :root {
@@ -134,4 +134,14 @@ html.admin-active {
   height: 100% !important;
   max-height: 100% !important;
 }
+
+/* Esconde scrollbar mas mantém o scroll funcional */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE e Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
 

@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateCurrentUserRequest, type UpdateUserPayload, userQueryOptions } from "@/api/user";
+import { type UpdateUserPayload, updateCurrentUserRequest, userQueryOptions } from "@/api/user";
 
 export function useUpdateUser() {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: (payload: UpdateUserPayload) => updateCurrentUserRequest(payload),
     onSuccess: async () => {

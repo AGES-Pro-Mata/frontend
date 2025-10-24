@@ -16,7 +16,7 @@ import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDeleteUser } from "@/hooks/use-delete-users";
-import { useState } from "react";
+import { type ChangeEvent, useState } from "react";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
   ["name"]: "Nome",
@@ -45,10 +45,13 @@ function RouteComponent() {
       page: 0,
     },
   });
+
   const { items, meta } = useFetchAdminUsers({ filters });
   const { handleDeleteUser } = useDeleteUser();
-  const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
     setSearchTerm(value);
     setFilter(selectedFilter, value);
   };
@@ -85,6 +88,7 @@ function RouteComponent() {
       enableSorting: true,
       cell: ({ row }: any) => {
         const createdBy = row.original.createdBy;
+
         return createdBy?.name || "-";
       },
     },

@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/table/index";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FaUser, FaRegCalendarCheck } from "react-icons/fa";
+import { FaRegCalendarCheck, FaUser } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { MdMoreVert, MdVisibility } from "react-icons/md";
-import { useCallback } from "react";
 import { useAdminRequests } from "@/hooks/useAdminRequests";
 
 type Request = {
@@ -46,10 +45,15 @@ const professorColumns: ColumnDef<Request>[] = [
     header: () => <span className="font-semibold">Actions</span>,
     cell: ({ row }) => {
       const request: Request = row.original;
+
       return (
         <div className="flex flex-col gap-1">
           <ApproveButton requestId={request.id} />
-          <Button variant="outline" size="sm" className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1"
+          >
             <MdVisibility size={18} /> View
           </Button>
         </div>
@@ -105,10 +109,15 @@ const reservationColumns: ColumnDef<Request>[] = [
     header: () => <span className="font-semibold">Actions</span>,
     cell: ({ row }) => {
       const request: Request = row.original;
+
       return (
         <div className="flex flex-col gap-1">
           <ApproveButton requestId={request.id} />
-          <Button variant="outline" size="sm" className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1"
+          >
             <MdVisibility size={18} /> View
           </Button>
         </div>
@@ -121,7 +130,7 @@ export default function AdminRequests() {
   const [tab, setTab] = useState<"professor" | "reservation">("professor");
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
   const [filters, setFilters] = useState({
-    page: 1,
+    page: 0,
     limit: 10,
     status: undefined as string | undefined,
     sort: undefined as string | undefined,
@@ -139,25 +148,29 @@ export default function AdminRequests() {
   const error = requestsQuery.error;
   // Garante que sempre seja array, mesmo que a API retorne objeto
   const allRequests: Request[] = Array.isArray(requestsQuery.data)
-    ? requestsQuery.data
-    : requestsQuery.data?.data || requestsQuery.data?.results || [];
+    ? (requestsQuery.data as Request[])
+    : [];
 
   const handleStatusChange = (status: string) => {
     setSelectedStatus((prev) =>
       prev.includes(status)
         ? prev.filter((s) => s !== status)
-        : [...prev, status]
+        : [...prev, status],
     );
   };
 
   // Filtra por status e tab
   const filteredRequests = allRequests.filter((d) => {
     if (tab === "professor") {
-      return professorStatus.includes(d.status) &&
-        (selectedStatus.length ? selectedStatus.includes(d.status) : true);
+      return (
+        professorStatus.includes(d.status) &&
+        (selectedStatus.length ? selectedStatus.includes(d.status) : true)
+      );
     } else {
-      return reservationStatus.includes(d.status) &&
-        (selectedStatus.length ? selectedStatus.includes(d.status) : true);
+      return (
+        reservationStatus.includes(d.status) &&
+        (selectedStatus.length ? selectedStatus.includes(d.status) : true)
+      );
     }
   });
 
@@ -202,15 +215,17 @@ export default function AdminRequests() {
       <div className="mb-4 flex flex-wrap items-center gap-4">
         <span className="font-semibold">Filters:</span>
         <span>Status:</span>
-        {(tab === "professor" ? professorStatus : reservationStatus).map((status) => (
-          <label key={status} className="flex items-center gap-1">
-            <Checkbox
-              checked={selectedStatus.includes(status)}
-              onCheckedChange={() => handleStatusChange(status)}
-            />
-            {status}
-          </label>
-        ))}
+        {(tab === "professor" ? professorStatus : reservationStatus).map(
+          (status) => (
+            <label key={status} className="flex items-center gap-1">
+              <Checkbox
+                checked={selectedStatus.includes(status)}
+                onCheckedChange={() => handleStatusChange(status)}
+              />
+              {status}
+            </label>
+          ),
+        )}
       </div>
 
       <DataTable
@@ -220,12 +235,13 @@ export default function AdminRequests() {
         setFilter={(key, value) =>
           setFilters((prev) => ({ ...prev, [key]: value }))
         }
-        meta={{ 
-          page: filters.page, 
-          limit: filters.limit, 
-          total: filteredRequests.length 
+        meta={{
+          page: filters.page,
+          limit: filters.limit,
+          total: filteredRequests.length,
         }}
       />
     </div>
   );
 }
+

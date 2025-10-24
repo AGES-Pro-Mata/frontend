@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
@@ -10,10 +10,10 @@ import {
   Heading2,
   Heading3,
   Italic,
-  ListOrdered,
   List,
-  Underline,
+  ListOrdered,
   Strikethrough,
+  Underline,
 } from "lucide-react";
 
 interface MarkdownTextAreaProps {
@@ -38,6 +38,7 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -47,6 +48,7 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
     const textarea = document.getElementById(
       "markdown-editor"
     ) as HTMLTextAreaElement;
+
     if (!textarea) return;
 
     const start = textarea.selectionStart;
@@ -56,6 +58,7 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
     let newText = "";
     const before = value.substring(0, start);
     const needsBreak = before.length > 0 && !before.endsWith("\n");
+
     switch (syntax) {
       case "bold":
         newText = `**${selected || " "}**`;
@@ -74,6 +77,7 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
           headingLevel && headingLevel >= 1 && headingLevel <= 6
             ? headingLevel
             : 1;
+
         newText = `${needsBreak ? "\n" : ""}${"#".repeat(level)} ${selected || " "}`;
         break;
       }
@@ -82,6 +86,7 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
         const lastLine = lines.length > 0 ? lines[lines.length - 1] : "";
         const match = lastLine.match(/^(\d+)\. /);
         let nextNumber = 1;
+
         if (match) {
           nextNumber = parseInt(match[1], 10) + 1;
         }
@@ -97,6 +102,7 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
     }
 
     const updated = value.substring(0, start) + newText + value.substring(end);
+
     onChange(updated);
 
     setTimeout(() => {
@@ -240,22 +246,22 @@ export function MarkdownTextArea({ value, onChange, placeholder }: MarkdownTextA
               remarkPlugins={[remarkGfm, remarkBreaks]}
               components={{
                 blockquote: () => null,
-                h1: ({ node, ...props }) => (
+                h1: ({ ...props }) => (
                   <h1 className="text-2xl font-bold mt-2 mb-2" {...props} />
                 ),
-                h2: ({ node, ...props }) => (
+                h2: ({ ...props }) => (
                   <h2 className="text-xl font-bold mt-2 mb-2" {...props} />
                 ),
-                h3: ({ node, ...props }) => (
+                h3: ({ ...props }) => (
                   <h3 className="text-lg font-bold mt-2 mb-2" {...props} />
                 ),
-                ul: ({ node, ...props }) => (
+                ul: ({ ...props }) => (
                   <ul className="list-disc ml-6 my-2" {...props} />
                 ),
-                ol: ({ node, ...props }) => (
+                ol: ({ ...props }) => (
                   <ol className="list-decimal ml-6 my-2" {...props} />
                 ),
-                li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                li: ({ ...props }) => <li className="mb-1" {...props} />,
               }}
             >
               {value || "Nada para visualizar."}

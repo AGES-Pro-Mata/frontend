@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-/* eslint-disable indent */
+ 
+ 
 import { create } from 'zustand'
 
 interface FilterStateValue {
@@ -25,6 +25,11 @@ type FilterStore = {
   }) => void
   applyValues: (key: string) => void
   deleteFilter: (key: string) => void
+  initFilterState: (params: {
+    key: string
+    initialFilters?: Record<string, unknown>
+    setQueryOnChange?: boolean
+  }) => void
   getFilterState: (params: {
     key: string
     initialFilters?: Record<string, unknown>
@@ -34,11 +39,13 @@ type FilterStore = {
 
 const createSearchParams = (obj: Record<string, unknown>): string => {
   const params = new URLSearchParams()
+
   Object.entries(obj).forEach(([key, value]) => {
     if (value !== null) {
       params.append(key, String(value))
     }
   })
+
   return params.toString()
 }
 
@@ -99,6 +106,7 @@ export const useFilterStore = create<FilterStore>()((set, get) => ({
   applyValues: (key) => {
     set((state) => {
       const currentState = state.filterStates[key] ?? DEFAULT_STATE
+
       return {
         filterStates: {
           ...state.filterStates,
@@ -118,23 +126,33 @@ export const useFilterStore = create<FilterStore>()((set, get) => ({
       )
     }))
   },
+  initFilterState: ({ key, initialFilters = {}, setQueryOnChange = true }) => {
+    set((prev) => {
+      if (prev.filterStates[key]) return prev
+
+      const newState = {
+        values: initialFilters,
+        filters: setQueryOnChange ? initialFilters : {},
+        query: setQueryOnChange ? createSearchParams(initialFilters) : ''
+      }
+
+      return {
+        filterStates: {
+          ...prev.filterStates,
+          [key]: newState
+        }
+      }
+    })
+  },
   getFilterState: ({ key, initialFilters = {}, setQueryOnChange = true }) => {
     const state = get().filterStates[key]
+
     if (state) return state
 
-    const newState = {
+    return {
       values: initialFilters,
       filters: setQueryOnChange ? initialFilters : {},
       query: setQueryOnChange ? createSearchParams(initialFilters) : ''
     }
-
-    set((prev) => ({
-      filterStates: {
-        ...prev.filterStates,
-        [key]: newState
-      }
-    }))
-
-    return newState
   }
 }))

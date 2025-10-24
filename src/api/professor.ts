@@ -14,10 +14,11 @@ export interface ProfessorApprovalRequestPayload {
 
 export async function approveOrRejectProfessor(
   id: string,
-  payload: ProfessorApprovalRequestPayload
+  payload: ProfessorApprovalRequestPayload,
 ): Promise<HttpResponse> {
   try {
     const response = await api.patch(`/user/${id}`, payload);
+
     return {
       statusCode: response.status,
       message: "Operação realizada com sucesso",
@@ -26,6 +27,7 @@ export async function approveOrRejectProfessor(
   } catch (error: any) {
     return {
       statusCode: error.response?.status || 500,
+
       message:
         error.response?.data?.message || "Erro ao processar a solicitação",
     };
