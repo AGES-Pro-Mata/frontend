@@ -14,23 +14,24 @@ type useFetchAdminExperiencesParams = {
 };
 
 export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesParams) => {
-  const { data, isFetching, refetch } = useQuery({
+  const query = useQuery({
     queryKey: [ADMIN_EXPERIENCES_QUERY_KEY, filters],
     queryFn: async () => {
       const response = await api.get<
         {
           items: TExperienceAdminResponse[];
         } & TApiPaginationMetaResult
-      >("/experience" + safeParseFilters(filters, ExperienceAdminRequestFilters));
+      >(`/experience${safeParseFilters(filters, ExperienceAdminRequestFilters)}`);
+
       return response.data;
     },
   });
 
-  const { items = [] } = data || {};
+  const { items = [] } = query.data || {};
   const meta = {
-    total: data?.total ?? 0,
-    page: data?.page ?? 0,
-    limit: data?.limit ?? 10,
+    total: query.data?.total ?? 0,
+    page: query.data?.page ?? 0,
+    limit: query.data?.limit ?? 10,
   };
 
   const parsedItems = items.map((e) => {
@@ -59,8 +60,6 @@ export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesPa
   return {
     items: parsedItems,
     meta,
-    data,
-    isFetching,
-    refetch,
+    ...query,
   };
 };

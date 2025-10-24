@@ -30,6 +30,7 @@ export function injectUmamiAnalytics(options: AnalyticsOptions = {}) {
   }
 
   const script = document.createElement("script");
+
   script.defer = true;
   script.src = scriptUrl;
   script.dataset.websiteId = websiteId;
