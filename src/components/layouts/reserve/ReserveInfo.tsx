@@ -3,19 +3,18 @@ import { ChevronLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { HiUsers } from "react-icons/hi";
 
-import { Button } from "@/components/buttons/defaultButton";
-import CanvasCard from "@/components/cards/canvasCard";
-import { ReserveSummaryExperienceCard } from "@/components/cards/reserveSummaryExperienceCard";
+import { Button } from "@/components/button/defaultButton";
+import CanvasCard from "@/components/card/canvasCard";
+import { ReserveSummaryExperienceCard } from "@/components/card/reserveSummaryExperienceCard";
 import { ReserveParticipantInputs } from "@/components/layouts/reserve/ReserveParticipantInputs";
 import { Textarea } from "@/components/ui/textarea";
-import { ReservationsLayout } from "@/components/display/reservationEvents";
+import { type ReservationEvent, ReservationsLayout } from "@/components/display/reservationEvents";
 import type {
   ReserveParticipant,
   ReserveSummaryExperience,
 } from "@/types/reserve";
 import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
-import type { ReservationEvent } from "@/components/display/reservationEvents";
 
 export type ReserveInfoProps = {
   title?: string;
@@ -42,12 +41,15 @@ export function ReserveInfo({
   const headerTitle = title ?? t("reservationInfo.title");
   const genderCounts = useMemo(() => {
     const counts = { men: 0, women: 0, other: 0 };
+
     (participants || []).forEach((p) => {
       const g = String((p as any).gender || "").toUpperCase();
+
       if (g === "MALE" || g === "M") counts.men += 1;
       else if (g === "FEMALE" || g === "F") counts.women += 1;
       else counts.other += 1;
     });
+
     return counts;
   }, [participants]);
 
