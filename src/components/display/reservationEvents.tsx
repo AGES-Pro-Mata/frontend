@@ -85,7 +85,7 @@ export function ReservationEvents({
 
 export function ReservationsLayout({ events }: ReservationsLayoutProps) {
   return (
-    <div className="rounded-2xl border-2 shadow-lg w-full max-w-4xl mx-auto overflow-hidden">
+    <div className="rounded-2xl border-2 shadow-lg w-full overflow-hidden">
       <div className="flex flex-row items-center justify-between border-b px-6 py-4">
         <div className="text-xl font-bold text-gray-800">Ações da reserva</div>
         <span className="text-sm text-gray-500">
