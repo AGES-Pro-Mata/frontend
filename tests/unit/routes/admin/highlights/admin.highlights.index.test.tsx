@@ -1,6 +1,18 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { type ButtonHTMLAttributes, type ComponentType, type ReactNode } from "react";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type ButtonHTMLAttributes,
+  type ComponentType,
+  type ReactNode,
+} from "react";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { HighlightCategory } from "@/entities/highlights";
 
 type RouteModule = {
@@ -22,7 +34,9 @@ const updateHighlightMock = vi.fn();
 const deleteHighlightMock = vi.fn();
 const toastSuccessMock = vi.fn();
 const toastErrorMock = vi.fn();
-const cnMock = vi.fn((...classes: unknown[]) => classes.filter(Boolean).join(" "));
+const cnMock = vi.fn((...classes: unknown[]) =>
+  classes.filter(Boolean).join(" ")
+);
 
 const confirmMock = vi.fn();
 const alertMock = vi.fn();
@@ -56,7 +70,14 @@ vi.mock("@/components/ui/button", () => {
     asChild?: boolean;
   };
 
-  const Button = ({ children, asChild, type, disabled, onClick, ...rest }: Props) => {
+  const Button = ({
+    children,
+    asChild,
+    type,
+    disabled,
+    onClick,
+    ...rest
+  }: Props) => {
     if (asChild) {
       throw new Error("asChild is not supported in this test mock");
     }
@@ -77,8 +98,12 @@ vi.mock("@/components/ui/button", () => {
   return { Button };
 });
 
-const passthrough = () =>
-  ({ children, ...rest }: { children?: ReactNode } & Record<string, unknown>) => (
+const passthrough =
+  () =>
+  ({
+    children,
+    ...rest
+  }: { children?: ReactNode } & Record<string, unknown>) => (
     <div {...rest}>{children}</div>
   );
 
@@ -92,7 +117,9 @@ vi.mock("@/components/cards", () => ({
 }));
 
 vi.mock("@/components/typography", () => ({
-  Typography: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
+  Typography: ({ children }: { children?: ReactNode }) => (
+    <span>{children}</span>
+  ),
 }));
 
 vi.mock("@/components/ui/dialog", () => {
@@ -166,10 +193,16 @@ vi.mock("react-spinners", () => ({
   MoonLoader: () => <div role="status">loading</div>,
 }));
 
-const createHiddenIcon = () =>
-  ({ ...rest }: Record<string, unknown>) => <span {...rest} aria-hidden={true} />;
-const createNamedIcon = (label: string) =>
-  ({ ...rest }: Record<string, unknown>) => <span {...rest} role="img" aria-label={label} />;
+const createHiddenIcon =
+  () =>
+  ({ ...rest }: Record<string, unknown>) => (
+    <span {...rest} aria-hidden={true} />
+  );
+const createNamedIcon =
+  (label: string) =>
+  ({ ...rest }: Record<string, unknown>) => (
+    <span {...rest} role="img" aria-label={label} />
+  );
 
 vi.mock("lucide-react", () => ({
   Bed: createHiddenIcon(),
@@ -198,7 +231,9 @@ afterAll(() => {
   window.FileReader = originalFileReader;
 });
 
-function createHighlightItem(overrides?: Partial<HighlightRecord>): HighlightRecord {
+function createHighlightItem(
+  overrides?: Partial<HighlightRecord>
+): HighlightRecord {
   return {
     id: "highlight-1",
     title: "Default title",
@@ -252,12 +287,16 @@ describe("Admin Highlights Route", () => {
     confirmMock.mockReset();
     alertMock.mockReset();
 
-    const routeModule = (await import("@/routes/admin/highlights/index")) as unknown as RouteModule;
+    const routeModule = (await import(
+      "@/routes/admin/highlights/index"
+    )) as unknown as RouteModule;
 
     Component = routeModule.RouteComponent ?? routeModule.Route.component;
 
     if (typeof Component !== "function") {
-      throw new Error("Expected admin highlights route component to be a function");
+      throw new Error(
+        "Expected admin highlights route component to be a function"
+      );
     }
   });
 
@@ -266,9 +305,21 @@ describe("Admin Highlights Route", () => {
     const dataset = buildFetchResponse(
       {
         [HighlightCategory.LABORATORIO]: [
-          createHighlightItem({ id: "lab-1", title: "Laboratório 1", order: 1 }),
-          createHighlightItem({ id: "lab-2", title: "Laboratório 2", order: 2 }),
-          createHighlightItem({ id: "lab-3", title: "Laboratório 3", order: 3 }),
+          createHighlightItem({
+            id: "lab-1",
+            title: "Laboratório 1",
+            order: 1,
+          }),
+          createHighlightItem({
+            id: "lab-2",
+            title: "Laboratório 2",
+            order: 2,
+          }),
+          createHighlightItem({
+            id: "lab-3",
+            title: "Laboratório 3",
+            order: 3,
+          }),
         ],
       },
       refetch
@@ -306,9 +357,7 @@ describe("Admin Highlights Route", () => {
 
     fireEvent.change(fileInput, { target: { files: [uploadedFile] } });
 
-    const titleInput = screen.getByPlaceholderText(
-      "Digite o título da imagem"
-    );
+    const titleInput = screen.getByPlaceholderText("Digite o título da imagem");
 
     fireEvent.change(titleInput, { target: { value: "Novo Quarto" } });
 
@@ -338,7 +387,7 @@ describe("Admin Highlights Route", () => {
         description: string;
         order: number;
       },
-      { onSuccess?: () => void; onError?: () => void }
+      { onSuccess?: () => void; onError?: () => void },
     ];
 
     expect(payload.category).toBe(HighlightCategory.QUARTO);
@@ -355,7 +404,9 @@ describe("Admin Highlights Route", () => {
     act(() => {
       options.onSuccess?.();
     });
-    expect(toastSuccessMock).toHaveBeenCalledWith("Destaque criado com sucesso!");
+    expect(toastSuccessMock).toHaveBeenCalledWith(
+      "Destaque criado com sucesso!"
+    );
     expect(refetch).toHaveBeenCalledTimes(1);
   });
 
@@ -398,9 +449,13 @@ describe("Admin Highlights Route", () => {
       screen.getByRole("button", { name: /Adicionar Primeira Imagem/i })
     );
 
-    const fileInput = screen.getByLabelText(/Clique para selecionar uma imagem/i);
+    const fileInput = screen.getByLabelText(
+      /Clique para selecionar uma imagem/i
+    );
 
-    const invalidFile = new File(["text"], "document.txt", { type: "text/plain" });
+    const invalidFile = new File(["text"], "document.txt", {
+      type: "text/plain",
+    });
 
     Object.defineProperty(invalidFile, "size", { value: 512 });
     fireEvent.change(fileInput, { target: { files: [invalidFile] } });
@@ -437,7 +492,9 @@ describe("Admin Highlights Route", () => {
       screen.getByRole("button", { name: /Adicionar Primeira Imagem/i })
     );
 
-    const fileInput = screen.getByLabelText(/Clique para selecionar uma imagem/i);
+    const fileInput = screen.getByLabelText(
+      /Clique para selecionar uma imagem/i
+    );
 
     fireEvent.change(fileInput, { target: { files: [] } });
 
@@ -472,9 +529,9 @@ describe("Admin Highlights Route", () => {
     toastErrorMock.mockClear();
     const addButton = screen.getByRole("button", { name: /Adicionar$/i });
 
-  expect(addButton).toHaveAttribute("data-disabled", "true");
+    expect(addButton).toHaveAttribute("data-disabled", "true");
 
-  addButton.removeAttribute("data-disabled");
+    addButton.removeAttribute("data-disabled");
     fireEvent.click(addButton);
 
     expect(toastErrorMock).toHaveBeenCalledWith(
@@ -499,12 +556,14 @@ describe("Admin Highlights Route", () => {
       screen.getByRole("button", { name: /Adicionar Primeira Imagem/i })
     );
 
-    const fileInput = screen.getByLabelText(/Clique para selecionar uma imagem/i);
+    const fileInput = screen.getByLabelText(
+      /Clique para selecionar uma imagem/i
+    );
     const addButton = screen.getByRole("button", { name: /Adicionar$/i });
 
-  const image = new File(["content"], "room.png", { type: "image/png" });
+    const image = new File(["content"], "room.png", { type: "image/png" });
 
-  Object.defineProperty(image, "size", { value: 1024 });
+    Object.defineProperty(image, "size", { value: 1024 });
 
     fireEvent.change(fileInput, { target: { files: [image] } });
 
@@ -552,18 +611,21 @@ describe("Admin Highlights Route", () => {
     expect(titleInput).toHaveValue("Lab Atual");
     fireEvent.change(titleInput, { target: { value: "Lab Atualizado" } });
 
-    const descriptionInput = screen.getByPlaceholderText("Digite uma descrição para a imagem");
+    const descriptionInput = screen.getByPlaceholderText(
+      "Digite uma descrição para a imagem"
+    );
 
     fireEvent.change(descriptionInput, { target: { value: "Nova descrição" } });
 
-     
     const fileInput = document.querySelector<HTMLInputElement>(
       'input[type="file"][id="image-upload-dialog"]'
     );
 
     expect(fileInput).not.toBeNull();
 
-    const newImage = new File(["content"], "updated.png", { type: "image/png" });
+    const newImage = new File(["content"], "updated.png", {
+      type: "image/png",
+    });
 
     Object.defineProperty(newImage, "size", { value: 1024 });
     fireEvent.change(fileInput!, { target: { files: [newImage] } });
@@ -583,7 +645,7 @@ describe("Admin Highlights Route", () => {
         id: string;
         payload: { title: string; description: string; image?: File };
       },
-      { onSuccess?: () => void; onError?: () => void }
+      { onSuccess?: () => void; onError?: () => void },
     ];
 
     expect(payload.id).toBe("lab-10");
@@ -599,7 +661,9 @@ describe("Admin Highlights Route", () => {
     act(() => {
       options.onSuccess?.();
     });
-    expect(toastSuccessMock).toHaveBeenCalledWith("Destaque atualizado com sucesso!");
+    expect(toastSuccessMock).toHaveBeenCalledWith(
+      "Destaque atualizado com sucesso!"
+    );
     expect(refetch).toHaveBeenCalledTimes(1);
   });
 
@@ -608,7 +672,11 @@ describe("Admin Highlights Route", () => {
     const dataset = buildFetchResponse(
       {
         [HighlightCategory.LABORATORIO]: [
-          createHighlightItem({ id: "lab-20", title: "Para remover", order: 1 }),
+          createHighlightItem({
+            id: "lab-20",
+            title: "Para remover",
+            order: 1,
+          }),
         ],
       },
       refetch
@@ -640,7 +708,7 @@ describe("Admin Highlights Route", () => {
 
     const [id, options] = call as [
       string,
-      { onSuccess?: () => void; onError?: () => void }
+      { onSuccess?: () => void; onError?: () => void },
     ];
 
     expect(id).toBe("lab-20");
@@ -653,7 +721,9 @@ describe("Admin Highlights Route", () => {
     act(() => {
       options.onSuccess?.();
     });
-    expect(toastSuccessMock).toHaveBeenCalledWith("Destaque excluído com sucesso!");
+    expect(toastSuccessMock).toHaveBeenCalledWith(
+      "Destaque excluído com sucesso!"
+    );
     expect(refetch).toHaveBeenCalledTimes(1);
   });
 
@@ -699,7 +769,9 @@ describe("Admin Highlights Route", () => {
 
     Object.defineProperty(file, "size", { value: 2048 });
 
-    const fileInput = screen.getByLabelText(/Clique para selecionar uma imagem/i);
+    const fileInput = screen.getByLabelText(
+      /Clique para selecionar uma imagem/i
+    );
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -713,7 +785,9 @@ describe("Admin Highlights Route", () => {
       screen.getByRole("button", { name: /Adicionar Primeira Imagem/i })
     );
 
-    const reopenedTitleInput = screen.getByPlaceholderText("Digite o título da imagem");
+    const reopenedTitleInput = screen.getByPlaceholderText(
+      "Digite o título da imagem"
+    );
 
     expect(reopenedTitleInput).toHaveValue("");
   });
@@ -791,20 +865,26 @@ describe("Admin Highlights Route", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Trilhas/i }));
 
-    fireEvent.click(screen.getByRole("button", { name: /Adicionar Primeira Imagem/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Adicionar Primeira Imagem/i })
+    );
 
-  const titleInput = screen.getByPlaceholderText("Digite o título da imagem");
+    const titleInput = screen.getByPlaceholderText("Digite o título da imagem");
 
-  fireEvent.change(titleInput, { target: { value: "Nova trilha" } });
+    fireEvent.change(titleInput, { target: { value: "Nova trilha" } });
 
-  const descriptionInput = screen.getByPlaceholderText("Digite uma descrição para a imagem");
+    const descriptionInput = screen.getByPlaceholderText(
+      "Digite uma descrição para a imagem"
+    );
 
-  fireEvent.change(descriptionInput, { target: { value: "Descrição" } });
+    fireEvent.change(descriptionInput, { target: { value: "Descrição" } });
 
-    const fileInput = screen.getByLabelText(/Clique para selecionar uma imagem/i);
-  const file = new File(["content"], "trail.png", { type: "image/png" });
+    const fileInput = screen.getByLabelText(
+      /Clique para selecionar uma imagem/i
+    );
+    const file = new File(["content"], "trail.png", { type: "image/png" });
 
-  Object.defineProperty(file, "size", { value: 1024 });
+    Object.defineProperty(file, "size", { value: 1024 });
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     fireEvent.click(screen.getByRole("button", { name: /Adicionar$/i }));
@@ -849,9 +929,13 @@ describe("Admin Highlights Route", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Quartos/i }));
 
-    fireEvent.click(screen.getByRole("button", { name: /^Adicionar Imagem$/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /^Adicionar Imagem$/i })
+    );
 
-    const dialogInput = screen.getByPlaceholderText("Digite o título da imagem");
+    const dialogInput = screen.getByPlaceholderText(
+      "Digite o título da imagem"
+    );
 
     expect(dialogInput).toHaveValue("");
   });
@@ -868,7 +952,8 @@ describe("Admin Highlights Route", () => {
 
     render(<Component />);
 
-    (HighlightCategory as Record<string, string>).CARROSSEL = "CAROUSEL-MISMATCH" as HighlightCategory;
+    (HighlightCategory as Record<string, string>).CARROSSEL =
+      "CAROUSEL-MISMATCH" as HighlightCategory;
 
     try {
       fireEvent.click(screen.getByRole("button", { name: /Carrossel/i }));
@@ -928,16 +1013,18 @@ describe("Admin Highlights Route", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Edit/i }));
 
-  const titleInput = screen.getByPlaceholderText("Digite o título da imagem");
+    const titleInput = screen.getByPlaceholderText("Digite o título da imagem");
 
-  fireEvent.change(titleInput, { target: { value: "Laboratório Atualizado" } });
+    fireEvent.change(titleInput, {
+      target: { value: "Laboratório Atualizado" },
+    });
 
     fireEvent.click(screen.getByRole("button", { name: /Salvar/i }));
 
     expect(updateMutation.mutate).toHaveBeenCalledTimes(1);
 
     const [payload] = updateMutation.mutate.mock.calls[0] as [
-      { payload: { image?: File | undefined } }
+      { payload: { image?: File | undefined } },
     ];
 
     expect(payload.payload.image).toBeUndefined();
@@ -954,9 +1041,9 @@ describe("Admin Highlights Route", () => {
 
     render(<Component />);
 
-  const deleteButton = screen.getByRole("button", { name: /Delete/i });
+    const deleteButton = screen.getByRole("button", { name: /Delete/i });
 
-  fireEvent.click(deleteButton);
+    fireEvent.click(deleteButton);
 
     const deleteOpenToggle = screen.getAllByTestId("dialog-open-toggle")[1];
     const deleteCloseToggle = screen.getAllByTestId("dialog-close-toggle")[1];
