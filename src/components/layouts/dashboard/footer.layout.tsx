@@ -41,8 +41,29 @@ export const FooterLayout = () => {
           </div>
         </div>
       </div>
+      
+      <div className="w-full flex justify-center md:justify-start gap-6 mt-4 mb-2">
+        <a href="/terms"> 
+          <Typography 
+            variant="body_light" 
+            className="underline hover:no-underline cursor-pointer"
+          >
+            {t("Termos de Uso")}
+          </Typography>
+        </a>
+        
+        <a href="/privacy"> 
+          <Typography 
+            variant="body_light" 
+            className="underline hover:no-underline cursor-pointer"
+          >
+            {t("Política de Privacidade")}
+          </Typography>
+        </a>
+      </div>
+
       <Separator className="my-4" />
-  <div className="w-full flex justify-center items-center">
+      <div className="w-full flex justify-center items-center">
         <Typography variant="h6_light">
           {t("footer.copyright", { year })}
         </Typography>
