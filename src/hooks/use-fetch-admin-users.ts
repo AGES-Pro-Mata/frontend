@@ -2,8 +2,8 @@ import { api } from "@/core/api";
 import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
 
 import {
-  UserAdminRequestFilters,
   type TUserAdminRequestFilters,
+  UserAdminRequestFilters,
 } from "@/entities/user-admin-filters";
 import type { TUserAdminResponse } from "@/entities/user-admin-response";
 import { safeParseFilters } from "@/utils/safe-filters";
@@ -24,7 +24,8 @@ export const useFetchAdminUsers = ({ filters }: useFetchAdminUsersParams) => {
         {
           items: TUserAdminResponse[];
         } & TApiPaginationMetaResult
-      >("/user" + safeParseFilters(filters, UserAdminRequestFilters));
+      >(`/user${safeParseFilters(filters, UserAdminRequestFilters)}`);
+
       return response.data;
     },
   });

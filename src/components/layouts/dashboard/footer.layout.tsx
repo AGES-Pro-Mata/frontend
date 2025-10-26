@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 export const FooterLayout = () => {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
+
   return (
     <div className="flex flex-col w-full py-4 px-6 bg-main-dark-green items-center text-white">
       <div className="md:flex-row md:gap-10 md:h-4/5 flex flex-col h-auto w-full">

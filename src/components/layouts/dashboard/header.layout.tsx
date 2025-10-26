@@ -7,19 +7,19 @@ import {
   CalendarDays,
   CircleUserRound,
   LayoutDashboard,
-  Mountain,
   LogIn,
   LogOut,
+  Mountain,
 } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useIsAdmin, userQueryOptions } from "@/api/user";
-import CartButton from "@/components/buttons/cartButton";
-import { HeaderButton } from "@/components/buttons/headerButton";
+import CartButton from "@/components/button/cartButton";
+import { HeaderButton } from "@/components/button/headerButton";
 import { useQuery } from "@tanstack/react-query";
 import { useLogout } from "@/hooks/useLogout";
 import { MoonLoader } from "react-spinners";
 import { useTranslation } from "react-i18next";
-import LanguageSelect from "@/components/buttons/languageSelector";
+import LanguageSelect from "@/components/button/languageSelector";
 
 type HeaderLayoutProps = {
   children?: React.ReactNode;

@@ -5,6 +5,9 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import react from "eslint-plugin-react";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
+import testingLibrary from "eslint-plugin-testing-library";
+import jestDom from "eslint-plugin-jest-dom";
+
 
 export default [
   {
@@ -187,6 +190,10 @@ export default [
         beforeAll: "readonly",
         afterAll: "readonly",
       },
+    },
+    plugins: {
+      "testing-library": testingLibrary,
+      "jest-dom": jestDom,
     },
     rules: {
       "@typescript-eslint/no-explicit-any": "off",

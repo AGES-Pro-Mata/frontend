@@ -16,6 +16,26 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
   ],
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./vitest.setup.ts"],
+    include: [
+      "src/**/*.{test,spec}.{ts,tsx}",
+      "tests/**/*.{test,spec}.{ts,tsx}"
+    ],
+    exclude: [
+      "tests/e2e/**",
+    ],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json-summary", "lcov"],
+      reportsDirectory: "./coverage",
+    },
+    css: {
+      include: [/.*/],
+    },
+  },
   build: {
     rollupOptions: {
       output: {
@@ -36,6 +56,9 @@ export default defineConfig({
       // Use fileURLToPath e import.meta.url para criar o alias
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
+  },
+  optimizeDeps: {
+    exclude: ["msw"],
   },
   server: {
     host: "0.0.0.0", // Essential for container access
