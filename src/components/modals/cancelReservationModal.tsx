@@ -1,4 +1,9 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/buttons/defaultButton";
 import { useTranslation } from "react-i18next";
 
@@ -8,12 +13,16 @@ type CancelReservationModalProps = {
   onConfirm: () => void;
 };
 
-export function CancelReservationModal({ open, onOpenChange, onConfirm }: CancelReservationModalProps) {
+export function CancelReservationModal({
+  open,
+  onOpenChange,
+  onConfirm,
+}: CancelReservationModalProps) {
   const { t } = useTranslation();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[499px] h-[268px] rounded-2xl bg-card flex flex-col justify-between p-6">
+      <DialogContent className="w-[499px] h-[268px] rounded-2xl bg-soft-white flex flex-col justify-between p-6">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-main-dark-green">
             {t("cancelReservation.title")}

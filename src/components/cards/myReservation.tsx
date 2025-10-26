@@ -14,9 +14,7 @@ import {
   getReservationStatusStyle,
 } from "@/entities/reservation-status";
 
-
-
-type Pessoa = {
+type Person = {
   nome: string;
   telefone: string;
   nascimento: string;
@@ -24,17 +22,16 @@ type Pessoa = {
   genero: string;
 };
 
-
 type ReservaCardProps = {
   titulo: string;
   preco: number;
   tipo?: string;
   periodo: { inicio: Date; fim: Date };
   imagem: string;
-  status?: StatusReserva;
+  status?: StatusReservation;
 };
 
-type StatusReserva =
+type StatusReservation =
   | "cadastro_pendente"
   | "pagamento_pendente"
   | "aprovacao_pendente"
@@ -47,19 +44,19 @@ export default function ReservaCard({
   tipo,
   periodo,
   imagem,
-  status: initialStatus = "cadastro_pendente", 
+  status: initialStatus = "cadastro_pendente",
 }: ReservaCardProps) {
   const { t } = useTranslation();
-  const [status, setStatus] = useState<StatusReserva>(initialStatus);
-  const [draftPessoas, setDraftPessoas] = useState<Pessoa[]>([]);
-  const [pessoas, setPessoas] = useState<Pessoa[]>(
+  const [status, setStatus] = useState<StatusReservation>(initialStatus);
+  const [draftPessoas, setDraftPessoas] = useState<Person[]>([]);
+  const [pessoas, setPessoas] = useState<Person[]>(
     Array.from({ length: 1 }, () => ({
       nome: "",
       telefone: "",
       nascimento: "",
       cpf: "",
       genero: "",
-    }))
+    })),
   );
   const fmt = (d: Date) => d.toLocaleDateString("pt-BR");
   const handleCancelarReserva = () => {
@@ -72,20 +69,20 @@ export default function ReservaCard({
   const [openModalComprovante, setOpenModalComprovante] = useState(false);
   const handleOpenModalPessoas = (open: boolean) => {
     if (open) {
-      setDraftPessoas(pessoas.map(p => ({ ...p })));
+      setDraftPessoas(pessoas.map((p) => ({ ...p })));
     } else {
-      setDraftPessoas(pessoas.map(p => ({ ...p })));
+      setDraftPessoas(pessoas.map((p) => ({ ...p })));
     }
     setOpenModalPessoas(open);
   };
-    const handleSalvarPessoas = (novasPessoas: Pessoa[]) => {
-      setPessoas(novasPessoas);
-      setStatus("pagamento_pendente");
-      toast.success(t("reservation.peopleRegisteredSuccess"));
-      setOpenModalPessoas(false);
-    };
+  const handleSalvarPessoas = (novasPessoas: Person[]) => {
+    setPessoas(novasPessoas);
+    setStatus("pagamento_pendente");
+    toast.success(t("reservation.peopleRegisteredSuccess"));
+    setOpenModalPessoas(false);
+  };
 
-  const statusMap: Record<StatusReserva, ReservationStatus> = {
+  const statusMap: Record<StatusReservation, ReservationStatus> = {
     cadastro_pendente: StatusEnum.CADASTRO_PENDENTE,
     pagamento_pendente: StatusEnum.PAGAMENTO_PENDENTE,
     aprovacao_pendente: StatusEnum.AGUARDANDO_APROVACAO,
@@ -109,7 +106,7 @@ export default function ReservaCard({
           />
         </div>
 
-        <div className="absolute top-[239px] left-0 w-full h-[15px] bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+        <div className="absolute top-[239px] left-0 w-full h-[15px] bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
 
         <div className="flex flex-col flex-1 px-6 py-4">
           <div className="flex items-center gap-3 flex-wrap">
@@ -122,7 +119,7 @@ export default function ReservaCard({
               </span>
             )}
             <div className="flex items-center gap-3 ml-auto">
-              <div className="flex items-center rounded-full bg-card shadow-sm gap-2 px-3 py-1">
+              <div className="flex items-center rounded-full bg-card-light shadow-sm gap-2 px-3 py-1">
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-soft-white">
                   <CalendarIcon className="w-3.5 h-3.5" />
                 </div>
@@ -130,7 +127,7 @@ export default function ReservaCard({
                   {fmt(periodo.inicio)} a {fmt(periodo.fim)}
                 </span>
               </div>
-              <div className="flex items-center rounded-full bg-card shadow-sm gap-2 px-3 py-1">
+              <div className="flex items-center rounded-full bg-card-light shadow-sm gap-2 px-3 py-1">
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-soft-white">
                   <DollarSign className="w-3.5 h-3.5" />
                 </div>
@@ -140,23 +137,23 @@ export default function ReservaCard({
               </div>
             </div>
           </div>
-            <ul className="text-xs font-bold text-main-dark-green/70 list-disc ml-6 mt-2 space-y-1">
-              <li>{t("reservation.activities.historicalTrail")}</li>
-              <li>{t("reservation.activities.birdWatching")}</li>
-              <li>{t("reservation.activities.outdoorLab")}</li>
-            </ul>
+          <ul className="text-xs font-bold text-main-dark-green/70 list-disc ml-6 mt-2 space-y-1">
+            <li>{t("reservation.activities.historicalTrail")}</li>
+            <li>{t("reservation.activities.birdWatching")}</li>
+            <li>{t("reservation.activities.outdoorLab")}</li>
+          </ul>
           <div className="w-full mt-6 flex items-center justify-between">
-          <CardStatus
-            icon={statusIcon}
-            label={statusLabel}
-            accentClassName={statusAccent}
-          />
+            <CardStatus
+              icon={statusIcon}
+              label={statusLabel}
+              accentClassName={statusAccent}
+            />
             <div className="flex gap-3">
               {status === "cadastro_pendente" && (
                 <Button
                   onClick={() => setOpenModalPessoas(true)}
                   className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
-                  label={t("reservation.registerPeople")}              
+                  label={t("reservation.registerPeople")}
                 />
               )}
               {status === "pagamento_pendente" && (
@@ -175,39 +172,41 @@ export default function ReservaCard({
               )}
 
               <Button
-                onClick={() => toast.info(t("reservation.openingReservationDetails"))}
+                onClick={() =>
+                  toast.info(t("reservation.openingReservationDetails"))
+                }
                 className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
                 label={t("reservation.viewReservation")}
               />
             </div>
-                      </div>
-                    </div>
-                  </CanvasCard>
+          </div>
+        </div>
+      </CanvasCard>
 
-                  <CancelReservationModal
-                    open={openModalCancel}
-                    onOpenChange={setOpenModalCancel}
-                    onConfirm={handleCancelarReserva}
-                  />
-                  <ModalPessoas
-                    open={openModalPessoas}
-                    onOpenChange={handleOpenModalPessoas}
-                    draftPessoas={draftPessoas}
-                    setDraftPessoas={setDraftPessoas}
-                    pessoas={pessoas}
-                    handleSalvarPessoas={handleSalvarPessoas}
-                  />
+      <CancelReservationModal
+        open={openModalCancel}
+        onOpenChange={setOpenModalCancel}
+        onConfirm={handleCancelarReserva}
+      />
+      <ModalPessoas
+        open={openModalPessoas}
+        onOpenChange={handleOpenModalPessoas}
+        draftPessoas={draftPessoas}
+        setDraftPessoas={setDraftPessoas}
+        pessoas={pessoas}
+        handleSalvarPessoas={handleSalvarPessoas}
+      />
 
-                <PaymentProofModal
-                  open={openModalComprovante}
-                  onOpenChange={setOpenModalComprovante}
-                  preco={preco}
-                  onConfirm={() => {
-                    setStatus("aprovacao_pendente");
-                    setOpenModalComprovante(false);
-                    toast.success(t("reservation.paymentProofSent"));
-                  }}
-            />
+      <PaymentProofModal
+        open={openModalComprovante}
+        onOpenChange={setOpenModalComprovante}
+        preco={preco}
+        onConfirm={() => {
+          setStatus("aprovacao_pendente");
+          setOpenModalComprovante(false);
+          toast.success(t("reservation.paymentProofSent"));
+        }}
+      />
     </>
   );
 }

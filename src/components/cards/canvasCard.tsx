@@ -6,7 +6,7 @@ type CanvasCardProps = {
 export default function CanvasCard({ children, className }: CanvasCardProps) {
   return (
     <div
-      className={`rounded-xl bg-card/20 text-card-foreground shadow-md ${className || ""}`}
+      className={`rounded-xl text-card-foreground shadow-md ${className || ""}`}
     >
       {children}
     </div>
