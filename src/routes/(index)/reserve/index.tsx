@@ -7,12 +7,24 @@ import {
   mapExperienceApiResponseToDTO,
 } from "@/types/experience";
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { useState } from "react";
 
 export const Route = createFileRoute("/(index)/reserve/")({
   component: ReservePage,
 });
 
 function ReservePage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
+
   const mockApiResponse: ExperienceApiResponse[] = [
     {
       experienceId: "1",
@@ -63,21 +75,76 @@ function ReservePage() {
       experienceWeekDays: ["SATURDAY"],
       experienceImage: "./logo-pro-mata-invertida.svg",
     },
+    {
+      experienceId: "5",
+      experienceName: "Workshop de Fotografia",
+      experienceDescription: "Evento especial com profissionais",
+      experienceCategory: ExperienceCategory.EVENTO,
+      experiencePrice: 200,
+      experienceStartDate: "2025-11-20T10:00:00.000Z",
+      experienceEndDate: "2025-11-20T18:00:00.000Z",
+      experienceWeekDays: ["SATURDAY"],
+      experienceImage: "./logo-pro-mata-invertida.svg",
+    },
   ];
 
   const experiences: Experience[] = mockApiResponse.map(
     mapExperienceApiResponseToDTO
   );
 
+  const totalPages = Math.ceil(experiences.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentExperiences = experiences.slice(startIndex, endIndex);
+
   return (
     <div className="min-h-screen">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-16 pt-12 sm:px-6 lg:px-8">
         <ExperienceFilter />
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2">
-          {experiences.map((exp) => (
+          {currentExperiences.map((exp) => (
             <CardExperience key={exp.id} experience={exp} />
           ))}
         </div>
+
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                className={
+                  currentPage === 1
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+
+            {[...Array(totalPages)].map((_, index) => (
+              <PaginationItem key={index + 1}>
+                <PaginationLink
+                  onClick={() => setCurrentPage(index + 1)}
+                  isActive={currentPage === index + 1}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                className={
+                  currentPage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
