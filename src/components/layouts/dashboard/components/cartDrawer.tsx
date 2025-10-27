@@ -90,22 +90,22 @@ export const CartDrawer = () => {
           </div>
 
           <div className="mt-2 flex flex-col gap-3 border-t border-banner pt-4">
-            <Button
-              className="w-full justify-center rounded-full py-3"
-              disabled={itemCount === 0}
-              onClick={() => {
-                closeCart();
-                void navigate({ to: "/user/my-reservations" });
-              }}
-              label={<span>{t("cartDrawer.checkoutButton")}</span>}
-            />
-            <Link
-              to="/reserve/finish"
-              className="text-center text-sm font-semibold text-main-dark-green transition-colors hover:text-main-dark-green/80"
+            <Link to="/reserve/finish">
+              <Button
+                className="w-full justify-center rounded-full py-3"
+                disabled={itemCount === 0}
+                onClick={() => {
+                  closeCart();
+                }}
+                label={<span>{t("cartDrawer.checkoutButton")}</span>}
+              />
+            </Link>
+            <span
+              className="text-center text-sm font-semibold text-main-dark-green transition-colors hover:text-main-dark-green/80 cursor-pointer"
               onClick={closeCart}
             >
               {t("cartDrawer.browseLink")}
-            </Link>
+            </span>
           </div>
         </div>
       </DrawerContent>

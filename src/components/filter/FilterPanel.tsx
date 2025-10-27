@@ -6,6 +6,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export type FilterWithDateRange = {
   startDate?: string;
@@ -124,7 +126,21 @@ export function FilterPanel<F extends FilterWithDateRange>({
 
   const selectedValue = filters[toggleKey];
   const searchValue =
-    typeof filters.search === "string" ? filters.search : "";
+    typeof filters.search === "string" ? filters.search : undefined;
+
+  const [localSearch, setLocalSearch] = useState(searchValue);
+
+  useEffect(() => {
+    setLocalSearch(searchValue);
+  }, [searchValue]);
+
+  const debouncedSearch = useDebounce(localSearch, 500);
+
+  useEffect(() => {
+    // Apply debounced search to filters (setQueryOnChange default is true)
+    setFilters({ search: debouncedSearch } as Partial<F>);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
 
   return (
     <section
@@ -196,10 +212,8 @@ export function FilterPanel<F extends FilterWithDateRange>({
             <Input
               type="text"
               placeholder={t(translationKeys.searchPlaceholderKey)}
-              value={searchValue}
-              onChange={(event) =>
-                setFilters({ search: event.target.value } as Partial<F>)
-              }
+              value={localSearch ?? ""}
+              onChange={(event) => setLocalSearch(event.target.value)}
               aria-label={t(translationKeys.searchAriaLabelKey)}
               className="h-14 rounded-full border border-card/60 bg-white pl-14 pr-6 text-base font-medium text-on-banner-text placeholder:text-on-banner-text/50 shadow-[0_45px_120px_rgba(46,54,29,0.08)] focus-visible:border-main-dark-green focus-visible:ring-main-dark-green/20"
             />

@@ -1,8 +1,5 @@
 import { CardExperience } from "@/components/card/experienceCard";
 import { ExperienceFilter } from "@/components/filter/ExperienceFilter";
-import {
-  type Experience,
-} from "@/types/experience";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Pagination,
@@ -12,100 +9,55 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFilters } from "@/hooks/filters/filters";
-
-const filterTypeToCategory = {
-  rooms: "HOSTING",
-  events: "EVENT",
-  labs: "LABORATORY",
-  trails: "TRAIL",
-};
+import type { TExperienceFilters } from "@/entities/experience-filter";
+import { useGetExperiences } from "@/hooks/useGetExperiences";
+import { ExperienceCategory } from "@/types/experience";
 
 function ReservePage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const itemsPerPage = 4;
+  const PAGE_LIMIT = 12;
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const { filters } = useFilters({
+  const { filters, setFilter } = useFilters<TExperienceFilters>({
     key: "get-experiences",
     initialFilters: {
-      type: "rooms",
+      category: ExperienceCategory.HOSPEDAGEM,
       startDate: undefined,
       endDate: undefined,
+      search: undefined,
+      page: 0,
+      limit: PAGE_LIMIT,
     },
   });
 
   useEffect(() => {
-    const fetchExperiences = async () => {
-      setIsLoading(true);
-      try {
-        const params = new URLSearchParams();
+    const pageFromFilters = typeof filters.page === "number" ? filters.page : 0;
 
-        if (filters.type) {
-          params.append(
-            "category",
-            filterTypeToCategory[
-              filters.type as keyof typeof filterTypeToCategory
-            ]
-          );
-        }
-        if (filters.startDate) {
-          params.append("startDate", filters.startDate);
-        }
-        if (filters.endDate) {
-          params.append("endDate", filters.endDate);
-        }
+    setCurrentPage(Math.max(1, pageFromFilters + 1));
+  }, [filters.page]);
 
-        const response = await fetch(
-          `http://localhost:3000/experience/expFilter?${params}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch experiences");
-        }
+  const {
+    data: experiencesData,
+    isLoading,
+    isError,
+    error,
+  } = useGetExperiences(filters, Math.max(0, currentPage - 1));
 
-        const data = await response.json();
+  const experiences = experiencesData?.items ?? [];
+  const totalItems = experiencesData?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_LIMIT));
+  const currentExperiences = experiences;
 
-        const mappedExperiences = data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          category:
-            filterTypeToCategory[
-              filters.type as keyof typeof filterTypeToCategory
-            ],
-          capacity: item.capacity,
-          startDate: item.startDate,
-          endDate: item.endDate,
-          price: item.price,
-          weekDays: item.weekDays,
-          durationMinutes: item.durationMinutes,
-          trailDifficulty: item.trailDifficulty,
-          trailLength: item.trailLength,
-          image: item.experienceImage
-            ? {
-                url:item.experienceImage,
-              }
-            : null,
-        }));
+  const handlePageChange = (page: number): void => {
+    setCurrentPage(page);
+    setFilter("page", page - 1);
+  };
 
-        setExperiences(mappedExperiences);
-      } catch (error) {
-        console.error("Error fetching experiences:", error);
-        setExperiences([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchExperiences();
-  }, [filters]); 
-
-  const totalPages = Math.ceil(experiences.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentExperiences = experiences.slice(startIndex, endIndex);
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(1);
+    setFilter("page", 0);
+  }
 
   return (
     <div className="min-h-screen">
@@ -114,21 +66,25 @@ function ReservePage() {
 
         {isLoading ? (
           <div className="text-center">Loading...</div>
+        ) : isError ? (
+          <div className="text-center text-red-500">
+            Error loading experiences: {error.message}
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2">
               {currentExperiences.map((exp) => (
-                <CardExperience experience={exp} />
+                <CardExperience experience={exp} key={exp.id} />
               ))}
             </div>
 
-            {experiences.length > 0 && (
+            {experiences.length > 0 && totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
                       onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        handlePageChange(Math.max(currentPage - 1, 1))
                       }
                       className={
                         currentPage === 1
@@ -138,11 +94,12 @@ function ReservePage() {
                     />
                   </PaginationItem>
 
-                  {[...Array(totalPages)].map((_, index) => (
+                  {Array.from({ length: totalPages }, (_, index) => (
                     <PaginationItem key={index + 1}>
                       <PaginationLink
-                        onClick={() => setCurrentPage(index + 1)}
+                        onClick={() => handlePageChange(index + 1)}
                         isActive={currentPage === index + 1}
+                        className="cursor-pointer"
                       >
                         {index + 1}
                       </PaginationLink>
@@ -152,7 +109,7 @@ function ReservePage() {
                   <PaginationItem>
                     <PaginationNext
                       onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                        handlePageChange(Math.min(currentPage + 1, totalPages))
                       }
                       className={
                         currentPage === totalPages
@@ -163,6 +120,12 @@ function ReservePage() {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
+            )}
+
+            {experiences.length === 0 && !isLoading && (
+              <div className="text-center text-gray-500">
+                No experiences found with the current filters.
+              </div>
             )}
           </>
         )}
