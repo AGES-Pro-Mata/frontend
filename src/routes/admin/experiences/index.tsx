@@ -31,7 +31,7 @@ function RouteComponent() {
       page: 0,
     },
   });
-  const { items, meta, isFetching, isLoading } = useFetchAdminExperiences({ filters });
+  const { items, meta, isLoading } = useFetchAdminExperiences({ filters });
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
