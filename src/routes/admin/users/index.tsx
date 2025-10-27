@@ -68,11 +68,11 @@ function RouteComponent() {
   };
 
   const handleEditUserClick = (userId: string) => {
-    navigate({ to: "/admin/users/$userId", params: { userId } });
+    void navigate({ to: "/admin/users/$userId", params: { userId } });
   };
 
   const navigateToCreateUser = () => {
-    navigate({ to: "/admin/users/create" });
+    void navigate({ to: "/admin/users/create" });
   };
 
   const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;

@@ -1,16 +1,14 @@
-
 import { api } from "@/core/api";
-import axios from "axios";
 import {
   type Experience,
   type ExperienceApiResponse,
   ExperienceCategory,
+  type ExperienceDTO,
   mapExperienceApiResponseToDTO,
 } from "@/types/experience";
+import type { TApiPaginationResult } from "@/entities/api-pagination-response";
 
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
+const BACKEND_URL = String(import.meta.env.VITE_BACKEND_URL);
 
 export interface CreateExperiencePayload {
   experienceName: string;
@@ -42,18 +40,40 @@ export interface SearchExperienceParams {
 }
 
 export async function getExperiences(
-  params: SearchExperienceParams,
+  params: SearchExperienceParams
 ): Promise<Experience[]> {
-  const res = await axios.get<ExperienceApiResponse[]>(
+  const res = await api.get<ExperienceApiResponse[]>(
     `${BACKEND_URL}/experiences/search`,
     {
       params,
-      timeout: 10000,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    },
+    }
   );
 
   return res.data.map(mapExperienceApiResponseToDTO);
+}
+
+export interface FilterExperiencesParams {
+  category?: ExperienceCategory;
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+}
+
+export async function getExperiencesByFilter(
+  params: FilterExperiencesParams & { page?: number; limit?: number }
+): Promise<TApiPaginationResult<Experience>> {
+  const res = await api.get<
+    {
+      items: ExperienceDTO[];
+    } & { page: number; limit: number; total: number }
+  >(`/experience/search`, {
+    params,
+  });
+
+  return {
+    items: res.data.items,
+    page: res.data.page,
+    limit: res.data.limit,
+    total: res.data.total,
+  };
 }
