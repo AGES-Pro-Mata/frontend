@@ -86,10 +86,11 @@ function ReserveInfoPage() {
     return "NOT_INFORMED";
   };
 
-  const participants: ReserveParticipant[] = reservation.reservations
-    .flatMap((r) => r.members)
+  // Members vem do ReservationGroup, não das Reservations individuais
+  const participants: ReserveParticipant[] = (reservation.members || [])
+    .filter((member) => member) // Remove membros null/undefined
     .map((member) => ({
-      id: member.id || member.document || member.name,
+      id: member.id || member.document || member.name || "unknown",
       name: member.name || "Não informado",
       phone: (member as any).phone || "Não informado", //não está sendo enviado pelo back
       birthDate: (member as any).birthDate || "Não informado", //não está sendo enviado pelo back
@@ -97,16 +98,20 @@ function ReserveInfoPage() {
       gender: normalizeGender(member.gender),
     }));
 
-  const experiences: ReserveSummaryExperience[] = reservation.reservations.map(
-    (res) => ({
-      title: res.experience.name || "Experiência sem nome",
-      startDate: res.experience.startDate ? new Date(res.experience.startDate).toLocaleDateString("pt-BR") : "N/A",
-      endDate: res.experience.endDate ? new Date(res.experience.endDate).toLocaleDateString("pt-BR") : "N/A",
-      price: Number(res.experience.price) || 0,
-      peopleCount: res.members.length,
-      imageUrl: "/mock/landscape-placeholder.webp", //imagem não está sendo enviada pelo back ou eu não entendi
-    })
-  );
+  const experiences: ReserveSummaryExperience[] = reservation.reservations
+    .filter((res) => res.experience) // Filtra apenas reservas com experience válido
+    .map((res) => ({
+      title: res.experience?.name || "Experiência sem nome",
+      startDate: res.experience?.startDate
+        ? new Date(res.experience.startDate).toLocaleDateString("pt-BR")
+        : "N/A",
+      endDate: res.experience?.endDate
+        ? new Date(res.experience.endDate).toLocaleDateString("pt-BR")
+        : "N/A",
+      price: Number(res.experience?.price) || 0,
+      peopleCount: reservation.members?.length || 0,
+      imageUrl: "/mock/landscape-placeholder.webp", //imagem não está sendo enviada pelo back
+    }));
 
   const events: ReservationEvent[] = (reservation.requests || []).map(
     (req, index) => ({

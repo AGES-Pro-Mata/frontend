@@ -24,6 +24,7 @@ const RequestStatusSchema = z.object({
 });
 
 export const RequestItemSchema = z.object({
+  id: z.string(),
   member: RequestMemberSchema,
   request: RequestStatusSchema,
 });

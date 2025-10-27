@@ -9,7 +9,6 @@ export const RequestAdminFilters = z.object({
         "CREATED",
         "CANCELED",
         "CANCELED_REQUESTED",
-        "EDITED",
         "REJECTED",
         "APPROVED",
         "PEOPLE_REQUESTED",

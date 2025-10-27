@@ -24,7 +24,6 @@ const reservationStatus: RequestStatus[] = [
   "APPROVED", // Aprovadas
   "CANCELED", // Canceladas
   "CANCELED_REQUESTED", // Cancelamento Solicitado
-  "EDITED", // Editadas
   "REJECTED", // Rejeitadas
   "PEOPLE_REQUESTED", // Usuários Solicitado
   "PAYMENT_REQUESTED", // Pagamento Solicitado
@@ -40,7 +39,6 @@ const statusMap: Record<RequestStatus, string> = {
   APPROVED: "Aprovadas",
   CANCELED: "Canceladas",
   CANCELED_REQUESTED: "Cancelamento Solicitado",
-  EDITED: "Editadas",
   REJECTED: "Rejeitadas",
   PEOPLE_REQUESTED: "Usuários Solicitado",
   PAYMENT_REQUESTED: "Pagamento Solicitado",
@@ -50,90 +48,6 @@ const statusMap: Record<RequestStatus, string> = {
   DOCUMENT_APPROVED: "Documento Aprovado",
   DOCUMENT_REJECTED: "Documento Rejeitado",
 };
-
-const professorColumns: ColumnDef<Request>[] = [
-  {
-    accessorKey: "name",
-    header: () => <span className="font-semibold">Nome</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true, // ✅ ADICIONA
-  },
-  {
-    accessorKey: "status",
-    header: () => <span className="font-semibold">Status</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true, // ✅ ADICIONA
-  },
-  {
-    accessorKey: "email",
-    header: () => <span className="font-semibold">E-mail</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true, // ✅ ADICIONA
-  },
-  {
-    id: "actions",
-    header: () => <span className="font-semibold">Ações</span>,
-    cell: ({ row }) => {
-      return (
-        <div className="flex flex-col gap-1">
-          <Button variant="ghost" size="sm" className="flex items-center gap-1">
-            <MdMoreVert size={18} /> Ações
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-          >
-            <MdVisibility size={18} /> Visualizar
-          </Button>
-        </div>
-      );
-    },
-  },
-];
-
-const reservationColumns: ColumnDef<TRequestItem>[] = [
-  {
-    accessorKey: "member.name",
-    header: () => <span className="font-semibold">Nome</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true, // ✅ ADICIONA
-  },
-  {
-    accessorKey: "request.type",
-    header: () => <span className="font-semibold">Status</span>,
-    cell: (info) =>
-      statusMap[info.getValue() as RequestStatus] || info.getValue(),
-    enableSorting: true, // ✅ ADICIONA
-  },
-  {
-    accessorKey: "member.email",
-    header: () => <span className="font-semibold">E-mail</span>,
-    cell: (info) => info.getValue(),
-    enableSorting: true, // ✅ ADICIONA
-  },
-  {
-    id: "actions",
-    header: () => <span className="font-semibold">Ações</span>,
-    cell: ({ row }) => {
-      return (
-        <div className="flex flex-col gap-1">
-          <Button variant="ghost" size="sm" className="flex items-center gap-1">
-            <MdMoreVert size={18} /> Ações
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-          >
-            <MdVisibility size={18} /> Visualizar
-          </Button>
-        </div>
-      );
-    },
-    enableSorting: false, // ✅ Ações não podem ser ordenadas
-  },
-];
 
 export default function AdminRequests({
   initialData,
@@ -149,10 +63,110 @@ export default function AdminRequests({
   >([]);
 
   const pendingLimitRef = useRef<number | null>(null);
-  const [sortField, setSortField] = useState<string | undefined>(undefined); // ✅ ADICIONA
-  const [sortDir, setSortDir] = useState<"asc" | "desc" | undefined>(undefined); // ✅ ADICIONA
+  const [sortField, setSortField] = useState<string | undefined>(undefined);
+  const [sortDir, setSortDir] = useState<"asc" | "desc" | undefined>(
+    undefined
+  );
 
   const allRequests: Request[] = [];
+
+  // Colunas movidas para dentro do componente para acessar navigate
+  const professorColumns: ColumnDef<Request>[] = [
+    {
+      accessorKey: "name",
+      header: () => <span className="font-semibold">Nome</span>,
+      cell: (info) => info.getValue(),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "status",
+      header: () => <span className="font-semibold">Status</span>,
+      cell: (info) => info.getValue(),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "email",
+      header: () => <span className="font-semibold">E-mail</span>,
+      cell: (info) => info.getValue(),
+      enableSorting: true,
+    },
+    {
+      id: "actions",
+      header: () => <span className="font-semibold">Ações</span>,
+      cell: () => {
+        return (
+          <div className="flex flex-col gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <MdMoreVert size={18} /> Ações
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <MdVisibility size={18} /> Visualizar
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const reservationColumns: ColumnDef<TRequestItem>[] = [
+    {
+      accessorKey: "member.name",
+      header: () => <span className="font-semibold">Nome</span>,
+      cell: (info) => info.getValue(),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "request.type",
+      header: () => <span className="font-semibold">Status</span>,
+      cell: (info) =>
+        statusMap[info.getValue() as RequestStatus] || info.getValue(),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "member.email",
+      header: () => <span className="font-semibold">E-mail</span>,
+      cell: (info) => info.getValue(),
+      enableSorting: true,
+    },
+    {
+      id: "actions",
+      header: () => <span className="font-semibold">Ações</span>,
+      cell: ({ row }) => {
+        const reservationId = row.original.id;
+        return (
+          <div className="flex flex-col gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <MdMoreVert size={18} /> Ações
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+              onClick={() => {
+                // Navegação usando window.location para evitar erro de tipo do TanStack Router
+                window.location.href = `/admin/requests/reservation-info/${reservationId}`;
+              }}
+            >
+              <MdVisibility size={18} /> Visualizar
+            </Button>
+          </div>
+        );
+      },
+      enableSorting: false,
+    },
+  ];
 
   const handleStatusChange = (status: string) => {
     setSelectedStatus((prev) =>
@@ -272,7 +286,11 @@ export default function AdminRequests({
 
       <div className="relative overflow-y-auto max-h-[600px]">
         <DataTable
-          columns={tab === "professor" ? professorColumns : reservationColumns}
+          columns={
+            (tab === "professor"
+              ? professorColumns
+              : reservationColumns) as ColumnDef<any>[]
+          }
           data={
             tab === "professor"
               ? filteredProfessorRequests

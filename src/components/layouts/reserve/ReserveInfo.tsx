@@ -3,14 +3,15 @@ import { ChevronLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { HiUsers } from "react-icons/hi";
 
-import { Button } from "@/components/buttons/defaultButton";
-import CanvasCard from "@/components/cards/canvasCard";
-import { ReserveSummaryExperienceCard } from "@/components/cards/reserveSummaryExperienceCard";
+import { Button } from "@/components/button/defaultButton";
+import CanvasCard from "@/components/card/canvasCard";
+import { ReserveSummaryExperienceCard } from "@/components/card/reserveSummaryExperienceCard";
 import { ReserveParticipantInputs } from "@/components/layouts/reserve/ReserveParticipantInputs";
 import { Textarea } from "@/components/ui/textarea";
 import { ReservationsLayout } from "@/components/display/reservationEvents";
 import type {
   ReserveParticipant,
+  ReserveParticipantDraft,
   ReserveSummaryExperience,
 } from "@/types/reserve";
 import { Typography } from "@/components/typography/typography";
@@ -19,7 +20,7 @@ import type { ReservationEvent } from "@/components/display/reservationEvents";
 
 export type ReserveInfoProps = {
   title?: string;
-  participants: ReserveParticipant[];
+  participants: ReserveParticipant[] | ReserveParticipantDraft[];
   experiences: ReserveSummaryExperience[];
   events?: ReservationEvent[];
   notes?: string;
@@ -103,7 +104,7 @@ export function ReserveInfo({
                         </Typography>
                       </header>
                       <ReserveParticipantInputs
-                        person={person}
+                        person={person as ReserveParticipantDraft}
                         readOnly
                         className="mt-1"
                       />
@@ -123,7 +124,19 @@ export function ReserveInfo({
                   </div>
                 ) : null}
               </div>
-            ) : null}
+            ) : (
+              <div className="flex flex-col gap-6">
+                <Typography
+                  variant="h3"
+                  className="text-2xl font-semibold text-main-dark-green"
+                >
+                  {t("reserveSummary.people.title")}
+                </Typography>
+                <Typography className="text-gray-600">
+                  Nenhum participante encontrado para esta reserva.
+                </Typography>
+              </div>
+            )}
             <div className="flex flex-col gap-3">
               <Typography
                 variant="h3"
