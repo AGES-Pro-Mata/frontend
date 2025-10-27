@@ -186,8 +186,8 @@ export default function AdminRequests() {
         <button
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
             tab === "professor"
-              ? "bg-green-500 text-white"
-              : "bg-gray-200 text-gray-700"
+              ? "bg-contrast-green text-white"
+              : "bg-soft-gray text-gray-700"
           }`}
           onClick={() => {
             setTab("professor");
@@ -199,8 +199,8 @@ export default function AdminRequests() {
         <button
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
             tab === "reservation"
-              ? "bg-green-500 text-white"
-              : "bg-gray-200 text-gray-700"
+              ? "bg-contrast-green text-white"
+              : "bg-soft-gray text-gray-700"
           }`}
           onClick={() => {
             setTab("reservation");
@@ -214,15 +214,17 @@ export default function AdminRequests() {
       <div className="mb-4 flex flex-wrap items-center gap-4">
         <span className="font-semibold">Filters:</span>
         <span>Status:</span>
-        {(tab === "professor" ? professorStatus : reservStatus).map((status) => (
-          <label key={status} className="flex items-center gap-1">
-            <Checkbox
-              checked={selectedStatus.includes(status)}
-              onCheckedChange={() => handleStatusChange(status)}
-            />
-            {status}
-          </label>
-        ))}
+        {(tab === "professor" ? professorStatus : reservStatus).map(
+          (status) => (
+            <label key={status} className="flex items-center gap-1">
+              <Checkbox
+                checked={selectedStatus.includes(status)}
+                onCheckedChange={() => handleStatusChange(status)}
+              />
+              {status}
+            </label>
+          )
+        )}
       </div>
       <div className="relative">
         {loading && (
