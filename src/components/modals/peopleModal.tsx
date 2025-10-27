@@ -1,10 +1,16 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/buttons/defaultButton";
-import { Trash2 } from "lucide-react";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/button/defaultButton';
+import { Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 type Pessoa = {
   nome: string;
@@ -38,7 +44,7 @@ export function ModalPessoas({
       <DialogContent className="!max-w-none w-[90vw] h-[75vh] bg-card rounded-xl shadow-lg p-6 flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-main-dark-green text-2xl font-bold">
-            {t("peopleModal.title")}
+            {t('peopleModal.title')}
           </DialogTitle>
         </DialogHeader>
 
@@ -49,38 +55,42 @@ export function ModalPessoas({
               className="grid grid-cols-6 gap-4 border-b border-gray-300 pb-4 items-center"
             >
               <Input
-                placeholder={t("peopleModal.name")}
+                placeholder={t('peopleModal.name')}
                 value={pessoa.nome}
                 onChange={(e) => {
                   const updated = [...draftPessoas];
+
                   updated[index].nome = e.target.value;
                   setDraftPessoas(updated);
                 }}
               />
               <Input
-                placeholder={t("peopleModal.phone")}
+                placeholder={t('peopleModal.phone')}
                 value={pessoa.telefone}
                 onChange={(e) => {
                   const updated = [...draftPessoas];
+
                   updated[index].telefone = e.target.value;
                   setDraftPessoas(updated);
                 }}
               />
               <Input
                 type="date"
-                placeholder={t("peopleModal.birth")}
+                placeholder={t('peopleModal.birth')}
                 value={pessoa.nascimento}
                 onChange={(e) => {
                   const updated = [...draftPessoas];
+
                   updated[index].nascimento = e.target.value;
                   setDraftPessoas(updated);
                 }}
               />
               <Input
-                placeholder={t("peopleModal.cpf")}
+                placeholder={t('peopleModal.cpf')}
                 value={pessoa.cpf}
                 onChange={(e) => {
                   const updated = [...draftPessoas];
+
                   updated[index].cpf = e.target.value;
                   setDraftPessoas(updated);
                 }}
@@ -89,23 +99,25 @@ export function ModalPessoas({
                 value={pessoa.genero}
                 onValueChange={(val) => {
                   const updated = [...draftPessoas];
+
                   updated[index].genero = val;
                   setDraftPessoas(updated);
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t("peopleModal.gender")} />
+                  <SelectValue placeholder={t('peopleModal.gender')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="masculino">{t("peopleModal.male")}</SelectItem>
-                  <SelectItem value="feminino">{t("peopleModal.female")}</SelectItem>
-                  <SelectItem value="outro">{t("peopleModal.other")}</SelectItem>
+                  <SelectItem value="masculino">{t('peopleModal.male')}</SelectItem>
+                  <SelectItem value="feminino">{t('peopleModal.female')}</SelectItem>
+                  <SelectItem value="outro">{t('peopleModal.other')}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Button
                 onClick={() => {
                   const updated = draftPessoas.filter((_, i) => i !== index);
+
                   setDraftPessoas(updated);
                 }}
                 className="bg-default-red text-soft-white rounded-full w-[40px] h-[40px] flex items-center justify-center"
@@ -118,11 +130,11 @@ export function ModalPessoas({
             onClick={() =>
               setDraftPessoas([
                 ...draftPessoas,
-                { nome: "", telefone: "", nascimento: "", cpf: "", genero: "" },
+                { nome: '', telefone: '', nascimento: '', cpf: '', genero: '' },
               ])
             }
             className="bg-main-dark-green text-soft-white rounded-full w-[240px] h-[40px] text-sm shadow-md hover:opacity-90"
-            label={t("peopleModal.addPerson")}
+            label={t('peopleModal.addPerson')}
           />
         </div>
 
@@ -133,25 +145,25 @@ export function ModalPessoas({
               onOpenChange(false);
             }}
             className="bg-dark-gray text-soft-white rounded-full w-[120px] h-[40px]"
-            label={t("common.back")}
+            label={t('common.back')}
           />
 
           <Button
             onClick={() => {
               const camposIncompletos = draftPessoas.some(
-                (p) =>
-                  !p.nome || !p.telefone || !p.nascimento || !p.cpf || !p.genero
+                (p) => !p.nome || !p.telefone || !p.nascimento || !p.cpf || !p.genero,
               );
 
               if (camposIncompletos) {
-                toast.error(t("peopleModal.fillAllFields"));
+                toast.error(t('peopleModal.fillAllFields'));
+
                 return;
               }
 
               handleSalvarPessoas(draftPessoas.map((p) => ({ ...p })));
             }}
             className="bg-contrast-green text-soft-white rounded-full w-[120px] h-[40px]"
-            label={t("common.save")}
+            label={t('common.save')}
           />
         </div>
       </DialogContent>

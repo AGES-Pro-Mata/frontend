@@ -1,34 +1,49 @@
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import type { ReservationGroupStatusFilter } from '@/hooks/useMyReservations';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-type ReservationGroupStatus = "APPROVED" | "CANCELLED" | "CREATED" | "ALL";
-type ReservationGroupStatusMap = Record<ReservationGroupStatus, string>
+type ReservationGroupStatusFilterMap = Record<ReservationGroupStatusFilter, string>;
 
 type MyReservationsFilterCompactProps = {
-	className?: string,
-	status: ReservationGroupStatus
-}
+  className?: string;
+  status: ReservationGroupStatusFilter;
+  handleStatusChange: (status: ReservationGroupStatusFilter) => void;
+};
 
-export function MyReservationsFilterCompact({ className, status }: MyReservationsFilterCompactProps) {
-	const { t } = useTranslation();
+export function MyReservationsFilterCompact({
+  className,
+  status,
+  handleStatusChange,
+}: MyReservationsFilterCompactProps) {
+  const { t } = useTranslation();
 
-	const STATUS_MAP: ReservationGroupStatusMap = useMemo(() => ({
-		ALL: t('myReservationsFilter.status.all'),
-		APPROVED: t('myReservationsFilter.status.confirmed'),
-		CANCELLED: t('myReservationsFilter.status.cancelled'),
-		CREATED: t('myReservationsFilter.status.waiting'),
-	}), [t]);
+  const STATUS_MAP: ReservationGroupStatusFilterMap = useMemo(
+    () => ({
+      ALL: t('myReservationsFilter.status.all'),
+      APPROVED: t('myReservationsFilter.status.confirmed'),
+      CANCELED: t('myReservationsFilter.status.cancelled'),
+      PENDING: t('myReservationsFilter.status.waiting'),
+    }),
+    [t],
+  );
 
-	return (
-		<div className={`w-full grid grid-cols-4 text-center rounded-full p-0 bg-card-light-light ${className}`}>
+  return (
+    <div
+      className={`w-full grid grid-cols-4 text-center rounded-full p-0 bg-card-light-light ${className}`}
+    >
+      {Object.entries(STATUS_MAP).map((e) => {
+        const [entryStatus, text] = e;
 
-			{Object.entries(STATUS_MAP).map(e => {
-				const [entryStatus, text] = e;
-
-				return <button key={entryStatus} className={`rounded-full ${entryStatus === status ? "bg-card-light-active" : ""} py-1 hover:bg-red`}>
-					{text}
-				</button>
-			})}
-		</div>
-	);
+        return (
+          <button
+            key={entryStatus}
+            className={`rounded-full ${entryStatus === status ? 'bg-card-light-active' : ''} py-1 hover:bg-card-light-plain`}
+            onClick={() => handleStatusChange(entryStatus as ReservationGroupStatusFilter)}
+          >
+            {text}
+          </button>
+        );
+      })}
+    </div>
+  );
 }
