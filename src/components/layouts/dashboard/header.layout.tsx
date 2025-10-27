@@ -20,9 +20,10 @@ import { useLogout } from "@/hooks/useLogout";
 import { MoonLoader } from "react-spinners";
 import { useTranslation } from "react-i18next";
 import LanguageSelect from "@/components/button/languageSelector";
+import type { MouseEvent, ReactNode } from "react";
 
 type HeaderLayoutProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
 };
 
@@ -37,7 +38,7 @@ export const HeaderLayout = ({ className, children }: HeaderLayoutProps) => {
   const cartItemCount = useCartStore((state) => state.items.length);
   const openCart = useCartStore((state) => state.openCart);
   const { logout } = useLogout();
-  const handleLogoClick = (e: React.MouseEvent) => {
+  const handleLogoClick = (e: MouseEvent) => {
     if (pathname === "/") {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });

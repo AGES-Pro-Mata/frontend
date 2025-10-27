@@ -14,6 +14,7 @@ import { useFilters } from "@/hooks/filters/filters";
 import type { TExperienceFilters } from "@/entities/experience-filter";
 import { useGetExperiences } from "@/hooks/useGetExperiences";
 import { ExperienceCategory } from "@/types/experience";
+import { MoonLoader } from "react-spinners";
 
 function ReservePage() {
   const PAGE_LIMIT = 12;
@@ -41,7 +42,6 @@ function ReservePage() {
     data: experiencesData,
     isLoading,
     isError,
-    error,
   } = useGetExperiences(filters, Math.max(0, currentPage - 1));
 
   const experiences = experiencesData?.items ?? [];
@@ -63,12 +63,11 @@ function ReservePage() {
     <div className="min-h-screen">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-16 pt-12 sm:px-6 lg:px-8">
         <ExperienceFilter />
-
         {isLoading ? (
-          <div className="text-center">Loading...</div>
+          <MoonLoader size={40} className="mx-auto" />
         ) : isError ? (
           <div className="text-center text-red-500">
-            Error loading experiences: {error.message}
+            Error loading experiences
           </div>
         ) : (
           <>
