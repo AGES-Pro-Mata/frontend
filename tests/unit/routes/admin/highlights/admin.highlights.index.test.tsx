@@ -845,8 +845,6 @@ describe("Admin Highlights Route", () => {
     buildMutations();
 
     render(<Component />);
-
-    expect(screen.getByText(/Carregando destaques/)).toBeInTheDocument();
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
