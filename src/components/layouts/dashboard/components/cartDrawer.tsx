@@ -89,13 +89,15 @@ export const CartDrawer = () => {
           </div>
 
           <div className="mt-2 flex flex-col gap-3 border-t border-banner pt-4">
-            <Link to="/reserve/finish">
+            <Link
+              to="/reserve/finish"
+              onClick={() => {
+                closeCart();
+              }}
+            >
               <Button
                 className="w-full justify-center rounded-full py-3"
                 disabled={itemCount === 0}
-                onClick={() => {
-                  closeCart();
-                }}
                 label={<span>{t("cartDrawer.checkoutButton")}</span>}
               />
             </Link>
