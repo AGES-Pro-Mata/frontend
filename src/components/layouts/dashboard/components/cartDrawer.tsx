@@ -10,12 +10,11 @@ import { Button } from "@/components/button/defaultButton";
 import { useCartStore } from "@/store/cartStore";
 import { X } from "lucide-react";
 import { useMemo } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export const CartDrawer = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const isOpen = useCartStore((state) => state.isOpen);
   const items = useCartStore((state) => state.items);
