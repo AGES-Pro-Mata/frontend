@@ -49,8 +49,8 @@ export function useCreateHighlight() {
 
   return useMutation({
     mutationFn: (payload: CreateHighlightPayload) => createHighlight(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
     },
   });
 }
@@ -61,8 +61,8 @@ export function useUpdateHighlight() {
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateHighlightPayload }) =>
       updateHighlight(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
     },
   });
 }
@@ -72,8 +72,8 @@ export function useDeleteHighlight() {
 
   return useMutation({
     mutationFn: (id: string) => deleteHighlight(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
     },
   });
 }

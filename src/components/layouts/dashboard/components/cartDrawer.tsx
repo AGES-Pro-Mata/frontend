@@ -5,17 +5,16 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import CartItem from "@/components/card/CartItem";
+import CartItem from "@/components/card/cartItem";
 import { Button } from "@/components/button/defaultButton";
 import { useCartStore } from "@/store/cartStore";
 import { X } from "lucide-react";
 import { useMemo } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export const CartDrawer = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const isOpen = useCartStore((state) => state.isOpen);
   const items = useCartStore((state) => state.items);
@@ -90,22 +89,24 @@ export const CartDrawer = () => {
           </div>
 
           <div className="mt-2 flex flex-col gap-3 border-t border-banner pt-4">
-            <Button
-              className="w-full justify-center rounded-full py-3"
-              disabled={itemCount === 0}
-              onClick={() => {
-                closeCart();
-                void navigate({ to: "/user/my-reservations" });
-              }}
-              label={<span>{t("cartDrawer.checkoutButton")}</span>}
-            />
             <Link
               to="/reserve/finish"
-              className="text-center text-sm font-semibold text-main-dark-green transition-colors hover:text-main-dark-green/80"
+              onClick={() => {
+                closeCart();
+              }}
+            >
+              <Button
+                className="w-full justify-center rounded-full py-3"
+                disabled={itemCount === 0}
+                label={<span>{t("cartDrawer.checkoutButton")}</span>}
+              />
+            </Link>
+            <span
+              className="text-center text-sm font-semibold text-main-dark-green transition-colors hover:text-main-dark-green/80 cursor-pointer"
               onClick={closeCart}
             >
               {t("cartDrawer.browseLink")}
-            </Link>
+            </span>
           </div>
         </div>
       </DrawerContent>

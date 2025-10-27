@@ -6,7 +6,7 @@ import { Typography } from "@/components/typography";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,9 +37,10 @@ function RouteComponent() {
 
   useEffect(() => {
     setFilter("name", debouncedSearchTerm);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm]);
 
-  const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
@@ -86,7 +87,7 @@ function RouteComponent() {
   ];
 
   const navigateToCreateExperience = () => {
-    navigate({ to: "/admin/experiences/create" });
+    void navigate({ to: "/admin/experiences/create" });
   };
 
   return (
