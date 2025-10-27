@@ -36,7 +36,8 @@ function RouteComponent() {
 
   useEffect(() => {
     setFilter("name", debouncedSearchTerm);
-  }, [debouncedSearchTerm, setFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchTerm]);
 
   const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
