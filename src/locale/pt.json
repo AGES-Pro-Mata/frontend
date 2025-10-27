@@ -74,7 +74,10 @@
     "searchPlaceholder": "Buscar reservas...",
     "searchAriaLabel": "Buscar reservas",
     "status": {
-      "all": "Todas"
+      "all": "Todas",
+      "waiting": "Aguardando",
+      "confirmed": "Confirmadas",
+      "cancelled": "Canceladas"
     }
   },
   "nav": {

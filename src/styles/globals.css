@@ -32,6 +32,9 @@ code {
   --color-card: #E7DED4;
   --color-card-background: #E7DED4;
   --color-card-light: #F6EDE4;
+  --color-card-light-light: #D6CCC242;
+  --color-card-light-active: #D6CCC299;
+  --color-card-light-plain: #D6CCC259;
   --color-popover: #FFFFFF;
   --color-card-label: #F6EDE4
 }

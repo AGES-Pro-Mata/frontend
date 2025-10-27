@@ -326,7 +326,10 @@
         "searchPlaceholder": "Search reservations...",
         "searchAriaLabel": "Search reservations",
         "status": {
-          "all": "All"
+          "all": "All",
+          "waiting": "Pending",
+          "confirmed": "Confirmed",
+          "cancelled": "Cancelled"
         }
       },
       "nav": {
