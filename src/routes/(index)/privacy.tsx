@@ -1,59 +1,100 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Typography } from "@/components/typography/typography";
-import React from 'react';
+import { useTranslation } from "react-i18next";
+
+type PrivacySection = {
+  heading?: string;
+  body?: string;
+  list?: string[];
+};
+
+type PrivacyContact = {
+  body?: string;
+  email?: string;
+};
 
 export const Route = createFileRoute('/(index)/privacy')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const { t } = useTranslation();
+  const rawSections = t("privacyPage.sections", { returnObjects: true });
+  const sections: PrivacySection[] = Array.isArray(rawSections)
+    ? rawSections.reduce<PrivacySection[]>((accumulator, section) => {
+        if (!section || typeof section !== "object") {
+          return accumulator;
+        }
+
+        const candidate = section as Record<string, unknown>;
+        const headingValue = candidate["heading"];
+        const bodyValue = candidate["body"];
+        const listValue = candidate["list"];
+
+        const safeSection: PrivacySection = {
+          heading: typeof headingValue === "string" ? headingValue : undefined,
+          body: typeof bodyValue === "string" ? bodyValue : undefined,
+          list: Array.isArray(listValue)
+            ? listValue.filter((item): item is string => typeof item === "string")
+            : undefined,
+        };
+
+        accumulator.push(safeSection);
+
+        return accumulator;
+      }, [])
+    : [];
+
+  const rawContact = t("privacyPage.contact", { returnObjects: true });
+  const contact: PrivacyContact =
+    rawContact && typeof rawContact === "object"
+      ? (({ body, email }) => ({
+          body: typeof body === "string" ? body : undefined,
+          email: typeof email === "string" ? email : undefined,
+        }))(rawContact as Record<string, unknown>)
+      : {};
+
   return (
-    <div className="container mx-auto p-8 max-w-4xl">
+    <div className="container mx-auto flex min-h-screen max-w-4xl flex-col justify-end p-8">
       <Typography variant="h2" className="mb-6 text-main-dark-green">
-        Política de Privacidade
+        {t("privacyPage.title")}
       </Typography>
 
-      <Typography variant="body" className="mb-4 font-semibold">
-        Dados Coletados e Finalidades
-      </Typography>
-      <Typography variant="body" className="mb-4 text-justify">
-        Durante a utilização do site serão coletados dados pessoais, informações de pagamento e dados de navegação. 
-        Os dados coletados têm como finalidades:
-        <ul className="list-disc list-inside ml-4 mt-2">
-          <li>Processar reservas e gerenciar hospedagens;</li>
-          <li>Garantir a comunicação entre usuário e administração;</li>
-          <li>Cumprir obrigações legais; e</li>
-          <li>Melhorar a experiência de uso do site.</li>
-        </ul>
-      </Typography>
+      {sections.map((section, index) => (
+        <div key={section.heading ?? index} className="mb-6">
+          {section.heading && (
+            <Typography variant="body" className="mb-2 font-semibold">
+              {section.heading}
+            </Typography>
+          )}
+          {section.body && (
+            <Typography variant="body" className="mb-4 text-justify">
+              {section.body}
+            </Typography>
+          )}
+          {section.list?.length ? (
+            <ul className="mb-4 ml-6 list-disc text-justify">
+              {section.list.map((item, itemIndex) => (
+                <li key={itemIndex} className="mb-2">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ))}
 
-      <Typography variant="body" className="mb-4 font-semibold">
-        Compartilhamento
-      </Typography>
-      <Typography variant="body" className="mb-4 text-justify">
-        Os dados não serão vendidos ou cedidos a terceiros. Poderão ser compartilhados apenas com prestadores de serviços necessários ou mediante exigência legal.
-      </Typography>
-
-      <Typography variant="body" className="mb-4 font-semibold">
-        Direitos do Usuário
-      </Typography>
-      <Typography variant="body" className="mb-4 text-justify">
-        O usuário pode solicitar acesso, correção ou exclusão de seus dados; revogar consentimento quando aplicável; e obter informações sobre o tratamento realizado.
-      </Typography>
-
-      <Typography variant="body" className="mb-4 font-semibold">
-        Armazenamento e Legislação
-      </Typography>
-      <Typography variant="body" className="mb-4 text-justify">
-        Os dados serão armazenados pelo período necessário ao cumprimento das finalidades e em conformidade com a legislação vigente, especialmente a Lei Geral de Proteção de Dados – LGPD (Lei nº 13.709/2018).
-      </Typography>
-
-      <Typography variant="body" className="mt-6 p-3 border border-gray-300 rounded text-justify">
-        Para dúvidas ou solicitações, o usuário pode entrar em contato com a administração do Pró-Mata/PUCRS pelo e-mail:{" "}
-        <a href="mailto:ima@pucrs.br" className="text-blue-600 underline">
-          ima@pucrs.br
-        </a>.
-      </Typography>
+      {contact?.body && (
+        <Typography variant="body" className="mt-6 rounded border border-gray-300 p-3 text-justify">
+          {contact.body}{" "}
+          {contact.email && (
+            <a href={`mailto:${contact.email}`} className="text-blue-600 underline">
+              {contact.email}
+            </a>
+          )}
+          .
+        </Typography>
+      )}
     </div>
   );
 }
