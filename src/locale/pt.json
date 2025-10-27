@@ -410,7 +410,15 @@
       "back": "Voltar"
     }
   },
-
+  "reservationInfo": {
+    "title": "Reservation information",
+    "counts": {
+      "men": "Men",
+      "women": "Women",
+      "other": "Other",
+      "summary": "Men: {{men}} - Women: {{women}} - Other: {{other}}"
+    }
+  },
   "validation": {
     "email": "Digite um e-mail válido.",
     "passwordRequired": "Digite sua senha.",
