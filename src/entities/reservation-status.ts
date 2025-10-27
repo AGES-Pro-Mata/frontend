@@ -1,5 +1,5 @@
 import { CheckCircle2, Clock5, XCircle } from "lucide-react";
-import { createElement, type ReactElement } from "react";
+import { type ReactElement, createElement } from "react";
 
 export const StatusEnum = {
   CONFIRMADA: "confirmada",

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { userQueryOptions, type CurrentUser } from "@/api/user";
-import type { RegisterUserPayload } from "@/api/user";
+import { type CurrentUser, type RegisterUserPayload, userQueryOptions } from "@/api/user";
 import { StatusEnum } from "@/entities/reservation-status";
 
 function mapCurrentUserToProfile(
@@ -10,6 +9,7 @@ function mapCurrentUserToProfile(
   const rawNumber = user.address?.number;
   const parsedNumber =
     rawNumber && !isNaN(Number(rawNumber)) ? Number(rawNumber) : undefined;
+
   return {
     name: user.name,
     email: user.email,
@@ -24,12 +24,13 @@ function mapCurrentUserToProfile(
     institution: user.institution,
     country: user.address?.country,
     isForeign: user.isForeign ?? undefined,
-    function: (user as any).function || (user as any).role || undefined,
+    function: user.userType || undefined,
   };
 }
 
 function resolveDocumentStatus(user?: CurrentUser) {
   if (!user) return StatusEnum.CADASTRO_PENDENTE;
+
   return user.verified ? StatusEnum.CONFIRMADA : StatusEnum.CADASTRO_PENDENTE;
 }
 
@@ -41,6 +42,7 @@ export function useCurrentUserProfile() {
   );
   const verified = query.data?.verified ?? false;
   const documentStatus = resolveDocumentStatus(query.data ?? undefined);
+
   return {
     ...query,
     mapped,

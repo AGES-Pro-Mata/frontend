@@ -1,20 +1,16 @@
-import { z } from "zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/button/defaultButton";
+import { TextInput } from "@/components/input/textInput";
+import { appToast } from "@/components/toast/toast";
+import { Typography } from "@/components/typography/typography";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
+  FormDescription,
   FormField,
   FormItem,
-  FormMessage,
-  FormDescription,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
-import { TextInput } from "@/components/inputs/textInput";
-import { Typography } from "@/components/typography/typography";
-import { Button } from "@/components/buttons/defaultButton";
-import { useRegisterAdmin } from "@/hooks/useRegisterAdmin";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -23,22 +19,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { COUNTRIES } from "@/lib/countries";
-import { appToast } from "@/components/toast/toast";
+import { Switch } from "@/components/ui/switch";
 import { useCepQuery } from "@/hooks/useCepQuery";
+import { useRegisterAdmin } from "@/hooks/useRegisterAdmin";
+import { COUNTRIES } from "@/lib/countries";
 import {
+  digitsOnly,
+  generateRandomPassword,
+  hashPassword,
   isValidBrazilZip,
   isValidCpf,
-  digitsOnly,
   isValidForeignZip,
-  generateRandomPassword,
-  maskCpf,
   maskCep,
-  hashPassword,
+  maskCpf,
+  maskPhone,
 } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { z } from "zod";
+import { useForm } from "../form";
+import { useTranslation } from "react-i18next";
 
 const formSchema = z
   .object({
@@ -47,13 +49,13 @@ const formSchema = z
     phone: z.string().min(8, "Informe o telefone"),
     document: z.string().optional().default(""),
     rg: z.string().optional().default(""),
-    gender: z.string().min(1, "Informe o gênero"),
+    gender: z.string(),
     zipCode: z.string().min(5, "Informe o CEP/ZIP"),
     country: z.string().min(2, "Informe o país"),
     isForeign: z.boolean().default(false),
     addressLine: z.string().optional().default(""),
     city: z.string().optional(),
-    number: z.string().optional(),
+    number: z.number().optional(),
     isAdmin: z.boolean().default(false),
     isProfessor: z.boolean().default(false),
     password: z.string().min(6, "Senha mínima de 6 caracteres"),
@@ -67,7 +69,7 @@ const formSchema = z
           path: ["city"],
         });
       }
-      if (!data.number || data.number.length < 1) {
+      if (!data.number || data.number < 1) {
         ctx.addIssue({
           code: "custom",
           message: "Cidade e número são obrigatórios para brasileiros",
@@ -116,6 +118,7 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>;
 
 export function RegisterUserAdmin() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [autoFilled, setAutoFilled] = useState({
     addressLine: false,
@@ -128,23 +131,25 @@ export function RegisterUserAdmin() {
     z.output<typeof formSchema>
   >({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      document: "",
-      rg: "",
-      gender: "",
-      zipCode: "",
-      country: "Brasil",
-      isForeign: false,
-      addressLine: "",
-      city: "",
-      number: "",
-      isAdmin: false,
-      isProfessor: false,
-      password: generateRandomPassword(),
-    },
+    defaultValues: useMemo(
+      () => ({
+        name: "",
+        email: "",
+        phone: "",
+        document: "",
+        rg: "",
+        gender: "",
+        zipCode: "",
+        country: "Brasil",
+        isForeign: false,
+        addressLine: "",
+        city: "",
+        isAdmin: false,
+        isProfessor: false,
+        password: generateRandomPassword(),
+      }),
+      []
+    ),
   });
 
   const isForeign = form.watch("isForeign");
@@ -215,9 +220,6 @@ export function RegisterUserAdmin() {
           appToast.error("Erro ao cadastrar usuário");
         }
       },
-      onError: () => {
-        appToast.error("Erro ao cadastrar usuário");
-      },
     });
   };
 
@@ -249,7 +251,7 @@ export function RegisterUserAdmin() {
                         field.onChange(checked);
                         if (checked) {
                           form.setValue("city", "");
-                          form.setValue("number", "");
+                          form.setValue("number", undefined);
                           form.setValue("document", "");
                           form.setValue("rg", "");
                           form.setValue("country", "");
@@ -310,12 +312,18 @@ export function RegisterUserAdmin() {
               render={({ field }) => (
                 <FormItem>
                   <TextInput
-                    label="Telefone"
+                    label={t("register.fields.phone")}
                     required
-                    placeholder="(55) 99999-9999"
-                    {...field}
+                    placeholder="(51) 99999-9999"
+                    value={maskPhone(field.value || "")}
+                    onChange={(e) => {
+                      const digits = digitsOnly(e.target.value).slice(0, 11);
+
+                      field.onChange(maskPhone(digits));
+                    }}
+                    onBlur={field.onBlur}
                   />
-                  <FormMessage />
+                  <FormMessage className="text-default-red" />
                 </FormItem>
               )}
             />
@@ -340,6 +348,7 @@ export function RegisterUserAdmin() {
                       } else {
                         const digits = digitsOnly(e.target.value).slice(0, 11);
                         const masked = maskCpf(digits);
+
                         field.onChange(masked);
                       }
                     }}
@@ -404,6 +413,7 @@ export function RegisterUserAdmin() {
                     onChange={(e) => {
                       const digits = digitsOnly(e.target.value).slice(0, 8);
                       const masked = maskCep(digits);
+
                       if (autoFilled.addressLine || autoFilled.city) {
                         setAutoFilled({ addressLine: false, city: false });
                       }
@@ -499,9 +509,17 @@ export function RegisterUserAdmin() {
                   <TextInput
                     label="Número"
                     required
+                    type="number"
                     placeholder="Número"
                     disabled={isForeign}
                     {...field}
+                    onChange={(e) => {
+                      const digits = digitsOnly(e.target.value);
+
+                      field.onChange(
+                        digits ? Number.parseInt(digits) : undefined
+                      );
+                    }}
                   />
                   <FormMessage />
                 </FormItem>
@@ -556,7 +574,7 @@ export function RegisterUserAdmin() {
                   <TextInput
                     label="Senha"
                     required
-                    type="password"
+                    type="text"
                     placeholder="Senha"
                     {...field}
                   />

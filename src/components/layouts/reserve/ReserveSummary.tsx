@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import { ChevronLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@/components/buttons/defaultButton";
-import CanvasCard from "@/components/cards/canvasCard";
-import { ReserveSummaryExperienceCard } from "@/components/cards/reserveSummaryExperienceCard";
+import { Button } from "@/components/button/defaultButton";
+import CanvasCard from "@/components/card/canvasCard";
+import { ReserveSummaryExperienceCard } from "@/components/card/reserveSummaryExperienceCard";
 import { ReserveSummaryParticipants } from "@/components/layouts/reserve/ReserveSummaryParticipants";
 import type {
   ReserveParticipant,
