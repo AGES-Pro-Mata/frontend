@@ -22,6 +22,8 @@ export const RequestAdminFilters = z.object({
       ])
     )
     .optional(),
+  sort: z.string().optional(),
+  dir: z.enum(["asc", "desc"]).optional(), 
 });
 
 export type TRequestAdminFilters = z.infer<typeof RequestAdminFilters>;

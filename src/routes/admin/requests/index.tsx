@@ -17,10 +17,13 @@ function AdminRequestsRoute() {
     status: undefined,
   });
 
-  const { data, isLoading, error } = useAdminRequests(filters, token ?? undefined);
+  const { data, isLoading, error } = useAdminRequests(
+    filters,
+    token ?? undefined
+  );
 
   if (isLoading) {
-    return <div className="p-6">Carregando solicitações...</div>; 
+    return <div className="p-6">Carregando solicitações...</div>;
   }
 
   if (error) {

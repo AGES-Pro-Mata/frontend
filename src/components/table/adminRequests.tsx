@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/table/index";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -56,16 +56,19 @@ const professorColumns: ColumnDef<Request>[] = [
     accessorKey: "name",
     header: () => <span className="font-semibold">Nome</span>,
     cell: (info) => info.getValue(),
+    enableSorting: true, // ✅ ADICIONA
   },
   {
     accessorKey: "status",
     header: () => <span className="font-semibold">Status</span>,
     cell: (info) => info.getValue(),
+    enableSorting: true, // ✅ ADICIONA
   },
   {
     accessorKey: "email",
     header: () => <span className="font-semibold">E-mail</span>,
     cell: (info) => info.getValue(),
+    enableSorting: true, // ✅ ADICIONA
   },
   {
     id: "actions",
@@ -94,17 +97,20 @@ const reservationColumns: ColumnDef<TRequestItem>[] = [
     accessorKey: "member.name",
     header: () => <span className="font-semibold">Nome</span>,
     cell: (info) => info.getValue(),
+    enableSorting: true, // ✅ ADICIONA
   },
   {
     accessorKey: "request.type",
     header: () => <span className="font-semibold">Status</span>,
     cell: (info) =>
       statusMap[info.getValue() as RequestStatus] || info.getValue(),
+    enableSorting: true, // ✅ ADICIONA
   },
   {
     accessorKey: "member.email",
     header: () => <span className="font-semibold">E-mail</span>,
     cell: (info) => info.getValue(),
+    enableSorting: true, // ✅ ADICIONA
   },
   {
     id: "actions",
@@ -125,6 +131,7 @@ const reservationColumns: ColumnDef<TRequestItem>[] = [
         </div>
       );
     },
+    enableSorting: false, // ✅ Ações não podem ser ordenadas
   },
 ];
 
@@ -140,6 +147,10 @@ export default function AdminRequests({
   const [selectedReservationStatus, setSelectedReservationStatus] = useState<
     RequestStatus[]
   >([]);
+
+  const pendingLimitRef = useRef<number | null>(null);
+  const [sortField, setSortField] = useState<string | undefined>(undefined); // ✅ ADICIONA
+  const [sortDir, setSortDir] = useState<"asc" | "desc" | undefined>(undefined); // ✅ ADICIONA
 
   const allRequests: Request[] = [];
 
@@ -158,10 +169,14 @@ export default function AdminRequests({
 
     setSelectedReservationStatus(newStatus);
 
+    const currentLimit = pendingLimitRef.current ?? initialData?.limit ?? 10;
+
     onFilterChange?.({
       page: 1,
-      limit: initialData?.limit || 10, 
+      limit: currentLimit,
       status: newStatus.length > 0 ? newStatus : undefined,
+      sort: sortField,
+      dir: sortDir,
     });
   };
 
@@ -169,12 +184,17 @@ export default function AdminRequests({
     setTab(newTab);
     setSelectedStatus([]);
     setSelectedReservationStatus([]);
+    pendingLimitRef.current = null;
+    setSortField(undefined);
+    setSortDir(undefined);
 
     if (newTab === "reservation") {
       onFilterChange?.({
         page: 1,
-        limit: initialData?.limit || 10, 
+        limit: initialData?.limit || 10,
         status: undefined,
+        sort: undefined,
+        dir: undefined,
       });
     }
   };
@@ -189,7 +209,7 @@ export default function AdminRequests({
   const reservationRequests = initialData?.data || [];
 
   const currentPage = initialData?.page || 1;
-  const currentLimit = initialData?.limit || 10;
+  const currentLimit = pendingLimitRef.current ?? initialData?.limit ?? 10;
 
   return (
     <div className="p-6 bg-white rounded-xl shadow flex flex-col gap-4">
@@ -258,25 +278,35 @@ export default function AdminRequests({
               ? filteredProfessorRequests
               : reservationRequests
           }
-          filters={{ page: currentPage - 1, limit: currentLimit }} 
+          filters={{
+            page: currentPage - 1,
+            limit: currentLimit,
+            sort: sortField,
+            dir: sortDir,
+          }}
           setFilter={(key, value) => {
             if (key === "page") {
               const newPage = value + 1;
+              const activeLimit = pendingLimitRef.current ?? currentLimit;
 
               if (tab === "reservation") {
                 onFilterChange?.({
                   page: newPage,
-                  limit: currentLimit, 
+                  limit: activeLimit,
                   status:
                     selectedReservationStatus.length > 0
                       ? selectedReservationStatus
                       : undefined,
+                  sort: sortField,
+                  dir: sortDir,
                 });
               }
             }
 
             if (key === "limit") {
-              const newLimit = value;
+              const newLimit = value as number; 
+
+              pendingLimitRef.current = newLimit;
 
               if (tab === "reservation") {
                 onFilterChange?.({
@@ -286,13 +316,51 @@ export default function AdminRequests({
                     selectedReservationStatus.length > 0
                       ? selectedReservationStatus
                       : undefined,
+                  sort: sortField,
+                  dir: sortDir,
+                });
+              }
+            }
+
+            if (key === "sort") {
+              const newSort = value as string | undefined; 
+              setSortField(newSort);
+
+              if (tab === "reservation") {
+                onFilterChange?.({
+                  page: 1,
+                  limit: currentLimit,
+                  status:
+                    selectedReservationStatus.length > 0
+                      ? selectedReservationStatus
+                      : undefined,
+                  sort: newSort,
+                  dir: sortDir,
+                });
+              }
+            }
+
+            if (key === "dir") {
+              const newDir = value as "asc" | "desc" | undefined; 
+              setSortDir(newDir);
+
+              if (tab === "reservation") {
+                onFilterChange?.({
+                  page: 1,
+                  limit: currentLimit,
+                  status:
+                    selectedReservationStatus.length > 0
+                      ? selectedReservationStatus
+                      : undefined,
+                  sort: sortField,
+                  dir: newDir,
                 });
               }
             }
           }}
           meta={{
-            page: currentPage - 1, 
-            limit: currentLimit,  
+            page: currentPage - 1,
+            limit: currentLimit,
             total:
               tab === "professor"
                 ? filteredProfessorRequests.length

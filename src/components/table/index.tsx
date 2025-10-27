@@ -84,7 +84,9 @@ export function DataTable<
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: tableState,
+    state: tableState,
+    manualPagination: true,
+    pageCount: Math.ceil(Number(meta?.total ?? 0) / pageSize),
   });
 
   const total = Number(meta?.total ?? 0);
@@ -100,6 +102,9 @@ export function DataTable<
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 const canSort = header.column.getCanSort();
+                const isSorted = sort === header.column.id;
+                const isAsc = isSorted && dir === "asc";
+                const isDesc = isSorted && dir === "desc";
 
                 return (
                   <TableHead
@@ -113,7 +118,7 @@ export function DataTable<
                           "cursor-pointer": canSort,
                         }
                       )}
-                      onClick={() => handleSortColumn(header.column.id)}
+                      onClick={() => canSort && handleSortColumn(header.column.id)}
                     >
                       <div className="truncate overflow-hidden whitespace-nowrap">
                         {flexRender(
@@ -122,11 +127,21 @@ export function DataTable<
                         )}
                       </div>
 
-                      {canSort && sort === header.column.id && (
-                        <>
-                          {dir === "desc" && <IoIosArrowDown />}
-                          {dir === "asc" && <IoIosArrowUp />}
-                        </>
+                      {canSort && (
+                        <div className="flex flex-col">
+                          <IoIosArrowUp
+                            className={cn("size-3 -mb-1", {
+                              "text-gray-900": isAsc,
+                              "text-gray-300": !isAsc,
+                            })}
+                          />
+                          <IoIosArrowDown
+                            className={cn("size-3", {
+                              "text-gray-900": isDesc,
+                              "text-gray-300": !isDesc,
+                            })}
+                          />
+                        </div>
                       )}
                     </div>
                   </TableHead>
