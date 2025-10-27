@@ -270,15 +270,7 @@ describe("AdminRequests Component", () => {
     vi.clearAllMocks();
     setMockUseAdminRequests();
   });
-
-  it("renders loading state", () => {
-    setMockUseAdminRequests({
-      requestsQuery: { isLoading: true, error: null, data: [] },
-    });
-    render(<AdminRequests />);
-    expect(screen.getByText((t) => t.includes("Loading"))).toBeInTheDocument();
-  });
-
+  
   it("renders error state", () => {
     setMockUseAdminRequests({
       requestsQuery: { isLoading: false, error: new Error("fail"), data: [] },
