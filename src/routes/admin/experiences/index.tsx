@@ -12,9 +12,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useFetchAdminExperiences } from "@/hooks/use-fetch-admin-experiences";
-import type { TExperienceAdminRequestFilters } from "@/entities/experiences-admin-filters";
+} from '@/components/ui/dropdown-menu';
+import { useFetchAdminExperiences } from '@/hooks/use-fetch-admin-experiences';
+import type { TExperienceAdminRequestFilters } from '@/entities/experiences-admin-filters';
+import { MoonLoader } from "react-spinners";
 
 export const Route = createFileRoute("/admin/experiences/")({
   component: RouteComponent,
@@ -30,7 +31,7 @@ function RouteComponent() {
       page: 0,
     },
   });
-  const { items, meta } = useFetchAdminExperiences({ filters });
+  const { items, meta, isLoading } = useFetchAdminExperiences({ filters });
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -107,6 +108,12 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
+      <div className="relative">
+      {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+            <MoonLoader size={35} color="#22c55e" />
+          </div>
+          )}
       <DataTable
         data={items}
         columns={columns}
@@ -114,6 +121,7 @@ function RouteComponent() {
         meta={meta}
         setFilter={setFilter}
       />
+      </div>
     </div>
   );
 }

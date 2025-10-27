@@ -352,10 +352,7 @@ export function RouteComponent() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <Typography className="text-lg text-muted-foreground">
-          Carregando destaques...
-        </Typography>
-        <MoonLoader color="#000" size={20} />
+        <MoonLoader color="#22c55e" size={40} />
       </div>
     );
   }

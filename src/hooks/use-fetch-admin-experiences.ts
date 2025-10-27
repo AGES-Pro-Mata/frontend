@@ -1,6 +1,9 @@
 import { api } from "@/core/api";
 import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
-import { ExperienceAdminRequestFilters, type TExperienceAdminRequestFilters } from "@/entities/experiences-admin-filters";
+import {
+  ExperienceAdminRequestFilters,
+  type TExperienceAdminRequestFilters,
+} from "@/entities/experiences-admin-filters";
 import type { TExperienceAdminResponse } from "@/entities/experiences-admin-response";
 
 import { safeParseFilters } from "@/utils/safe-filters";
@@ -13,15 +16,20 @@ type useFetchAdminExperiencesParams = {
   filters: TExperienceAdminRequestFilters;
 };
 
-export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesParams) => {
+export const useFetchAdminExperiences = ({
+  filters,
+}: useFetchAdminExperiencesParams) => {
   const query = useQuery({
     queryKey: [ADMIN_EXPERIENCES_QUERY_KEY, filters],
     queryFn: async () => {
+      //await new Promise(r => setTimeout(r, 5000));
       const response = await api.get<
         {
           items: TExperienceAdminResponse[];
         } & TApiPaginationMetaResult
-      >(`/experience${safeParseFilters(filters, ExperienceAdminRequestFilters)}`);
+      >(
+        `/experience${safeParseFilters(filters, ExperienceAdminRequestFilters)}`
+      );
 
       return response.data;
     },
@@ -36,25 +44,25 @@ export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesPa
 
   const parsedItems = items.map((e) => {
     if (!e.startDate || !e.endDate) {
-      return e
+      return e;
     }
 
     const startDate = new Date(e.startDate).toLocaleDateString("pt-BR", {
       day: "2-digit",
-      month: "2-digit"
+      month: "2-digit",
     });
 
     const endDate = new Date(e.endDate).toLocaleDateString("pt-BR", {
       day: "2-digit",
-      month: "2-digit"
+      month: "2-digit",
     });
 
-    const date = `${startDate}-${endDate}`
+    const date = `${startDate}-${endDate}`;
 
     return {
       ...e,
-      date
-    }
+      date,
+    };
   });
 
   return {
