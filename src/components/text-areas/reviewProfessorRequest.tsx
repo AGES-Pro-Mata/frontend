@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
-
 import { Button } from "../button/defaultButton";
 import { Textarea } from "../ui/textarea";
 import { MarkdownTextArea } from "./markdownTextArea";

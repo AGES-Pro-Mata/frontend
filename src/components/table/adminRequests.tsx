@@ -1,12 +1,12 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/table/index";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaRegCalendarCheck, FaUser } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { MdMoreVert, MdVisibility } from "react-icons/md";
-import { useAdminRequests } from "@/hooks/useAdminRequests";
-import { MoonLoader } from "react-spinners";
+import type { TRequestItem } from "@/entities/request-admin-response";
+import type { TRequestAdminFilters } from "@/entities/request-admin-filters";
 
 type Request = {
   id: string;
@@ -15,20 +15,46 @@ type Request = {
   status: string;
 };
 
+type RequestStatus = NonNullable<TRequestAdminFilters["status"]>[number];
+
 const professorStatus = ["Approved", "Rejected", "Pending"];
-const reservStatus = [
-  "Confirmed",
-  "Pending",
-  "User Requested",
-  "Payment Requested",
-  "Cancellation Requested",
-  "Edit Requested",
+
+const reservationStatus: RequestStatus[] = [
+  "CREATED", // Criadas
+  "APPROVED", // Aprovadas
+  "CANCELED", // Canceladas
+  "CANCELED_REQUESTED", // Cancelamento Solicitado
+  "EDITED", // Editadas
+  "REJECTED", // Rejeitadas
+  "PEOPLE_REQUESTED", // Usuários Solicitado
+  "PAYMENT_REQUESTED", // Pagamento Solicitado
+  "PEOPLE_SENT", // Participantes Enviados
+  "PAYMENT_SENT", // Pagamento Enviado
+  "DOCUMENT_REQUESTED", // Documento Solicitado
+  "DOCUMENT_APPROVED", // Documento Aprovado
+  "DOCUMENT_REJECTED", // Documento Rejeitado
 ];
+
+const statusMap: Record<RequestStatus, string> = {
+  CREATED: "Criadas",
+  APPROVED: "Aprovadas",
+  CANCELED: "Canceladas",
+  CANCELED_REQUESTED: "Cancelamento Solicitado",
+  EDITED: "Editadas",
+  REJECTED: "Rejeitadas",
+  PEOPLE_REQUESTED: "Usuários Solicitado",
+  PAYMENT_REQUESTED: "Pagamento Solicitado",
+  PEOPLE_SENT: "Participantes Enviados",
+  PAYMENT_SENT: "Pagamento Enviado",
+  DOCUMENT_REQUESTED: "Documento Solicitado",
+  DOCUMENT_APPROVED: "Documento Aprovado",
+  DOCUMENT_REJECTED: "Documento Rejeitado",
+};
 
 const professorColumns: ColumnDef<Request>[] = [
   {
     accessorKey: "name",
-    header: () => <span className="font-semibold">Name</span>,
+    header: () => <span className="font-semibold">Nome</span>,
     cell: (info) => info.getValue(),
   },
   {
@@ -38,24 +64,24 @@ const professorColumns: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "email",
-    header: () => <span className="font-semibold">Email</span>,
+    header: () => <span className="font-semibold">E-mail</span>,
     cell: (info) => info.getValue(),
   },
   {
     id: "actions",
-    header: () => <span className="font-semibold">Actions</span>,
+    header: () => <span className="font-semibold">Ações</span>,
     cell: ({ row }) => {
-      const request: Request = row.original;
-
       return (
         <div className="flex flex-col gap-1">
-          <ApproveButton requestId={request.id} />
+          <Button variant="ghost" size="sm" className="flex items-center gap-1">
+            <MdMoreVert size={18} /> Ações
+          </Button>
           <Button
             variant="outline"
             size="sm"
             className="flex items-center gap-1"
           >
-            <MdVisibility size={18} /> View
+            <MdVisibility size={18} /> Visualizar
           </Button>
         </div>
       );
@@ -63,63 +89,38 @@ const professorColumns: ColumnDef<Request>[] = [
   },
 ];
 
-function ApproveButton({ requestId }: { requestId: string }) {
-  // Usa apenas a mutation, sem filtros
-  const { approveMutation } = useAdminRequests({});
-
-  const handleApprove = useCallback(() => {
-    approveMutation.mutate(requestId);
-  }, [approveMutation, requestId]);
-
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="flex items-center gap-1"
-      onClick={handleApprove}
-      disabled={approveMutation.isPending}
-    >
-      {approveMutation.isPending ? (
-        <span className="animate-spin mr-2">⏳</span>
-      ) : (
-        <MdMoreVert size={18} />
-      )}
-      Approve
-    </Button>
-  );
-}
-
-const reservationColumns: ColumnDef<Request>[] = [
+const reservationColumns: ColumnDef<TRequestItem>[] = [
   {
-    accessorKey: "name",
-    header: () => <span className="font-semibold">Name</span>,
+    accessorKey: "member.name",
+    header: () => <span className="font-semibold">Nome</span>,
     cell: (info) => info.getValue(),
   },
   {
-    accessorKey: "status",
+    accessorKey: "request.type",
     header: () => <span className="font-semibold">Status</span>,
-    cell: (info) => info.getValue(),
+    cell: (info) =>
+      statusMap[info.getValue() as RequestStatus] || info.getValue(),
   },
   {
-    accessorKey: "email",
-    header: () => <span className="font-semibold">Email</span>,
+    accessorKey: "member.email",
+    header: () => <span className="font-semibold">E-mail</span>,
     cell: (info) => info.getValue(),
   },
   {
     id: "actions",
-    header: () => <span className="font-semibold">Actions</span>,
+    header: () => <span className="font-semibold">Ações</span>,
     cell: ({ row }) => {
-      const request: Request = row.original;
-
       return (
         <div className="flex flex-col gap-1">
-          <ApproveButton requestId={request.id} />
+          <Button variant="ghost" size="sm" className="flex items-center gap-1">
+            <MdMoreVert size={18} /> Ações
+          </Button>
           <Button
             variant="outline"
             size="sm"
             className="flex items-center gap-1"
           >
-            <MdVisibility size={18} /> View
+            <MdVisibility size={18} /> Visualizar
           </Button>
         </div>
       );
@@ -127,130 +128,178 @@ const reservationColumns: ColumnDef<Request>[] = [
   },
 ];
 
-export default function AdminRequests() {
-  const [tab, setTab] = useState<"professor" | "reservation">("professor");
+export default function AdminRequests({
+  initialData,
+  onFilterChange,
+}: {
+  initialData?: any;
+  onFilterChange?: (filters: TRequestAdminFilters) => void;
+}) {
+  const [tab, setTab] = useState<"professor" | "reservation">("reservation");
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
-  const [filters, setFilters] = useState({
-    page: 0,
-    limit: 10,
-    status: undefined as string | undefined,
-    sort: undefined as string | undefined,
-    dir: undefined as "asc" | "desc" | undefined,
-  });
+  const [selectedReservationStatus, setSelectedReservationStatus] = useState<
+    RequestStatus[]
+  >([]);
 
-  // Passa filtros para o hook
-  const { requestsQuery, reservationStatus } = useAdminRequests({
-    page: filters.page,
-    limit: filters.limit,
-    status: selectedStatus.length ? selectedStatus[0] : undefined,
-  });
-
-  const loading = requestsQuery.isLoading || requestsQuery.isFetching;
-  const error = requestsQuery.error;
-  // Garante que sempre seja array, mesmo que a API retorne objeto
-  const allRequests: Request[] = Array.isArray(requestsQuery.data)
-    ? (requestsQuery.data as Request[])
-    : [];
+  const allRequests: Request[] = [];
 
   const handleStatusChange = (status: string) => {
     setSelectedStatus((prev) =>
       prev.includes(status)
         ? prev.filter((s) => s !== status)
-        : [...prev, status],
+        : [...prev, status]
     );
   };
 
-  // Filtra por status e tab
-  const filteredRequests = allRequests.filter((d) => {
-    if (tab === "professor") {
-      return (
-        professorStatus.includes(d.status) &&
-        (selectedStatus.length ? selectedStatus.includes(d.status) : true)
-      );
-    } else {
-      return (
-        reservationStatus.includes(d.status) &&
-        (selectedStatus.length ? selectedStatus.includes(d.status) : true)
-      );
+  const handleReservationStatusChange = (status: RequestStatus) => {
+    const newStatus = selectedReservationStatus.includes(status)
+      ? selectedReservationStatus.filter((s) => s !== status)
+      : [...selectedReservationStatus, status];
+
+    setSelectedReservationStatus(newStatus);
+
+    onFilterChange?.({
+      page: 1,
+      limit: initialData?.limit || 10, 
+      status: newStatus.length > 0 ? newStatus : undefined,
+    });
+  };
+
+  const handleTabChange = (newTab: "professor" | "reservation") => {
+    setTab(newTab);
+    setSelectedStatus([]);
+    setSelectedReservationStatus([]);
+
+    if (newTab === "reservation") {
+      onFilterChange?.({
+        page: 1,
+        limit: initialData?.limit || 10, 
+        status: undefined,
+      });
     }
+  };
+
+  const filteredProfessorRequests = allRequests.filter((d) => {
+    return (
+      professorStatus.includes(d.status) &&
+      (selectedStatus.length ? selectedStatus.includes(d.status) : true)
+    );
   });
 
+  const reservationRequests = initialData?.data || [];
 
-  if (error) {
-    return <div className="p-6 text-red-500">Error loading requests.</div>;
-  }
+  const currentPage = initialData?.page || 1;
+  const currentLimit = initialData?.limit || 10;
 
   return (
     <div className="p-6 bg-white rounded-xl shadow flex flex-col gap-4">
       <div className="flex gap-2 mb-4">
         <button
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             tab === "professor"
               ? "bg-contrast-green text-white"
-              : "bg-soft-gray text-gray-700"
+              : "bg-soft-gray text-gray-700 hover:bg-gray-300"
           }`}
-          onClick={() => {
-            setTab("professor");
-            setSelectedStatus([]);
-          }}
+          onClick={() => handleTabChange("professor")}
         >
-          <FaUser size={24} /> Professor Requests
+          <FaUser size={24} /> Solicitações de Professor
         </button>
         <button
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             tab === "reservation"
               ? "bg-contrast-green text-white"
-              : "bg-soft-gray text-gray-700"
+              : "bg-soft-gray text-gray-700 hover:bg-gray-300"
           }`}
-          onClick={() => {
-            setTab("reservation");
-            setSelectedStatus([]);
-          }}
+          onClick={() => handleTabChange("reservation")}
         >
-          <FaRegCalendarCheck size={24} /> Reservation Requests
+          <FaRegCalendarCheck size={24} /> Solicitações de Reserva
         </button>
       </div>
 
-      <div className="mb-4 flex flex-wrap items-center gap-4">
-        <span className="font-semibold">Filters:</span>
-        <span>Status:</span>
-        {(tab === "professor" ? professorStatus : reservStatus).map(
-          (status) => (
-            <label key={status} className="flex items-center gap-1">
-              <Checkbox
-                checked={selectedStatus.includes(status)}
-                onCheckedChange={() => handleStatusChange(status)}
-              />
-              {status}
-            </label>
-          )
-        )}
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <span className="font-semibold">Filtros:</span>
+        <span className="text-gray-600">Status:</span>
+        <div className="flex flex-wrap gap-3">
+          {tab === "professor"
+            ? professorStatus.map((status) => (
+                <label
+                  key={status}
+                  className="flex items-center gap-2 cursor-pointer hover:bg-gray-300 px-2 py-1 rounded"
+                >
+                  <Checkbox
+                    checked={selectedStatus.includes(status)}
+                    onCheckedChange={() => handleStatusChange(status)}
+                  />
+                  <span className="text-sm">{status}</span>
+                </label>
+              ))
+            : reservationStatus.map((status) => (
+                <label
+                  key={status}
+                  className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded"
+                >
+                  <Checkbox
+                    checked={selectedReservationStatus.includes(status)}
+                    onCheckedChange={() =>
+                      handleReservationStatusChange(status)
+                    }
+                  />
+                  <span className="text-sm">{statusMap[status]}</span>
+                </label>
+              ))}
+        </div>
       </div>
-      <div className="relative">
-        {loading && (
-          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
-            <MoonLoader size={35} color="#22c55e" />
-          </div>
-        )}
+
+      <div className="relative overflow-y-auto max-h-[600px]">
         <DataTable
           columns={tab === "professor" ? professorColumns : reservationColumns}
-          data={filteredRequests}
-          filters={filters}
-          setFilter={(key, value) =>
-            setFilters((prev) => ({ ...prev, [key]: value }))
+          data={
+            tab === "professor"
+              ? filteredProfessorRequests
+              : reservationRequests
           }
+          filters={{ page: currentPage - 1, limit: currentLimit }} 
+          setFilter={(key, value) => {
+            if (key === "page") {
+              const newPage = value + 1;
+
+              if (tab === "reservation") {
+                onFilterChange?.({
+                  page: newPage,
+                  limit: currentLimit, 
+                  status:
+                    selectedReservationStatus.length > 0
+                      ? selectedReservationStatus
+                      : undefined,
+                });
+              }
+            }
+
+            if (key === "limit") {
+              const newLimit = value;
+
+              if (tab === "reservation") {
+                onFilterChange?.({
+                  page: 1,
+                  limit: newLimit,
+                  status:
+                    selectedReservationStatus.length > 0
+                      ? selectedReservationStatus
+                      : undefined,
+                });
+              }
+            }
+          }}
           meta={{
-            page: filters.page,
-            limit: filters.limit,
-            total: filteredRequests.length,
+            page: currentPage - 1, 
+            limit: currentLimit,  
+            total:
+              tab === "professor"
+                ? filteredProfessorRequests.length
+                : initialData?.total || 0,
           }}
         />
       </div>
-
-      {error && (
-        <div className="text-red-500 text-center">Error loading requests.</div>
-      )}
     </div>
   );
 }
-
