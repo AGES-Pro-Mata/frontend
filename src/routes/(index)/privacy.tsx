@@ -17,7 +17,7 @@ export const Route = createFileRoute('/(index)/privacy')({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+export function RouteComponent() {
   const { t } = useTranslation();
   const rawSections = t("privacyPage.sections", { returnObjects: true });
   const sections: PrivacySection[] = Array.isArray(rawSections)

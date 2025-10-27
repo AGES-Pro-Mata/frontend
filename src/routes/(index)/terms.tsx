@@ -6,7 +6,7 @@ export const Route = createFileRoute('/(index)/terms')({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+export function RouteComponent() {
   const { t } = useTranslation();
   const translatedParagraphs = t("termsPage.paragraphs", { returnObjects: true });
   const paragraphs = Array.isArray(translatedParagraphs) ? translatedParagraphs : [];
