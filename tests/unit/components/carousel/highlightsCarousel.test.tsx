@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HighlightsCarousel } from "@/components/carousel/highlightsCarousel";
 import type { HighlightResponse } from "@/api/highlights";
 import { HighlightCategory } from "@/entities/highlights";
@@ -32,7 +32,21 @@ describe("HighlightsCarousel", () => {
     ).toBeInTheDocument();
   });
 
-  it("allows navigating highlights via buttons, keyboard, and thumbnails", () => {
+  it("hides navigation when a single highlight is provided", () => {
+    const highlight = createHighlight({ title: "Único" });
+
+    render(<HighlightsCarousel highlights={[highlight]} />);
+
+    expect(
+      screen.queryByRole("button", { name: "Próxima imagem" })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Imagem anterior" })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Ver/ })).not.toBeInTheDocument();
+  });
+
+  it("allows navigating highlights via buttons, keyboard, and thumbnails", async () => {
     const highlights: HighlightResponse[] = [
       createHighlight({
         id: "00000000-0000-0000-0000-000000000001",
@@ -52,11 +66,24 @@ describe("HighlightsCarousel", () => {
       }),
     ];
 
-    render(<HighlightsCarousel highlights={highlights} />);
+    const removeSpy = vi.spyOn(window, "removeEventListener");
+    const { unmount } = render(<HighlightsCarousel highlights={highlights} />);
 
     const mainImage = screen.getByRole("img", { name: "Primeiro" });
+    const mainContainer = mainImage.closest("div.relative");
+
+    expect(mainContainer).not.toBeNull();
+    expect(
+      mainContainer?.querySelector("div[aria-hidden=\"true\"].animate-pulse")
+    ).toBeInTheDocument();
 
     fireEvent.load(mainImage);
+
+    await waitFor(() => {
+      expect(
+        mainContainer?.querySelector("div[aria-hidden=\"true\"].animate-pulse")
+      ).not.toBeInTheDocument();
+    });
 
     fireEvent.click(screen.getByRole("button", { name: "Próxima imagem" }));
     expect(screen.getByText("Segundo")).toBeInTheDocument();
@@ -78,5 +105,9 @@ describe("HighlightsCarousel", () => {
       window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
     });
     expect(screen.getByText("Terceiro")).toBeInTheDocument();
+
+    unmount();
+    expect(removeSpy).toHaveBeenCalledWith("keydown", expect.any(Function));
+    removeSpy.mockRestore();
   });
 });

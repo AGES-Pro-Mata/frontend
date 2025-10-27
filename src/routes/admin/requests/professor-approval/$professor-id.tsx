@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ApproveProfessorCard } from "@/components/cards/approveProfessorCard";
+import { ApproveProfessorCard } from "@/components/card/approveProfessorCard";
 
 export const Route = createFileRoute(
   "/admin/requests/professor-approval/$professor-id",

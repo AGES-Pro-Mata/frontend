@@ -10,12 +10,14 @@ export async function safeApiCall<
   const { data, config } = await request;
 
   const result = await schema.safeParseAsync(data);
+
   if (result.success) return result.data as R;
 
   const error = new HttpZodException(
     result.error as unknown as z.ZodError,
     config
   );
+
   console.warn(error);
   throw error;
 }

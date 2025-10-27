@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { ReserveStepLayout } from "@/components/layouts/reserve/ReserveStepLayout";
 import { PeopleRegistrationStep } from "@/components/layouts/reserve/PeopleRegistrationStep";
 import { ExperienceAdjustmentsStep } from "@/components/layouts/reserve/ExperienceAdjustmentsStep";

@@ -9,11 +9,9 @@ const ApiPaginationMetaResult = z.object({
 export type TApiPaginationMetaResult = z.infer<typeof ApiPaginationMetaResult>;
 
 export const ApiPaginationResult = <T extends ZodType>(object: T) => {
-  return z
-    .object({
-      items: z.array(object).default([]),
-    })
-    .extend(ApiPaginationMetaResult);
+  return ApiPaginationMetaResult.extend({
+    items: z.array(object).default([]),
+  });
 };
 
 export type TApiPaginationResult<T = unknown> = {

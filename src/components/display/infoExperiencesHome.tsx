@@ -1,10 +1,11 @@
-import { Button } from "@/components/buttons/defaultButton";
+import { Button } from "@/components/button/defaultButton";
 import { Typography } from "@/components/typography/typography";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export function InfoExperiencies() {
   const { t } = useTranslation();
+
   return (
     <div className="flex flex-col items-center pt-[clamp(2rem,6vh,3.125rem)] px-4 sm:px-0">
       <Typography className="text-[clamp(1.75rem,4.5vw,2.25rem)] m-0 p-0 font-bold text-on-banner-text">

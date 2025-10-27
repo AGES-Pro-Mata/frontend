@@ -30,7 +30,7 @@ import {
   useUpdateHighlight,
 } from "@/hooks/useHighlights";
 import { appToast } from "@/components/toast/toast";
-import { CanvasCard } from "@/components/cards";
+import { CanvasCard } from "@/components/card";
 import { MoonLoader } from "react-spinners";
 
 export const Route = createFileRoute("/admin/highlights/")({
@@ -186,12 +186,10 @@ export function RouteComponent() {
       );
     } else {
       // Adicionar nova imagem
-      if (!formData.image) return;
-
       createMutation.mutate(
         {
           category: selectedCategory,
-          image: formData.image,
+          image: formData.image!,
           title: formData.title,
           description: formData.description,
           order: highlights[selectedCategory].length + 1,
@@ -354,10 +352,7 @@ export function RouteComponent() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <Typography className="text-lg text-muted-foreground">
-          Carregando destaques...
-        </Typography>
-        <MoonLoader color="#000" size={20} />
+        <MoonLoader color="#22c55e" size={40} />
       </div>
     );
   }

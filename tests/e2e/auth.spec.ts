@@ -5,6 +5,7 @@ test.describe("Auth", () => {
     await page.goto("/");
 
     const entryPoints = page.getByRole("link", { name: /entrar|login/i });
+
     await expect(entryPoints).toHaveCount(1);
   });
 

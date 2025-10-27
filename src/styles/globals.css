@@ -11,7 +11,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 code {
   font-family:
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -33,7 +32,7 @@ code {
   --color-card: #E7DED4;
   --color-card-background: #E7DED4;
   --color-popover: #FFFFFF;
-  --color-accent: #4C9613;
+  --color-card-label: #F6EDE4
 }
 
 :root {
@@ -134,5 +133,123 @@ html.admin-active {
   overflow: hidden !important;
   height: 100% !important;
   max-height: 100% !important;
+}
+
+/* Opção 1: CSS Puro - Adicione no seu arquivo global.css ou index.css */
+
+/* Para navegadores WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+  /* Largura da scrollbar vertical */
+  height: 12px;
+  /* Altura da scrollbar horizontal */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  /* Cor do fundo da track */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  /* Cor da barra */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  /* Cor ao passar o mouse */
+}
+
+/* Para Firefox */
+* {
+  scrollbar-width: thin;
+  /* auto, thin, ou none */
+  scrollbar-color: #888 #f1f1f1;
+  /* thumb e track */
+}
+
+/* Forçar a scrollbar sempre visível */
+html {
+  overflow-y: scroll;
+  /* Sempre mostra scrollbar vertical */
+}
+
+/* ================================================ */
+/* Opção 2: Estilo mais moderno e elegante */
+/* ================================================ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+  background-clip: padding-box;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* ================================================ */
+/* Opção 3: Tema escuro */
+/* ================================================ */
+
+.dark ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+.dark * {
+  scrollbar-color: #4a4a4a #1a1a1a;
+}
+
+/* ================================================ */
+/* Opção 4: Com cores do seu design system */
+/* ================================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--background));
+  /* Use suas variáveis CSS */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--primary) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary) / 0.5);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--primary) / 0.3) rgb(var(--background));
 }
 

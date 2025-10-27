@@ -1,15 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  getHighlights,
-  getHighlightById,
+  type CreateHighlightPayload,
+  type GetHighlightsParams,
+  type UpdateHighlightPayload,
   createHighlight,
-  updateHighlight,
   deleteHighlight,
+  getHighlightById,
+  getHighlights,
   getHighlightsByCategories,
   getPublicHighlightsByCategories,
-  type GetHighlightsParams,
-  type CreateHighlightPayload,
-  type UpdateHighlightPayload,
+  updateHighlight,
 } from "@/api/highlights";
 import type { HighlightCategory } from "@/entities/highlights";
 
@@ -49,8 +49,8 @@ export function useCreateHighlight() {
 
   return useMutation({
     mutationFn: (payload: CreateHighlightPayload) => createHighlight(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
     },
   });
 }
@@ -61,8 +61,8 @@ export function useUpdateHighlight() {
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateHighlightPayload }) =>
       updateHighlight(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
     },
   });
 }
@@ -72,8 +72,8 @@ export function useDeleteHighlight() {
 
   return useMutation({
     mutationFn: (id: string) => deleteHighlight(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [HIGHLIGHTS_QUERY_KEY] });
     },
   });
 }
