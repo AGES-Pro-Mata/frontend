@@ -4,12 +4,13 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/button/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetchPublicHighlightsByCategories } from "@/hooks/useHighlights";
 import { HighlightCategory } from "@/entities/highlights";
 import type { HighlightResponse } from "@/api/highlights";
 import { Loader } from "lucide-react";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 export const Route = createFileRoute("/(index)/")({
   component: RouteComponent,
@@ -17,7 +18,8 @@ export const Route = createFileRoute("/(index)/")({
 
 export function RouteComponent() {
   const { t } = useTranslation();
-  const [heroLoaded, setHeroLoaded] = useState(false);
+  const heroImageUrl = "https://promata-storage-dev.s3.us-east-2.amazonaws.com/highlights/Promata+Agosto+(1).JPG";
+  const { data: heroLoaded } = useLoadImage(heroImageUrl);
   const { data: highlightsData, isLoading } =
     useFetchPublicHighlightsByCategories();
 
@@ -49,7 +51,7 @@ export function RouteComponent() {
       <div className="relative w-full h-screen bg-main-dark-green/70 flex items-start justify-center pt-[clamp(2rem,6vh,5rem)]">
         <picture className="absolute inset-0 w-full h-full">
           <img
-            src="https://promata-storage-dev.s3.us-east-2.amazonaws.com/highlights/Promata+Agosto+(1).JPG"
+            src={heroImageUrl}
             alt="PRÓ-MATA Centro de Pesquisas"
             className={`w-full h-full object-cover transition-opacity duration-700 ease-out ${
               heroLoaded ? "opacity-100" : "opacity-0"
@@ -58,7 +60,6 @@ export function RouteComponent() {
             decoding="async"
             fetchPriority="high"
             sizes="100vw"
-            onLoad={() => setHeroLoaded(true)}
           />
         </picture>
 

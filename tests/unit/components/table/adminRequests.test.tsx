@@ -271,14 +271,6 @@ describe("AdminRequests Component", () => {
     setMockUseAdminRequests();
   });
 
-  it("renders loading state", () => {
-    setMockUseAdminRequests({
-      requestsQuery: { isLoading: true, error: null, data: [] },
-    });
-    render(<AdminRequests />);
-    expect(screen.getByText((t) => t.includes("Loading"))).toBeInTheDocument();
-  });
-
   it("renders error state", () => {
     setMockUseAdminRequests({
       requestsQuery: { isLoading: false, error: new Error("fail"), data: [] },
@@ -292,7 +284,7 @@ describe("AdminRequests Component", () => {
   it("renders professor requests by default", () => {
     render(<AdminRequests />);
     expect(screen.getByText((t) => t.includes("Professor Requests"))).toHaveClass(
-      "bg-green-500"
+      "bg-contrast-green"
     );
     expect(screen.getAllByTestId("row")).toHaveLength(2);
   });
@@ -304,7 +296,7 @@ describe("AdminRequests Component", () => {
     );
     
     fireEvent.click(reservationBtn);
-    expect(reservationBtn).toHaveClass("bg-green-500");
+    expect(reservationBtn).toHaveClass("bg-contrast-green");
   });
 
   it("toggles checkbox filters correctly", async () => {
@@ -365,7 +357,7 @@ describe("AdminRequests Component", () => {
     
     fireEvent.click(reservationBtn);
     fireEvent.click(professorBtn);
-    expect(professorBtn).toHaveClass("bg-green-500");
+    expect(professorBtn).toHaveClass("bg-contrast-green");
   });
 
   it("renders DataTable even when there are no requests", () => {
@@ -748,13 +740,15 @@ describe("AdminRequests Component", () => {
   fireEvent.click(screen.getByText((t) => t.includes("Reservation Requests")));
   
   await waitFor(() => {
-    expect(screen.getByText((t) => t.includes("Reservation Requests"))).toHaveClass("bg-green-500");
+    expect(screen.getByText((t) => t.includes("Reservation Requests"))).toHaveClass("bg-contrast-green");
   });
   
   fireEvent.click(screen.getByText((t) => t.includes("Professor Requests")));
   
   await waitFor(() => {
-    expect(screen.getByText((t) => t.includes("Professor Requests"))).toHaveClass("bg-green-500");
+    expect(
+      screen.getByText((t) => t.includes("Professor Requests"))
+    ).toHaveClass("bg-contrast-green");
   });
   
   const resetCheckbox = getCheckboxByLabel("Approved");

@@ -1,6 +1,7 @@
 import { Calendar, DollarSign, UsersRound } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 import CanvasCard from "@/components/card/canvasCard";
 import { Typography } from "@/components/typography/typography";
@@ -32,6 +33,7 @@ export function ReserveSummaryExperienceCard({
   className,
 }: ReserveSummaryExperienceCardProps) {
   const { t, i18n } = useTranslation();
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageUrl);
 
   const { formattedPeriod, formattedPrice } = useMemo(() => {
     const fromDate = parseDate(startDate);
@@ -63,13 +65,18 @@ export function ReserveSummaryExperienceCard({
         className
       )}
     >
-      <div className="h-36 w-full overflow-hidden md:h-auto md:w-[45%]">
+      <div className="relative h-36 w-full overflow-hidden md:h-auto md:w-[45%]">
         <img
           src={imageUrl}
           alt={title}
-          className="h-full w-full object-cover"
+          className={`h-full w-full object-cover transition-opacity duration-300 ${
+            imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
+          }`}
           loading="lazy"
         />
+        {imageLoading && (
+          <div className="absolute inset-0 animate-pulse bg-muted" />
+        )}
       </div>
 
       <div className="flex w-full flex-1 flex-col gap-3 px-5 py-4 text-on-banner-text">
