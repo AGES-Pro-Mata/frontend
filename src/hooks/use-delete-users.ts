@@ -9,9 +9,10 @@ export const useDeleteUser = () => {
   const { mutateAsync } = useMutation({
     mutationKey: DELETE_USER_MUTATION_KEY,
     mutationFn: async (id: string) => await deleteUser(id),
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: [ADMIN_USERS_QUERY_KEY] });
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: [ADMIN_USERS_QUERY_KEY] });
     },
   });
+
   return { handleDeleteUser: mutateAsync };
 };

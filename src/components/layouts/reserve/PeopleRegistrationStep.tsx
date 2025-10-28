@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import CanvasCard from "@/components/cards/canvasCard";
-import { Button } from "@/components/buttons/defaultButton";
+import CanvasCard from "@/components/card/canvasCard";
+import { Button } from "@/components/button/defaultButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";

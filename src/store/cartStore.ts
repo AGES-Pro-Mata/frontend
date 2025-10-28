@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import type { ExperienceDTO } from "@/types/experience";
 type CartStore = {
   items: ExperienceDTO[];
@@ -34,6 +34,7 @@ export const useCartStore = create<CartStore>()(
           const items = alreadyExists
             ? state.items.map((item) => (item.id === experience.id ? experience : item))
             : [...state.items, experience];
+
           return { items };
         }),
       removeItem: (experienceId) =>

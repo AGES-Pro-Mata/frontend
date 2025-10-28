@@ -6,6 +6,7 @@ import { FaRegCalendarCheck, FaUser } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { MdMoreVert, MdVisibility } from "react-icons/md";
 import { useAdminRequests } from "@/hooks/useAdminRequests";
+import { MoonLoader } from "react-spinners";
 
 type Request = {
   id: string;
@@ -15,7 +16,7 @@ type Request = {
 };
 
 const professorStatus = ["Approved", "Rejected", "Pending"];
-const reservationStatus = [
+const reservStatus = [
   "Confirmed",
   "Pending",
   "User Requested",
@@ -138,13 +139,13 @@ export default function AdminRequests() {
   });
 
   // Passa filtros para o hook
-  const { requestsQuery } = useAdminRequests({
+  const { requestsQuery, reservationStatus } = useAdminRequests({
     page: filters.page,
     limit: filters.limit,
     status: selectedStatus.length ? selectedStatus[0] : undefined,
   });
 
-  const loading = requestsQuery.isLoading;
+  const loading = requestsQuery.isLoading || requestsQuery.isFetching;
   const error = requestsQuery.error;
   // Garante que sempre seja array, mesmo que a API retorne objeto
   const allRequests: Request[] = Array.isArray(requestsQuery.data)
@@ -174,9 +175,7 @@ export default function AdminRequests() {
     }
   });
 
-  if (loading) {
-    return <div className="p-6">Loading...</div>;
-  }
+
   if (error) {
     return <div className="p-6 text-red-500">Error loading requests.</div>;
   }
@@ -187,8 +186,8 @@ export default function AdminRequests() {
         <button
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
             tab === "professor"
-              ? "bg-green-500 text-white"
-              : "bg-gray-200 text-gray-700"
+              ? "bg-contrast-green text-white"
+              : "bg-soft-gray text-gray-700"
           }`}
           onClick={() => {
             setTab("professor");
@@ -200,8 +199,8 @@ export default function AdminRequests() {
         <button
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
             tab === "reservation"
-              ? "bg-green-500 text-white"
-              : "bg-gray-200 text-gray-700"
+              ? "bg-contrast-green text-white"
+              : "bg-soft-gray text-gray-700"
           }`}
           onClick={() => {
             setTab("reservation");
@@ -215,7 +214,7 @@ export default function AdminRequests() {
       <div className="mb-4 flex flex-wrap items-center gap-4">
         <span className="font-semibold">Filters:</span>
         <span>Status:</span>
-        {(tab === "professor" ? professorStatus : reservationStatus).map(
+        {(tab === "professor" ? professorStatus : reservStatus).map(
           (status) => (
             <label key={status} className="flex items-center gap-1">
               <Checkbox
@@ -224,23 +223,33 @@ export default function AdminRequests() {
               />
               {status}
             </label>
-          ),
+          )
         )}
       </div>
+      <div className="relative">
+        {loading && (
+          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+            <MoonLoader size={35} color="#22c55e" />
+          </div>
+        )}
+        <DataTable
+          columns={tab === "professor" ? professorColumns : reservationColumns}
+          data={filteredRequests}
+          filters={filters}
+          setFilter={(key, value) =>
+            setFilters((prev) => ({ ...prev, [key]: value }))
+          }
+          meta={{
+            page: filters.page,
+            limit: filters.limit,
+            total: filteredRequests.length,
+          }}
+        />
+      </div>
 
-      <DataTable
-        columns={tab === "professor" ? professorColumns : reservationColumns}
-        data={filteredRequests}
-        filters={filters}
-        setFilter={(key, value) =>
-          setFilters((prev) => ({ ...prev, [key]: value }))
-        }
-        meta={{
-          page: filters.page,
-          limit: filters.limit,
-          total: filteredRequests.length,
-        }}
-      />
+      {error && (
+        <div className="text-red-500 text-center">Error loading requests.</div>
+      )}
     </div>
   );
 }

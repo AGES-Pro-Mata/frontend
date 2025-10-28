@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 
-import { Button } from "../buttons/defaultButton";
+import { Button } from "../button/defaultButton";
 import { Textarea } from "../ui/textarea";
 import { MarkdownTextArea } from "./markdownTextArea";
 import { cn } from "@/lib/utils";
@@ -56,6 +56,7 @@ export default function ProfessorApproval({
   const statusKey = useMemo(() => {
     if (userType === "PROFESSOR") return "approved" as const;
     if (userType === "GUEST") return "rejected" as const;
+
     return null;
   }, [userType]);
 
@@ -67,6 +68,7 @@ export default function ProfessorApproval({
 
   const statusConfig = useMemo(() => {
     if (!statusKey) return null;
+
     return statusMap[statusKey];
   }, [statusKey]);
 

@@ -2,8 +2,8 @@ import { api } from "@/core/api";
 import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
 
 import {
-  UserAdminRequestFilters,
   type TUserAdminRequestFilters,
+  UserAdminRequestFilters,
 } from "@/entities/user-admin-filters";
 import type { TUserAdminResponse } from "@/entities/user-admin-response";
 import { safeParseFilters } from "@/utils/safe-filters";
@@ -17,14 +17,15 @@ type useFetchAdminUsersParams = {
 };
 
 export const useFetchAdminUsers = ({ filters }: useFetchAdminUsersParams) => {
-  const { data, isFetching, refetch } = useQuery({
+  const { data, isFetching, refetch, isLoading } = useQuery({
     queryKey: [ADMIN_USERS_QUERY_KEY, filters],
     queryFn: async () => {
       const response = await api.get<
         {
           items: TUserAdminResponse[];
         } & TApiPaginationMetaResult
-      >("/user" + safeParseFilters(filters, UserAdminRequestFilters));
+      >(`/user${safeParseFilters(filters, UserAdminRequestFilters)}`);
+
       return response.data;
     },
   });
@@ -41,6 +42,7 @@ export const useFetchAdminUsers = ({ filters }: useFetchAdminUsersParams) => {
     meta,
     data,
     isFetching,
+    isLoading,
     refetch,
   };
 };

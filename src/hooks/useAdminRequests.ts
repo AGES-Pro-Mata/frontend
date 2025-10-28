@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/core/api";
 const reservationStatus = [
   "CREATED",
@@ -39,7 +39,7 @@ export function useAdminRequests(filters: {
 
   const requestsQuery = useQuery({
     queryKey: ["adminRequests", filters],
-    queryFn: () => fetchRequests(filters),
+    queryFn: () => fetchRequests(filters)
   });
 
   // Exemplo de mutation para aprovar (ajuste endpoint se necessário)

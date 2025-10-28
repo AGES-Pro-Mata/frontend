@@ -13,7 +13,7 @@ export function useLogout() {
     queryClient.clear();
     
     // Redireciona para a página de login
-    navigate({ to: "/auth/login" });
+    void navigate({ to: "/auth/login" });
   };
 
   return { logout };

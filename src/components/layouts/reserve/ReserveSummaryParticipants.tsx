@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 
-import CanvasCard from "@/components/cards/canvasCard";
+import CanvasCard from "@/components/card/canvasCard";
 import { Textarea } from "@/components/ui/textarea";
 import { Typography } from "@/components/typography/typography";
 import { ReserveParticipantInputs } from "@/components/layouts/reserve/ReserveParticipantInputs";

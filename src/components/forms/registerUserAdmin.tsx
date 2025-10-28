@@ -1,5 +1,5 @@
-import { Button } from "@/components/buttons/defaultButton";
-import { TextInput } from "@/components/inputs/textInput";
+import { Button } from "@/components/button/defaultButton";
+import { TextInput } from "@/components/input/textInput";
 import { appToast } from "@/components/toast/toast";
 import { Typography } from "@/components/typography/typography";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -318,6 +318,7 @@ export function RegisterUserAdmin() {
                     value={maskPhone(field.value || "")}
                     onChange={(e) => {
                       const digits = digitsOnly(e.target.value).slice(0, 11);
+
                       field.onChange(maskPhone(digits));
                     }}
                     onBlur={field.onBlur}
@@ -347,6 +348,7 @@ export function RegisterUserAdmin() {
                       } else {
                         const digits = digitsOnly(e.target.value).slice(0, 11);
                         const masked = maskCpf(digits);
+
                         field.onChange(masked);
                       }
                     }}
@@ -411,6 +413,7 @@ export function RegisterUserAdmin() {
                     onChange={(e) => {
                       const digits = digitsOnly(e.target.value).slice(0, 8);
                       const masked = maskCep(digits);
+
                       if (autoFilled.addressLine || autoFilled.city) {
                         setAutoFilled({ addressLine: false, city: false });
                       }
@@ -512,6 +515,7 @@ export function RegisterUserAdmin() {
                     {...field}
                     onChange={(e) => {
                       const digits = digitsOnly(e.target.value);
+
                       field.onChange(
                         digits ? Number.parseInt(digits) : undefined
                       );

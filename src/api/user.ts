@@ -102,24 +102,25 @@ export interface UpdateUserAdminPayload {
 }
 
 export async function getUserById(
-  userId: string,
+  userId: string
 ): Promise<TEditUserAdminResponse> {
   const result = await safeApiCall(
     api.get(`/user/${userId}`),
-    EditUserAdminResponse,
+    EditUserAdminResponse
   );
 
   return result;
 }
 
 export async function registerUserAdminRequest(
-  payload: RegisterUserAdminPayload,
+  payload: RegisterUserAdminPayload
 ): Promise<HttpResponse> {
-  const response = await api.post(`/user`, {
+  const response = await api.post(`/auth/create-root-user`, {
     confirmPassword: payload.password,
     number: Number.parseInt(payload.number ?? ""),
     ...payload,
   });
+
   return {
     statusCode: response.status,
     message: "Usuário registrado com sucesso",
@@ -129,7 +130,7 @@ export async function registerUserAdminRequest(
 
 export async function updateUserRequest(
   payload: UpdateUserAdminPayload,
-  userId: string,
+  userId: string
 ): Promise<HttpResponse> {
   const formData = new FormData();
 
@@ -151,7 +152,8 @@ export async function updateUserRequest(
   if (payload.teacherDocument)
     formData.append("teacherDocument", payload.teacherDocument);
 
-  const response = await api.post(`/user/` + userId, formData);
+  const response = await api.post(`/user/${userId}`, formData);
+
   return {
     statusCode: response.status,
     message: "Usuário atualizado com sucesso",
@@ -160,7 +162,7 @@ export async function updateUserRequest(
 }
 
 export async function registerUserRequest(
-  payload: RegisterUserPayload,
+  payload: RegisterUserPayload
 ): Promise<HttpResponse> {
   const formData = new FormData();
 
@@ -185,6 +187,7 @@ export async function registerUserRequest(
     formData.append("teacherDocument", payload.teacherDocument);
 
   const response = await api.post(`/auth/signUp`, formData);
+
   return {
     statusCode: response.status,
     message: "Usuário registrado com sucesso",
@@ -193,9 +196,10 @@ export async function registerUserRequest(
 }
 
 export async function loginRequest(
-  payload: LoginPayload,
+  payload: LoginPayload
 ): Promise<HttpResponse> {
   const response = await api.post(`/auth/signIn`, payload);
+
   return {
     statusCode: response.status,
     message: "Login realizado com sucesso",
@@ -204,9 +208,10 @@ export async function loginRequest(
 }
 
 export async function forgotPasswordRequest(
-  payload: ForgotPasswordPayload,
+  payload: ForgotPasswordPayload
 ): Promise<HttpResponse> {
   const response = await api.post(`/auth/forgot`, payload);
+
   return {
     statusCode: response.status,
     message: "Email enviado com sucesso",
@@ -216,6 +221,7 @@ export async function forgotPasswordRequest(
 
 export async function verifyTokenRequest(token: string): Promise<HttpResponse> {
   const response = await api.get(`/auth/forgot/${token}`);
+
   return {
     statusCode: response.status,
     message: "Token verificado com sucesso",
@@ -230,9 +236,10 @@ export interface ResetPasswordPayload {
 }
 
 export async function resetPasswordRequest(
-  payload: ResetPasswordPayload,
+  payload: ResetPasswordPayload
 ): Promise<HttpResponse> {
   const response = await api.patch(`/auth/forgot`, payload);
+
   return {
     statusCode: response.status,
     message: "Senha redefinida com sucesso",
@@ -271,10 +278,13 @@ export async function getCurrentUserRequest(): Promise<CurrentUser | null> {
     });
 
     const parsed = profileSchema.safeParse(response.data);
+
     if (!parsed.success) {
       console.error("Invalid profile payload", parsed.error.format());
+
       return null;
     }
+
     return parsed.data as CurrentUser;
   } catch (error) {
     return null;
@@ -317,13 +327,15 @@ export interface UpdateUserPayload {
 }
 
 export async function updateCurrentUserRequest(
-  payload: UpdateUserPayload,
+  payload: UpdateUserPayload
 ): Promise<HttpResponse> {
   const body: Record<string, unknown> = { ...payload };
+
   if (typeof body.isForeign === "boolean") {
     body.isForeign = body.isForeign ? "true" : "false";
   }
   const response = await api.patch(`/user`, body);
+
   return {
     statusCode: response.status,
     message: "Perfil atualizado com sucesso",
@@ -333,6 +345,7 @@ export async function updateCurrentUserRequest(
 
 export function useIsAdmin() {
   const { data } = useQuery(userQueryOptions);
+
   return data?.userType === "ADMIN" || data?.userType === "ROOT";
 }
 
@@ -352,12 +365,15 @@ export function userPollingQueryOptions(intervalMs = 60000) {
 
 export async function requireAdminUser(queryClient: QueryClient) {
   const user = await queryClient.ensureQueryData(userQueryOptions);
+
   if (!user) {
     throw redirect({ to: "/auth/login" });
   }
   const isAdmin = user?.userType === "ADMIN" || user?.userType === "ROOT";
+
   if (!isAdmin) {
     throw redirect({ to: "/" });
   }
+
   return user?.userType === "ADMIN" || user?.userType === "ROOT";
 }
