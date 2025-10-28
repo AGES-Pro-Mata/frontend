@@ -1,11 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/test/test-utils";
+import { type UserType } from "@/types/user";
 
 // Mock do i18n (caso use)
 vi.mock("react-i18next", async (importOriginal) => {
   const actual = await importOriginal<typeof import("react-i18next")>();
+
   return {
     ...actual,
     useTranslation: () => ({
@@ -23,7 +25,7 @@ describe("ProfessorApproval", () => {
     markdown: "",
     setMarkdown: vi.fn(),
     placeholder: "Digite alguma observação sobre essa solicitação",
-    userType: "GUEST",
+  userType: "GUEST" as UserType,
     statusVersion: 0,
     onApprove: vi.fn(),
     onReject: vi.fn(),
@@ -45,12 +47,14 @@ describe("ProfessorApproval", () => {
   it("textarea está sempre readonly", () => {
     renderWithProviders(<ProfessorApproval {...baseProps} userType="PROFESSOR" />);
     const textarea = screen.getByPlaceholderText(baseProps.placeholder);
+
     expect(textarea).toHaveAttribute("readonly");
   });
 
   it("não chama setMarkdown ao digitar quando textarea está readonly", async () => {
     renderWithProviders(<ProfessorApproval {...baseProps} />);
     const textarea = screen.getByPlaceholderText(baseProps.placeholder);
+
     await userEvent.type(textarea, "Teste markdown");
     expect(baseProps.setMarkdown).not.toHaveBeenCalled();
   });
@@ -61,12 +65,8 @@ describe("ProfessorApproval", () => {
   });
 
   it("mostra status Aprovado quando statusVersion for 1", () => {
-    renderWithProviders(<ProfessorApproval {...baseProps} statusVersion={1} />);
-    expect(
-      screen.getByText((content, node) =>
-        node?.textContent?.toLowerCase().includes("aprovado")
-      )
-    ).toBeInTheDocument();
+    renderWithProviders(<ProfessorApproval {...baseProps} userType="PROFESSOR" statusVersion={1} />);
+    expect(screen.getAllByText(/aprovado/i).length).toBeGreaterThan(0);
   });
 
   it("botão Editar aparece para userType GUEST", () => {

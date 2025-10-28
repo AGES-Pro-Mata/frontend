@@ -1,6 +1,7 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
 
 import { LoginForm } from "@/components/forms/loginForm";
 import { renderWithProviders } from "@/test/test-utils";
@@ -11,7 +12,14 @@ vi.mock("@tanstack/react-router", async () => {
 
   return {
     ...actual,
-    Link: ({ children, to, ...props }: any) => (
+    Link: ({
+      children,
+      to,
+      ...props
+    }: {
+      children: React.ReactNode;
+      to: string;
+    } & React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
       <a href={to} {...props}>
         {children}
       </a>
@@ -43,7 +51,9 @@ vi.mock("@/lib/utils", async (importOriginal) => {
 
   return {
     ...actual,
-    hashPassword: vi.fn((password: string) => Promise.resolve(`hashed_${password}`)),
+    hashPassword: vi.fn((password: string) =>
+      Promise.resolve(`hashed_${password}`)
+    ),
   };
 });
 
@@ -69,24 +79,26 @@ describe("LoginForm", () => {
   });
 
   it("renders the login form with all elements", () => {
-    const onSuccess = vi.fn();
-
-    renderWithProviders(<LoginForm onSuccess={onSuccess} />);
+    renderWithProviders(<LoginForm />);
 
     expect(screen.getByText("auth.login.title")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("auth.login.emailPlaceholder")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("auth.login.passwordPlaceholder")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("auth.login.emailPlaceholder")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("auth.login.passwordPlaceholder")
+    ).toBeInTheDocument();
     expect(screen.getByText("auth.login.forgot")).toBeInTheDocument();
     expect(screen.getByText("auth.login.submit")).toBeInTheDocument();
     expect(screen.getByText("auth.login.register")).toBeInTheDocument();
   });
 
   it("allows user to type in email field", async () => {
-    const onSuccess = vi.fn();
+    renderWithProviders(<LoginForm />);
 
-    renderWithProviders(<LoginForm onSuccess={onSuccess} />);
-
-    const emailInput = screen.getByPlaceholderText("auth.login.emailPlaceholder");
+    const emailInput = screen.getByPlaceholderText(
+      "auth.login.emailPlaceholder"
+    );
 
     await userEvent.type(emailInput, "usuario@email.com");
 
@@ -94,11 +106,11 @@ describe("LoginForm", () => {
   });
 
   it("allows user to type in password field", async () => {
-    const onSuccess = vi.fn();
+    renderWithProviders(<LoginForm />);
 
-    renderWithProviders(<LoginForm onSuccess={onSuccess} />);
-
-    const passwordInput = screen.getByPlaceholderText("auth.login.passwordPlaceholder");
+    const passwordInput = screen.getByPlaceholderText(
+      "auth.login.passwordPlaceholder"
+    );
 
     await userEvent.type(passwordInput, "senha123");
 
@@ -106,9 +118,7 @@ describe("LoginForm", () => {
   });
 
   it("submit button is enabled by default", () => {
-    const onSuccess = vi.fn();
-
-    renderWithProviders(<LoginForm onSuccess={onSuccess} />);
+    renderWithProviders(<LoginForm />);
 
     const submitButton = screen.getByText("auth.login.submit");
 
@@ -116,12 +126,14 @@ describe("LoginForm", () => {
   });
 
   it("can fill both fields and click submit", async () => {
-    const onSuccess = vi.fn();
+    renderWithProviders(<LoginForm />);
 
-    renderWithProviders(<LoginForm onSuccess={onSuccess} />);
-
-    const emailInput = screen.getByPlaceholderText("auth.login.emailPlaceholder");
-    const passwordInput = screen.getByPlaceholderText("auth.login.passwordPlaceholder");
+    const emailInput = screen.getByPlaceholderText(
+      "auth.login.emailPlaceholder"
+    );
+    const passwordInput = screen.getByPlaceholderText(
+      "auth.login.passwordPlaceholder"
+    );
     const submitButton = screen.getByText("auth.login.submit");
 
     await userEvent.type(emailInput, "usuario@email.com");
@@ -133,13 +145,14 @@ describe("LoginForm", () => {
   });
 
   it("forgot password link is clickable", () => {
-    const onSuccess = vi.fn();
-
-    renderWithProviders(<LoginForm onSuccess={onSuccess} />);
+    renderWithProviders(<LoginForm />);
 
     const forgotLink = screen.getByText("auth.login.forgot");
 
     expect(forgotLink).toBeInTheDocument();
-    expect(forgotLink.closest("a")).toHaveAttribute("href", "/auth/forgot-password");
+    expect(forgotLink.closest("a")).toHaveAttribute(
+      "href",
+      "/auth/forgot-password"
+    );
   });
 });
