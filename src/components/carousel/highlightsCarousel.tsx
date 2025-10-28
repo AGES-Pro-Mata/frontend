@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Typography } from "@/components/typography/typography";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CanvasCard } from "@/components/card";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 interface HighlightsCarouselProps {
   highlights: HighlightResponse[];
@@ -21,7 +22,7 @@ const ImageLoader = memo(function ImageLoader({
   className?: string;
   isDecorative?: boolean;
 }) {
-  const [loaded, setLoaded] = useState(false);
+  const { data: loadedUrl, isLoading } = useLoadImage(src);
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
@@ -31,12 +32,11 @@ const ImageLoader = memo(function ImageLoader({
         aria-hidden={isDecorative ? true : undefined}
         className={cn(
           "h-full w-full object-cover transition-opacity duration-300",
-          loaded ? "opacity-100" : "opacity-0"
+          loadedUrl && !isLoading ? "opacity-100" : "opacity-0"
         )}
         loading="lazy"
-        onLoad={() => setLoaded(true)}
       />
-      {!loaded && (
+      {isLoading && (
         <div
           className="absolute inset-0 animate-pulse bg-muted"
           aria-hidden={true}
