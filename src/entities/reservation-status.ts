@@ -2,7 +2,7 @@ import { CheckCircle2, Clock5, XCircle } from "lucide-react";
 import { type ReactElement, createElement } from "react";
 
 export const StatusEnum = {
-  CONFIRMADA: "confirmada",
+  CONFIRMADA: "concluida",
   PAGAMENTO_PENDENTE: "pagamento_pendente",
   CADASTRO_PENDENTE: "cadastro_pendente",
   AGUARDANDO_APROVACAO: "aguardando_aprovacao",
