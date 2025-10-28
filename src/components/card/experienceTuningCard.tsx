@@ -10,6 +10,7 @@ import { CalendarIcon, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useExperienceTuning } from "@/hooks/useExperienceTuning";
 import type { ExperienceTuningData } from "@/types/experience";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 type ExperienceCardProps = {
   title: string;
@@ -34,6 +35,7 @@ export default function ExperienceCard({
 }: ExperienceCardProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageUrl);
   const {
     range,
     setRange,
@@ -124,8 +126,17 @@ export default function ExperienceCard({
   return (
     <CanvasCard className="w-full max-w-3xl mx-auto bg-card shadow-lg rounded-xl overflow-hidden flex flex-col">
       {/* image */}
-      <div className="w-full overflow-hidden h-40 md:h-56 lg:h-64 xl:h-72 rounded-t-xl">
-        <img src={imageUrl} alt={title} className="w-full h-full object-cover block" />
+      <div className="relative w-full overflow-hidden h-40 md:h-56 lg:h-64 xl:h-72 rounded-t-xl">
+        <img 
+          src={imageUrl} 
+          alt={title} 
+          className={`w-full h-full object-cover block transition-opacity duration-300 ${
+            imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
+          }`} 
+        />
+        {imageLoading && (
+          <div className="absolute inset-0 animate-pulse bg-muted" />
+        )}
       </div>
 
       {/* header */}

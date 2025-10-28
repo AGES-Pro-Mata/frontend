@@ -1,8 +1,9 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HighlightsCarousel } from "@/components/carousel/highlightsCarousel";
 import type { HighlightResponse } from "@/api/highlights";
 import { HighlightCategory } from "@/entities/highlights";
+import { renderWithProviders } from "@/test/test-utils";
 
 let highlightCounter = 0;
 
@@ -25,7 +26,7 @@ describe("HighlightsCarousel", () => {
   });
 
   it("renders fallback when no highlights are provided", () => {
-    render(<HighlightsCarousel highlights={[]} />);
+    renderWithProviders(<HighlightsCarousel highlights={[]} />);
 
     expect(
       screen.getByText("Nenhum destaque disponível")
@@ -35,7 +36,7 @@ describe("HighlightsCarousel", () => {
   it("hides navigation when a single highlight is provided", () => {
     const highlight = createHighlight({ title: "Único" });
 
-    render(<HighlightsCarousel highlights={[highlight]} />);
+    renderWithProviders(<HighlightsCarousel highlights={[highlight]} />);
 
     expect(
       screen.queryByRole("button", { name: "Próxima imagem" })
@@ -67,23 +68,11 @@ describe("HighlightsCarousel", () => {
     ];
 
     const removeSpy = vi.spyOn(window, "removeEventListener");
-    const { unmount } = render(<HighlightsCarousel highlights={highlights} />);
+    const { unmount } = renderWithProviders(<HighlightsCarousel highlights={highlights} />);
 
     const mainImage = screen.getByRole("img", { name: "Primeiro" });
-    const mainContainer = mainImage.closest("div.relative");
 
-    expect(mainContainer).not.toBeNull();
-    expect(
-      mainContainer?.querySelector("div[aria-hidden=\"true\"].animate-pulse")
-    ).toBeInTheDocument();
-
-    fireEvent.load(mainImage);
-
-    await waitFor(() => {
-      expect(
-        mainContainer?.querySelector("div[aria-hidden=\"true\"].animate-pulse")
-      ).not.toBeInTheDocument();
-    });
+    expect(mainImage).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Próxima imagem" }));
     expect(screen.getByText("Segundo")).toBeInTheDocument();

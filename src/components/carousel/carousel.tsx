@@ -1,7 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, memo } from "react";
 
 import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 import {
   DESTINATIONS,
@@ -9,6 +10,65 @@ import {
   getNextIndex,
   getPreviousIndex,
 } from "./destinations";
+
+const CarouselImage = memo(function CarouselImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(src);
+  
+  return (
+    <div className="relative h-64 w-[28rem] max-w-full rounded-2xl overflow-hidden">
+      <img
+        src={src}
+        alt={alt}
+        className={cn(
+          "h-full w-full object-cover transition-opacity duration-300",
+          imageLoaded && !imageLoading ? "opacity-100" : "opacity-0",
+          className
+        )}
+      />
+      {imageLoading && (
+        <div className="absolute inset-0 animate-pulse bg-muted" />
+      )}
+    </div>
+  );
+});
+
+const ThumbnailImage = memo(function ThumbnailImage({ 
+  src, 
+  alt, 
+  isActive, 
+  onClick 
+}: { 
+  src: string; 
+  alt: string; 
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(src);
+  
+  return (
+    <div 
+      className={cn(
+        "relative h-24 w-full cursor-pointer rounded-xl overflow-hidden transition-opacity",
+        isActive
+          ? "opacity-100 ring-2 ring-main-dark-green"
+          : "opacity-60 hover:opacity-100"
+      )}
+      onClick={onClick}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className={cn(
+          "h-full w-full object-cover transition-opacity duration-300",
+          imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
+        )}
+      />
+      {imageLoading && (
+        <div className="absolute inset-0 animate-pulse bg-muted" />
+      )}
+    </div>
+  );
+});
 
 export function Carousel() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -57,10 +117,9 @@ export function Carousel() {
             Anterior
           </button>
 
-          <img
+          <CarouselImage
             src={activeDestination.src}
             alt={activeDestination.alt}
-            className="h-64 w-[28rem] max-w-full rounded-2xl object-cover"
           />
 
           <button
@@ -76,17 +135,12 @@ export function Carousel() {
 
         <div className="grid w-full max-w-4xl grid-cols-2 gap-3 sm:grid-cols-4">
           {DESTINATIONS.map((destination, index) => (
-            <img
+            <ThumbnailImage
               key={destination.src}
               src={destination.src}
               alt={destination.alt}
+              isActive={index === activeIndex}
               onClick={() => handleSelect(index)}
-              className={cn(
-                "h-24 w-full cursor-pointer rounded-xl object-cover transition-opacity",
-                index === activeIndex
-                  ? "opacity-100 ring-2 ring-main-dark-green"
-                  : "opacity-60 hover:opacity-100"
-              )}
             />
           ))}
         </div>
