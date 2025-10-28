@@ -40,6 +40,7 @@ import { z } from "zod";
 import { useForm } from "../form";
 import { t } from "i18next";
 import type { UpdateUserAdminPayload } from "@/api/user";
+import { MoonLoader } from "react-spinners";
 
 const EditUserAdminSchema = z
   .object({
@@ -120,7 +121,7 @@ type EditUserAdminProps = {
   userId: string;
 };
 export function EditUserAdmin({ userId }: EditUserAdminProps) {
-  const { data, isFetching } = useGetAdminUser({ id: userId });
+  const { data, isFetching, isLoading } = useGetAdminUser({ id: userId });
 
   const navigate = useNavigate();
   const [autoFilled, setAutoFilled] = useState({
@@ -151,7 +152,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
         isAdmin: data?.isAdmin,
         isProfessor: data?.isProfessor,
       }),
-      [data],
+      [data]
     ),
   });
 
@@ -228,22 +229,24 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
         onError: () => {
           toast.error("Erro ao cadastrar usuário");
         },
-      },
+      }
     );
   };
 
   const handleSubmit = form.handleSubmit(onSubmit);
 
-  if (isFetching) return;
-
   return (
     <div className="h-full flex flex-col px-4 overflow-x-hidden overflow-y-auto">
       <div className="space-y-2">
+        {(isLoading || isFetching) && (
+          <div className="absolute inset-0 flex justify-center items-center bg-black/10 backdrop-blur-sm z-10">
+            <MoonLoader size={40} color="#22c55e" />
+          </div>
+        )}
         <Typography className="text-2xl font-semibold text-on-banner-text">
           Edição de Usuário
         </Typography>
       </div>
-
       <Form {...form}>
         <div className="mt-6 space-y-3">
           <div className="flex items-center justify-start gap-4">
