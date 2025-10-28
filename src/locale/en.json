@@ -840,6 +840,7 @@
     "male": "Male",
     "female": "Female",
     "other": "Other",
+    "addOnePerson": "Add person",
     "addPerson": "Add another person",
     "fillAllFields": "Please fill in all required fields"
   }

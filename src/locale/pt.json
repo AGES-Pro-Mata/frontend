@@ -525,7 +525,8 @@
     "male": "Masculino",
     "female": "Feminino",
     "other": "Outro",
-    "addPerson": "Adicionar mais pessoa",
+    "addOnePerson": "Adicionar pessoa",
+    "addPerson": "Adicionar mais uma pessoas",
     "fillAllFields": "Preencha todos os campos obrigatórios"
   }
 }

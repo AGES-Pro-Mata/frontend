@@ -1,16 +1,19 @@
-import ReservaCard from '@/components/card/myReservation';
-import { MyReservationsFilterCompact } from '@/components/filter/MyReservationsFilterCompact';
-import { useMyReservations, type ReservationGroupStatusFilter } from '@/hooks/useMyReservations';
-import { createFileRoute } from '@tanstack/react-router';
-import { useState, type Key } from 'react';
-import { MoonLoader } from 'react-spinners';
+import ReservaCard from "@/components/card/myReservation";
+import { MyReservationsFilterCompact } from "@/components/filter/MyReservationsFilterCompact";
+import {
+  useMyReservations,
+  type ReservationGroupStatusFilter,
+} from "@/hooks/useMyReservations";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState, type Key } from "react";
+import { MoonLoader } from "react-spinners";
 
-export const Route = createFileRoute('/(index)/user/my-reservations/')({
+export const Route = createFileRoute("/(index)/user/my-reservations/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const [status, setStatus] = useState<ReservationGroupStatusFilter>('ALL');
+  const [status, setStatus] = useState<ReservationGroupStatusFilter>("ALL");
 
   const { data, isFetching } = useMyReservations(status);
   console.log(data);
@@ -27,13 +30,14 @@ function RouteComponent() {
         data?.map((rg) => (
           <ReservaCard
             key={rg.id as Key}
-            titulo={'Pacote personalizado'}
+            titulo={"Pacote personalizado"}
             preco={+rg.price}
             periodo={{
               inicio: new Date(rg.startDate),
               fim: new Date(rg.endDate),
             }}
             reservations={rg.reservations}
+            status={rg.status}
           />
         ))
       )}
