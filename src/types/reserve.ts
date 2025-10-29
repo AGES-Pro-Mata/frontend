@@ -8,7 +8,7 @@ type ReserveParticipantBase = {
   id: string;
   name: string;
   phone: string;
-  birthDate: string;
+  birthDate: Date | string;
   cpf: string;
 };
 

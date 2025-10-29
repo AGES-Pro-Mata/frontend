@@ -15,6 +15,9 @@ export interface ReservationGroupAdminReservation {
     startDate?: string | null;
     endDate?: string | null;
     price?: number | null;
+    image?: {
+      url?: string | null;
+    } | null;
   };
 }
 
@@ -26,6 +29,8 @@ export interface ReservationGroupAdminResponse {
     name: string;
     document?: string | null;
     gender?: string | null;
+    phone?: string | null;
+    birthDate?: string | Date | null;
   }>;
   reservations: ReservationGroupAdminReservation[];
   requests?: any[];

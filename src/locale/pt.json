@@ -411,12 +411,12 @@
     }
   },
   "reservationInfo": {
-    "title": "Reservation information",
+    "title": "Informações da reserva",
     "counts": {
-      "men": "Men",
-      "women": "Women",
-      "other": "Other",
-      "summary": "Men: {{men}} - Women: {{women}} - Other: {{other}}"
+      "men": "Homens",
+      "women": "Mulheres",
+      "other": "Outros",
+      "summary": "Homens: {{men}} - Mulheres: {{women}} - Outros: {{other}}"
     }
   },
   "validation": {

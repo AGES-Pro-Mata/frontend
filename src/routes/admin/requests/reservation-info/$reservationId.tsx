@@ -20,22 +20,30 @@ import type {
   ReserveParticipantGender,
 } from "@/types/reserve";
 
-export const Route = createFileRoute("/admin/requests/reservation-info/$reservationId")({
-    // garante que reservationId é valido pelo uuid
+export const Route = createFileRoute(
+  "/admin/requests/reservation-info/$reservationId"
+)({
+  // garante que reservationId é valido pelo uuid
   parseParams: (params: any) => ({
     reservationId: z
       .string()
       .uuid("ID de reserva inválido.")
       .parse(params.reservationId),
   }),
+  validateSearch: z
+    .object({
+      lang: z.enum(["pt", "en"]).optional(),
+    })
+    .optional(),
   component: ReserveInfoPage,
 });
 
 function ReserveInfoPage() {
   const navigate = useNavigate();
-  const { reservationId } = useParams({ from: Route.id }); 
+  const { reservationId } = useParams({ from: Route.id });
 
-  const [reservation, setReservation] = useState<ReservationGroupAdminResponse | null>(null);
+  const [reservation, setReservation] =
+    useState<ReservationGroupAdminResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,7 +64,9 @@ function ReserveInfoPage() {
       if (response.statusCode === 200 && response.data) {
         setReservation(response.data);
       } else {
-        setError(response.message || "Ocorreu um erro ao buscar os dados da reserva.");
+        setError(
+          response.message || "Ocorreu um erro ao buscar os dados da reserva."
+        );
       }
 
       setIsLoading(false);
@@ -66,7 +76,11 @@ function ReserveInfoPage() {
   }, [reservationId]);
 
   if (isLoading) {
-    return <div className="p-8 text-center">Carregando informações da reserva...</div>;
+    return (
+      <div className="p-8 text-center">
+        Carregando informações da reserva...
+      </div>
+    );
   }
 
   if (error) {
@@ -74,7 +88,11 @@ function ReserveInfoPage() {
   }
 
   if (!reservation) {
-    return <div className="p-8 text-center">Nenhuma informação da reserva foi encontrada.</div>;
+    return (
+      <div className="p-8 text-center">
+        Nenhuma informação da reserva foi encontrada.
+      </div>
+    );
   }
 
   const normalizeGender = (g?: string | null): ReserveParticipantGender => {
@@ -86,20 +104,41 @@ function ReserveInfoPage() {
     return "NOT_INFORMED";
   };
 
-  // Members vem do ReservationGroup, não das Reservations individuais
+  //formatar a data
+  const formatDateForInput = (date?: string | Date | null): string => {
+    if (!date) return "";
+
+    try {
+      if (typeof date === "string" && date.includes("T")) {
+        return date.split("T")[0];
+      }
+
+      const d = typeof date === "string" ? new Date(date) : date;
+      if (isNaN(d.getTime())) return "";
+
+      const year = d.getUTCFullYear();
+      const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(d.getUTCDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    } catch {
+      return "";
+    }
+  };
+
   const participants: ReserveParticipant[] = (reservation.members || [])
-    .filter((member) => member) // Remove membros null/undefined
+    .filter((member) => member)
     .map((member) => ({
       id: member.id || member.document || member.name || "unknown",
       name: member.name || "Não informado",
-      phone: (member as any).phone || "Não informado", //não está sendo enviado pelo back
-      birthDate: (member as any).birthDate || "Não informado", //não está sendo enviado pelo back
+      phone: member.phone?.replace(/^\+/, "") || "Não informado",
+      birthDate: formatDateForInput(member.birthDate),
       cpf: member.document || "Não informado",
       gender: normalizeGender(member.gender),
     }));
 
   const experiences: ReserveSummaryExperience[] = reservation.reservations
-    .filter((res) => res.experience) // Filtra apenas reservas com experience válido
+    .filter((res) => res.experience)
     .map((res) => ({
       title: res.experience?.name || "Experiência sem nome",
       startDate: res.experience?.startDate
@@ -110,7 +149,7 @@ function ReserveInfoPage() {
         : "N/A",
       price: Number(res.experience?.price) || 0,
       peopleCount: reservation.members?.length || 0,
-      imageUrl: "/mock/landscape-placeholder.webp", //imagem não está sendo enviada pelo back
+      imageUrl: res.experience?.image?.url || "N/A",
     }));
 
   const events: ReservationEvent[] = (reservation.requests || []).map(
@@ -124,10 +163,11 @@ function ReserveInfoPage() {
     })
   );
 
-  const notes = reservation.reservations
-    .map((r) => r.notes)
-    .filter(Boolean)
-    .join("\n") || "Sem observações";
+  const notes =
+    reservation.reservations
+      .map((r) => r.notes)
+      .filter(Boolean)
+      .join("\n") || "Sem observações";
 
   return (
     <ReserveInfo

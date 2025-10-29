@@ -3,8 +3,14 @@ import AdminRequests from "@/components/table/adminRequests";
 import { useAdminRequests } from "@/api/request";
 import { useState } from "react";
 import type { TRequestAdminFilters } from "@/entities/request-admin-filters";
+import z from "zod";
 
 export const Route = createFileRoute("/admin/requests/")({
+  validateSearch: z
+    .object({
+      lang: z.enum(["pt", "en"]).optional(), 
+    })
+    .optional(),
   component: AdminRequestsRoute,
 });
 

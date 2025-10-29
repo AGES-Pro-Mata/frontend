@@ -109,7 +109,7 @@ export function ReserveParticipantInputs({
         label={t("reserveFlow.peopleStep.fields.birthDate.label")}
         required
         type="date"
-        value={person.birthDate}
+        value={typeof person.birthDate === "string" ? person.birthDate : ""} // aceitar string também
         onChange={(event) => handleChange("birthDate", event.target.value)}
         disabled={disabled}
         readOnly={isReadOnly}

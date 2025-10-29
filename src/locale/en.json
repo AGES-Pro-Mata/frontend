@@ -398,14 +398,15 @@
         }
     },
     "reservationInfo": {
-        "title": "Reservation information",
+        "title": "Reservation Information",
         "counts": {
-            "men": "Men",
-            "women": "Women",
-            "other": "Other",
-            "summary": "Men: {{men}} - Women: {{women}} - Other: {{other}}"
-        }
-    },
+          "men": "Men",
+          "women": "Women",
+          "other": "Other",
+          "summary": "Men: {{men}} - Women: {{women}} - Other: {{other}}"
+        },
+        "noParticipants": "No participants found for this reservation."
+      },
     "validation": {
         "email": "Enter a valid email.",
         "passwordRequired": "Enter your password.",
