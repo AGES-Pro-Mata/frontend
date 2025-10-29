@@ -1,9 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import type {
-  ButtonHTMLAttributes,
-  HTMLAttributes,
-  ReactNode,
-} from "react";
+import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
   Dialog,
@@ -161,7 +157,9 @@ describe("Dialog UI", () => {
   });
 
   it("merges additional classes on the dialog overlay", () => {
-    render(<DialogOverlay data-slot="overlay-test" className="backdrop-blur" />);
+    render(
+      <DialogOverlay data-slot="overlay-test" className="backdrop-blur" />
+    );
 
     expect(screen.getByTestId("overlay-test")).toHaveClass("backdrop-blur");
   });

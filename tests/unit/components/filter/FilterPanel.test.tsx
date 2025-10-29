@@ -455,4 +455,29 @@ describe("FilterPanel", () => {
 
     expect(screen.getByPlaceholderText(overriddenPlaceholder)).toBeInTheDocument();
   });
+
+  it('handles non-string search value gracefully', () => {
+    const filtersKey = 'filter-panel-non-string-search';
+
+    renderFilter({ filtersKey, initialFilters: { search: 123 as unknown as string } });
+
+    const searchInput = screen.getByPlaceholderText(
+      i18n.t('reserveFilter.searchPlaceholder')
+    );
+
+    // non-string search should result in empty input value
+    expect(searchInput).toHaveValue('');
+  });
+
+  it('renders when initial search is a string', () => {
+    const filtersKey = 'filter-panel-initial-search-string';
+
+    renderFilter({ filtersKey, initialFilters: { search: 'hello world' } });
+
+    const searchInput = screen.getByPlaceholderText(
+      i18n.t('reserveFilter.searchPlaceholder')
+    );
+
+    expect(searchInput).toHaveValue('hello world');
+  });
 });

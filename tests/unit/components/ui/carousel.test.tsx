@@ -95,10 +95,9 @@ describe("Carousel UI", () => {
       </Carousel>
     );
 
-    const selectHandler = api.on.mock.calls
-      .find(([, handler]) => typeof handler === "function")?.[1] as
-      | ((api?: unknown) => void)
-      | undefined;
+    const selectHandler = api.on.mock.calls.find(
+      ([, handler]) => typeof handler === "function"
+    )?.[1] as ((api?: unknown) => void) | undefined;
 
     expect(selectHandler).toBeDefined();
 
@@ -107,9 +106,9 @@ describe("Carousel UI", () => {
   });
 
   it("gracefully renders when embla api is unavailable", () => {
-  const localRef = vi.fn();
+    const localRef = vi.fn();
 
-  useEmblaCarouselMock.mockReturnValueOnce([localRef, undefined as never]);
+    useEmblaCarouselMock.mockReturnValueOnce([localRef, undefined as never]);
 
     const setApi = vi.fn();
 
@@ -130,7 +129,6 @@ describe("Carousel UI", () => {
   it("derives vertical orientation from opts axis when orientation is not provided", () => {
     render(
       <Carousel
-        // Force the component to fall back to opts.axis derived orientation
         orientation={"" as unknown as "horizontal"}
         opts={{ axis: "y" }}
       >
@@ -145,8 +143,8 @@ describe("Carousel UI", () => {
     const prevButton = screen.getByRole("button", { name: /Previous slide/ });
     const nextButton = screen.getByRole("button", { name: /Next slide/ });
 
-  expect(prevButton).toHaveClass("rotate-90");
-  expect(nextButton).toHaveClass("rotate-90");
+    expect(prevButton).toHaveClass("rotate-90");
+    expect(nextButton).toHaveClass("rotate-90");
   });
 
   it("keeps horizontal orientation when opts axis is not vertical", () => {
@@ -184,7 +182,9 @@ describe("Carousel UI", () => {
       </Carousel>
     );
 
-    expect(screen.getByRole("button", { name: /Previous slide/ })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /Previous slide/ })
+    ).toBeDisabled();
     expect(screen.getByRole("button", { name: /Next slide/ })).toBeDisabled();
   });
 
