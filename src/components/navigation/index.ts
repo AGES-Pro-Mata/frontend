@@ -1,1 +1,1 @@
-export { AdminSideBar } from "./sideBar";
+export { AdminSideBar } from "@/components/navigation/sideBar";

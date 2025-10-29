@@ -126,7 +126,7 @@ const mapImage = (image: ExperienceApiImage): { url: string } | null => {
 };
 
 export const mapExperienceApiResponseToDTO = (
-  apiExperience: ExperienceApiResponse,
+  apiExperience: ExperienceApiResponse
 ): Experience => {
   const category = CATEGORY_CARD_MAP[apiExperience.experienceCategory];
 

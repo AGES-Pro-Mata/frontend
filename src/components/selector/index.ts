@@ -1,1 +1,1 @@
-export { default as Selector } from "./selector";
+export { default as Selector } from "@/components/selector/selector";

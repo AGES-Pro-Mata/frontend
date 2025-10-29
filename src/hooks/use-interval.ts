@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const noop = () => {};
+export const noop = () => {};
 
 export const useInterval = (
   callback: () => void,

@@ -1,3 +1,3 @@
-export { Carousel } from "./carousel";
-export { HighlightsCarousel } from "./highlightsCarousel";
-export { HighlightsCarouselDemo } from "./highlightsCarouselDemo";
+export { Carousel } from "@/components/carousel/carousel";
+export { HighlightsCarousel } from "@/components/carousel/highlightsCarousel";
+export { HighlightsCarouselDemo } from "@/components/carousel/highlightsCarouselDemo";

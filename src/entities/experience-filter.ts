@@ -9,7 +9,7 @@ export const ExperienceFilters = z.object({
   startDate: z.string().max(100).optional(),
   endDate: z.string().max(100).optional(),
   page: z.number().min(0),
-  limit: 12,
+  limit: z.number().default(12),
 });
 
 export type TExperienceFilters = z.infer<typeof ExperienceFilters>;

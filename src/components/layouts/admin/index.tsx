@@ -1,7 +1,7 @@
-import { AdminLayoutContent } from "./content.layout";
-import { AdminLayoutSidebar } from "./sidebar.layout";
-import { AdminLayoutHeader } from "./header.layout";
-import { AdminLayoutRoot } from "./root.layout";
+import { AdminLayoutContent } from "@/components/layouts/admin/content.layout";
+import { AdminLayoutSidebar } from "@/components/layouts/admin/sidebar.layout";
+import { AdminLayoutHeader } from "@/components/layouts/admin/header.layout";
+import { AdminLayoutRoot } from "@/components/layouts/admin/root.layout";
 
 const AdminLayout = Object.assign(AdminLayoutRoot, {
   Header: AdminLayoutHeader,

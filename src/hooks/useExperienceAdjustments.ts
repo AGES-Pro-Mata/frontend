@@ -11,11 +11,26 @@ export function useExperienceAdjustments() {
 		enabled: !!currentUser?.id,
 		queryFn: async () => {
 			const res = await axios.get("/api/experience-adjustments");
-			const all = res.data.data || res.data || [];
+			const payload: unknown = res?.data;
 
-			if (!currentUser?.id) return [];
+			type ExperienceAdjustment = {
+				userId?: string | number;
+				user?: { id?: string | number } | null;
+			};
 
-			return all.filter((exp: any) => exp.userId === currentUser.id || exp.user?.id === currentUser.id);
+			function hasDataArray(x: unknown): x is { data: ExperienceAdjustment[] } {
+				return typeof x === "object" && x !== null && Array.isArray((x as { data?: unknown }).data);
+			}
+
+			const all: ExperienceAdjustment[] = hasDataArray(payload)
+				? payload.data
+				: Array.isArray(payload)
+				? (payload as ExperienceAdjustment[])
+				: [];
+
+			return all.filter((exp) =>
+				exp.userId === currentUser?.id || exp.user?.id === currentUser?.id,
+			);
 		},
 	});
 }
