@@ -8,10 +8,8 @@ import { z } from "zod";
 
 import { ReserveInfo } from "@/components/layouts/reserve/ReserveInfo";
 
-import {
-  getRequestGroupByIdAdmin,
-  type RequestGroupAdminResponse,
-} from "@/api/request";
+import { getRequestGroupByIdAdmin } from "@/api/request";
+import type { TRequestDetailResponse } from "@/entities/request-admin-response";
 
 import type { ReservationEvent } from "@/components/display/reservationEvents";
 import type {
@@ -43,7 +41,7 @@ function ReserveInfoPage() {
   const { requestId } = useParams({ from: Route.id });
 
   const [request, setRequest] =
-    useState<RequestGroupAdminResponse | null>(null);
+    useState<TRequestDetailResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,9 +62,17 @@ function ReserveInfoPage() {
       if (response.statusCode === 200 && response.data) {
         setRequest(response.data);
       } else {
-        setError(
-          response.message || "Ocorreu um erro ao buscar os dados da request."
-        );
+        if (response.message === 'VALIDATION_ERROR') {
+          setError(
+            `VALIDATION_ERROR: ${
+              typeof response.error === 'string'
+                ? response.error
+                : JSON.stringify(response.error, null, 2)
+            }`
+          );
+        } else {
+          setError(response.message || "Ocorreu um erro ao buscar os dados da request.");
+        }
       }
 
       setIsLoading(false);
@@ -154,9 +160,9 @@ function ReserveInfoPage() {
 
   const events: ReservationEvent[] = (request.requests || []).map(
     (req, index) => ({
-      id: req.id || `event-${index}`,
+      id: `event-${index}`,
       user: "Usuário",
-      status: `${req.type}${req.description ? `: ${req.description}` : ``}`,
+      status: `${req.type}`,
       date: "Data indisponível",
       time: "",
       avatarUrl: undefined,
