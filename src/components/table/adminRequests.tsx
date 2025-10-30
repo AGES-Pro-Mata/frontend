@@ -4,9 +4,16 @@ import { DataTable } from "@/components/table/index";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaRegCalendarCheck, FaUser } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
-import { MdMoreVert, MdVisibility } from "react-icons/md";
 import type { TRequestItem } from "@/entities/request-admin-response";
 import type { TRequestAdminFilters } from "@/entities/request-admin-filters";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Eye } from "lucide-react"; 
 
 type Request = {
   id: string;
@@ -58,9 +65,10 @@ export default function AdminRequests({
 }) {
   const [tab, setTab] = useState<"professor" | "reservation">("reservation");
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
-  const [selectedReservationStatus, setSelectedReservationStatus] = useState<
-    RequestStatus[]
-  >([]);
+  const [selectedReservationStatus, setSelectedReservationStatus] =
+    useState<RequestStatus[]>([]);
+
+ 
 
   const pendingLimitRef = useRef<number | null>(null);
   const [sortField, setSortField] = useState<string | undefined>(undefined);
@@ -70,7 +78,6 @@ export default function AdminRequests({
 
   const allRequests: Request[] = [];
 
-  // Colunas movidas para dentro do componente para acessar navigate
   const professorColumns: ColumnDef<Request>[] = [
     {
       accessorKey: "name",
@@ -92,25 +99,29 @@ export default function AdminRequests({
     },
     {
       id: "actions",
-      header: () => <span className="font-semibold">Ações</span>,
-      cell: () => {
+      cell: ({ row }) => {
+        const id = row.original.id;
+
         return (
-          <div className="flex flex-col gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-1"
-            >
-              <MdMoreVert size={18} /> Ações
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1"
-            >
-              <MdVisibility size={18} /> Visualizar
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  window.location.href = `/admin/requests/reservation-info/${id}`;
+                }}
+                className="cursor-pointer gap-2"
+              >
+                <Eye className="size-4" />
+                Visualizar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
@@ -140,28 +151,28 @@ export default function AdminRequests({
       id: "actions",
       header: () => <span className="font-semibold">Ações</span>,
       cell: ({ row }) => {
-        const reservationId = row.original.id;
+        const requestId = row.original.id;
+
         return (
-          <div className="flex flex-col gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-1"
-            >
-              <MdMoreVert size={18} /> Ações
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => {
-                // Navegação usando window.location para evitar erro de tipo do TanStack Router
-                window.location.href = `/admin/requests/reservation-info/${reservationId}`;
-              }}
-            >
-              <MdVisibility size={18} /> Visualizar
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  window.location.href = `/admin/requests/${requestId}`;
+                }}
+                className="cursor-pointer gap-2"
+              >
+                <Eye className="size-4" />
+                Visualizar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
       enableSorting: false,
@@ -226,7 +237,7 @@ export default function AdminRequests({
   const currentLimit = pendingLimitRef.current ?? initialData?.limit ?? 10;
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow flex flex-col gap-4">
+    <>
       <div className="flex gap-2 mb-4">
         <button
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
@@ -287,15 +298,9 @@ export default function AdminRequests({
       <div className="relative overflow-y-auto max-h-[600px]">
         <DataTable
           columns={
-            (tab === "professor"
-              ? professorColumns
-              : reservationColumns) as ColumnDef<any>[]
+            (tab === "professor" ? professorColumns : reservationColumns) as ColumnDef<any>[]
           }
-          data={
-            tab === "professor"
-              ? filteredProfessorRequests
-              : reservationRequests
-          }
+          data={tab === "professor" ? filteredProfessorRequests : reservationRequests}
           filters={{
             page: currentPage - 1,
             limit: currentLimit,
@@ -386,6 +391,6 @@ export default function AdminRequests({
           }}
         />
       </div>
-    </div>
+    </>
   );
 }

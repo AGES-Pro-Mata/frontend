@@ -55,6 +55,7 @@ export function ReserveInfo({
   const experiencesToRender = useMemo(() => experiences ?? [], [experiences]);
   const eventsToRender = useMemo(() => events ?? [], [events]);
 
+
   return (
     <section className={cn("min-h-screen py-5", className)}>
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-2 sm:px-6 lg:px-8">

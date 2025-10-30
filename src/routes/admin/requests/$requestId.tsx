@@ -9,9 +9,9 @@ import { z } from "zod";
 import { ReserveInfo } from "@/components/layouts/reserve/ReserveInfo";
 
 import {
-  getReservationGroupByIdAdmin,
-  type ReservationGroupAdminResponse,
-} from "@/api/reservation";
+  getRequestGroupByIdAdmin,
+  type RequestGroupAdminResponse,
+} from "@/api/request";
 
 import type { ReservationEvent } from "@/components/display/reservationEvents";
 import type {
@@ -21,14 +21,14 @@ import type {
 } from "@/types/reserve";
 
 export const Route = createFileRoute(
-  "/admin/requests/reservation-info/$reservationId"
+  "/admin/requests/$requestId"
 )({
-  // garante que reservationId é valido pelo uuid
+  // garante que requestId é valido pelo uuid
   parseParams: (params: any) => ({
-    reservationId: z
+    requestId: z
       .string()
-      .uuid("ID de reserva inválido.")
-      .parse(params.reservationId),
+      .uuid("ID de request inválido.")
+      .parse(params.requestId),
   }),
   validateSearch: z
     .object({
@@ -40,15 +40,15 @@ export const Route = createFileRoute(
 
 function ReserveInfoPage() {
   const navigate = useNavigate();
-  const { reservationId } = useParams({ from: Route.id });
+  const { requestId } = useParams({ from: Route.id });
 
-  const [reservation, setReservation] =
-    useState<ReservationGroupAdminResponse | null>(null);
+  const [request, setRequest] =
+    useState<RequestGroupAdminResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchReservationData() {
+    async function fetchRequestData() {
       setIsLoading(true);
       setError(null);
 
@@ -59,26 +59,26 @@ function ReserveInfoPage() {
         return;
       }
 
-      const response = await getReservationGroupByIdAdmin(reservationId, token);
+      const response = await getRequestGroupByIdAdmin(requestId, token);
 
       if (response.statusCode === 200 && response.data) {
-        setReservation(response.data);
+        setRequest(response.data);
       } else {
         setError(
-          response.message || "Ocorreu um erro ao buscar os dados da reserva."
+          response.message || "Ocorreu um erro ao buscar os dados da request."
         );
       }
 
       setIsLoading(false);
     }
 
-    fetchReservationData();
-  }, [reservationId]);
+    fetchRequestData();
+  }, [requestId]);
 
   if (isLoading) {
     return (
       <div className="p-8 text-center">
-        Carregando informações da reserva...
+        Carregando informações da request...
       </div>
     );
   }
@@ -87,10 +87,10 @@ function ReserveInfoPage() {
     return <div className="p-8 text-center text-red-600">Erro: {error}</div>;
   }
 
-  if (!reservation) {
+  if (!request) {
     return (
       <div className="p-8 text-center">
-        Nenhuma informação da reserva foi encontrada.
+        Nenhuma informação da request foi encontrada.
       </div>
     );
   }
@@ -126,7 +126,7 @@ function ReserveInfoPage() {
     }
   };
 
-  const participants: ReserveParticipant[] = (reservation.members || [])
+  const participants: ReserveParticipant[] = (request.members || [])
     .filter((member) => member)
     .map((member) => ({
       id: member.id || member.document || member.name || "unknown",
@@ -137,7 +137,7 @@ function ReserveInfoPage() {
       gender: normalizeGender(member.gender),
     }));
 
-  const experiences: ReserveSummaryExperience[] = reservation.reservations
+  const experiences: ReserveSummaryExperience[] = request.reservations
     .filter((res) => res.experience)
     .map((res) => ({
       title: res.experience?.name || "Experiência sem nome",
@@ -148,11 +148,11 @@ function ReserveInfoPage() {
         ? new Date(res.experience.endDate).toLocaleDateString("pt-BR")
         : "N/A",
       price: Number(res.experience?.price) || 0,
-      peopleCount: reservation.members?.length || 0,
+      peopleCount: request.members?.length || 0,
       imageUrl: res.experience?.image?.url || "N/A",
     }));
 
-  const events: ReservationEvent[] = (reservation.requests || []).map(
+  const events: ReservationEvent[] = (request.requests || []).map(
     (req, index) => ({
       id: req.id || `event-${index}`,
       user: "Usuário",
@@ -163,15 +163,17 @@ function ReserveInfoPage() {
     })
   );
 
+  console.log("request.requests", request.requests);
+
   const notes =
-    reservation.reservations
+    request.reservations
       .map((r) => r.notes)
       .filter(Boolean)
       .join("\n") || "Sem observações";
 
   return (
     <ReserveInfo
-      title={`Reserva de ${reservation.user?.name || `N/A`}`}
+      title={`Request de ${request.user?.name || `N/A`}`}
       participants={participants}
       experiences={experiences}
       events={events}
