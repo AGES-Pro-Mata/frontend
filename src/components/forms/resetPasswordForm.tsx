@@ -3,7 +3,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { AuthCard } from "../auth";
-import { TextInput } from "@/components/input/textInput";
 import { PasswordInput } from "@/components/input/passwordInput";
 import { Typography } from "../typography";
 import { Form, FormField, FormItem, FormMessage } from "../ui/form";
