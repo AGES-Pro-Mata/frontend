@@ -1,10 +1,9 @@
 import AdminRequests from "@/components/table/adminRequests";
 import { useTeacherRequests } from "@/api/request";
 import { useState } from "react";
-import type { TRequestAdminFilters } from "@/entities/request-admin-filters";
+import type { TRequestAdminTeacherFilters } from "@/entities/request-admin-filters";
 import z from "zod";
 import { createFileRoute } from "@tanstack/react-router"
-
 
 export const Route = createFileRoute('/admin/requests/teacher/')({
   validateSearch: z
@@ -18,7 +17,7 @@ export const Route = createFileRoute('/admin/requests/teacher/')({
 function TeacherRequestRoute() {
   const token = localStorage.getItem("token");
 
-  const [filters, setFilters] = useState<TRequestAdminFilters>({
+  const [filters, setFilters] = useState<TRequestAdminTeacherFilters>({
     page: 1,
     limit: 10,
     status: undefined,
@@ -41,5 +40,22 @@ function TeacherRequestRoute() {
     );
   }
 
-  return <AdminRequests initialData={data} onFilterChange={setFilters} />;
+  return (
+    <AdminRequests
+      initialData={data}
+      onFilterChange={(filters) => {
+        setFilters({
+          ...filters,
+          status: Array.isArray(filters.status)
+            ? (filters.status.filter(
+                (s) =>
+                  s === "CREATED" ||
+                  s === "APPROVED" ||
+                  s === "REJECTED"
+              ) as TRequestAdminTeacherFilters["status"])
+            : undefined,
+        });
+      }}
+    />
+  );
 }

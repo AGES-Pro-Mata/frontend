@@ -20,13 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Eye } from "lucide-react";
 
-type Request = {
-  id: string;
-  name: string;
-  email: string;
-  status: string;
-};
-
 type RequestStatus = NonNullable<TRequestAdminFilters["status"]>[number];
 type RequestTeacherStatus = NonNullable<
   TRequestAdminTeacherFilters["status"]
@@ -36,13 +29,12 @@ const professorStatus: RequestTeacherStatus[] = [
   "APPROVED",
   "REJECTED",
   "CREATED",
-  // Adicione outros status válidos do tipo RequestTeacherStatus se existirem
 ];
 
 const statusTeacherMap: Record<RequestTeacherStatus, string> = {
-  APPROVED: "Aprovadas",
-  REJECTED: "Rejeitadas",
-  CREATED: "Pendentes",
+  APPROVED: "Aprovada",
+  REJECTED: "Rejeitada",
+  CREATED: "Pendente",
 };
 
 const requestStatus: RequestStatus[] = [
@@ -61,11 +53,11 @@ const requestStatus: RequestStatus[] = [
 ];
 
 const statusMap: Record<RequestStatus, string> = {
-  CREATED: "Criadas",
-  APPROVED: "Aprovadas",
-  CANCELED: "Canceladas",
+  CREATED: "Criada",
+  APPROVED: "Aprovada",
+  CANCELED: "Cancelada",
   CANCELED_REQUESTED: "Cancelamento Solicitado",
-  REJECTED: "Rejeitadas",
+  REJECTED: "Rejeitada",
   PEOPLE_REQUESTED: "Usuários Solicitado",
   PAYMENT_REQUESTED: "Pagamento Solicitado",
   PEOPLE_SENT: "Participantes Enviados",
@@ -80,7 +72,9 @@ export default function AdminRequests({
   onFilterChange,
 }: {
   initialData?: any;
-  onFilterChange?: (filters: TRequestAdminFilters) => void;
+  onFilterChange?: (
+    filters: TRequestAdminFilters | TRequestAdminTeacherFilters
+  ) => void;
 }) {
   const [tab, setTab] = useState<"professor" | "request">("request");
   const [selectedStatus, setSelectedStatus] = useState<RequestTeacherStatus[]>(
@@ -95,7 +89,7 @@ export default function AdminRequests({
   const [sortDir, setSortDir] = useState<"asc" | "desc" | undefined>(undefined);
 
   const allRequests: TRequestListItem[] = initialData?.data || [];
-  
+
   const filteredProfessorRequests = allRequests.filter((d) => {
     return (
       professorStatus.includes(d.request.type as RequestTeacherStatus) &&
@@ -324,7 +318,9 @@ export default function AdminRequests({
       <div className="relative overflow-y-auto max-h-[600px]">
         <DataTable
           columns={tab === "professor" ? professorColumns : requestColumns}
-          data={tab === "professor" ? filteredProfessorRequests : requestRequests}
+          data={
+            tab === "professor" ? filteredProfessorRequests : requestRequests
+          }
           filters={{
             page: currentPage - 1,
             limit: currentLimit,
