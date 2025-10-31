@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useLogin } from "@/hooks/useLogin";
 import { TextInput } from "@/components/input/textInput";
+import { PasswordInput } from "@/components/input/passwordInput";
 import { Link } from "@tanstack/react-router";
 import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
@@ -74,8 +75,7 @@ export function LoginForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <TextInput
-                      type="password"
+                    <PasswordInput
                       label={t("auth.login.password")}
                       placeholder={t("auth.login.passwordPlaceholder")}
                       required
