@@ -1,20 +1,21 @@
-import { createFileRoute } from "@tanstack/react-router";
 import AdminRequests from "@/components/table/adminRequests";
-import { useAdminRequests } from "@/api/request";
+import { useTeacherRequests } from "@/api/request";
 import { useState } from "react";
 import type { TRequestAdminFilters } from "@/entities/request-admin-filters";
 import z from "zod";
+import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/admin/requests/")({
+
+export const Route = createFileRoute('/admin/requests/teacher/')({
   validateSearch: z
-    .object({
-      lang: z.enum(["pt", "en"]).optional(),
-    })
-    .optional(),
-  component: AdminRequestsRoute,
-});
+      .object({
+        lang: z.enum(["pt", "en"]).optional(),
+      })
+      .optional(),
+    component: TeacherRequestRoute,
+})
 
-function AdminRequestsRoute() {
+function TeacherRequestRoute() {
   const token = localStorage.getItem("token");
 
   const [filters, setFilters] = useState<TRequestAdminFilters>({
@@ -23,7 +24,7 @@ function AdminRequestsRoute() {
     status: undefined,
   });
 
-  const { data, isLoading, error } = useAdminRequests(
+  const { data, isLoading, error } = useTeacherRequests(
     filters,
     token ?? undefined
   );

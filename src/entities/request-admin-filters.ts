@@ -25,4 +25,21 @@ export const RequestAdminFilters = z.object({
   dir: z.enum(["asc", "desc"]).optional(), 
 });
 
+export const RequestAdminTeacherFilters = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(10),
+  status: z
+    .array(
+      z.enum([
+        "CREATED",
+        "APPROVED",
+        "REJECTED",
+      ])
+    )
+    .optional(),
+  sort: z.string().optional(),
+  dir: z.enum(["asc", "desc"]).optional(), 
+});
+
 export type TRequestAdminFilters = z.infer<typeof RequestAdminFilters>;
+export type TRequestAdminTeacherFilters = z.infer<typeof RequestAdminTeacherFilters>;

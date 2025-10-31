@@ -1,11 +1,16 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/table/index";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaRegCalendarCheck, FaUser } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
-import type { TRequestItem } from "@/entities/request-admin-response";
-import type { TRequestAdminFilters } from "@/entities/request-admin-filters";
+import type { TRequestListItem } from "@/entities/request-admin-response";
+import type {
+  TRequestAdminFilters,
+  TRequestAdminTeacherFilters,
+} from "@/entities/request-admin-filters";
+import { useNavigate } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 
 import {
   DropdownMenu,
@@ -13,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Eye } from "lucide-react"; 
+import { MoreHorizontal, Eye } from "lucide-react";
 
 type Request = {
   id: string;
@@ -23,10 +28,24 @@ type Request = {
 };
 
 type RequestStatus = NonNullable<TRequestAdminFilters["status"]>[number];
+type RequestTeacherStatus = NonNullable<
+  TRequestAdminTeacherFilters["status"]
+>[number];
 
-const professorStatus = ["Approved", "Rejected", "Pending"];
+const professorStatus: RequestTeacherStatus[] = [
+  "APPROVED",
+  "REJECTED",
+  "CREATED",
+  // Adicione outros status válidos do tipo RequestTeacherStatus se existirem
+];
 
-const reservationStatus: RequestStatus[] = [
+const statusTeacherMap: Record<RequestTeacherStatus, string> = {
+  APPROVED: "Aprovadas",
+  REJECTED: "Rejeitadas",
+  CREATED: "Pendentes",
+};
+
+const requestStatus: RequestStatus[] = [
   "CREATED", // Criadas
   "APPROVED", // Aprovadas
   "CANCELED", // Canceladas
@@ -63,36 +82,59 @@ export default function AdminRequests({
   initialData?: any;
   onFilterChange?: (filters: TRequestAdminFilters) => void;
 }) {
-  const [tab, setTab] = useState<"professor" | "reservation">("reservation");
-  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
-  const [selectedReservationStatus, setSelectedReservationStatus] =
-    useState<RequestStatus[]>([]);
-
- 
+  const [tab, setTab] = useState<"professor" | "request">("request");
+  const [selectedStatus, setSelectedStatus] = useState<RequestTeacherStatus[]>(
+    []
+  );
+  const [selectedRequestStatus, setSelectedRequestStatus] = useState<
+    RequestStatus[]
+  >([]);
 
   const pendingLimitRef = useRef<number | null>(null);
   const [sortField, setSortField] = useState<string | undefined>(undefined);
-  const [sortDir, setSortDir] = useState<"asc" | "desc" | undefined>(
-    undefined
-  );
+  const [sortDir, setSortDir] = useState<"asc" | "desc" | undefined>(undefined);
 
-  const allRequests: Request[] = [];
+  const allRequests: TRequestListItem[] = initialData?.data || [];
+  
+  const filteredProfessorRequests = allRequests.filter((d) => {
+    return (
+      professorStatus.includes(d.request.type as RequestTeacherStatus) &&
+      (selectedStatus.length
+        ? selectedStatus.includes(d.request.type as RequestTeacherStatus)
+        : true)
+    );
+  });
 
-  const professorColumns: ColumnDef<Request>[] = [
+  const routerState = useRouterState();
+  const currentPath = routerState.location.pathname;
+
+  useEffect(() => {
+    if (currentPath.includes("/teacher")) {
+      setTab("professor");
+      setSelectedStatus([]);
+    } else {
+      setTab("request");
+      setSelectedRequestStatus([]);
+    }
+  }, [currentPath]);
+
+  const professorColumns: ColumnDef<TRequestListItem>[] = [
     {
-      accessorKey: "name",
+      accessorKey: "member.name",
       header: () => <span className="font-semibold">Nome</span>,
       cell: (info) => info.getValue(),
       enableSorting: true,
     },
     {
-      accessorKey: "status",
+      accessorKey: "request.type",
       header: () => <span className="font-semibold">Status</span>,
-      cell: (info) => info.getValue(),
+      cell: (info) =>
+        statusTeacherMap[info.getValue() as RequestTeacherStatus] ||
+        info.getValue(),
       enableSorting: true,
     },
     {
-      accessorKey: "email",
+      accessorKey: "member.email",
       header: () => <span className="font-semibold">E-mail</span>,
       cell: (info) => info.getValue(),
       enableSorting: true,
@@ -113,7 +155,7 @@ export default function AdminRequests({
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => {
-                  window.location.href = `/admin/requests/reservation-info/${id}`;
+                  window.location.href = `/admin/requests/${id}`;
                 }}
                 className="cursor-pointer gap-2"
               >
@@ -127,7 +169,7 @@ export default function AdminRequests({
     },
   ];
 
-  const reservationColumns: ColumnDef<TRequestItem>[] = [
+  const requestColumns: ColumnDef<TRequestListItem>[] = [
     {
       accessorKey: "member.name",
       header: () => <span className="font-semibold">Nome</span>,
@@ -179,7 +221,7 @@ export default function AdminRequests({
     },
   ];
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = (status: RequestTeacherStatus) => {
     setSelectedStatus((prev) =>
       prev.includes(status)
         ? prev.filter((s) => s !== status)
@@ -187,12 +229,12 @@ export default function AdminRequests({
     );
   };
 
-  const handleReservationStatusChange = (status: RequestStatus) => {
-    const newStatus = selectedReservationStatus.includes(status)
-      ? selectedReservationStatus.filter((s) => s !== status)
-      : [...selectedReservationStatus, status];
+  const handleRequestStatusChange = (status: RequestStatus) => {
+    const newStatus = selectedRequestStatus.includes(status)
+      ? selectedRequestStatus.filter((s) => s !== status)
+      : [...selectedRequestStatus, status];
 
-    setSelectedReservationStatus(newStatus);
+    setSelectedRequestStatus(newStatus);
 
     const currentLimit = pendingLimitRef.current ?? initialData?.limit ?? 10;
 
@@ -205,60 +247,44 @@ export default function AdminRequests({
     });
   };
 
-  const handleTabChange = (newTab: "professor" | "reservation") => {
-    setTab(newTab);
-    setSelectedStatus([]);
-    setSelectedReservationStatus([]);
-    pendingLimitRef.current = null;
-    setSortField(undefined);
-    setSortDir(undefined);
-
-    if (newTab === "reservation") {
-      onFilterChange?.({
-        page: 1,
-        limit: initialData?.limit || 10,
-        status: undefined,
-        sort: undefined,
-        dir: undefined,
-      });
-    }
-  };
-
-  const filteredProfessorRequests = allRequests.filter((d) => {
-    return (
-      professorStatus.includes(d.status) &&
-      (selectedStatus.length ? selectedStatus.includes(d.status) : true)
-    );
-  });
-
-  const reservationRequests = initialData?.data || [];
+  const requestRequests = initialData?.data || [];
 
   const currentPage = initialData?.page || 1;
   const currentLimit = pendingLimitRef.current ?? initialData?.limit ?? 10;
 
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="flex gap-2 mb-4">
-        <button
+        <Button
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             tab === "professor"
               ? "bg-contrast-green text-white"
               : "bg-soft-gray text-gray-700 hover:bg-gray-300"
           }`}
-          onClick={() => handleTabChange("professor")}
+          onClick={() => {
+            setTab("professor");
+            setSelectedStatus([]);
+            navigate({ to: "/admin/requests/teacher" });
+          }}
         >
           <FaUser size={24} /> Solicitações de Professor
-        </button>
-        <button
+        </Button>
+        <Button
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
-            tab === "reservation"
+            tab === "request"
               ? "bg-contrast-green text-white"
               : "bg-soft-gray text-gray-700 hover:bg-gray-300"
           }`}
-          onClick={() => handleTabChange("reservation")}
+          onClick={() => {
+            setTab("request");
+            setSelectedRequestStatus([]);
+            navigate({ to: "/admin/requests" });
+          }}
         >
           <FaRegCalendarCheck size={24} /> Solicitações de Reserva
-        </button>
+        </Button>
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -275,19 +301,19 @@ export default function AdminRequests({
                     checked={selectedStatus.includes(status)}
                     onCheckedChange={() => handleStatusChange(status)}
                   />
-                  <span className="text-sm">{status}</span>
+                  <span className="text-sm">
+                    {statusTeacherMap[status as RequestTeacherStatus] ?? status}
+                  </span>
                 </label>
               ))
-            : reservationStatus.map((status) => (
+            : requestStatus.map((status) => (
                 <label
                   key={status}
                   className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded"
                 >
                   <Checkbox
-                    checked={selectedReservationStatus.includes(status)}
-                    onCheckedChange={() =>
-                      handleReservationStatusChange(status)
-                    }
+                    checked={selectedRequestStatus.includes(status)}
+                    onCheckedChange={() => handleRequestStatusChange(status)}
                   />
                   <span className="text-sm">{statusMap[status]}</span>
                 </label>
@@ -297,10 +323,8 @@ export default function AdminRequests({
 
       <div className="relative overflow-y-auto max-h-[600px]">
         <DataTable
-          columns={
-            (tab === "professor" ? professorColumns : reservationColumns) as ColumnDef<any>[]
-          }
-          data={tab === "professor" ? filteredProfessorRequests : reservationRequests}
+          columns={tab === "professor" ? professorColumns : requestColumns}
+          data={tab === "professor" ? filteredProfessorRequests : requestRequests}
           filters={{
             page: currentPage - 1,
             limit: currentLimit,
@@ -312,13 +336,13 @@ export default function AdminRequests({
               const newPage = value + 1;
               const activeLimit = pendingLimitRef.current ?? currentLimit;
 
-              if (tab === "reservation") {
+              if (tab === "request") {
                 onFilterChange?.({
                   page: newPage,
                   limit: activeLimit,
                   status:
-                    selectedReservationStatus.length > 0
-                      ? selectedReservationStatus
+                    selectedRequestStatus.length > 0
+                      ? selectedRequestStatus
                       : undefined,
                   sort: sortField,
                   dir: sortDir,
@@ -327,17 +351,17 @@ export default function AdminRequests({
             }
 
             if (key === "limit") {
-              const newLimit = value as number; 
+              const newLimit = value as number;
 
               pendingLimitRef.current = newLimit;
 
-              if (tab === "reservation") {
+              if (tab === "request") {
                 onFilterChange?.({
                   page: 1,
                   limit: newLimit,
                   status:
-                    selectedReservationStatus.length > 0
-                      ? selectedReservationStatus
+                    selectedRequestStatus.length > 0
+                      ? selectedRequestStatus
                       : undefined,
                   sort: sortField,
                   dir: sortDir,
@@ -346,16 +370,16 @@ export default function AdminRequests({
             }
 
             if (key === "sort") {
-              const newSort = value as string | undefined; 
+              const newSort = value as string | undefined;
               setSortField(newSort);
 
-              if (tab === "reservation") {
+              if (tab === "request") {
                 onFilterChange?.({
                   page: 1,
                   limit: currentLimit,
                   status:
-                    selectedReservationStatus.length > 0
-                      ? selectedReservationStatus
+                    selectedRequestStatus.length > 0
+                      ? selectedRequestStatus
                       : undefined,
                   sort: newSort,
                   dir: sortDir,
@@ -364,16 +388,16 @@ export default function AdminRequests({
             }
 
             if (key === "dir") {
-              const newDir = value as "asc" | "desc" | undefined; 
+              const newDir = value as "asc" | "desc" | undefined;
               setSortDir(newDir);
 
-              if (tab === "reservation") {
+              if (tab === "request") {
                 onFilterChange?.({
                   page: 1,
                   limit: currentLimit,
                   status:
-                    selectedReservationStatus.length > 0
-                      ? selectedReservationStatus
+                    selectedRequestStatus.length > 0
+                      ? selectedRequestStatus
                       : undefined,
                   sort: sortField,
                   dir: newDir,

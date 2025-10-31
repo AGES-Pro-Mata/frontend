@@ -7,8 +7,9 @@ import {
   type TRequestListResponse,
   type TRequestDetailResponse,
 } from "@/entities/request-admin-response";
-import type { TRequestAdminFilters } from "@/entities/request-admin-filters";
+import type { TRequestAdminFilters, TRequestAdminTeacherFilters } from "@/entities/request-admin-filters";
 import type { HttpResponse } from "@/types/http-response";
+
 
 export async function getAllRequests(
   params: TRequestAdminFilters,
@@ -50,7 +51,7 @@ export const requestsQueryOptions = (
     enabled: !!token,
   });
 
-export function useAdminRequests(params: TRequestAdminFilters, token?: string, ) {
+export function useAdminRequests(params: TRequestAdminFilters, token?: string) {
   return useQuery(requestsQueryOptions(params, token));
 }
 
@@ -64,13 +65,13 @@ export function prefetchRequests(
 
 export async function getRequestGroupByIdAdmin(
   id: string,
-  token?: string,
+  token?: string
 ): Promise<HttpResponse<TRequestDetailResponse>> {
   try {
     const response = await api.get(`request/${id}`, {
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
@@ -79,23 +80,75 @@ export async function getRequestGroupByIdAdmin(
       const data = await RequestDetailResponseSchema.parseAsync(response.data);
       return {
         statusCode: response.status,
-        message: 'Request encontrada com sucesso',
+        message: "Request encontrada com sucesso",
         data,
       };
     } catch (parseErr: any) {
       return {
         statusCode: 500,
-        message: 'VALIDATION_ERROR',
+        message: "VALIDATION_ERROR",
         error: (parseErr && parseErr.errors) || String(parseErr),
       } as HttpResponse<TRequestDetailResponse>;
     }
   } catch (error: any) {
     return {
       statusCode: error.response?.data?.statusCode || 500,
-      message: error.response?.data?.message || 'REQUEST_ERROR',
+      message: error.response?.data?.message || "REQUEST_ERROR",
       error: error.response?.data?.error || String(error),
     };
   }
 }
 
+export async function getAllRequestTeacher(
+  params: TRequestAdminTeacherFilters,
+  token?: string
+): Promise<TRequestListResponse> {
+  const queryParams = new URLSearchParams();
 
+  queryParams.append("page", (params.page ?? 1).toString());
+  queryParams.append("limit", (params.limit ?? 10).toString());
+
+  if (params.status && params.status.length > 0) {
+    params.status.forEach((s) => queryParams.append("status", s));
+  }
+
+  const result = await safeApiCall(
+    api.get(`/request/teacher?${queryParams.toString()}`, {
+      timeout: 10000,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    }),
+    RequestListResponseSchema
+  );
+  return result;
+}
+
+export const requestsTeacherQueryOptions = (
+  params: TRequestAdminTeacherFilters,
+  token?: string
+) =>
+  queryOptions({
+    queryKey: ["admin-request-teacher", params],
+    queryFn: async () => {
+      return await getAllRequestTeacher(params, token);
+    },
+    placeholderData: (previousData) => previousData,
+    enabled: !!token,
+  });
+
+
+export function useTeacherRequests(
+  params: TRequestAdminTeacherFilters,
+  token?: string
+) {
+  return useQuery(requestsTeacherQueryOptions(params, token));
+}
+export function prefetchTeacherRequests(
+  queryClient: QueryClient,
+  params: TRequestAdminTeacherFilters,
+  token?: string
+) {
+  return queryClient.prefetchQuery(requestsTeacherQueryOptions(params, token));
+}
