@@ -91,7 +91,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className="flex flex-col w-full h-full p-4 gap-6">
+    <div className="flex flex-col w-full h-full p-4 gap-6 overflow-hidden">
       <div className="flex justify-between items-center">
         <Input
           value={searchTerm}
@@ -108,7 +108,7 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
-      <div className="relative">
+      <div className="relative flex-1 overflow-hidden">
       {isLoading && (
           <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
             <MoonLoader size={35} color="#22c55e" />
