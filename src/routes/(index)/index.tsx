@@ -1,35 +1,65 @@
-import { Carousel } from "@/components/carousel/carousel";
-import { CardsInfoOnHover } from "@/components/cards/cardInfoOnHover";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button } from "@/components/buttons/defaultButton";
+import { HighlightsCarousel } from "@/components/carousel";
+import { CardsInfoOnHover } from "@/components/card/cardInfoOnHover";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { Button } from "@/components/button/defaultButton";
 import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
-import { useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useFetchPublicHighlightsByCategories } from "@/hooks/useHighlights";
+import { HighlightCategory } from "@/entities/highlights";
+import type { HighlightResponse } from "@/api/highlights";
+import { Loader } from "lucide-react";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 export const Route = createFileRoute("/(index)/")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+export function RouteComponent() {
   const { t } = useTranslation();
-  const [heroLoaded, setHeroLoaded] = useState(false);
+  const heroImageUrl = "https://promata-storage-dev.s3.us-east-2.amazonaws.com/highlights/Promata+Agosto+(1).JPG";
+  const { data: heroLoaded } = useLoadImage(heroImageUrl);
+  const { data: highlightsData, isLoading } =
+    useFetchPublicHighlightsByCategories();
+
+  const sortByOrder = useMemo(
+    () => (items?: HighlightResponse[]) =>
+      items ? [...items].sort((a, b) => a.order - b.order) : [],
+    []
+  );
+
+  const carouselHighlights = useMemo(() => {
+    const items = highlightsData?.[HighlightCategory.CARROSSEL];
+
+    return sortByOrder(items);
+  }, [highlightsData, sortByOrder]);
+
+  const cardsHighlights = useMemo(() => {
+    if (!highlightsData) return undefined;
+
+    return {
+      labs: sortByOrder(highlightsData[HighlightCategory.LABORATORIO]),
+      rooms: sortByOrder(highlightsData[HighlightCategory.QUARTO]),
+      events: sortByOrder(highlightsData[HighlightCategory.EVENTO]),
+      trails: sortByOrder(highlightsData[HighlightCategory.TRILHA]),
+    };
+  }, [highlightsData, sortByOrder]);
+
   return (
-    <div className="w-full overflow-x-hidden">
-      <div className="relative w-full h-screen bg-main-dark-green flex items-start justify-center pt-[clamp(2rem,6vh,5rem)]">
+    <div className="w-full overflow-x-hidden bg-soft-white">
+      <div className="relative w-full h-screen bg-main-dark-green/70 flex items-start justify-center pt-[clamp(2rem,6vh,5rem)]">
         <picture className="absolute inset-0 w-full h-full">
-          <source srcSet="/home-page-image.avif" type="image/avif" />
-          <source srcSet="/home-page-image.webp" type="image/webp" />
           <img
-            src="/home-page-image.avif"
+            src={heroImageUrl}
             alt="PRÓ-MATA Centro de Pesquisas"
-            className={`w-full h-full object-cover transition-opacity duration-700 ease-out ${heroLoaded ? "opacity-100" : "opacity-0"
-              }`}
+            className={`w-full h-full object-cover transition-opacity duration-700 ease-out ${
+              heroLoaded ? "opacity-100" : "opacity-0"
+            }`}
             loading="eager"
             decoding="async"
             fetchPriority="high"
             sizes="100vw"
-            onLoad={() => setHeroLoaded(true)}
           />
         </picture>
 
@@ -81,8 +111,20 @@ function RouteComponent() {
       <div className="h-[clamp(2.5rem,6vh,5rem)] w-full bg-main-dark-green" />
       <div className="px-4 sm:px-6 lg:px-8 py-[clamp(2rem,6vw,5rem)] flex flex-col items-center">
         <InfoExperiencies />
-        <CardsInfoOnHover />
-        <Carousel />
+        {isLoading ? (
+          <div className="flex items-center justify-center h-[clamp(14rem,60vw,28rem)] sm:h-[clamp(22rem,50vw,33.8125rem)]">
+            <Loader />
+          </div>
+        ) : (
+          cardsHighlights && <CardsInfoOnHover highlights={cardsHighlights} />
+        )}
+        {isLoading ? (
+          <div className="flex items-center justify-center h-[clamp(14rem,60vw,28rem)] sm:h-[clamp(22rem,50vw,33.8125rem)]">
+            <Loader />
+          </div>
+        ) : (
+          carouselHighlights && <HighlightsCarousel highlights={carouselHighlights} />
+        )}
         <div className="flex flex-col items-center mb-[clamp(2rem,5vw,3.75rem)] justify-center">
           <Typography
             variant="h4"

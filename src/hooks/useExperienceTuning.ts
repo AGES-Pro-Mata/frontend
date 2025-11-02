@@ -29,11 +29,14 @@ export function useExperienceTuning({
     if (!storageKey) return;
     try {
       const raw = localStorage.getItem(storageKey);
+
       if (!raw) return;
       const data: ExperienceTuningData = JSON.parse(raw);
+
       if (data.from && data.to) {
         const fromDate = new Date(data.from);
         const toDate = new Date(data.to);
+
         if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime())) {
           setRange({ from: fromDate, to: toDate });
           setSavedRange({ from: fromDate, to: toDate });
@@ -66,6 +69,7 @@ export function useExperienceTuning({
       to: range.to.toISOString(),
       savedAt: new Date().toISOString(),
     };
+
     if (storageKey) {
       try {
         localStorage.setItem(storageKey, JSON.stringify(payload));
@@ -83,6 +87,7 @@ export function useExperienceTuning({
       setSavedWomen(womenNum);
     }
     onSave?.(payload);
+
     return payload;
   }, [experienceId, men, range, storageKey, women, onSave]);
 

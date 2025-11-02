@@ -1,7 +1,5 @@
-
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/core/api";
 const reservationStatus = [
   "CREATED",
   "CANCELED",
@@ -15,29 +13,44 @@ const reservationStatus = [
   "PAYMENT_SENT",
 ];
 
-async function fetchRequests({ page = 1, limit = 10, status }: { page?: number; limit?: number; status?: string }) {
-  const params: any = { page, limit };
+async function fetchRequests({
+  page = 1,
+  limit = 10,
+  status,
+}: {
+  page?: number;
+  limit?: number;
+  status?: string;
+}) {
+  const params = { page, limit, status };
+
   if (status) params.status = status;
-  const response = await axios.get("/api/requests", { params });
+  const response = await api.get("/api/requests", { params });
+
   return response.data;
 }
 
-export function useAdminRequests(filters: { page?: number; limit?: number; status?: string }) {
+export function useAdminRequests(filters: {
+  page?: number;
+  limit?: number;
+  status?: string;
+}) {
   const queryClient = useQueryClient();
 
   const requestsQuery = useQuery({
     queryKey: ["adminRequests", filters],
-    queryFn: () => fetchRequests(filters),
+    queryFn: () => fetchRequests(filters)
   });
 
   // Exemplo de mutation para aprovar (ajuste endpoint se necessário)
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await axios.post(`/api/requests/${id}/approve`);
+      const response = await api.post(`/api/requests/${id}/approve`);
+
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adminRequests"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["adminRequests"] });
     },
   });
 
@@ -47,3 +60,4 @@ export function useAdminRequests(filters: { page?: number; limit?: number; statu
     reservationStatus,
   };
 }
+

@@ -1,6 +1,9 @@
 import { api } from "@/core/api";
 import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
-import { ExperienceAdminRequestFilters, type TExperienceAdminRequestFilters } from "@/entities/experiences-admin-filters";
+import {
+  ExperienceAdminRequestFilters,
+  type TExperienceAdminRequestFilters,
+} from "@/entities/experiences-admin-filters";
 import type { TExperienceAdminResponse } from "@/entities/experiences-admin-response";
 
 import { safeParseFilters } from "@/utils/safe-filters";
@@ -13,54 +16,58 @@ type useFetchAdminExperiencesParams = {
   filters: TExperienceAdminRequestFilters;
 };
 
-export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesParams) => {
-  const { data, isFetching, refetch } = useQuery({
+export const useFetchAdminExperiences = ({
+  filters,
+}: useFetchAdminExperiencesParams) => {
+  const query = useQuery({
     queryKey: [ADMIN_EXPERIENCES_QUERY_KEY, filters],
     queryFn: async () => {
+      //await new Promise(r => setTimeout(r, 5000));
       const response = await api.get<
         {
           items: TExperienceAdminResponse[];
         } & TApiPaginationMetaResult
-      >("/experience" + safeParseFilters(filters, ExperienceAdminRequestFilters));
+      >(
+        `/experience${safeParseFilters(filters, ExperienceAdminRequestFilters)}`
+      );
+
       return response.data;
     },
   });
 
-  const { items = [] } = data || {};
+  const { items = [] } = query.data || {};
   const meta = {
-    total: data?.total ?? 0,
-    page: data?.page ?? 0,
-    limit: data?.limit ?? 10,
+    total: query.data?.total ?? 0,
+    page: query.data?.page ?? 0,
+    limit: query.data?.limit ?? 10,
   };
 
   const parsedItems = items.map((e) => {
     if (!e.startDate || !e.endDate) {
-      return e
+      return e;
     }
 
     const startDate = new Date(e.startDate).toLocaleDateString("pt-BR", {
       day: "2-digit",
-      month: "2-digit"
+      month: "2-digit",
     });
 
     const endDate = new Date(e.endDate).toLocaleDateString("pt-BR", {
       day: "2-digit",
-      month: "2-digit"
+      month: "2-digit",
     });
 
-    const date = `${startDate}-${endDate}`
+    const date = `${startDate}-${endDate}`;
 
     return {
       ...e,
-      date
-    }
+      date,
+    };
   });
 
   return {
     items: parsedItems,
     meta,
-    data,
-    isFetching,
-    refetch,
+    ...query,
   };
 };

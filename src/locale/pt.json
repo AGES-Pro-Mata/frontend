@@ -31,7 +31,22 @@
       "subtitle": "Adicione experiências ao seu carrinho para finalizar a reserva."
     },
     "checkoutButton": "Finalizar Reserva",
-    "browseLink": "Ver mais experiências"
+    "browseLink": "Ver mais experiências",
+    "closeButtonAria": "Fechar carrinho"
+  },
+  "cartItem": {
+    "capacity_one": "{{count}} pessoa",
+    "capacity_other": "{{count}} pessoas",
+    "length": "{{length}} km",
+    "duration": "{{value}} h",
+    "difficulty": {
+      "light": "Leve",
+      "easy": "Fácil",
+      "medium": "Moderada",
+      "hard": "Difícil",
+      "extreme": "Extrema"
+    },
+    "eventDateRange": "{{from}} – {{to}}"
   },
   "status": {
     "confirmada": "Confirmada",
@@ -40,6 +55,13 @@
     "aguardando_aprovacao": "Aguardando aprovação",
     "cancelada": "Cancelada",
     "desconhecido": "Desconhecido"
+  },
+  "myReservationsFilter": {
+    "searchPlaceholder": "Buscar reservas...",
+    "searchAriaLabel": "Buscar reservas",
+    "status": {
+      "all": "Todas"
+    }
   },
 
   "nav": {
@@ -100,6 +122,21 @@
     "book": "Fazer Reserva"
   },
 
+  "reserveFilter": {
+    "arrivalDateLabel": "Data de entrada",
+    "arrivalDatePlaceholder": "Entrada",
+    "departureDateLabel": "Data de saída",
+    "departureDatePlaceholder": "Saída",
+    "experienceTypes": {
+      "rooms": "Quartos",
+      "events": "Eventos",
+      "labs": "Laboratórios",
+      "trails": "Trilhas"
+    },
+    "searchPlaceholder": "Buscar...",
+    "searchAriaLabel": "Buscar experiências"
+  },
+
   "experienceCard": {
     "package": "Pacote",
     "currencySymbol": "$",
@@ -114,7 +151,8 @@
     "selectPeriodOnCalendar": "Selecione o período no calendário",
     "selectAmountOfPeople": "Selecione a quantidade de pessoas",
     "malePeople": "Número de pessoas do gênero masculino",
-    "femalePeople": "Número de pessoas do gênero feminino"
+    "femalePeople": "Número de pessoas do gênero feminino",
+    "addToCart": "Adicionar ao carrinho"
   },
 
   "homeCards": {
@@ -158,6 +196,7 @@
       "register": "Cadastre-se",
       "toastSuccess": "Login realizado com sucesso!",
       "toastError": "Erro ao fazer login",
+      "toastWarning": "Atenção: Você deve mudar a sua senha no primeiro acesso.",
       "toastErrorTryAgain": "Erro ao fazer login. Tente novamente.",
       "toastInternal": "Erro interno. Tente novamente.",
       "invalidCredentials": "Credenciais inválidas. Tente novamente."
@@ -395,14 +434,53 @@
     "mustAcceptTerms": "Você deve aceitar os termos de uso",
     "cityRequired": "Cidade é obrigatória",
     "numberRequired": "Número é obrigatório"
-  }
-  ,
+  },
+  "termsPage": {
+    "title": "Termos de Uso",
+    "paragraphs": [
+      "Estes Termos de Uso regulam a utilização do site de hospedagem do Pró-Mata/PUCRS, que disponibiliza informações, reservas e serviços relacionados à hospedagem no Centro de Pesquisas e Conservação da Natureza Pró-Mata, em São Francisco de Paula/RS. O acesso ao site é livre e gratuito, ressalvados os serviços que dependam de reserva ou contratação.",
+      "Ao realizar uma reserva, o usuário declara estar de acordo com estas condições. É responsabilidade do usuário fornecer informações corretas e atualizadas. Reservas estão sujeitas à disponibilidade e confirmação. Cancelamentos e alterações devem respeitar os prazos informados. Em casos de não comparecimento ou cancelamento fora do prazo, poderá haver cobrança de multa.",
+      "O usuário deve zelar pela preservação das instalações e do patrimônio ambiental, cumprir normas internas de segurança e responder por eventuais danos causados por uso indevido das dependências.",
+      "A PUCRS se compromete a manter as instalações adequadas, fornecer informações claras sobre serviços, tarifas e condições, e adotar medidas de segurança digital compatíveis."
+    ]
+  },
+  "privacyPage": {
+    "title": "Política de Privacidade",
+    "sections": [
+      {
+        "heading": "Dados Coletados e Finalidades",
+        "body": "Durante a utilização do site são coletados dados pessoais, informações de pagamento e dados de navegação. Os dados coletados têm as seguintes finalidades:",
+        "list": [
+          "Processar reservas e gerenciar hospedagens",
+          "Garantir a comunicação entre usuário e administração",
+          "Cumprir obrigações legais",
+          "Melhorar a experiência de uso do site"
+        ]
+      },
+      {
+        "heading": "Compartilhamento",
+        "body": "Os dados não serão vendidos ou cedidos a terceiros. Poderão ser compartilhados apenas com prestadores de serviços necessários ou mediante exigência legal."
+      },
+      {
+        "heading": "Direitos do Usuário",
+        "body": "O usuário pode solicitar acesso, correção ou exclusão de seus dados; revogar consentimento quando aplicável; e obter informações sobre o tratamento realizado."
+      },
+      {
+        "heading": "Armazenamento e Legislação",
+        "body": "Os dados serão armazenados pelo período necessário ao cumprimento das finalidades e em conformidade com a legislação vigente, especialmente a Lei Geral de Proteção de Dados – LGPD (Lei nº 13.709/2018)."
+      }
+    ],
+    "contact": {
+      "body": "Para dúvidas ou solicitações, o usuário pode entrar em contato com a administração do Pró-Mata/PUCRS pelo e-mail:",
+      "email": "ima@pucrs.br"
+    }
+  },
   "footer": {
     "contact": "Entre em contato",
     "researchCenter": "Centro de Pesquisas PRÓ-MATA",
-    "city": "CIDADE",
-    "phone": "Telefone: (XX) XXXX-XXXX",
-    "email": "E-mail: contato@pro-mata.org",
+    "city": "São Francisco de Paula - RS",
+    "phoneLabel": "Telefone",
+    "emailLabel": "E-mail",
     "copyright": "© {{year}} PRÓ-MATA. Todos os direitos reservados."
   }
 }

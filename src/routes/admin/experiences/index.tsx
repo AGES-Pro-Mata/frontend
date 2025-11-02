@@ -1,12 +1,12 @@
-import DataTable from '@/components/table';
-import { useFilters } from '@/hooks/filters/filters';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { Typography } from '@/components/typography';
-import { Edit, MoreHorizontal, Trash } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useEffect, useState } from 'react';
+import DataTable from "@/components/table";
+import { useFilters } from "@/hooks/filters/filters";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/typography";
+import { Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/hooks/useDebounce";
+import { type ChangeEvent, useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,51 +15,53 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useFetchAdminExperiences } from '@/hooks/use-fetch-admin-experiences';
 import type { TExperienceAdminRequestFilters } from '@/entities/experiences-admin-filters';
+import { MoonLoader } from "react-spinners";
 
-export const Route = createFileRoute('/admin/experiences/')({
+export const Route = createFileRoute("/admin/experiences/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const { filters, setFilter } = useFilters<TExperienceAdminRequestFilters>({
-    key: 'get-admin-experience',
+    key: "get-admin-experience",
     initialFilters: {
       limit: 10,
       page: 0,
     },
   });
-  const { items, meta } = useFetchAdminExperiences({ filters });
+  const { items, meta, isLoading } = useFetchAdminExperiences({ filters });
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   useEffect(() => {
-    setFilter('name', debouncedSearchTerm);
+    setFilter("name", debouncedSearchTerm);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm]);
 
-  const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
   const columns = [
     {
-      accessorKey: 'name',
-      header: 'Name',
+      accessorKey: "name",
+      header: "Name",
       enableSorting: true,
     },
     {
-      accessorKey: 'description',
-      header: 'Descrição',
+      accessorKey: "description",
+      header: "Descrição",
       enableSorting: true,
     },
     {
-      accessorKey: 'date',
-      header: 'Data',
+      accessorKey: "date",
+      header: "Data",
       enableSorting: true,
     },
     {
-      id: 'actions',
+      id: "actions",
       enableHiding: false,
       size: 50,
       cell: () => {
@@ -70,11 +72,11 @@ function RouteComponent() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem className="cursor-pointer gap-4">
-                {'Editar'}
+                {"Editar"}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer text-red-500 gap-3">
-                {'Excluir'}
+                {"Excluir"}
                 <Trash className="size-4 text-red-500" />
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -85,7 +87,7 @@ function RouteComponent() {
   ];
 
   const navigateToCreateExperience = () => {
-    navigate({ to: '/admin/experiences/create' });
+    void navigate({ to: "/admin/experiences/create" });
   };
 
   return (
@@ -106,6 +108,12 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
+      <div className="relative">
+      {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+            <MoonLoader size={35} color="#22c55e" />
+          </div>
+          )}
       <DataTable
         data={items}
         columns={columns}
@@ -113,6 +121,7 @@ function RouteComponent() {
         meta={meta}
         setFilter={setFilter}
       />
+      </div>
     </div>
   );
 }

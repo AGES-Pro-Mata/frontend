@@ -29,7 +29,22 @@
             "subtitle": "Add experiences to your cart to finish your reservation."
         },
         "checkoutButton": "Finish Reservation",
-        "browseLink": "See more experiences"
+        "browseLink": "See more experiences",
+        "closeButtonAria": "Close cart"
+    },
+    "cartItem": {
+        "capacity_one": "{{count}} person",
+        "capacity_other": "{{count}} people",
+        "length": "{{length}} km",
+        "duration": "{{value}} h",
+        "difficulty": {
+            "light": "Light",
+            "easy": "Easy",
+            "medium": "Moderate",
+            "hard": "Hard",
+            "extreme": "Extreme"
+        },
+        "eventDateRange": "{{from}} – {{to}}"
     },
     "status": {
         "confirmada": "Confirmed",
@@ -38,6 +53,13 @@
         "aguardando_aprovacao": "Awaiting approval",
         "cancelada": "Cancelled",
         "desconhecido": "Unknown"
+    },
+    "myReservationsFilter": {
+        "searchPlaceholder": "Search reservations...",
+        "searchAriaLabel": "Search reservations",
+        "status": {
+            "all": "All"
+        }
     },
     "nav": {
         "home": "Home",
@@ -94,21 +116,36 @@
         "bookNow": "Book now!",
         "book": "Make a Reservation"
     },
+        "reserveFilter": {
+            "arrivalDateLabel": "Check-in date",
+            "arrivalDatePlaceholder": "Check-in",
+            "departureDateLabel": "Check-out date",
+            "departureDatePlaceholder": "Check-out",
+            "experienceTypes": {
+                "rooms": "Rooms",
+                "events": "Events",
+                "labs": "Laboratories",
+                "trails": "Trails"
+            },
+            "searchPlaceholder": "Search...",
+            "searchAriaLabel": "Search experiences"
+        },
     "experienceCard": {
-        "package": "Package",
-        "currencySymbol": "$",
-        "currencyPrefix": "$",
-        "dateRange": "{{from}} to {{to}}",
-        "editInfo": "Edit information",
-        "selectDateAndPeople": "Select date and number of people",
-        "men": "Men",
-        "women": "Women",
-        "selectedDate": "Selected date",
-        "chooseDate": "Choose a Date",
-        "selectPeriodOnCalendar": "Select the period on the calendar",
-        "selectAmountOfPeople": "Select the amount of people",
-        "malePeople": "Number of male individuals",
-        "femalePeople": "Number of female individuals"
+      "package": "Package",
+      "currencySymbol": "$",
+      "currencyPrefix": "$",
+      "dateRange": "{{from}} to {{to}}",
+      "editInfo": "Edit information",
+      "selectDateAndPeople": "Select date and number of people",
+      "men": "Men",
+      "women": "Women",
+      "selectedDate": "Selected date",
+      "chooseDate": "Choose a Date",
+      "selectPeriodOnCalendar": "Select the period on the calendar",
+      "selectAmountOfPeople": "Select the amount of people",
+      "malePeople": "Number of male individuals",
+      "femalePeople": "Number of female individuals",
+      "addToCart": "Add to cart"
     },
     "homeCards": {
         "cta": "Learn more",
@@ -148,6 +185,7 @@
             "submitting": "Logging in...",
             "register": "Sign up",
             "toastSuccess": "Logged in successfully!",
+            "toastWarning": "Attention: You must change your password on first access.",
             "toastError": "Error logging in",
             "toastErrorTryAgain": "Error logging in. Please try again.",
             "toastInternal": "Internal error. Please try again.",
@@ -382,12 +420,52 @@
         "cityRequired": "City is required",
         "numberRequired": "Number is required"
     },
+    "termsPage": {
+        "title": "Terms of Use",
+        "paragraphs": [
+            "These Terms of Use govern access to the Pró-Mata/PUCRS reservations website, which provides information, reservation options, and services related to accommodations at the Pró-Mata Research and Nature Conservation Center in São Francisco de Paula, RS. The access to the website is free of charge, with the exception of services that require reservations or contractual arrangements.",
+            "By making a reservation, the user acknowledges and agrees to these conditions and is responsible for providing accurate and up-to-date information. Reservations are subject to availability and confirmation. Cancellations or changes must follow the timelines communicated on the platform, and late cancellations or no-shows may result in a fee.",
+            "Users must preserve the facilities and environmental assets, comply with internal safety guidelines, and are liable for any damages arising from improper use of the premises.",
+            "PUCRS undertakes to maintain the facilities in good condition, provide clear information about services, rates, and conditions, and adopt appropriate digital security measures."
+        ]
+    },
+    "privacyPage": {
+        "title": "Privacy Policy",
+        "sections": [
+            {
+                "heading": "Collected Data and Purpose",
+                "body": "While using the website, personal data, payment details, and browsing information are collected. The data serves the following purposes:",
+                "list": [
+                    "Process reservations and manage accommodations",
+                    "Ensure communication between the user and the administration",
+                    "Fulfill legal obligations",
+                    "Improve the website experience"
+                ]
+            },
+            {
+                "heading": "Sharing",
+                "body": "Data is neither sold nor transferred to third parties. It may only be shared with service providers required for operations or when mandated by law."
+            },
+            {
+                "heading": "User Rights",
+                "body": "Users may request access to, correction of, or deletion of their data; revoke consent when applicable; and obtain information about how their data is processed."
+            },
+            {
+                "heading": "Storage and Legislation",
+                "body": "Data is stored for as long as necessary to fulfill its intended purposes and in accordance with the applicable legislation, especially Brazil's General Data Protection Law (LGPD – Law No. 13,709/2018)."
+            }
+        ],
+        "contact": {
+            "body": "For questions or requests, users can contact the Pró-Mata/PUCRS administration by email:",
+            "email": "ima@pucrs.br"
+        }
+    },
     "footer": {
         "contact": "Contact us",
         "researchCenter": "PRÓ-MATA Research Center",
-        "city": "CITY",
-        "phone": "Phone: (XX) XXXX-XXXX",
-        "email": "Email: contato@pro-mata.org",
+        "city": "São Francisco de Paula - RS",
+            "phoneLabel": "Phone",
+            "emailLabel": "Email",
         "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
     }
 }

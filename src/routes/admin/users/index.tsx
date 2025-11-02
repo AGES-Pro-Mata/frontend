@@ -16,8 +16,8 @@ import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDeleteUser } from "@/hooks/use-delete-users";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useEffect, useState } from "react";
+import { useState, type ChangeEvent } from "react";
+import { MoonLoader } from "react-spinners";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
   ["name"]: "Nome",
@@ -46,19 +46,14 @@ function RouteComponent() {
       page: 0,
     },
   });
-
-  const { items, meta } = useFetchAdminUsers({ filters });
+  const { items, meta, isLoading } = useFetchAdminUsers({ filters });
   const { handleDeleteUser } = useDeleteUser();
 
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
-  useEffect(() => {
-    setFilter(selectedFilter, debouncedSearchTerm);
-  }, [debouncedSearchTerm, selectedFilter]);
-
-  const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
     setSearchTerm(value);
+    setFilter(selectedFilter, value);
   };
 
   const onChangeFilter = (value: FilterKey) => {
@@ -73,11 +68,11 @@ function RouteComponent() {
   };
 
   const handleEditUserClick = (userId: string) => {
-    navigate({ to: "/admin/users/$userId", params: { userId } });
+    void navigate({ to: "/admin/users/$userId", params: { userId } });
   };
 
   const navigateToCreateUser = () => {
-    navigate({ to: "/admin/users/create" });
+    void navigate({ to: "/admin/users/create" });
   };
 
   const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
@@ -93,6 +88,7 @@ function RouteComponent() {
       enableSorting: true,
       cell: ({ row }: any) => {
         const createdBy = row.original.createdBy;
+
         return createdBy?.name || "-";
       },
     },
@@ -178,6 +174,12 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
+      <div className="relative">
+      {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+            <MoonLoader size={35} color="#22c55e" />
+          </div>
+          )}
       <DataTable
         data={items}
         columns={columns}
@@ -185,6 +187,7 @@ function RouteComponent() {
         meta={meta}
         setFilter={setFilter}
       />
+      </div>
     </div>
   );
 }

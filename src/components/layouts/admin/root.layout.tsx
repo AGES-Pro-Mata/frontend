@@ -12,6 +12,7 @@ export function AdminLayoutRoot({ children }: AdminLayoutRootProps) {
 
   childrenArray.forEach((child) => {
     const displayName = (child.type as any)?.displayName;
+
     if (displayName === "AdminLayout.Header") {
       headerChildren.push(child);
     } else if (
