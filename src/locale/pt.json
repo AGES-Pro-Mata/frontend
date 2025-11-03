@@ -59,21 +59,38 @@
     "eventDateRange": "{{from}} – {{to}}"
   },
   "status": {
-    "confirmada": "Confirmada",
-    "pagamento_pendente": "Pagamento pendente",
-    "cadastro_pendente": "Cadastro pendente",
-    "aguardando_aprovacao": "Aguardando aprovação",
+    "cadastro_pendente": "Cadastro Pendente",
+    "pagamento_pendente": "Pagamento Pendente",
+    "aguardando_aprovacao": "Aprovação Pendente",
+    "concluida": "Concluída",
     "cancelada": "Cancelada",
-    "desconhecido": "Desconhecido"
+    "cancelamento_pendente": "Aguardando cancelamento"
+  },
+  "reservation": {
+    "registerPeople": "Cadastrar Pessoas",
+    "sendPaymentProof": "Enviar Comprovante",
+    "cancelReservation": "Cancelar Reserva",
+    "viewReservation": "Visualizar Reserva",
+    "cancelRequestSent": "Solicitação de cancelamento enviada!",
+    "peopleRegisteredSuccess": "Pessoas cadastradas com sucesso!",
+    "paymentProofSent": "Comprovante enviado com sucesso!",
+    "openingReservationDetails": "Abrindo detalhes da reserva...",
+    "activities": {
+      "historicalTrail": "Trilha Histórico-Cultural",
+      "birdWatching": "Observação de Aves",
+      "outdoorLab": "Laboratório ao Ar Livre"
+    }
   },
   "myReservationsFilter": {
     "searchPlaceholder": "Buscar reservas...",
     "searchAriaLabel": "Buscar reservas",
     "status": {
-      "all": "Todas"
+      "all": "Todas",
+      "waiting": "Aguardando",
+      "confirmed": "Confirmadas",
+      "cancelled": "Canceladas"
     }
   },
-
   "nav": {
     "home": "Início",
     "reserve": "Reservar",
@@ -510,5 +527,35 @@
     "phoneLabel": "Telefone",
     "emailLabel": "E-mail",
     "copyright": "© {{year}} PRÓ-MATA. Todos os direitos reservados."
+  },
+  "paymentProof": {
+    "selectBeforeSend": "Selecione um arquivo antes de enviar!",
+    "instructions": "Envie o comprovante de pagamento para confirmar a reserva",
+    "acceptedProofs": "Hoje, aceitamos os seguintes comprovantes:",
+    "ted": "TED: BANCO",
+    "pix": "PIX: CHAVEPIX",
+    "sendProofWithValue": "Envie o comprovante com o valor de",
+    "paymentProofLabel": "Comprovante de Pagamento",
+    "chooseFile": "Escolher arquivo",
+    "noFileSelected": "Nenhum arquivo selecionado"
+  },
+  "cancelReservation": {
+    "title": "Cancelar reserva?",
+    "confirmation": "Tem certeza de que deseja cancelar sua reserva? Esta ação não poderá ser desfeita.",
+    "keepReservation": "Manter reserva"
+  },
+  "peopleModal": {
+    "title": "Cadastrar Pessoas",
+    "name": "Nome",
+    "phone": "Telefone",
+    "birth": "Nascimento",
+    "cpf": "CPF",
+    "gender": "Gênero",
+    "male": "Masculino",
+    "female": "Feminino",
+    "other": "Outro",
+    "addOnePerson": "Adicionar pessoa",
+    "addPerson": "Adicionar mais uma pessoas",
+    "fillAllFields": "Preencha todos os campos obrigatórios"
   }
 }
