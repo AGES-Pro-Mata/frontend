@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { TextInput } from "@/components/input/textInput";
+import { PasswordInput } from "@/components/input/passwordInput";
 import { Typography } from "@/components/typography/typography";
 import { Button } from "@/components/button/defaultButton";
 import { useRegisterUser } from "@/hooks/useRegisterUser";
@@ -646,10 +647,9 @@ export function RegisterUser() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <TextInput
+                      <PasswordInput
                         label={t("register.fields.password")}
                         required
-                        type="password"
                         placeholder={t("register.fields.password")}
                         {...field}
                       />
@@ -663,10 +663,9 @@ export function RegisterUser() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <TextInput
+                      <PasswordInput
                         label={t("register.fields.confirmPassword")}
                         required
-                        type="password"
                         placeholder={t("register.fields.confirmPassword")}
                         {...field}
                       />
