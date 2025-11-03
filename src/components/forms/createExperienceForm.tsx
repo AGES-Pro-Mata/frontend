@@ -152,7 +152,9 @@ const parsePrice = (formattedValue: string) => {
 export function CreateExperience() {
   const { mutate } = useCreateExperience();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(imagePreview || "");
+  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(
+    imagePreview || ""
+  );
   const [priceDisplay, setPriceDisplay] = useState<string>("");
 
   const form = useForm<
@@ -188,7 +190,7 @@ export function CreateExperience() {
     ) {
       form.setValue("experienceEndDate", undefined as any);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchedStartDate, watchedEndDate]);
 
   const getDisabledDates = (isStartDate: boolean) => {
@@ -292,7 +294,9 @@ export function CreateExperience() {
                           src={imagePreview}
                           alt="Preview"
                           className={`max-w-full max-h-48 object-cover rounded-lg transition-opacity duration-300 ${
-                            previewLoaded && !previewLoading ? "opacity-100" : "opacity-0"
+                            previewLoaded && !previewLoading
+                              ? "opacity-100"
+                              : "opacity-0"
                           }`}
                         />
                         {previewLoading && (
@@ -343,7 +347,7 @@ export function CreateExperience() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Tipo de experiência *
                     </Typography>
                     <Select value={field.value} onValueChange={field.onChange}>
@@ -431,14 +435,14 @@ export function CreateExperience() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Dias da semana disponíveis
                     </Typography>
                     <Popover>
                       <PopoverTrigger asChild>
                         <ShadcnButton
                           variant="outline"
-                          className="w-full justify-start text-left font-normal h-10 px-3"
+                          className="w-full justify-start text-left font-normal h-12 px-5"
                         >
                           {field.value && field.value.length > 0 ? (
                             <Typography className="text-sm">
@@ -518,7 +522,7 @@ export function CreateExperience() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Data de início
                     </Typography>
                     <Popover>
@@ -559,7 +563,7 @@ export function CreateExperience() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Data de fim
                     </Typography>
                     <Popover>
@@ -654,7 +658,7 @@ export function CreateExperience() {
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex flex-col gap-0">
-                        <Typography className="text-foreground font-medium mb-1">
+                        <Typography className="text-foreground font-medium">
                           Dificuldade *
                         </Typography>
                         <Select
