@@ -75,11 +75,9 @@ export function CardExperience({ experience }: CardExperienceProps) {
     switch (experience.trailDifficulty) {
       case "LIGHT":
         return t("cartItem.difficulty.light");
-      case "EASY":
-        return t("cartItem.difficulty.easy");
-      case "MEDIUM":
+      case "MODERATED":
         return t("cartItem.difficulty.medium");
-      case "HARD":
+      case "HEAVY":
         return t("cartItem.difficulty.hard");
       case "EXTREME":
         return t("cartItem.difficulty.extreme");
