@@ -149,11 +149,11 @@
     },
     "homeCards": {
         "cta": "Learn more",
-        "labs": {
+        "laboratorys": {
             "title": "Laboratories",
             "description": "Spaces equipped for scientific research and academic projects."
         },
-        "rooms": {
+        "hostings": {
             "title": "Rooms",
             "description": "Comfortable spaces for academic and tourist lodging."
         },
