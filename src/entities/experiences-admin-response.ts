@@ -6,6 +6,7 @@ export const ExperienceAdminResponse = z.object({
   description: z.string().optional(),
   startDate: z.iso.datetime().optional(),
   endDate: z.iso.datetime().optional(),
+  active: z.boolean().optional().default(true),
 });
 
 export type TExperienceAdminResponse = z.infer<typeof ExperienceAdminResponse>;

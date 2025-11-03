@@ -191,3 +191,11 @@ export async function updateExperience(experienceId: string, payload: UpdateExpe
     },
   });
 }
+
+export async function deleteExperience(experienceId: string) {
+  return await api.delete(`/experience/${experienceId}`);
+}
+
+export async function toggleExperienceStatus(experienceId: string, active: boolean) {
+  return await api.patch(`/experience/${experienceId}/status/${active}`);
+}
