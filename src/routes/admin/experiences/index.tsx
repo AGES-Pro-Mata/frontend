@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useFetchAdminExperiences } from '@/hooks/use-fetch-admin-experiences';
 import type { TExperienceAdminRequestFilters } from '@/entities/experiences-admin-filters';
+import type { TExperienceAdminResponse } from '@/entities/experiences-admin-response';
 import { MoonLoader } from "react-spinners";
 
 export const Route = createFileRoute("/admin/experiences/")({
@@ -64,14 +65,20 @@ function RouteComponent() {
       id: "actions",
       enableHiding: false,
       size: 50,
-      cell: () => {
+      cell: ({ row }: { row: { original: TExperienceAdminResponse & { date?: string } } }) => {
+        const experienceId = row.original.id;
+        if (!experienceId) return null;
+        
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <MoreHorizontal className="size-5 p-0 cursor-pointer" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem className="cursor-pointer gap-4">
+              <DropdownMenuItem 
+                className="cursor-pointer gap-4"
+                onClick={() => navigate({ to: "/admin/experiences/$experienceId", params: { experienceId } })}
+              >
                 {"Editar"}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>

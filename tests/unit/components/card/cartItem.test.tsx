@@ -126,7 +126,7 @@ describe("CartItem", () => {
           category: ExperienceCategoryCard.TRAIL,
           trailLength: 4,
           durationMinutes: 90,
-          trailDifficulty: "HARD",
+          trailDifficulty: "HEAVY",
         })}
       />
     );
@@ -137,12 +137,12 @@ describe("CartItem", () => {
   });
 
   // Verifica exibição correta do rótulo de dificuldade da trilha
-  it("renders trail difficulty label for MEDIUM", () => {
+  it("renders trail difficulty label for MODERATED", () => {
     renderWithProviders(
       <CartItem
         experience={makeExperience({
           category: ExperienceCategoryCard.TRAIL,
-          trailDifficulty: "MEDIUM",
+          trailDifficulty: "MODERATED",
         })}
       />
     );

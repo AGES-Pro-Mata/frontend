@@ -7,7 +7,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
-import type { CreateExperiencePayload } from "@/api/experience";
+import type { UpdateExperiencePayload } from "@/api/experience";
 import {
   Popover,
   PopoverContent,
@@ -21,7 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useCreateExperience } from "@/hooks/useCreateExperience";
+import { useUpdateExperience } from "@/hooks/useUpdateExperience";
+import { useGetExperience } from "@/hooks/useGetExperience";
 import { useLoadImage } from "@/hooks/useLoadImage";
 import { ExperienceCategory } from "@/types/experience";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,11 +34,13 @@ import {
   Calendar,
   CalendarIcon,
   FlaskConical,
+  Loader,
   Mountain,
   Upload,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 
 const formSchema = z
@@ -47,35 +50,42 @@ const formSchema = z
       .string()
       .min(2, "Informe a descrição da experiência"),
     experienceCategory: z.nativeEnum(ExperienceCategory),
-    experienceCapacity: z.coerce
-      .number()
-      .min(1, "Informe a quantidade de pessoas"),
-    experienceImage: z.instanceof(File, {
-      message: "Selecione uma imagem para a experiência",
-    }),
-    experienceStartDate: z.date().optional(),
-    experienceEndDate: z.date().optional(),
-    experiencePrice: z.coerce.number().optional(),
+    experienceCapacity: z.string().min(1, "Informe a quantidade de pessoas"),
+    experienceImage: z.union([z.instanceof(File), z.string()]).optional(),
+    experienceStartDate: z.union([z.date(), z.string()]).optional(),
+    experienceEndDate: z.union([z.date(), z.string()]).optional(),
+    experiencePrice: z.string().optional(),
     experienceWeekDays: z.array(z.string()).optional().default([]),
-    trailDurationMinutes: z.coerce.number().optional(),
+    trailDurationMinutes: z.string().optional(),
     trailDifficulty: z.string().optional(),
     trailLength: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    if (
-      data.experienceEndDate &&
-      data.experienceStartDate &&
-      data.experienceEndDate < data.experienceStartDate
-    ) {
+    const startDate =
+      data.experienceStartDate instanceof Date
+        ? data.experienceStartDate
+        : data.experienceStartDate
+          ? new Date(data.experienceStartDate)
+          : null;
+    const endDate =
+      data.experienceEndDate instanceof Date
+        ? data.experienceEndDate
+        : data.experienceEndDate
+          ? new Date(data.experienceEndDate)
+          : null;
+
+    if (endDate && startDate && endDate < startDate) {
       ctx.addIssue({
         code: "custom",
         message: "A data de fim deve ser posterior à data de início",
         path: ["experienceEndDate"],
       });
     }
+
     if (data.experienceCategory === ExperienceCategory.TRILHA) {
       const hasValidMinutes =
-        !!data.trailDurationMinutes && data.trailDurationMinutes > 0;
+        !!data.trailDurationMinutes &&
+        parseFloat(data.trailDurationMinutes) > 0;
 
       if (!hasValidMinutes) {
         ctx.addIssue({
@@ -149,10 +159,19 @@ const parsePrice = (formattedValue: string) => {
   return parseInt(numbers) || 0;
 };
 
-export function CreateExperience() {
-  const { mutate } = useCreateExperience();
+interface EditExperienceProps {
+  experienceId: string;
+}
+
+export function EditExperience({ experienceId }: EditExperienceProps) {
+  const navigate = useNavigate();
+  const { data: experience, isLoading: isLoadingExperience } =
+    useGetExperience(experienceId);
+  const { mutate } = useUpdateExperience(experienceId);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(imagePreview || "");
+  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(
+    imagePreview || ""
+  );
   const [priceDisplay, setPriceDisplay] = useState<string>("");
 
   const form = useForm<
@@ -165,10 +184,10 @@ export function CreateExperience() {
       experienceName: "",
       experienceDescription: "",
       experienceCategory: ExperienceCategory.LABORATORIO,
-      experienceCapacity: 1,
+      experienceCapacity: "1",
       experienceStartDate: undefined,
       experienceEndDate: undefined,
-      experiencePrice: 0,
+      experiencePrice: "0",
       experienceWeekDays: [],
       trailDurationMinutes: undefined,
       trailDifficulty: undefined,
@@ -180,12 +199,63 @@ export function CreateExperience() {
   const watchedStartDate = form.watch("experienceStartDate");
   const watchedEndDate = form.watch("experienceEndDate");
 
+  // Load experience data into form
   useEffect(() => {
-    if (
-      watchedStartDate &&
-      watchedEndDate &&
-      watchedEndDate < watchedStartDate
-    ) {
+    if (experience) {
+      // Map category back
+      const categoryMap: Record<string, ExperienceCategory> = {
+        TRAIL: ExperienceCategory.TRILHA,
+        EVENT: ExperienceCategory.EVENTO,
+        ROOM: ExperienceCategory.HOSPEDAGEM,
+        LAB: ExperienceCategory.LABORATORIO,
+      };
+
+      // Set price display
+      if (experience.price) {
+        const priceInCents = experience.price * 100;
+        const formatted = formatPrice(String(priceInCents));
+        setPriceDisplay(formatted);
+      }
+
+      // Set image preview
+      if (experience.image?.url) {
+        setImagePreview(experience.image.url);
+      }
+
+      // Reset form with all values at once
+      form.reset({
+        experienceName: experience.name,
+        experienceDescription: experience.description || "",
+        experienceCategory: categoryMap[experience.category] || ExperienceCategory.LABORATORIO,
+        experienceCapacity: String(experience.capacity || 1),
+        experienceStartDate: experience.startDate || undefined,
+        experienceEndDate: experience.endDate || undefined,
+        experiencePrice: experience.price ? String(experience.price) : "0",
+        experienceWeekDays: experience.weekDays || [],
+        trailDurationMinutes: experience.durationMinutes ? String(experience.durationMinutes) : undefined,
+        trailDifficulty: experience.trailDifficulty || undefined,
+        trailLength: experience.trailLength ? String(experience.trailLength) : undefined,
+        experienceImage: experience.image?.url || undefined,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [experience]);
+
+  useEffect(() => {
+    const startDate =
+      watchedStartDate instanceof Date
+        ? watchedStartDate
+        : watchedStartDate
+          ? new Date(watchedStartDate)
+          : null;
+    const endDate =
+      watchedEndDate instanceof Date
+        ? watchedEndDate
+        : watchedEndDate
+          ? new Date(watchedEndDate)
+          : null;
+
+    if (startDate && endDate && endDate < startDate) {
       form.setValue("experienceEndDate", undefined as any);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -193,13 +263,17 @@ export function CreateExperience() {
 
   const getDisabledDates = (isStartDate: boolean) => {
     const today = new Date();
-
     today.setHours(0, 0, 0, 0);
 
     if (isStartDate) {
       return { before: today };
     } else {
-      const startDate = watchedStartDate;
+      const startDate =
+        watchedStartDate instanceof Date
+          ? watchedStartDate
+          : watchedStartDate
+            ? new Date(watchedStartDate)
+            : null;
 
       if (startDate) {
         return {
@@ -217,20 +291,17 @@ export function CreateExperience() {
     if (file) {
       if (!file.type.startsWith("image/")) {
         alert("Por favor, selecione apenas arquivos de imagem");
-
         return;
       }
 
       if (file.size > 10 * 1024 * 1024) {
         alert("Arquivo muito grande. Tamanho máximo: 10MB");
-
         return;
       }
 
       form.setValue("experienceImage", file);
 
       const reader = new FileReader();
-
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
       };
@@ -239,28 +310,47 @@ export function CreateExperience() {
   };
 
   const onSubmit = form.handleSubmit((data) => {
-    const payload: CreateExperiencePayload = {
-      ...data,
+    const payload: UpdateExperiencePayload = {
+      experienceName: data.experienceName,
+      experienceDescription: data.experienceDescription,
+      experienceCategory: data.experienceCategory,
+      experienceCapacity: data.experienceCapacity,
+      experienceImage: data.experienceImage,
+      experienceStartDate: data.experienceStartDate,
+      experienceEndDate: data.experienceEndDate,
+      experiencePrice: data.experiencePrice || "0",
       experienceWeekDays: (data.experienceWeekDays ?? []).map((day) =>
         day.toUpperCase()
       ),
+      trailDurationMinutes: data.trailDurationMinutes,
+      trailDifficulty: data.trailDifficulty,
+      trailLength: data.trailLength,
     };
 
     mutate(payload, {
       onSuccess: () => {
-        appToast.success("Experiência criada com sucesso");
+        appToast.success("Experiência atualizada com sucesso");
+        void navigate({ to: "/admin/experiences" });
       },
       onError: () => {
-        appToast.error("Erro ao criar experiência");
+        appToast.error("Erro ao atualizar experiência");
       },
     });
   });
+
+  if (isLoadingExperience) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader className="h-8 w-8 animate-spin text-contrast-green" />
+      </div>
+    );
+  }
 
   return (
     <div className="pb-8 pt-6 justify-items-center">
       <div className="space-y-2 mb-6">
         <Typography className="text-2xl font-semibold text-on-banner-text">
-          Criar Experiência
+          Editar Experiência
         </Typography>
       </div>
 
@@ -272,7 +362,7 @@ export function CreateExperience() {
             render={() => (
               <FormItem>
                 <Typography className="font-medium text-foreground text-lg">
-                  Imagem da Experiência *
+                  Imagem da Experiência
                 </Typography>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                   <input
@@ -292,7 +382,9 @@ export function CreateExperience() {
                           src={imagePreview}
                           alt="Preview"
                           className={`max-w-full max-h-48 object-cover rounded-lg transition-opacity duration-300 ${
-                            previewLoaded && !previewLoading ? "opacity-100" : "opacity-0"
+                            previewLoaded && !previewLoading
+                              ? "opacity-100"
+                              : "opacity-0"
                           }`}
                         />
                         {previewLoading && (
@@ -411,14 +503,7 @@ export function CreateExperience() {
                     type="number"
                     min="1"
                     placeholder="Digite a quantidade de pessoas que o laboratório suporta"
-                    value={field.value as number | undefined}
-                    onChange={(e) =>
-                      field.onChange(
-                        e.currentTarget.value === ""
-                          ? undefined
-                          : Number(e.currentTarget.value)
-                      )
-                    }
+                    {...field}
                   />
                   <FormMessage className="text-red-500" />
                 </FormItem>
@@ -529,9 +614,15 @@ export function CreateExperience() {
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value ? (
-                            format(field.value, "dd/MM/yyyy", {
-                              locale: ptBR,
-                            })
+                            format(
+                              field.value instanceof Date
+                                ? field.value
+                                : new Date(field.value),
+                              "dd/MM/yyyy",
+                              {
+                                locale: ptBR,
+                              }
+                            )
                           ) : (
                             <Typography>Selecione a data</Typography>
                           )}
@@ -540,7 +631,13 @@ export function CreateExperience() {
                       <PopoverContent className="w-auto p-0">
                         <CalendarComponent
                           mode="single"
-                          selected={field.value}
+                          selected={
+                            field.value instanceof Date
+                              ? field.value
+                              : field.value
+                                ? new Date(field.value)
+                                : undefined
+                          }
                           onSelect={field.onChange}
                           disabled={getDisabledDates(true)}
                           autoFocus
@@ -570,9 +667,15 @@ export function CreateExperience() {
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value ? (
-                            format(field.value, "dd/MM/yyyy", {
-                              locale: ptBR,
-                            })
+                            format(
+                              field.value instanceof Date
+                                ? field.value
+                                : new Date(field.value),
+                              "dd/MM/yyyy",
+                              {
+                                locale: ptBR,
+                              }
+                            )
                           ) : (
                             <Typography>Selecione a data</Typography>
                           )}
@@ -581,7 +684,13 @@ export function CreateExperience() {
                       <PopoverContent className="w-auto p-0">
                         <CalendarComponent
                           mode="single"
-                          selected={field.value}
+                          selected={
+                            field.value instanceof Date
+                              ? field.value
+                              : field.value
+                                ? new Date(field.value)
+                                : undefined
+                          }
                           onSelect={field.onChange}
                           disabled={getDisabledDates(false)}
                           autoFocus
@@ -605,9 +714,8 @@ export function CreateExperience() {
                     value={priceDisplay}
                     onChange={(e) => {
                       const formatted = formatPrice(e.target.value);
-
                       setPriceDisplay(formatted);
-                      field.onChange(parsePrice(formatted));
+                      field.onChange(String(parsePrice(formatted) / 100));
                     }}
                   />
                   <FormMessage className="text-red-500" />
@@ -634,14 +742,7 @@ export function CreateExperience() {
                         type="number"
                         min="1"
                         placeholder="Ex: 120"
-                        value={field.value as number | undefined}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.currentTarget.value === ""
-                              ? undefined
-                              : Number(e.currentTarget.value)
-                          )
-                        }
+                        {...field}
                       />
                       <FormMessage className="text-red-500" />
                     </FormItem>
@@ -701,16 +802,16 @@ export function CreateExperience() {
             <Button
               type="button"
               variant="ghost"
-              label="Voltar"
+              label="Cancelar"
               className="w-36"
-              onClick={() => history.back()}
+              onClick={() => navigate({ to: "/admin/experiences" })}
             />
             <Button
               type="submit"
               variant="primary"
               className="w-36"
               onClick={onSubmit}
-              label="Criar"
+              label="Salvar"
             />
           </div>
         </form>
