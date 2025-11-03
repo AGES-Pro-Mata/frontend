@@ -239,7 +239,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
     <div className="h-full flex flex-col px-4 overflow-x-hidden overflow-y-auto">
       <div className="space-y-2">
         {(isLoading || isFetching) && (
-          <div className="absolute inset-0 flex justify-center items-center bg-black/10 backdrop-blur-sm z-10">
+          <div className="absolute inset-0 flex justify-center items-center bg-black/10 z-10">
             <MoonLoader size={40} color="#22c55e" />
           </div>
         )}
