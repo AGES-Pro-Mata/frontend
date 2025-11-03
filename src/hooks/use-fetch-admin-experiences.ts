@@ -22,7 +22,7 @@ export const useFetchAdminExperiences = ({
   const query = useQuery({
     queryKey: [ADMIN_EXPERIENCES_QUERY_KEY, filters],
     queryFn: async () => {
-      //await new Promise(r => setTimeout(r, 5000));
+      await new Promise(r => setTimeout(r, 5000));
       const response = await api.get<
         {
           items: TExperienceAdminResponse[];
