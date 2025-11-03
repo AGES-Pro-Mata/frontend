@@ -32,6 +32,7 @@ import {
 import { appToast } from "@/components/toast/toast";
 import { CanvasCard } from "@/components/card";
 import { MoonLoader } from "react-spinners";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 export const Route = createFileRoute("/admin/highlights/")({
   component: RouteComponent,
@@ -44,6 +45,55 @@ type HighlightImage = {
   description?: string;
   order: number;
 };
+
+function HighlightImageCard({ image, onEdit, onDelete }: { image: HighlightImage; onEdit: () => void; onDelete: () => void }) {
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(image.imageUrl);
+  
+  return (
+    <CanvasCard className="overflow-hidden">
+      <div className="relative h-48 bg-gray-100">
+        <img
+          src={image.imageUrl}
+          alt={image.title}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${
+            imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
+          }`}
+        />
+        {imageLoading && (
+          <div className="absolute inset-0 animate-pulse bg-muted" />
+        )}
+        <div className="absolute top-2 right-2 flex gap-2">
+          <Button
+            size="icon"
+            variant="secondary"
+            className="h-8 w-8 bg-white/90 hover:bg-white"
+            onClick={onEdit}
+          >
+            <Edit className="h-4 w-4 text-contrast-green" />
+          </Button>
+          <Button
+            size="icon"
+            variant="secondary"
+            className="h-8 w-8 bg-white/90 hover:bg-white"
+            onClick={onDelete}
+          >
+            <Trash2 className="h-4 w-4 text-contrast-green" />
+          </Button>
+        </div>
+      </div>
+      <CardHeader className="p-4">
+        <Typography variant="h4" className="text-base font-semibold">
+          {image.title}
+        </Typography>
+        {image.description && (
+          <Typography className="text-sm text-muted-foreground mt-1">
+            {image.description}
+          </Typography>
+        )}
+      </CardHeader>
+    </CanvasCard>
+  );
+}
 
 export function RouteComponent() {
   const [activeCategory, setActiveCategory] = useState<HighlightCategory>(
@@ -60,6 +110,7 @@ export function RouteComponent() {
     image: null as File | null,
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(imagePreview || "");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [highlightToDelete, setHighlightToDelete] =
     useState<HighlightImage | null>(null);
@@ -293,43 +344,12 @@ export function RouteComponent() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {images.map((image) => (
-              <CanvasCard key={image.id} className="overflow-hidden">
-                <div className="relative h-48 bg-gray-100">
-                  <img
-                    src={image.imageUrl}
-                    alt={image.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className="h-8 w-8 bg-white/90 hover:bg-white"
-                      onClick={() => handleOpenDialog(category, image)}
-                    >
-                      <Edit className="h-4 w-4 text-contrast-green" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className="h-8 w-8 bg-white/90 hover:bg-white"
-                      onClick={() => handleRequestDelete(image)}
-                    >
-                      <Trash2 className="h-4 w-4 text-contrast-green" />
-                    </Button>
-                  </div>
-                </div>
-                <CardHeader className="p-4">
-                  <Typography variant="h4" className="text-base font-semibold">
-                    {image.title}
-                  </Typography>
-                  {image.description && (
-                    <Typography className="text-sm text-muted-foreground mt-1">
-                      {image.description}
-                    </Typography>
-                  )}
-                </CardHeader>
-              </CanvasCard>
+              <HighlightImageCard
+                key={image.id}
+                image={image}
+                onEdit={() => handleOpenDialog(category, image)}
+                onDelete={() => handleRequestDelete(image)}
+              />
             ))}
           </div>
         )}
@@ -440,11 +460,18 @@ export function RouteComponent() {
                   className="cursor-pointer flex flex-col items-center gap-3"
                 >
                   {imagePreview ? (
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="max-w-full max-h-40 object-cover rounded-lg"
-                    />
+                    <div className="relative max-w-full max-h-40">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className={`max-w-full max-h-40 object-cover rounded-lg transition-opacity duration-300 ${
+                          previewLoaded && !previewLoading ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                      {previewLoading && (
+                        <div className="absolute inset-0 animate-pulse bg-muted rounded-lg" />
+                      )}
+                    </div>
                   ) : (
                     <>
                       <Upload className="h-10 w-10 text-contrast-green" />

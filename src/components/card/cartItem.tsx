@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ExperienceCategoryCard, type ExperienceDTO } from "@/types/experience";
 import { resolveImageUrl } from "@/utils/resolveImageUrl";
 import { useTranslation } from "react-i18next";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 export interface CartItemProps {
   experience: ExperienceDTO;
@@ -52,6 +53,7 @@ const CartItem: React.FC<CartItemProps> = ({ experience: e, onSelect, onRemove, 
     [locale],
   );
   const imageUrl = resolveImageUrl(e.image?.url);
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageUrl);
   const title = e.name;
   const price = currencyFormatter.format(e.price ?? 0);
 
@@ -86,11 +88,9 @@ const CartItem: React.FC<CartItemProps> = ({ experience: e, onSelect, onRemove, 
     switch (e.trailDifficulty) {
       case "LIGHT":
         return t("cartItem.difficulty.light");
-      case "EASY":
-        return t("cartItem.difficulty.easy");
-      case "MEDIUM":
+      case "MODERATED":
         return t("cartItem.difficulty.medium");
-      case "HARD":
+      case "HEAVY":
         return t("cartItem.difficulty.hard");
       case "EXTREME":
         return t("cartItem.difficulty.extreme");
@@ -149,12 +149,19 @@ const CartItem: React.FC<CartItemProps> = ({ experience: e, onSelect, onRemove, 
       tabIndex={onSelect ? 0 : -1}
       onClick={handleSelect}
     >
-      <img
-        src={imageUrl}
-        alt=""
-        className="h-[110px] w-[148px] flex-shrink-0 rounded-md border object-cover"
-        loading="lazy"
-      />
+      <div className="relative h-[110px] w-[148px] flex-shrink-0">
+        <img
+          src={imageUrl}
+          alt=""
+          className={`h-full w-full rounded-md border object-cover transition-opacity duration-300 ${
+            imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
+          }`}
+          loading="lazy"
+        />
+        {imageLoading && (
+          <div className="absolute inset-0 animate-pulse bg-muted rounded-md" />
+        )}
+      </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-start justify-between gap-3">

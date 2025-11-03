@@ -6,6 +6,7 @@ import { CalendarClock, DollarSign, Map, Timer, Users } from "lucide-react";
 import { BsSpeedometer2 } from "react-icons/bs";
 import { type ComponentType, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useLoadImage } from "@/hooks/useLoadImage";
 import { type Experience, ExperienceCategoryCard } from "@/types/experience";
 
 interface CardExperienceProps {
@@ -45,12 +46,13 @@ export function CardExperience({ experience }: CardExperienceProps) {
   const addItemToCart = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
   const categoryTranslationKey = `${experience.category.toLowerCase()}s`;
+  const imageSrc = resolveImageUrl(experience.image?.url);
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageSrc);
   const translatedCategory = t(`homeCards.${categoryTranslationKey}.title`);
   const categoryLabel =
     translatedCategory === `homeCards.${categoryTranslationKey}.title`
       ? experience.category.toLowerCase()
       : translatedCategory;
-  const imageSrc = resolveImageUrl(experience.image?.url);
 
   const capacityLabel = t("cartItem.capacity", {
     count: Number(experience.capacity ?? 0),
@@ -73,11 +75,9 @@ export function CardExperience({ experience }: CardExperienceProps) {
     switch (experience.trailDifficulty) {
       case "LIGHT":
         return t("cartItem.difficulty.light");
-      case "EASY":
-        return t("cartItem.difficulty.easy");
-      case "MEDIUM":
+      case "MODERATED":
         return t("cartItem.difficulty.medium");
-      case "HARD":
+      case "HEAVY":
         return t("cartItem.difficulty.hard");
       case "EXTREME":
         return t("cartItem.difficulty.extreme");
@@ -139,9 +139,14 @@ export function CardExperience({ experience }: CardExperienceProps) {
       <div className="relative w-full overflow-hidden pb-[54%]">
         <img
           src={imageSrc}
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+            imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
+          }`}
           alt=""
         />
+        {imageLoading && (
+          <div className="absolute inset-0 animate-pulse bg-muted" />
+        )}
       </div>
       <div className="flex flex-col gap-4 px-6 py-5">
         <div className="flex flex-col gap-4 md:flex-row md:items-stretch md:justify-between">

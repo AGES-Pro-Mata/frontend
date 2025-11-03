@@ -1,10 +1,11 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/button/defaultButton";
 import { Typography } from "@/components/typography/typography";
 import { type HomeCard, type HomeCardId, homeCards } from "@/content/cardsInfo";
 import { cn } from "@/lib/utils";
 import type { HighlightResponse } from "@/api/highlights";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 interface TranslatedCard extends HomeCard {
   title: string;
@@ -29,11 +30,7 @@ const ImageTile = memo(function ImageTile({
   alt: string;
   priority: boolean;
 }) {
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    setLoaded(false);
-  }, [src]);
+  const { data: loadedUrl, isLoading } = useLoadImage(src);
 
   return (
     <div className="relative flex h-full w-full">
@@ -42,18 +39,17 @@ const ImageTile = memo(function ImageTile({
         alt={alt}
         className={cn(
           "h-full w-full rounded-[inherit] object-cover object-center transition-opacity duration-500",
-          loaded ? "opacity-100" : "opacity-0"
+          loadedUrl && !isLoading ? "opacity-100" : "opacity-0"
         )}
         loading={priority ? "eager" : "lazy"}
         decoding="async"
         sizes="(min-width: 640px) 25vw, 85vw"
-        onLoad={() => setLoaded(true)}
       />
       <span
         aria-hidden="true"
         className={cn(
           "absolute inset-0 rounded-[inherit] bg-card/70",
-          loaded ? "opacity-0" : "opacity-100 animate-pulse"
+          loadedUrl && !isLoading ? "opacity-0" : "opacity-100 animate-pulse"
         )}
       />
     </div>

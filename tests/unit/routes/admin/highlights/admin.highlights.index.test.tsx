@@ -193,6 +193,13 @@ vi.mock("react-spinners", () => ({
   MoonLoader: () => <div role="status">loading</div>,
 }));
 
+vi.mock("@/hooks/useLoadImage", () => ({
+  useLoadImage: () => ({
+    data: "mocked-url",
+    isLoading: false,
+  }),
+}));
+
 const createHiddenIcon =
   () =>
   ({ ...rest }: Record<string, unknown>) => (

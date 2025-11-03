@@ -304,7 +304,6 @@ describe("genderLabel (imported)", () => {
 
   it("returns '-' for undefined or null input", () => {
     expect(typedGenderLabel(undefined)).toBe("-");
-    //expect(genderLabel(null)).toBe("-");
   });
 
   it("returns translated and default labels for male/female/other variants", () => {
