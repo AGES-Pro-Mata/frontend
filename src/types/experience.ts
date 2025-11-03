@@ -63,6 +63,7 @@ export interface ExperienceApiResponse {
   durationMinutes?: RawNumber;
   trailDifficulty?: TrailDifficulty | null;
   trailLength?: RawNumber;
+  active?: boolean | string | null;
 
   // API POST/PATCH usa prefixo experience (mantido para compatibilidade)
   experienceId?: string | null;
@@ -76,6 +77,7 @@ export interface ExperienceApiResponse {
   experiencePrice?: RawNumber;
   experienceWeekDays?: ExperienceWeekDay[] | null;
   trailDurationMinutes?: RawNumber;
+  experienceActive?: boolean | string | null;
 }
 
 export interface ExperienceDTO {
@@ -93,6 +95,7 @@ export interface ExperienceDTO {
   trailLength?: number | null;
   image?: { url: string } | null;
   imageId?: string | null;
+  active?: boolean | null;
 }
 
 export type Experience = ExperienceDTO;
@@ -138,6 +141,26 @@ const mapImage = (image: ExperienceApiImage): { url: string } | null => {
   return { url: resolveImageUrl(rawUrl) };
 };
 
+const toBooleanOrNull = (value: unknown): boolean | null => {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+
+    if (normalized === "true") {
+      return true;
+    }
+
+    if (normalized === "false") {
+      return false;
+    }
+  }
+
+  return null;
+};
+
 export const mapExperienceApiResponseToDTO = (
   apiExperience: ExperienceApiResponse
 ): Experience => {
@@ -173,5 +196,8 @@ export const mapExperienceApiResponseToDTO = (
     trailLength: toNumberOrNull(apiExperience.trailLength),
     image: mapImage(apiExperience.image ?? apiExperience.experienceImage),
     imageId: null,
+    active: toBooleanOrNull(
+      apiExperience.active ?? apiExperience.experienceActive ?? null
+    ),
   };
 };

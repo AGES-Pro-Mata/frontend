@@ -18,7 +18,17 @@
     "email": "Email",
     "function": "Função",
     "next": "Próximo",
-    "finish": "Finalizar"
+    "finish": "Finalizar",
+    "lab": "Laboratório",
+    "room": "Quarto",
+    "event": "Evento",
+    "trail": "Trilha",
+    "labs": "Laboratórios",
+    "rooms": "Quartos",
+    "events": "Eventos",
+    "trails": "Trilhas",
+    "experience": "Experiência",
+    "experiences": "Experiências"
   },
   "cartDrawer": {
     "heading": {
@@ -79,6 +89,13 @@
       "waiting": "Aguardando",
       "confirmed": "Confirmadas",
       "cancelled": "Canceladas"
+    }
+  },
+  "myReservationsPage": {
+    "empty": {
+      "title": "Você ainda não possui reservas.",
+      "description": "Assim que fizer uma reserva ela aparecerá por aqui. Explore as experiências disponíveis para encontrar a ideal.",
+      "cta": "Explorar experiências"
     }
   },
   "nav": {
@@ -151,7 +168,8 @@
       "trails": "Trilhas"
     },
     "searchPlaceholder": "Buscar...",
-    "searchAriaLabel": "Buscar experiências"
+    "searchAriaLabel": "Buscar experiências",
+    "noExperiences": "Nenhuma experiência encontrada com os filtros selecionados."
   },
 
   "experienceCard": {
@@ -190,6 +208,13 @@
       "title": "Trilhas",
       "description": "Caminhos ecológicos para exploração e aprendizado."
     }
+  },
+
+  "experienceCategories": {
+    "lab": "Laboratório",
+    "room": "Hospedagem",
+    "event": "Evento",
+    "trail": "Trilha"
   },
 
   "carousel": {
@@ -361,8 +386,7 @@
       "genderOptions": {
         "female": "Feminino",
         "male": "Masculino",
-        "other": "Outro",
-        "notInformed": "Prefiro não informar"
+        "other": "Outro"
       },
       "postConfirmation": {
         "label": "Adicionar as pessoas após a confirmação da reserva"
@@ -376,6 +400,7 @@
       "instructions": "Revise as experiências selecionadas, ajustando datas, quantidade de pessoas e demais detalhes antes de finalizar a reserva.",
       "selectedExperiences": "Experiências selecionadas",
       "error": "Erro ao carregar experiências.",
+      "emptyCart": "Nenhuma experiência selecionada.",
       "fallbackExperiences": {
         "sunriseTrail": {
           "title": "Trilha do Sol Nascente",
@@ -395,8 +420,16 @@
         "type": "Passeio"
       }
     },
+    "validation": {
+      "fillRequired": "Preencha todos os campos obrigatórios.",
+      "personIssue": "Participante {{index}}: {{message}}",
+      "noExperiences": "Adicione pelo menos uma experiência ao carrinho.",
+      "missingExperienceDates": "Selecione as datas da experiência {{title}}.",
+      "unknownExperience": "esta experiência"
+    },
     "toast": {
-      "success": "Reserva atualizada com sucesso!"
+      "success": "Reserva atualizada com sucesso!",
+      "error": "Não foi possível finalizar a reserva."
     }
   },
 
@@ -441,6 +474,8 @@
     "zipRequired": "Informe o CEP",
     "countryRequired": "Informe o país",
     "addressRequired": "Endereço é obrigatório",
+  "birthDateRequired": "Informe a data de nascimento",
+  "cpfRequired": "Informe o CPF",
 
     "cep8": "CEP deve conter 8 dígitos",
     "cpfInvalid": "CPF inválido",

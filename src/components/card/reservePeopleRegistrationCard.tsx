@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Typography } from "@/components/typography/typography";
-import { ReserveParticipantInputs } from "@/components/layouts/reserve/ReserveParticipantInputs";
+import { ReserveParticipantInputs } from "@/components/forms/registerReserveParticipantsForm";
 import type { ReserveParticipantDraft } from "@/types/reserve";
 
 type PersonForm = ReserveParticipantDraft;
@@ -54,7 +54,7 @@ export function PeopleRegistrationStep({
   );
 
   return (
-    <CanvasCard className="w-full border border-dark-gray/20 bg-white p-6 shadow-sm">
+    <CanvasCard className="w-full border border-dark-gray/20 bg-card/20 p-6">
       <div className="flex flex-col gap-6">
         <Typography className="text-sm text-foreground">
           {t("reserveFlow.peopleStep.instructions")}
@@ -73,9 +73,12 @@ export function PeopleRegistrationStep({
                     size="icon"
                     label={<Trash2 className="h-5 w-5" />}
                     onClick={() => onRemovePerson(person.id)}
-                    aria-label={t("reserveFlow.peopleStep.buttons.removePersonAria", {
-                      index: index + 1,
-                    })}
+                    aria-label={t(
+                      "reserveFlow.peopleStep.buttons.removePersonAria",
+                      {
+                        index: index + 1,
+                      }
+                    )}
                     className="ml-auto text-default-red hover:bg-default-red/10"
                   />
                 )}
@@ -103,10 +106,14 @@ export function PeopleRegistrationStep({
         />
 
         <section className="flex flex-col gap-4 rounded-2xl border border-dark-gray/20 bg-soft-white p-5 shadow-xs">
-          <Label htmlFor="post-confirmation" className="gap-3 text-sm font-medium text-foreground">
+          <Label
+            htmlFor="post-confirmation"
+            className="gap-3 text-sm font-medium text-foreground"
+          >
             <Checkbox
               id="post-confirmation"
               checked={allowPostConfirmation}
+              className="hover:cursor-pointer"
               onCheckedChange={(checked) =>
                 onToggleAllowPostConfirmation(checked === true)
               }

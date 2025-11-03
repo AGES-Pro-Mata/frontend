@@ -64,8 +64,8 @@ describe('CartItem', () => {
     try {
       renderWithProviders(<CartItem experience={makeExperience()} />);
 
-      expect(screen.getByText(/R\$(?:\u00A0|\s)?120\.00/)).toBeInTheDocument();
-      expect(screen.getByText(/5\s?pessoas/)).toBeInTheDocument();
+  expect(screen.getByText(/R\$(?:\u00A0|\s)?120\.00/)).toBeInTheDocument();
+  expect(screen.getByText(/5\s?people/)).toBeInTheDocument();
     } finally {
       await act(async () => {
         await i18n.changeLanguage(originalLanguage ?? 'pt');
