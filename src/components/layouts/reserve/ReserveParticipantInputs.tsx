@@ -14,7 +14,18 @@ import {
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
-import { cn, digitsOnly, maskCpf, maskPhone } from "@/lib/utils";
+import {
+  cn,
+  digitsOnly,
+  maskCpf,
+  maskPhone,
+  maskDateBR,
+  toIsoFromBR,
+  isoToDate,
+  dateToIso,
+  toBRForDisplay,
+} from "@/lib/utils";
+
 import type {
   ReserveParticipantDraft,
   ReserveParticipantGender,
@@ -31,56 +42,7 @@ export type ReserveParticipantInputsProps = {
   className?: string;
 };
 
-function maskDateBR(v: string) {
-  const d = digitsOnly(v).slice(0, 8);
-  const p1 = d.slice(0, 2);
-  const p2 = d.slice(2, 4);
-  const p3 = d.slice(4, 8);
-  if (d.length <= 2) return p1;
-  if (d.length <= 4) return `${p1}/${p2}`;
-  return `${p1}/${p2}/${p3}`;
-}
-
-function toIsoFromBR(v: string) {
-  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec((v || "").trim());
-  if (!m) return "";
-  const [, dd, mm, yyyy] = m;
-  const y = Number(yyyy),
-    mo = Number(mm),
-    d = Number(dd);
-  if (y < 1900 || y > new Date().getFullYear()) return "";
-  if (mo < 1 || mo > 12) return "";
-  const lastDay = new Date(y, mo, 0).getDate();
-  if (d < 1 || d > lastDay) return "";
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-function toBRForDisplay(v: string) {
-  const iso = (v || "").trim();
-  const isoMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  if (isoMatch) {
-    const [, y, m, d] = isoMatch;
-    return `${d}/${m}/${y}`;
-  }
-  return maskDateBR(v || "");
-}
-
-function isoToDate(iso: string): Date | undefined {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((iso || "").trim());
-  if (!m) return undefined;
-  const [, y, mo, d] = m;
-  const dt = new Date(Number(y), Number(mo) - 1, Number(d));
-  return isNaN(dt.getTime()) ? undefined : dt;
-}
-
-function dateToIso(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-export function ReserveParticipantInputs({
+function ReserveParticipantInputs({
   person,
   readOnly = false,
   disabled = false,
@@ -124,7 +86,8 @@ export function ReserveParticipantInputs({
   const dateForCalendar = isoToDate(person.birthDate || "");
 
   return (
-    <div
+    <form
+      onSubmit={(e) => e.preventDefault()}
       className={cn(
         "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5",
         className
@@ -186,8 +149,6 @@ export function ReserveParticipantInputs({
             readOnly={isReadOnly}
             tabIndex={isReadOnly ? -1 : undefined}
             className={cn(
-              "pr-12",
-              "pr-10",
               "w-full xl:min-w-[13.3rem] pr-10",
               isReadOnly ? "pointer-events-none text-main-dark-green" : undefined
             )}
@@ -198,13 +159,11 @@ export function ReserveParticipantInputs({
               <button
                 type="button"
                 className={cn(
-                    "absolute inset-y-0 right-0 z-10 w-10",
--                  "inline-flex items-center justify-center rounded-r-md",
-+                  "absolute right-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8",
-+                  "inline-flex items-center justify-center rounded-md",
-                   "bg-transparent",
-                   "text-foreground/80",
-                   "disabled:cursor-not-allowed disabled:opacity-50"
+                  "absolute right-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8",
+                  "inline-flex items-center justify-center rounded-md",
+                  "bg-transparent",
+                  "text-foreground/80",
+                  "disabled:cursor-not-allowed disabled:opacity-50"
                 )}
                 disabled={disabled || isReadOnly}
                 aria-label={t("reserveFlow.peopleStep.fields.birthDate.label")}
@@ -302,6 +261,9 @@ export function ReserveParticipantInputs({
           </Select>
         </div>
       )}
-    </div>
+    </form>
   );
 }
+
+export { ReserveParticipantInputs };
+export default ReserveParticipantInputs;
