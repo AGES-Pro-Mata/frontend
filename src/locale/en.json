@@ -36,7 +36,8 @@
     "pagamento_pendente": "Pending Payment",
     "aprovacao_pendente": "Pending Approval",
     "concluida": "Completed",
-    "cancelada": "Cancelled"
+    "cancelada": "Cancelled",
+    "cancelamento_pendente": "Pending cancel"
   },
   "reservation": {
     "registerPeople": "Register People",

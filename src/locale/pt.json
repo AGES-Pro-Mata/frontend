@@ -53,7 +53,8 @@
     "pagamento_pendente": "Pagamento Pendente",
     "aguardando_aprovacao": "Aprovação Pendente",
     "concluida": "Concluída",
-    "cancelada": "Cancelada"
+    "cancelada": "Cancelada",
+    "cancelamento_pendente": "Aguardando cancelamento"
   },
   "reservation": {
     "registerPeople": "Cadastrar Pessoas",
