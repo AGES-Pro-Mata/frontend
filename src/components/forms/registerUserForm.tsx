@@ -201,7 +201,7 @@ export function RegisterUser() {
 
     if (errorFields.length > 0) {
       // retrigger only errored fields to refresh message language
-      void form.trigger(errorFields as any);
+      void form.trigger(errorFields as (keyof FormData)[]);
     }
   }, [i18n.language]);
 
@@ -273,7 +273,7 @@ export function RegisterUser() {
           form.reset();
           appToast.success(t("register.toasts.success"));
           setAutoFilled({ addressLine: false, city: false });
-          navigate({ to: "/auth/login" });
+          void navigate({ to: "/auth/login" });
         } else {
           appToast.error(t("register.toasts.error"));
         }
@@ -296,7 +296,7 @@ export function RegisterUser() {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={void form.handleSubmit(onSubmit)}
             className="mt-6 space-y-3"
           >
             <div className="flex flex-wrap items-center justify-start gap-4">
@@ -327,7 +327,7 @@ export function RegisterUser() {
                           // Re-run validation to clear/set field errors according to new mode
                           setTimeout(
                             () =>
-                              form.trigger([
+                              void form.trigger([
                                 "city",
                                 "number",
                                 "zipCode",

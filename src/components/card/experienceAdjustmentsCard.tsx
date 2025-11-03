@@ -148,6 +148,12 @@ function ExperienceAdjustmentsCard({
             period={exp.period}
             imageUrl={exp.imageUrl}
             experienceId={exp.experienceId}
+            persist={false}
+            initialData={
+              exp.experienceId
+                ? adjustments.find((item) => item.experienceId === exp.experienceId) ?? null
+                : null
+            }
             onSave={upsertAdjustment}
           />
         ))}

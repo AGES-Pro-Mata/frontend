@@ -15,6 +15,7 @@ import type { TExperienceFilters } from "@/entities/experience-filter";
 import { useGetExperiences } from "@/hooks/useGetExperiences";
 import { ExperienceCategory } from "@/types/experience";
 import { MoonLoader } from "react-spinners";
+import { t } from "i18next";
 
 function ReservePage() {
   const PAGE_LIMIT = 12;
@@ -66,7 +67,7 @@ function ReservePage() {
         {isLoading ? (
           <MoonLoader size={40} className="mx-auto" />
         ) : isError ? (
-          <div className="text-center text-red-500">
+          <div className="text-center text-default-red">
             Error loading experiences
           </div>
         ) : (
@@ -122,9 +123,9 @@ function ReservePage() {
             )}
 
             {experiences.length === 0 && !isLoading && (
-              <div className="text-center text-gray-500">
-                No experiences found with the current filters.
-              </div>
+                <div className="text-center text-foreground/70">
+                {t("reserveFilter.noExperiences")}
+                </div>
             )}
           </>
         )}

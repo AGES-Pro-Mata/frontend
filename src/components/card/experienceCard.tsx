@@ -8,6 +8,7 @@ import { type ComponentType, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLoadImage } from "@/hooks/useLoadImage";
 import { type Experience, ExperienceCategoryCard } from "@/types/experience";
+import { translateExperienceCategory } from "@/utils/translateExperienceCategory";
 
 interface CardExperienceProps {
   experience: Experience;
@@ -45,14 +46,15 @@ export function CardExperience({ experience }: CardExperienceProps) {
   );
   const addItemToCart = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
-  const categoryTranslationKey = `${experience.category.toLowerCase()}s`;
+  const translatedCategoryRaw = translateExperienceCategory(
+    experience.category,
+    t,
+    experience.category.toLowerCase()
+  );
   const imageSrc = resolveImageUrl(experience.image?.url);
   const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageSrc);
-  const translatedCategory = t(`homeCards.${categoryTranslationKey}.title`);
   const categoryLabel =
-    translatedCategory === `homeCards.${categoryTranslationKey}.title`
-      ? experience.category.toLowerCase()
-      : translatedCategory;
+    translatedCategoryRaw || experience.category.toLowerCase();
 
   const capacityLabel = t("cartItem.capacity", {
     count: Number(experience.capacity ?? 0),

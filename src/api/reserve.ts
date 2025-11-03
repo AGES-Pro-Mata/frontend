@@ -9,6 +9,7 @@ export type GroupReservationParticipantPayload = {
 	phone: string;
 	birthDate: string;
 	cpf: string;
+	document: string;
 	gender: ReserveParticipantGender;
 };
 
@@ -16,17 +17,19 @@ export type ReservationAdjustmentPayload = Omit<ExperienceTuningData, "experienc
 	experienceId: string;
 };
 
-export type ReservationExperiencePayload = {
+export type ReservationPayload = {
 	experienceId: string;
-	adjustment?: ReservationAdjustmentPayload | null;
+	startDate: string;
+	endDate: string;
+	membersCount: number;
+	adjustments: ReservationAdjustmentPayload[];
 };
 
 export type CreateGroupReservationPayload = {
 	allowPostConfirmation: boolean;
 	notes: string;
-	participants: GroupReservationParticipantPayload[];
-	adjustments: ReservationAdjustmentPayload[];
-	experiences: ReservationExperiencePayload[];
+	members: GroupReservationParticipantPayload[];
+	reservations: ReservationPayload[];
 };
 
 const createGroupReservationResponseSchema = z.unknown();
