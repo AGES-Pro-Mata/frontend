@@ -296,7 +296,9 @@ export function RegisterUser() {
 
         <Form {...form}>
           <form
-            onSubmit={void form.handleSubmit(onSubmit)}
+            onSubmit={(event) => {
+              void form.handleSubmit(onSubmit)(event);
+            }}
             className="mt-6 space-y-3"
           >
             <div className="flex flex-wrap items-center justify-start gap-4">

@@ -1,5 +1,6 @@
 import { api } from '@/core/api';
-import { useQuery } from '@tanstack/react-query';
+import { type UseQueryResult, useQuery } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 
 export type ReservationGroupStatus =
   | 'CREATED'
@@ -72,8 +73,8 @@ export type ReservationGroupStatusFilter = 'APPROVED' | 'CANCELED' | 'PENDING' |
 
 export const MY_RESERVATION_KEY = 'myReservations';
 
-export function useMyReservations(status: ReservationGroupStatusFilter) {
-  return useQuery({
+export function useMyReservations(status: ReservationGroupStatusFilter): UseQueryResult<ReservationGroup[], AxiosError> {
+  return useQuery<ReservationGroup[], AxiosError>({
     queryKey: [MY_RESERVATION_KEY, status],
     queryFn: async () => {
       return (

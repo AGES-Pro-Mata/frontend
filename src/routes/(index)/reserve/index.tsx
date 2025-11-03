@@ -45,10 +45,12 @@ function ReservePage() {
     isError,
   } = useGetExperiences(filters, Math.max(0, currentPage - 1));
 
-  const experiences = experiencesData?.items ?? [];
+  const fetchedExperiences = experiencesData?.items ?? [];
+  const currentExperiences = fetchedExperiences.filter(
+    (experience) => experience.active !== false
+  );
   const totalItems = experiencesData?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_LIMIT));
-  const currentExperiences = experiences;
 
   const handlePageChange = (page: number): void => {
     setCurrentPage(page);
@@ -78,7 +80,7 @@ function ReservePage() {
               ))}
             </div>
 
-            {experiences.length > 0 && totalPages > 1 && (
+            {totalItems > 0 && totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
@@ -122,10 +124,10 @@ function ReservePage() {
               </Pagination>
             )}
 
-            {experiences.length === 0 && !isLoading && (
-                <div className="text-center text-foreground/70">
+            {currentExperiences.length === 0 && !isLoading && (
+              <div className="text-center text-foreground/70">
                 {t("reserveFilter.noExperiences")}
-                </div>
+              </div>
             )}
           </>
         )}

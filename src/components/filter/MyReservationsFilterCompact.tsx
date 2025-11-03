@@ -33,7 +33,7 @@ export function MyReservationsFilterCompact({
         return (
           <button
             key={entryStatus}
-            className={`rounded-full ${entryStatus === status ? 'bg-card-light-active' : ''} py-1 ${entryStatus === status ? '' : 'hover:text-black/60'}`}
+            className={`rounded-full ${entryStatus === status ? 'bg-card-light-active' : ''} py-1 ${entryStatus === status ? '' : 'hover:text-black/60 hover:cursor-pointer'}`}
             onClick={() => handleStatusChange(entryStatus as ReservationGroupStatusFilter)}
           >
             {text}

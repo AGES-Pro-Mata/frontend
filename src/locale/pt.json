@@ -91,6 +91,13 @@
       "cancelled": "Canceladas"
     }
   },
+  "myReservationsPage": {
+    "empty": {
+      "title": "Você ainda não possui reservas.",
+      "description": "Assim que fizer uma reserva ela aparecerá por aqui. Explore as experiências disponíveis para encontrar a ideal.",
+      "cta": "Explorar experiências"
+    }
+  },
   "nav": {
     "home": "Início",
     "reserve": "Reservar",

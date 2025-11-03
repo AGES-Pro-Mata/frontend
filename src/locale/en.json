@@ -87,6 +87,13 @@
             "all": "All"
         }
     },
+    "myReservationsPage": {
+        "empty": {
+            "title": "You don't have any reservations yet.",
+            "description": "Once you book an experience it will appear here. Explore the available options to get started.",
+            "cta": "Browse experiences"
+        }
+    },
     "nav": {
         "home": "Home",
         "reserve": "Reserve",

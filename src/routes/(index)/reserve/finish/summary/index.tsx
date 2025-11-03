@@ -88,7 +88,7 @@ function ReserveSummaryPage() {
             }
             onClick={() => {
               clearSummary();
-              void navigate({ to: "/reserve" });
+              void navigate({ to: "/" });
             }}
             className="text-main-dark-green hover:bg-main-dark-green/10"
           />
