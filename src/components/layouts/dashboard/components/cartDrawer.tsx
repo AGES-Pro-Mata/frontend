@@ -51,6 +51,9 @@ export const CartDrawer = () => {
         style={{ top: "5rem", bottom: 0 }}
         className="data-[vaul-drawer-direction=right]:!w-full data-[vaul-drawer-direction=right]:!max-w-[520px] bg-card border-none shadow-xl"
         overlayClassName="!top-20"
+        onPointerDownOutside={() => {
+          closeCart();
+        }}
       >
         <DrawerHeader className="flex flex-row items-start justify-between px-6 pt-6 pb-4">
           <DrawerTitle className="text-left text-lg font-semibold text-main-dark-green">
@@ -60,7 +63,7 @@ export const CartDrawer = () => {
             <button
               type="button"
               onClick={closeCart}
-              className="rounded-full p-1 text-main-dark-green transition-colors hover:bg-soft-white"
+              className="rounded-full p-1 text-main-dark-green transition-colors hover:bg-soft-white hover:cursor-pointer"
               aria-label={t("cartDrawer.closeButtonAria")}
             >
               <X className="h-5 w-5" />

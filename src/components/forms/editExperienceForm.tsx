@@ -440,7 +440,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Tipo de experiência *
                     </Typography>
                     <Select value={field.value} onValueChange={field.onChange}>
@@ -521,14 +521,14 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Dias da semana disponíveis
                     </Typography>
                     <Popover>
                       <PopoverTrigger asChild>
                         <ShadcnButton
                           variant="outline"
-                          className="w-full justify-start text-left font-normal h-10 px-3"
+                          className="w-full justify-start text-left font-normal h-12 px-5"
                         >
                           {field.value && field.value.length > 0 ? (
                             <Typography className="text-sm">
@@ -588,7 +588,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
             name="experienceDescription"
             render={({ field }) => (
               <FormItem>
-                <Typography className="text-foreground font-medium mb-2">
+                <Typography className="text-foreground font-medium">
                   Descrição da experiência
                 </Typography>
                 <textarea
@@ -608,7 +608,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Data de início
                     </Typography>
                     <Popover>
@@ -661,7 +661,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Data de fim
                     </Typography>
                     <Popover>
