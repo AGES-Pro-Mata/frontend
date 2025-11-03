@@ -11,19 +11,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
 import {
   cn,
-  digitsOnly,
-  maskCpf,
-  maskPhone,
-  maskDateBR,
-  toIsoFromBR,
-  isoToDate,
   dateToIso,
+  digitsOnly,
+  isoToDate,
+  maskCpf,
+  maskDateBR,
+  maskPhone,
   toBRForDisplay,
+  toIsoFromBR,
 } from "@/lib/utils";
 
 import type {
@@ -139,10 +139,12 @@ function ReserveParticipantInputs({
             value={toBRForDisplay(person.birthDate || "")}
             onChange={(e) => {
               const masked = maskDateBR(e.target.value);
+
               handleChange("birthDate", masked as any);
             }}
             onBlur={(e) => {
               const iso = toIsoFromBR(e.target.value);
+
               if (iso) handleChange("birthDate", iso as any);
             }}
             disabled={disabled}
@@ -178,6 +180,7 @@ function ReserveParticipantInputs({
                 onSelect={(date) => {
                   if (date) {
                     const iso = dateToIso(date);
+
                     handleChange("birthDate", iso as any);
                   }
                   setCalendarOpen(false);

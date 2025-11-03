@@ -21,6 +21,7 @@ type ExperienceCardProps = {
   experienceId?: string;
   persist?: boolean;
   onSave?: (data: ExperienceTuningData) => void;
+  onLoad?: (data: ExperienceTuningData) => void;
 };
 
 export default function ExperienceCard({
@@ -32,6 +33,7 @@ export default function ExperienceCard({
   experienceId,
   persist = true,
   onSave,
+  onLoad,
 }: ExperienceCardProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -48,7 +50,7 @@ export default function ExperienceCard({
     save,
     savedMen,
     savedWomen,
-  } = useExperienceTuning({ experienceId, persist, onSave });
+  } = useExperienceTuning({ experienceId, persist, onSave, onLoad });
 
   const fmt = (d: Date) => d.toLocaleDateString("pt-BR");
   const calendarStyles = { "--rdp-cell-size": "1.75rem" } as CSSProperties;

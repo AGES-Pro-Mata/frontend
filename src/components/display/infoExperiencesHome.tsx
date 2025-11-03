@@ -28,7 +28,7 @@ export function InfoExperiencies() {
           <Typography className="text-black font-bold text-[clamp(1.125rem,2.5vw,1.375rem)]">
             {t("experiences.bookNow")}
           </Typography>
-          <Link to="/reserve/finish">
+          <Link to="/reserve">
             <Button
               label={t("experiences.book")}
               variant="gray"

@@ -1,28 +1,31 @@
 import { useMemo } from "react";
-import type { UseQueryResult } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import ExperienceCard from "@/components/card/experienceTuningCard";
 import { useExperienceAdjustments } from "@/hooks/useExperienceAdjustments";
 import { cn } from "@/lib/utils";
-import type {
-  NormalizedExperienceAdjustment,
-  RawExperienceAdjustment,
-} from "@/types/experience-adjustments";
+import type { NormalizedExperienceAdjustment } from "@/types/experience-adjustments";
+import type { ExperienceTuningData } from "@/types/experience";
 
 type ExperienceAdjustmentsCardProps = {
   className?: string;
+  value?: ExperienceTuningData[];
+  onChange?: (adjustments: ExperienceTuningData[]) => void;
+  experiences?: NormalizedExperienceAdjustment[] | null;
 };
 
 function ExperienceAdjustmentsCard({
   className,
+  value,
+  onChange,
+  experiences: externalExperiences,
 }: ExperienceAdjustmentsCardProps) {
   const { t } = useTranslation();
-  const query = useExperienceAdjustments() as UseQueryResult<RawExperienceAdjustment[], Error>;
-  const { isLoading, error, data: experiencesData } = query;
-  const experiences = Array.isArray(experiencesData)
-    ? experiencesData
-    : [];
+  const hasExternalSource = Array.isArray(externalExperiences);
+  const { isLoading, error, data } = useExperienceAdjustments({
+    enabled: !hasExternalSource,
+  });
+  const adjustments = Array.isArray(value) ? value : [];
 
   const fallbackExperiences = useMemo<NormalizedExperienceAdjustment[]>(
     () =>
@@ -61,8 +64,48 @@ function ExperienceAdjustmentsCard({
     [t]
   );
 
-  if (isLoading) return <div className="p-8">{t("common.loading")}</div>;
-  if (error) {
+  const experiencesToRender = useMemo<NormalizedExperienceAdjustment[]>(() => {
+    if (hasExternalSource) {
+      return externalExperiences ?? [];
+    }
+
+    const rawExperiences = Array.isArray(data) ? data : [];
+
+    if (rawExperiences.length === 0) {
+      return fallbackExperiences;
+    }
+
+    return rawExperiences.map((exp) => {
+      const baseTitle = exp.title ?? exp.name;
+      const resolvedTitle = baseTitle ?? t("reserveFlow.experienceStep.fallbackDefaults.title");
+
+      const startInput = exp.period?.start ?? exp.periodStart;
+      const endInput = exp.period?.end ?? exp.periodEnd;
+
+      const start = startInput ? new Date(startInput) : new Date();
+      const end = endInput ? new Date(endInput) : new Date();
+
+      const experienceId = exp.experienceId ?? exp.id;
+
+      return {
+        title: resolvedTitle,
+        price: typeof exp.price === "number" ? exp.price : 355,
+        type: exp.type || t("reserveFlow.experienceStep.fallbackDefaults.type"),
+        period: {
+          start: Number.isNaN(start.getTime()) ? new Date() : start,
+          end: Number.isNaN(end.getTime()) ? new Date() : end,
+        },
+        imageUrl: exp.imageUrl || "/mock/landscape-1.jpg",
+        experienceId: experienceId != null ? String(experienceId) : undefined,
+      } satisfies NormalizedExperienceAdjustment;
+    });
+  }, [data, externalExperiences, fallbackExperiences, hasExternalSource, t]);
+
+  if (!hasExternalSource && isLoading) {
+    return <div className="p-8">{t("common.loading")}</div>;
+  }
+
+  if (!hasExternalSource && error) {
     return (
       <div className="p-8 text-default-red">
         {t("reserveFlow.experienceStep.error")}
@@ -70,33 +113,23 @@ function ExperienceAdjustmentsCard({
     );
   }
 
-  const experiencesToRender: NormalizedExperienceAdjustment[] =
-    experiences.length > 0
-      ? experiences.map((exp) => {
-          const baseTitle = exp.title ?? exp.name;
-          const resolvedTitle = baseTitle ?? t("reserveFlow.experienceStep.fallbackDefaults.title");
+  if (experiencesToRender.length === 0) {
+    return (
+      <div className="p-8 text-foreground/70">
+        {t("reserveFlow.experienceStep.emptyCart")}
+      </div>
+    );
+  }
 
-          const startInput = exp.period?.start ?? exp.periodStart;
-          const endInput = exp.period?.end ?? exp.periodEnd;
+  const upsertAdjustment = (adjustment?: ExperienceTuningData) => {
+    if (!adjustment?.experienceId) {
+      return;
+    }
 
-          const start = startInput ? new Date(startInput) : new Date();
-          const end = endInput ? new Date(endInput) : new Date();
+    const next = adjustments.filter((item) => item.experienceId !== adjustment.experienceId);
 
-          const experienceId = exp.experienceId ?? exp.id;
-
-          return {
-            title: resolvedTitle,
-            price: typeof exp.price === "number" ? exp.price : 355,
-            type: exp.type || t("reserveFlow.experienceStep.fallbackDefaults.type"),
-            period: {
-              start: Number.isNaN(start.getTime()) ? new Date() : start,
-              end: Number.isNaN(end.getTime()) ? new Date() : end,
-            },
-            imageUrl: exp.imageUrl || "/mock/landscape-1.jpg",
-            experienceId: experienceId != null ? String(experienceId) : undefined,
-          };
-        })
-      : fallbackExperiences;
+    onChange?.([...next, adjustment]);
+  };
 
   return (
     <div
@@ -115,6 +148,7 @@ function ExperienceAdjustmentsCard({
             period={exp.period}
             imageUrl={exp.imageUrl}
             experienceId={exp.experienceId}
+            onSave={upsertAdjustment}
           />
         ))}
       </div>
