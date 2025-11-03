@@ -10,7 +10,7 @@ export const ContentLayout = ({ className, children }: ContentLayoutProps) => {
   return (
     <div
       className={cn(
-        "!w-full flex-1",
+        "!w-full flex-1 pt-20",
         className
       )}
     >
