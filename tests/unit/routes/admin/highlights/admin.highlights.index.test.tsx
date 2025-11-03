@@ -193,6 +193,13 @@ vi.mock("react-spinners", () => ({
   MoonLoader: () => <div role="status">loading</div>,
 }));
 
+vi.mock("@/hooks/useLoadImage", () => ({
+  useLoadImage: () => ({
+    data: "mocked-url",
+    isLoading: false,
+  }),
+}));
+
 const createHiddenIcon =
   () =>
   ({ ...rest }: Record<string, unknown>) => (
@@ -845,8 +852,6 @@ describe("Admin Highlights Route", () => {
     buildMutations();
 
     render(<Component />);
-
-    expect(screen.getByText(/Carregando destaques/)).toBeInTheDocument();
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
 

@@ -1,11 +1,27 @@
 import type { TExperienceFilters } from "@/entities/experience-filter";
-import { type FilterOption, FilterPanel } from "@/components/filter/FilterPanel";
+import {
+  type FilterOption,
+  FilterPanel,
+} from "@/components/filter/FilterPanel";
+import { ExperienceCategory } from "@/types/experience";
 
 const experienceTypeOptions: FilterOption[] = [
-  { value: "rooms", labelKey: "reserveFilter.experienceTypes.rooms" },
-  { value: "events", labelKey: "reserveFilter.experienceTypes.events" },
-  { value: "labs", labelKey: "reserveFilter.experienceTypes.labs" },
-  { value: "trails", labelKey: "reserveFilter.experienceTypes.trails" },
+  {
+    value: ExperienceCategory.HOSPEDAGEM,
+    labelKey: "reserveFilter.experienceTypes.rooms",
+  },
+  {
+    value: ExperienceCategory.EVENTO,
+    labelKey: "reserveFilter.experienceTypes.events",
+  },
+  {
+    value: ExperienceCategory.LABORATORIO,
+    labelKey: "reserveFilter.experienceTypes.labs",
+  },
+  {
+    value: ExperienceCategory.TRILHA,
+    labelKey: "reserveFilter.experienceTypes.trails",
+  },
 ];
 
 export function ExperienceFilter({ className }: { className?: string } = {}) {
@@ -13,11 +29,13 @@ export function ExperienceFilter({ className }: { className?: string } = {}) {
     <FilterPanel<TExperienceFilters>
       filtersKey="get-experiences"
       initialFilters={{
-        limit: 10,
+        category: ExperienceCategory.HOSPEDAGEM,
+        startDate: undefined,
+        endDate: undefined,
+        search: undefined,
         page: 0,
-        type: "rooms",
       }}
-      toggleKey="type"
+      toggleKey="category"
       options={experienceTypeOptions}
       className={className}
     />

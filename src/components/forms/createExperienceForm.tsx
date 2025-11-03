@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useCreateExperience } from "@/hooks/useCreateExperience";
+import { useLoadImage } from "@/hooks/useLoadImage";
 import { ExperienceCategory } from "@/types/experience";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -151,6 +152,7 @@ const parsePrice = (formattedValue: string) => {
 export function CreateExperience() {
   const { mutate } = useCreateExperience();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(imagePreview || "");
   const [priceDisplay, setPriceDisplay] = useState<string>("");
 
   const form = useForm<
@@ -284,11 +286,18 @@ export function CreateExperience() {
                     className="cursor-pointer flex flex-col items-center gap-4"
                   >
                     {imagePreview ? (
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="max-w-full max-h-48 object-cover rounded-lg"
-                      />
+                      <div className="relative max-w-full max-h-48">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className={`max-w-full max-h-48 object-cover rounded-lg transition-opacity duration-300 ${
+                            previewLoaded && !previewLoading ? "opacity-100" : "opacity-0"
+                          }`}
+                        />
+                        {previewLoading && (
+                          <div className="absolute inset-0 animate-pulse bg-muted rounded-lg" />
+                        )}
+                      </div>
                     ) : (
                       <>
                         <Upload className="h-12 w-12 text-contrast-green" />

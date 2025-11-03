@@ -168,6 +168,31 @@ jobs:
 
           aws s3 sync dist/ "s3://$TARGET_BUCKET" --delete
 
+      - name: Purge Cloudflare Cache
+        env:
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_ZONE_ID" ] || [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "Cloudflare credentials not configured, skipping cache purge"
+            exit 0
+          fi
+
+          echo "🔄 Purging Cloudflare cache..."
+
+          RESPONSE=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/purge_cache" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+
+          if echo "$RESPONSE" | grep -q '"success":true'; then
+            echo "Cloudflare cache purged successfully"
+          else
+            echo "Failed to purge Cloudflare cache"
+            echo "$RESPONSE"
+            exit 1
+          fi
+
       - name: Deployment Summary
         run: |
           echo "## 🌐 Static Site Deployment" >> $GITHUB_STEP_SUMMARY
@@ -175,4 +200,5 @@ jobs:
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| **Branch** | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Bucket** | ${{ vars.AWS_S3_BUCKET }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **CloudFront Distribution** | ${{ vars.CLOUDFRONT_DISTRIBUTION_ID || 'None' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **CDN** | Cloudflare |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Cache Status** | Purged |" >> $GITHUB_STEP_SUMMARY

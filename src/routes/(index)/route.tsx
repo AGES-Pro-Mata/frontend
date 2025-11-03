@@ -9,16 +9,24 @@ export const Route = createFileRoute("/(index)")({
     })
     .optional(),
   beforeLoad: ({ search }) => {
-    const lang = (search as any)?.lang as "pt" | "en" | undefined
+    const langCandidate =
+      typeof search === "object" && search !== null
+        ? (search as { lang?: unknown }).lang
+        : undefined
+
+    const lang =
+      typeof langCandidate === "string" && (langCandidate === "pt" || langCandidate === "en")
+        ? langCandidate
+        : undefined
 
     if (lang && i18n.language !== lang) {
-      i18n.changeLanguage(lang)
+      void i18n.changeLanguage(lang)
     }
   },
   component: RouteComponent,
 })
 
-function RouteComponent() {
+export function RouteComponent() {
   return (
     <Layout>
       <Layout.Header />

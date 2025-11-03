@@ -12,6 +12,7 @@ import {
 } from "@/components/filter/FilterPanel";
 import type { TExperienceFilters } from "@/entities/experience-filter";
 import { ExperienceFilter } from "@/components/filter/ExperienceFilter";
+import { ExperienceCategory } from "@/types/experience";
 
 type FilterPanelMock = ReturnType<typeof vi.fn>;
 
@@ -29,16 +30,35 @@ describe("ExperienceFilter", () => {
 
     expect(filterPanelMock).toHaveBeenCalledTimes(1);
 
-  const props = filterPanelMock.mock.calls[0][0] as FilterPanelProps<TExperienceFilters>;
+    const props = filterPanelMock.mock
+      .calls[0][0] as FilterPanelProps<TExperienceFilters>;
 
     expect(props.filtersKey).toBe("get-experiences");
-    expect(props.initialFilters).toEqual({ limit: 10, page: 0, type: "rooms" });
-    expect(props.toggleKey).toBe("type");
+    expect(props.initialFilters).toEqual({
+      page: 0,
+      category: ExperienceCategory.HOSPEDAGEM,
+      startDate: undefined,
+      endDate: undefined,
+      search: undefined,
+    });
+    expect(props.toggleKey).toBe("category");
     expect(props.options).toEqual([
-      { value: "rooms", labelKey: "reserveFilter.experienceTypes.rooms" },
-      { value: "events", labelKey: "reserveFilter.experienceTypes.events" },
-      { value: "labs", labelKey: "reserveFilter.experienceTypes.labs" },
-      { value: "trails", labelKey: "reserveFilter.experienceTypes.trails" },
+      {
+        value: ExperienceCategory.HOSPEDAGEM,
+        labelKey: "reserveFilter.experienceTypes.rooms",
+      },
+      {
+        value: ExperienceCategory.EVENTO,
+        labelKey: "reserveFilter.experienceTypes.events",
+      },
+      {
+        value: ExperienceCategory.LABORATORIO,
+        labelKey: "reserveFilter.experienceTypes.labs",
+      },
+      {
+        value: ExperienceCategory.TRILHA,
+        labelKey: "reserveFilter.experienceTypes.trails",
+      },
     ]);
     expect(props.className).toBeUndefined();
 
@@ -52,7 +72,8 @@ describe("ExperienceFilter", () => {
 
     expect(filterPanelMock).toHaveBeenCalledTimes(1);
 
-  const props = filterPanelMock.mock.calls[0][0] as FilterPanelProps<TExperienceFilters>;
+    const props = filterPanelMock.mock
+      .calls[0][0] as FilterPanelProps<TExperienceFilters>;
 
     expect(props.className).toBe("custom-gap");
   });

@@ -420,12 +420,52 @@
         "cityRequired": "City is required",
         "numberRequired": "Number is required"
     },
+    "termsPage": {
+        "title": "Terms of Use",
+        "paragraphs": [
+            "These Terms of Use govern access to the Pró-Mata/PUCRS reservations website, which provides information, reservation options, and services related to accommodations at the Pró-Mata Research and Nature Conservation Center in São Francisco de Paula, RS. The access to the website is free of charge, with the exception of services that require reservations or contractual arrangements.",
+            "By making a reservation, the user acknowledges and agrees to these conditions and is responsible for providing accurate and up-to-date information. Reservations are subject to availability and confirmation. Cancellations or changes must follow the timelines communicated on the platform, and late cancellations or no-shows may result in a fee.",
+            "Users must preserve the facilities and environmental assets, comply with internal safety guidelines, and are liable for any damages arising from improper use of the premises.",
+            "PUCRS undertakes to maintain the facilities in good condition, provide clear information about services, rates, and conditions, and adopt appropriate digital security measures."
+        ]
+    },
+    "privacyPage": {
+        "title": "Privacy Policy",
+        "sections": [
+            {
+                "heading": "Collected Data and Purpose",
+                "body": "While using the website, personal data, payment details, and browsing information are collected. The data serves the following purposes:",
+                "list": [
+                    "Process reservations and manage accommodations",
+                    "Ensure communication between the user and the administration",
+                    "Fulfill legal obligations",
+                    "Improve the website experience"
+                ]
+            },
+            {
+                "heading": "Sharing",
+                "body": "Data is neither sold nor transferred to third parties. It may only be shared with service providers required for operations or when mandated by law."
+            },
+            {
+                "heading": "User Rights",
+                "body": "Users may request access to, correction of, or deletion of their data; revoke consent when applicable; and obtain information about how their data is processed."
+            },
+            {
+                "heading": "Storage and Legislation",
+                "body": "Data is stored for as long as necessary to fulfill its intended purposes and in accordance with the applicable legislation, especially Brazil's General Data Protection Law (LGPD – Law No. 13,709/2018)."
+            }
+        ],
+        "contact": {
+            "body": "For questions or requests, users can contact the Pró-Mata/PUCRS administration by email:",
+            "email": "ima@pucrs.br"
+        }
+    },
     "footer": {
         "contact": "Contact us",
         "researchCenter": "PRÓ-MATA Research Center",
-        "city": "CITY",
-        "phone": "Phone: (XX) XXXX-XXXX",
-        "email": "Email: contato@pro-mata.org",
+        "city": "São Francisco de Paula - RS",
+            "phoneLabel": "Phone",
+            "emailLabel": "Email",
         "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
     }
 }

@@ -1,9 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { HighlightResponse } from "@/api/highlights";
 import type { HomeCard, HomeCardId } from "@/content/cardsInfo";
 import { CardsInfoOnHover } from "@/components/card/cardInfoOnHover";
+import { renderWithProviders } from "@/test/test-utils";
 
 const { createHomeCardsFixture, homeCardsFixture } = vi.hoisted(() => {
   const createHomeCardsFixture = (): HomeCard[] => [
@@ -22,13 +23,17 @@ vi.mock("@/content/cardsInfo", () => ({
   homeCards: homeCardsFixture,
 }));
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: { defaultValue?: string }) =>
-      options?.defaultValue ?? `${key}-translated`,
-    i18n: { language: "pt-BR" },
-  }),
-}));
+vi.mock("react-i18next", async () => {
+  const actual = await vi.importActual<typeof import("react-i18next")>("react-i18next");
+  return {
+    ...actual,
+    useTranslation: () => ({
+      t: (key: string, options?: { defaultValue?: string }) =>
+        options?.defaultValue ?? `${key}-translated`,
+      i18n: { language: "pt-BR" },
+    }),
+  };
+});
 
 vi.mock("@/components/buttons/defaultButton", () => ({
   Button: ({
@@ -87,7 +92,7 @@ describe("CardsInfoOnHover", () => {
   });
 
   it("renders desktop cards, allows selection, and swaps highlight images", () => {
-    render(<CardsInfoOnHover highlights={highlightsFixture} />);
+    renderWithProviders(<CardsInfoOnHover highlights={highlightsFixture} />);
 
     const desktopCards = screen.getAllByRole("group");
 
@@ -120,7 +125,7 @@ describe("CardsInfoOnHover", () => {
   });
 
   it("updates active card when mobile navigation is used", () => {
-    render(<CardsInfoOnHover highlights={highlightsFixture} />);
+    renderWithProviders(<CardsInfoOnHover highlights={highlightsFixture} />);
 
     const mobileButtons = screen.getAllByRole("button", {
       name: /homeCards\..*\.title-translated/i,
@@ -142,7 +147,7 @@ describe("CardsInfoOnHover", () => {
   it("resets the active card when cards list becomes empty", () => {
     homeCardsFixture.splice(0, homeCardsFixture.length);
 
-    const { container } = render(<CardsInfoOnHover />);
+    const { container } = renderWithProviders(<CardsInfoOnHover />);
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -173,7 +178,7 @@ describe("CardsInfoOnHover", () => {
       ],
     } satisfies Partial<Record<HomeCardId, HighlightResponse[]>>;
 
-    render(<CardsInfoOnHover highlights={highlights} />);
+    renderWithProviders(<CardsInfoOnHover highlights={highlights} />);
 
     const images = screen.getAllByRole("img", {
       name: /homeCards\.labs\.title-translated/i,
