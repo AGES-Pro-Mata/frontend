@@ -45,10 +45,12 @@ export const CartDrawer = () => {
         else closeCart();
       }}
       direction="right"
+      modal={false}
     >
       <DrawerContent
         style={{ top: "5rem", bottom: 0 }}
         className="data-[vaul-drawer-direction=right]:!w-full data-[vaul-drawer-direction=right]:!max-w-[520px] bg-card border-none shadow-xl"
+        overlayClassName="!top-20"
       >
         <DrawerHeader className="flex flex-row items-start justify-between px-6 pt-6 pb-4">
           <DrawerTitle className="text-left text-lg font-semibold text-main-dark-green">
