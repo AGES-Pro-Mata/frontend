@@ -122,6 +122,7 @@ export async function getExperiencesByFilter(
 
 export async function getExperienceById(experienceId: string): Promise<Experience> {
   const res = await api.get<ExperienceApiResponse>(`/experience/${experienceId}`);
+
   return mapExperienceApiResponseToDTO(res.data);
 }
 
@@ -157,6 +158,7 @@ export async function updateExperience(experienceId: string, payload: UpdateExpe
     const startDate = payload.experienceStartDate instanceof Date 
       ? payload.experienceStartDate.toISOString() 
       : payload.experienceStartDate;
+
     formData.append('experienceStartDate', startDate);
   }
   
@@ -164,6 +166,7 @@ export async function updateExperience(experienceId: string, payload: UpdateExpe
     const endDate = payload.experienceEndDate instanceof Date 
       ? payload.experienceEndDate.toISOString() 
       : payload.experienceEndDate;
+
     formData.append('experienceEndDate', endDate);
   }
   

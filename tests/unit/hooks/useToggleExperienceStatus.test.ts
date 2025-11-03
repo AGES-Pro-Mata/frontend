@@ -45,6 +45,7 @@ describe("useToggleExperienceStatus", () => {
 
   it("should invalidate all experience-related queries on success", async () => {
     const invalidateQueriesMock = vi.fn();
+
     useQueryClientMock.mockReturnValue({
       invalidateQueries: invalidateQueriesMock,
     });

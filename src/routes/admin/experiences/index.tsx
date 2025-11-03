@@ -57,6 +57,7 @@ function RouteComponent() {
 
   const handleToggleStatus = (experienceId: string, currentActive: boolean) => {
     const action = currentActive ? "desativar" : "ativar";
+
     if (window.confirm(`Tem certeza que deseja ${action} esta experiência?`)) {
       toggleStatusMutation.mutate({ experienceId, active: !currentActive });
     }
@@ -84,6 +85,7 @@ function RouteComponent() {
       enableSorting: true,
       cell: ({ row }: { row: { original: TExperienceAdminResponse } }) => {
         const isActive = row.original.active ?? true;
+
         return (
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
             isActive 
@@ -102,6 +104,7 @@ function RouteComponent() {
       cell: ({ row }: { row: { original: TExperienceAdminResponse & { date?: string } } }) => {
         const experienceId = row.original.id;
         const isActive = row.original.active ?? true;
+
         if (!experienceId) return null;
         
         return (

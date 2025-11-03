@@ -214,6 +214,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
       if (experience.price) {
         const priceInCents = experience.price * 100;
         const formatted = formatPrice(String(priceInCents));
+
         setPriceDisplay(formatted);
       }
 
@@ -263,6 +264,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
 
   const getDisabledDates = (isStartDate: boolean) => {
     const today = new Date();
+
     today.setHours(0, 0, 0, 0);
 
     if (isStartDate) {
@@ -291,17 +293,20 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
     if (file) {
       if (!file.type.startsWith("image/")) {
         alert("Por favor, selecione apenas arquivos de imagem");
+
         return;
       }
 
       if (file.size > 10 * 1024 * 1024) {
         alert("Arquivo muito grande. Tamanho máximo: 10MB");
+
         return;
       }
 
       form.setValue("experienceImage", file);
 
       const reader = new FileReader();
+
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
       };
@@ -714,6 +719,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
                     value={priceDisplay}
                     onChange={(e) => {
                       const formatted = formatPrice(e.target.value);
+
                       setPriceDisplay(formatted);
                       field.onChange(String(parsePrice(formatted) / 100));
                     }}
