@@ -87,7 +87,7 @@ export function RouteComponent() {
           </Typography>
 
           <div className="flex flex-col sm:flex-row gap-[clamp(0.75rem,2vw,1rem)] justify-center items-center">
-            <Link to="/reserve/finish">
+            <Link to="/reserve">
               <Button
                 label={t("homePage.ctaPrimary")}
                 variant="primary"
@@ -132,7 +132,7 @@ export function RouteComponent() {
           >
             {t("homePage.ctaBottomTitle")}
           </Typography>
-          <Link to="/reserve/finish">
+          <Link to="/reserve">
             <Button
               label={t("homePage.ctaBottom")}
               variant="gray"

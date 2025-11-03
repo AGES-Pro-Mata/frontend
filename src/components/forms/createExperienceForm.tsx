@@ -25,6 +25,7 @@ import { useCreateExperience } from "@/hooks/useCreateExperience";
 import { useLoadImage } from "@/hooks/useLoadImage";
 import { ExperienceCategory } from "@/types/experience";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -115,12 +116,12 @@ const WEEK_DAYS = [
 
 const DIFFICULTY_LEVELS = [
   { value: "LIGHT", label: "Leve" },
-  { value: "MEDIUM", label: "Moderado" },
-  { value: "HARD", label: "Pesado" },
+  { value: "MODERATED", label: "Moderado" },
+  { value: "HEAVY", label: "Pesado" },
   { value: "EXTREME", label: "Extremo" },
 ];
 
-const getCategoryIcon = (category: string) => {
+const getCategoryIcon = (category: ExperienceCategory) => {
   switch (category) {
     case ExperienceCategory.LABORATORIO:
       return <FlaskConical className="h-4 w-4" />;
@@ -137,27 +138,38 @@ const getCategoryIcon = (category: string) => {
 
 const formatPrice = (value: string) => {
   const numbers = value.replace(/\D/g, "");
-  const cents = parseInt(numbers) || 0;
-  const formatted = (cents / 100).toFixed(2).replace(".", ",");
 
-  return formatted;
+  if (!numbers) {
+    return "";
+  }
+  const cents = parseInt(numbers, 10) || 0;
+
+  return (cents / 100).toFixed(2).replace(".", ",");
 };
 
 const parsePrice = (formattedValue: string) => {
   const numbers = formattedValue.replace(/\D/g, "");
 
-  return parseInt(numbers) || 0;
+  if (!numbers) {
+    return undefined;
+  }
+  const cents = parseInt(numbers, 10) || 0;
+
+  return cents / 100;
 };
 
 export function CreateExperience() {
   const { mutate } = useCreateExperience();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(imagePreview || "");
+  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(
+    imagePreview || ""
+  );
   const [priceDisplay, setPriceDisplay] = useState<string>("");
+  const navigate = useNavigate();
 
   const form = useForm<
     z.input<typeof formSchema>,
-    any,
+    unknown,
     z.output<typeof formSchema>
   >({
     resolver: zodResolver(formSchema),
@@ -168,7 +180,7 @@ export function CreateExperience() {
       experienceCapacity: 1,
       experienceStartDate: undefined,
       experienceEndDate: undefined,
-      experiencePrice: 0,
+      experiencePrice: undefined,
       experienceWeekDays: [],
       trailDurationMinutes: undefined,
       trailDifficulty: undefined,
@@ -179,6 +191,7 @@ export function CreateExperience() {
   const watchedCategory = form.watch("experienceCategory");
   const watchedStartDate = form.watch("experienceStartDate");
   const watchedEndDate = form.watch("experienceEndDate");
+  const watchedPrice = form.watch("experiencePrice");
 
   useEffect(() => {
     if (
@@ -186,9 +199,25 @@ export function CreateExperience() {
       watchedEndDate &&
       watchedEndDate < watchedStartDate
     ) {
-      form.setValue("experienceEndDate", undefined as any);
+      form.setValue("experienceEndDate", undefined);
     }
-  }, [watchedStartDate, watchedEndDate, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedStartDate, watchedEndDate]);
+
+  useEffect(() => {
+    if (typeof watchedPrice !== "number" || Number.isNaN(watchedPrice)) {
+      setPriceDisplay("");
+
+      return;
+    }
+
+    setPriceDisplay(
+      watchedPrice.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    );
+  }, [watchedPrice]);
 
   const getDisabledDates = (isStartDate: boolean) => {
     const today = new Date();
@@ -215,13 +244,13 @@ export function CreateExperience() {
 
     if (file) {
       if (!file.type.startsWith("image/")) {
-        alert("Por favor, selecione apenas arquivos de imagem");
+        appToast.error("Por favor, selecione apenas arquivos de imagem.");
 
         return;
       }
 
       if (file.size > 10 * 1024 * 1024) {
-        alert("Arquivo muito grande. Tamanho máximo: 10MB");
+        appToast.error("Arquivo muito grande. Tamanho máximo: 10MB.");
 
         return;
       }
@@ -237,7 +266,7 @@ export function CreateExperience() {
     }
   };
 
-  const onSubmit = form.handleSubmit((data) => {
+  const submitForm = form.handleSubmit((data) => {
     const payload: CreateExperiencePayload = {
       ...data,
       experienceWeekDays: (data.experienceWeekDays ?? []).map((day) =>
@@ -248,12 +277,17 @@ export function CreateExperience() {
     mutate(payload, {
       onSuccess: () => {
         appToast.success("Experiência criada com sucesso");
+        void navigate({ to: "/admin/experiences" });
       },
       onError: () => {
         appToast.error("Erro ao criar experiência");
       },
     });
   });
+
+  const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    void submitForm(event);
+  };
 
   return (
     <div className="pb-8 pt-6 justify-items-center">
@@ -264,7 +298,7 @@ export function CreateExperience() {
       </div>
 
       <Form {...form}>
-        <form className="space-y-6">
+  <form className="space-y-6" onSubmit={handleFormSubmit}>
           <FormField
             control={form.control}
             name="experienceImage"
@@ -291,7 +325,9 @@ export function CreateExperience() {
                           src={imagePreview}
                           alt="Preview"
                           className={`max-w-full max-h-48 object-cover rounded-lg transition-opacity duration-300 ${
-                            previewLoaded && !previewLoading ? "opacity-100" : "opacity-0"
+                            previewLoaded && !previewLoading
+                              ? "opacity-100"
+                              : "opacity-0"
                           }`}
                         />
                         {previewLoading && (
@@ -342,7 +378,7 @@ export function CreateExperience() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Tipo de experiência *
                     </Typography>
                     <Select value={field.value} onValueChange={field.onChange}>
@@ -408,6 +444,7 @@ export function CreateExperience() {
                     label="Quantidade de pessoas"
                     required
                     type="number"
+                    min="1"
                     placeholder="Digite a quantidade de pessoas que o laboratório suporta"
                     value={field.value as number | undefined}
                     onChange={(e) =>
@@ -429,14 +466,14 @@ export function CreateExperience() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Dias da semana disponíveis
                     </Typography>
                     <Popover>
                       <PopoverTrigger asChild>
                         <ShadcnButton
                           variant="outline"
-                          className="w-full justify-start text-left font-normal h-10 px-3"
+                          className="w-full justify-start text-left font-normal h-12 px-5"
                         >
                           {field.value && field.value.length > 0 ? (
                             <Typography className="text-sm">
@@ -516,7 +553,7 @@ export function CreateExperience() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Data de início
                     </Typography>
                     <Popover>
@@ -557,7 +594,7 @@ export function CreateExperience() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
+                    <Typography className="text-foreground font-medium">
                       Data de fim
                     </Typography>
                     <Popover>
@@ -630,6 +667,7 @@ export function CreateExperience() {
                         label="Duração (minutos)"
                         required
                         type="number"
+                        min="1"
                         placeholder="Ex: 120"
                         value={field.value as number | undefined}
                         onChange={(e) =>
@@ -651,7 +689,7 @@ export function CreateExperience() {
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex flex-col gap-0">
-                        <Typography className="text-foreground font-medium mb-1">
+                        <Typography className="text-foreground font-medium">
                           Dificuldade *
                         </Typography>
                         <Select
@@ -706,7 +744,6 @@ export function CreateExperience() {
               type="submit"
               variant="primary"
               className="w-36"
-              onClick={onSubmit}
               label="Criar"
             />
           </div>

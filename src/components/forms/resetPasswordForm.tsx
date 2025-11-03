@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { AuthCard } from "../auth";
-import { TextInput } from "@/components/input/textInput";
+import { PasswordInput } from "@/components/input/passwordInput";
 import { Typography } from "../typography";
 import { Form, FormField, FormItem, FormMessage } from "../ui/form";
 import { Button } from "../button/defaultButton";
@@ -76,11 +76,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <TextInput
-                      type="password"
+                    <PasswordInput
                       label={t("auth.reset.newPassword")}
-                      placeholder={t("auth.reset.newPasswordPlaceholder")}
                       required
+                      placeholder={t("auth.reset.newPasswordPlaceholder")}
                       {...field}
                     />
                     <FormMessage />
@@ -92,11 +91,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
                 name="confirm"
                 render={({ field }) => (
                   <FormItem>
-                    <TextInput
-                      type="password"
+                    <PasswordInput
                       label={t("auth.reset.confirmPassword")}
-                      placeholder={t("auth.reset.confirmPasswordPlaceholder")}
                       required
+                      placeholder={t("auth.reset.confirmPasswordPlaceholder")}
                       {...field}
                     />
                     <FormMessage />

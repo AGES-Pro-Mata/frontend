@@ -15,6 +15,7 @@ import type { TExperienceFilters } from "@/entities/experience-filter";
 import { useGetExperiences } from "@/hooks/useGetExperiences";
 import { ExperienceCategory } from "@/types/experience";
 import { MoonLoader } from "react-spinners";
+import { t } from "i18next";
 
 function ReservePage() {
   const PAGE_LIMIT = 12;
@@ -44,10 +45,12 @@ function ReservePage() {
     isError,
   } = useGetExperiences(filters, Math.max(0, currentPage - 1));
 
-  const experiences = experiencesData?.items ?? [];
+  const fetchedExperiences = experiencesData?.items ?? [];
+  const currentExperiences = fetchedExperiences.filter(
+    (experience) => experience.active !== false
+  );
   const totalItems = experiencesData?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_LIMIT));
-  const currentExperiences = experiences;
 
   const handlePageChange = (page: number): void => {
     setCurrentPage(page);
@@ -66,7 +69,7 @@ function ReservePage() {
         {isLoading ? (
           <MoonLoader size={40} className="mx-auto" />
         ) : isError ? (
-          <div className="text-center text-red-500">
+          <div className="text-center text-default-red">
             Error loading experiences
           </div>
         ) : (
@@ -77,7 +80,7 @@ function ReservePage() {
               ))}
             </div>
 
-            {experiences.length > 0 && totalPages > 1 && (
+            {totalItems > 0 && totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
@@ -121,9 +124,9 @@ function ReservePage() {
               </Pagination>
             )}
 
-            {experiences.length === 0 && !isLoading && (
-              <div className="text-center text-gray-500">
-                No experiences found with the current filters.
+            {currentExperiences.length === 0 && !isLoading && (
+              <div className="text-center text-foreground/70">
+                {t("reserveFilter.noExperiences")}
               </div>
             )}
           </>

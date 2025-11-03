@@ -19,13 +19,17 @@ vi.mock("react-i18next", async (importOriginal) => {
 
   return {
     ...(actual ?? {}),
-    useTranslation: (): { t: (key: string, params?: Record<string, string>) => string } => ({
+    useTranslation: (): {
+      t: (key: string, params?: Record<string, string>) => string;
+      i18n: { language: string };
+    } => ({
       t: (key, params) => {
         if (params?.from && params?.to) return `De ${params.from} até ${params.to}`;
 
         const map: Record<string, string> = {
           "common.cancel": "Cancelar",
           "common.save": "Salvar",
+          "common.turismo": "Turismo",
           "experienceCard.editInfo": "Editar informações",
           "experienceCard.selectDateAndPeople": "Selecionar data e pessoas",
           "experienceCard.dateRange": "Período",
@@ -41,6 +45,7 @@ vi.mock("react-i18next", async (importOriginal) => {
 
         return map[key] ?? key;
       },
+      i18n: { language: "pt-BR" },
     }),
   };
 });
@@ -212,7 +217,7 @@ describe("ExperienceCard", () => {
 
     expect(screen.getByText("Viagem Rural")).toBeInTheDocument();
     expect(screen.getByText("Turismo")).toBeInTheDocument();
-    expect(screen.getByText("R$ 100.50")).toBeInTheDocument();
+  expect(screen.getByText(/R\$\s*100,50/)).toBeInTheDocument();
     expect(screen.getByRole("img")).toHaveAttribute("src", "image.jpg");
   });
 

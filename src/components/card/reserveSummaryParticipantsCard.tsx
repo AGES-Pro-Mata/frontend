@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import CanvasCard from "@/components/card/canvasCard";
 import { Textarea } from "@/components/ui/textarea";
 import { Typography } from "@/components/typography/typography";
-import { ReserveParticipantInputs } from "@/components/layouts/reserve/ReserveParticipantInputs";
+import { ReserveParticipantInputs } from "@/components/forms/registerReserveParticipantsForm";
 import type { ReserveParticipant } from "@/types/reserve";
 
 export type ReserveSummaryParticipantsProps = {
@@ -12,7 +12,10 @@ export type ReserveSummaryParticipantsProps = {
   notes?: string;
 };
 
-export function ReserveSummaryParticipants({ people, notes }: ReserveSummaryParticipantsProps) {
+export function ReserveSummaryParticipants({
+  people,
+  notes,
+}: ReserveSummaryParticipantsProps) {
   const { t } = useTranslation();
 
   if (!people.length) {
@@ -20,9 +23,12 @@ export function ReserveSummaryParticipants({ people, notes }: ReserveSummaryPart
   }
 
   return (
-    <CanvasCard className="w-full border border-dark-gray/25 bg-white p-6 shadow-sm">
+    <CanvasCard className="w-full border border-dark-gray/25 bg-card/20 p-6 shadow-sm">
       <div className="flex flex-col gap-6">
-        <Typography variant="h3" className="text-2xl font-semibold text-main-dark-green">
+        <Typography
+          variant="h3"
+          className="text-2xl font-semibold text-main-dark-green"
+        >
           {t("reserveSummary.people.title")}
         </Typography>
 
@@ -32,7 +38,9 @@ export function ReserveSummaryParticipants({ people, notes }: ReserveSummaryPart
               <section className="rounded-2xl border border-dark-gray/20 bg-soft-white p-5 shadow-xs">
                 <header className="mb-4 flex items-center justify-between">
                   <Typography className="text-sm font-semibold uppercase tracking-[0.12em] text-main-dark-green/70">
-                    {t("reserveSummary.people.personBadge", { index: index + 1 })}
+                    {t("reserveSummary.people.personBadge", {
+                      index: index + 1,
+                    })}
                   </Typography>
                 </header>
                 <ReserveParticipantInputs

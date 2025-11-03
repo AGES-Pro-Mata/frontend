@@ -13,7 +13,10 @@ describe("ExperienceAdminResponse", () => {
 
     const result = ExperienceAdminResponse.parse(payload);
 
-    expect(result).toEqual(payload);
+    expect(result).toEqual({
+      ...payload,
+      active: true, // Campo adicionado por padrão
+    });
   });
 
   it("rejects invalid start date", () => {
