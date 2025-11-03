@@ -16,7 +16,7 @@ import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDeleteUser } from "@/hooks/use-delete-users";
-import { useState, type ChangeEvent } from "react";
+import { type ChangeEvent, useState } from "react";
 import { MoonLoader } from "react-spinners";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
