@@ -1,25 +1,23 @@
-import {
-  type FilterOption,
-  FilterPanel,
-} from "@/components/filter/FilterPanel";
-import { ExperienceCategory } from "@/types/experience";
+import { type FilterOption, FilterPanel } from '@/components/filter/FilterPanel';
+import type { TExperienceFilters } from '@/entities/experience-filter';
+import { ExperienceCategory } from '@/types/experience';
 
 const experienceTypeOptions: FilterOption[] = [
   {
     value: ExperienceCategory.HOSPEDAGEM,
-    labelKey: "reserveFilter.experienceTypes.rooms",
+    labelKey: 'reserveFilter.experienceTypes.rooms',
   },
   {
     value: ExperienceCategory.EVENTO,
-    labelKey: "reserveFilter.experienceTypes.events",
+    labelKey: 'reserveFilter.experienceTypes.events',
   },
   {
     value: ExperienceCategory.LABORATORIO,
-    labelKey: "reserveFilter.experienceTypes.labs",
+    labelKey: 'reserveFilter.experienceTypes.labs',
   },
   {
     value: ExperienceCategory.TRILHA,
-    labelKey: "reserveFilter.experienceTypes.trails",
+    labelKey: 'reserveFilter.experienceTypes.trails',
   },
 ];
 
