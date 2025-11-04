@@ -16,21 +16,31 @@ import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
 import { useTranslation } from "react-i18next";
 import { appToast } from "@/components/toast/toast";
+import { useMemo, useEffect } from "react";
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
 }
 
 export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
-  const { t } = useTranslation();
-  const formSchema = z.object({
+  const { t, i18n } = useTranslation();
+  const formSchema = useMemo(
+    () => 
+      z
+        .object({
   email: z.email(t("validation.email")),
-  });
+  }),  
+  [i18n.language]);
   type FormData = z.infer<typeof formSchema>;
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "" },
   });
+
+  useEffect(() => {
+  form.clearErrors();
+  form.trigger();
+  }, [i18n.language]);
 
   const mutation = useForgotPasswordMutation();
 
