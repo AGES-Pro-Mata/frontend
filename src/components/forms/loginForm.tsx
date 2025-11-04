@@ -12,17 +12,13 @@ import { Button } from "@/components/button/defaultButton";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
-const formSchema = z.object({
-  email: z.email("validation.email" as unknown as string),
-  password: z
-    .string()
-    .min(1, "validation.passwordRequired" as unknown as string),
-});
-
-type FormData = z.infer<typeof formSchema>;
-
 export function LoginForm() {
   const { t } = useTranslation();
+  const formSchema = z.object({
+    email: z.email(t("validation.email")),
+    password: z.string().min(1, t("validation.passwordRequired")),
+  });
+  type FormData = z.infer<typeof formSchema>;
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {

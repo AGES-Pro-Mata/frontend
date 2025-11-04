@@ -17,18 +17,16 @@ import { Button } from "@/components/button/defaultButton";
 import { useTranslation } from "react-i18next";
 import { appToast } from "@/components/toast/toast";
 
-const formSchema = z.object({
-  email: z.email("validation.email" as unknown as string),
-});
-
-type FormData = z.infer<typeof formSchema>;
-
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
 }
 
 export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
   const { t } = useTranslation();
+  const formSchema = z.object({
+  email: z.email(t("validation.email")),
+  });
+  type FormData = z.infer<typeof formSchema>;
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "" },
