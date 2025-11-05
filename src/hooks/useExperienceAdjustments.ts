@@ -1,36 +1,60 @@
-
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+
+import { api } from "@/core/api";
+import type { RawExperienceAdjustment } from "@/types/experience-adjustments";
+
 import { useCurrentUserProfile } from "./useCurrentUser";
 
-export function useExperienceAdjustments() {
+type ExperienceAdjustmentsResponse =
+	| RawExperienceAdjustment[]
+	| { data?: RawExperienceAdjustment[] };
+
+type RawExperienceAdjustmentWithUser = RawExperienceAdjustment & {
+	userId?: string | number | null;
+	user?: { id?: string | number | null } | null;
+};
+
+const EXPERIENCE_ADJUSTMENTS_QUERY_KEY = "experienceAdjustments";
+
+type UseExperienceAdjustmentsOptions = {
+	enabled?: boolean;
+};
+
+export function useExperienceAdjustments(options?: UseExperienceAdjustmentsOptions) {
 	const { data: currentUser } = useCurrentUserProfile();
+	const userId = currentUser?.id;
+	const isEnabled = Boolean(userId) && (options?.enabled ?? true);
 
 	return useQuery({
-		queryKey: ["experienceAdjustments", currentUser?.id],
-		enabled: !!currentUser?.id,
-		queryFn: async () => {
-			const res = await axios.get("/api/experience-adjustments");
-			const payload: unknown = res?.data;
-
-			type ExperienceAdjustment = {
-				userId?: string | number;
-				user?: { id?: string | number } | null;
-			};
-
-			function hasDataArray(x: unknown): x is { data: ExperienceAdjustment[] } {
-				return typeof x === "object" && x !== null && Array.isArray((x as { data?: unknown }).data);
+		queryKey: [EXPERIENCE_ADJUSTMENTS_QUERY_KEY, userId],
+		enabled: isEnabled,
+		queryFn: async (): Promise<RawExperienceAdjustment[]> => {
+			if (!userId) {
+				return [];
 			}
 
-			const all: ExperienceAdjustment[] = hasDataArray(payload)
-				? payload.data
-				: Array.isArray(payload)
-				? (payload as ExperienceAdjustment[])
+			const response = await api.get<ExperienceAdjustmentsResponse>(
+				"/experience-adjustments"
+			);
+			const rawData = response.data;
+
+			const allAdjustments = Array.isArray(rawData)
+				? rawData
+				: Array.isArray(rawData?.data)
+				? rawData.data
 				: [];
 
-			return all.filter((exp) =>
-				exp.userId === currentUser?.id || exp.user?.id === currentUser?.id,
-			);
+			const normalizedUserId = String(userId);
+			const adjustmentsWithUser = allAdjustments as RawExperienceAdjustmentWithUser[];
+
+			return adjustmentsWithUser.filter((experience) => {
+				const directId = experience.userId;
+				const nestedId = experience.user?.id;
+				const directMatches = directId != null && String(directId) === normalizedUserId;
+				const nestedMatches = nestedId != null && String(nestedId) === normalizedUserId;
+
+				return directMatches || nestedMatches;
+			});
 		},
 	});
 }

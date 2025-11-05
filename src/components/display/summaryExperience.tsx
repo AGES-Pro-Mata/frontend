@@ -2,6 +2,7 @@ import { Typography } from "@/components/typography/typography";
 import type { Locale } from "@/types/locale";
 import { CalendarDays, CircleDollarSign, User } from "lucide-react";
 import type { ComponentType } from "react";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 type SummaryXpProps = {
   experience: string;
@@ -27,6 +28,8 @@ export const SummaryExperience = ({
   locale,
   imageUrl,
 }: SummaryXpProps) => {
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageUrl);
+  
   const formatDate = (isoDate: string) => {
     const [year, month, day] = isoDate.split("-");
 
@@ -53,8 +56,17 @@ export const SummaryExperience = ({
 
   return (
     <div className="flex gap-4 p-4 pr-16 bg-card-background w-fit rounded-2xl items-center shadow-xl">
-      <div>
-        <img src={imageUrl} alt={experience} className="rounded-2xl" />
+      <div className="relative">
+        <img 
+          src={imageUrl} 
+          alt={experience} 
+          className={`rounded-2xl transition-opacity duration-300 ${
+            imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
+          }`} 
+        />
+        {imageLoading && (
+          <div className="absolute inset-0 animate-pulse bg-muted rounded-2xl" />
+        )}
       </div>
       <div className="flex flex-col gap-1">
         <Typography variant="h4" className="text-main-dark-green mb-2">

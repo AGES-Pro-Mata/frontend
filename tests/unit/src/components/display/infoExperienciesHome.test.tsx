@@ -104,7 +104,7 @@ describe("InfoExperiencies Component", () => {
 
     expect(button).toBeInTheDocument();
     expect(button).toHaveTextContent("Reservar");
-    expect(link).toHaveAttribute("href", "/reserve/finish");
+    expect(link).toHaveAttribute("href", "/reserve");
   });
 
   it("mostra o texto 'Reserve agora!' antes do botão", () => {

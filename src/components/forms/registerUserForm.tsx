@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { TextInput } from "@/components/input/textInput";
+import { PasswordInput } from "@/components/input/passwordInput";
 import { Typography } from "@/components/typography/typography";
 import { Button } from "@/components/button/defaultButton";
 import { useRegisterUser } from "@/hooks/useRegisterUser";
@@ -200,7 +201,7 @@ export function RegisterUser() {
 
     if (errorFields.length > 0) {
       // retrigger only errored fields to refresh message language
-      void form.trigger(errorFields as any);
+      void form.trigger(errorFields as (keyof FormData)[]);
     }
   }, [i18n.language]);
 
@@ -272,7 +273,7 @@ export function RegisterUser() {
           form.reset();
           appToast.success(t("register.toasts.success"));
           setAutoFilled({ addressLine: false, city: false });
-          navigate({ to: "/auth/login" });
+          void navigate({ to: "/auth/login" });
         } else {
           appToast.error(t("register.toasts.error"));
         }
@@ -295,7 +296,9 @@ export function RegisterUser() {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={(event) => {
+              void form.handleSubmit(onSubmit)(event);
+            }}
             className="mt-6 space-y-3"
           >
             <div className="flex flex-wrap items-center justify-start gap-4">
@@ -326,7 +329,7 @@ export function RegisterUser() {
                           // Re-run validation to clear/set field errors according to new mode
                           setTimeout(
                             () =>
-                              form.trigger([
+                              void form.trigger([
                                 "city",
                                 "number",
                                 "zipCode",
@@ -646,10 +649,9 @@ export function RegisterUser() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <TextInput
+                      <PasswordInput
                         label={t("register.fields.password")}
                         required
-                        type="password"
                         placeholder={t("register.fields.password")}
                         {...field}
                       />
@@ -663,10 +665,9 @@ export function RegisterUser() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <TextInput
+                      <PasswordInput
                         label={t("register.fields.confirmPassword")}
                         required
-                        type="password"
                         placeholder={t("register.fields.confirmPassword")}
                         {...field}
                       />

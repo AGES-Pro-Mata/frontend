@@ -1,10 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SummaryExperience } from "@/components/display/summaryExperience";
+import { renderWithProviders } from "@/test/test-utils";
 
 describe("SummaryExperience", () => {
   it("renders formatted experience information", () => {
-    render(
+    renderWithProviders(
       <SummaryExperience
         experience="Workshop de Robótica"
         startDate="2025-01-01"
@@ -27,7 +28,7 @@ describe("SummaryExperience", () => {
   });
 
   it("falls back to original date string when formatting fails", () => {
-    render(
+    renderWithProviders(
       <SummaryExperience
         experience="Visita Técnica"
         startDate="sem-data"

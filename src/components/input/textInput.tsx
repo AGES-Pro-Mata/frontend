@@ -9,6 +9,7 @@ interface textInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   type?: string;
   placeholder?: string;
   className?: string;
+  error?: string | null;
 }
 
 export function TextInput({
@@ -17,11 +18,12 @@ export function TextInput({
   type,
   placeholder,
   className,
+  error,
   ...Props
 }: textInputProps) {
   const [value, setValue] = React.useState(Props.value ?? "");
   const [touched, setTouched] = React.useState(false);
-  const isInvalid = required && touched && !value;
+  const isInvalid = Boolean(error) || (required && touched && !value);
 
   // Keep local state in sync with external value updates (e.g., programmatic form.setValue)
   React.useEffect(() => {
@@ -30,6 +32,7 @@ export function TextInput({
 
   return (
     <div className={cn("flex flex-col gap-0.7", className)}>
+  {error && <span className="mt-1 text-sm text-default-red">{error}</span>}
       {label && (
         <Typography
           className={cn(

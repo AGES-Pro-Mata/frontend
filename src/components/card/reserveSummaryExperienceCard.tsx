@@ -1,6 +1,7 @@
 import { Calendar, DollarSign, UsersRound } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useLoadImage } from "@/hooks/useLoadImage";
 
 import CanvasCard from "@/components/card/canvasCard";
 import { Typography } from "@/components/typography/typography";
@@ -32,6 +33,7 @@ export function ReserveSummaryExperienceCard({
   className,
 }: ReserveSummaryExperienceCardProps) {
   const { t, i18n } = useTranslation();
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageUrl);
 
   const { formattedPeriod, formattedPrice } = useMemo(() => {
     const fromDate = parseDate(startDate);
@@ -59,30 +61,40 @@ export function ReserveSummaryExperienceCard({
   return (
     <CanvasCard
       className={cn(
-        "flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-dark-gray/20 !bg-banner text-on-banner-text shadow-md md:flex-row",
+        "flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-dark-gray/20 !bg-card text-on-banner-text shadow-md md:flex-row",
         className
       )}
     >
-      <div className="h-36 w-full overflow-hidden md:h-auto md:w-[45%]">
+      <div className="relative h-36 w-full overflow-hidden md:h-auto md:w-[45%]">
         <img
           src={imageUrl}
           alt={title}
-          className="h-full w-full object-cover"
+          className={`h-full w-full object-cover transition-opacity duration-300 ${
+            imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
+          }`}
           loading="lazy"
         />
+        {imageLoading && (
+          <div className="absolute inset-0 animate-pulse bg-muted" />
+        )}
       </div>
 
       <div className="flex w-full flex-1 flex-col gap-3 px-5 py-4 text-on-banner-text">
-        <Typography variant="h4" className="text-lg font-semibold text-main-dark-green">
+        <Typography
+          variant="h4"
+          className="text-lg font-semibold text-main-dark-green"
+        >
           {title}
         </Typography>
 
-  <div className="flex flex-col gap-2 text-xs font-semibold md:text-sm">
+        <div className="flex flex-col gap-2 text-xs font-semibold md:text-sm">
           <SummaryBadge icon={Calendar} label={formattedPeriod} />
           <SummaryBadge icon={DollarSign} label={formattedPrice} />
           <SummaryBadge
             icon={UsersRound}
-            label={t("reserveSummary.experiences.peopleCount", { count: peopleCount })}
+            label={t("reserveSummary.experiences.peopleCount", {
+              count: peopleCount,
+            })}
           />
         </div>
       </div>
@@ -97,11 +109,13 @@ type SummaryBadgeProps = {
 
 function SummaryBadge({ icon: Icon, label }: SummaryBadgeProps) {
   return (
-  <div className="inline-flex items-center gap-3 rounded-full border border-dark-gray/15 bg-soft-white px-3 py-1.5 text-main-dark-green shadow-sm">
+    <div className="inline-flex items-center gap-3 rounded-full border border-dark-gray/15 bg-soft-white px-3 py-1.5 text-main-dark-green shadow-sm">
       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-main-dark-green text-white">
         <Icon className="h-3.5 w-3.5" />
       </span>
-      <span className="text-xs font-semibold leading-tight md:text-sm">{label}</span>
+      <span className="text-xs font-semibold leading-tight md:text-sm">
+        {label}
+      </span>
     </div>
   );
 }

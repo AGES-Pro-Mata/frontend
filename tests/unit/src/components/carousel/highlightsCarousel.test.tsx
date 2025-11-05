@@ -1,7 +1,6 @@
 import {
   act,
   fireEvent,
-  render,
   screen,
   waitFor,
 } from "@testing-library/react";
@@ -9,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HighlightsCarousel } from "@/components/carousel/highlightsCarousel";
 import type { HighlightResponse } from "@/api/highlights";
 import { HighlightCategory } from "@/entities/highlights";
+import { renderWithProviders } from "@/test/test-utils";
 
 let highlightCounter = 0;
 
@@ -31,7 +31,7 @@ describe("HighlightsCarousel", () => {
   });
 
   it("renders fallback when no highlights are provided", () => {
-    render(<HighlightsCarousel highlights={[]} />);
+    renderWithProviders(<HighlightsCarousel highlights={[]} />);
 
     expect(screen.getByText("Nenhum destaque disponível")).toBeInTheDocument();
   });
@@ -39,7 +39,7 @@ describe("HighlightsCarousel", () => {
   it("hides navigation when a single highlight is provided", () => {
     const highlight = createHighlight({ title: "Único" });
 
-    render(<HighlightsCarousel highlights={[highlight]} />);
+    renderWithProviders(<HighlightsCarousel highlights={[highlight]} />);
 
     expect(
       screen.queryByRole("button", { name: "Próxima imagem" })
@@ -73,7 +73,7 @@ describe("HighlightsCarousel", () => {
     ];
 
     const removeSpy = vi.spyOn(window, "removeEventListener");
-    const { unmount } = render(<HighlightsCarousel highlights={highlights} />);
+    const { unmount } = renderWithProviders(<HighlightsCarousel highlights={highlights} />);
 
     const mainImage = screen.getByRole("img", { name: "Primeiro" });
     const mainContainer = mainImage.closest("div.relative");

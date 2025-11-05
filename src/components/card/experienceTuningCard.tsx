@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, type ChangeEvent, useState } from "react";
+import { type CSSProperties, type ChangeEvent, useMemo, useState } from "react";
 import { Button } from "@/components/button/defaultButton";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import { CalendarIcon, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useExperienceTuning } from "@/hooks/useExperienceTuning";
 import type { ExperienceTuningData } from "@/types/experience";
+import { useLoadImage } from "@/hooks/useLoadImage";
+import { translateExperienceCategory } from "@/utils/translateExperienceCategory";
 
 type ExperienceCardProps = {
   title: string;
@@ -20,6 +22,8 @@ type ExperienceCardProps = {
   experienceId?: string;
   persist?: boolean;
   onSave?: (data: ExperienceTuningData) => void;
+  onLoad?: (data: ExperienceTuningData) => void;
+  initialData?: ExperienceTuningData | null;
 };
 
 export default function ExperienceCard({
@@ -31,9 +35,12 @@ export default function ExperienceCard({
   experienceId,
   persist = true,
   onSave,
+  onLoad,
+  initialData,
 }: ExperienceCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageUrl);
   const {
     range,
     setRange,
@@ -46,9 +53,33 @@ export default function ExperienceCard({
     save,
     savedMen,
     savedWomen,
-  } = useExperienceTuning({ experienceId, persist, onSave });
+  } = useExperienceTuning({ experienceId, persist, initialData, onSave, onLoad });
 
-  const fmt = (d: Date) => d.toLocaleDateString("pt-BR");
+  const locale = useMemo(
+    () => (i18n.language?.startsWith("pt") ? "pt-BR" : "en-US"),
+    [i18n.language]
+  );
+  const currencyFormatter = useMemo(
+    () => new Intl.NumberFormat(locale, { style: "currency", currency: "BRL" }),
+    [locale]
+  );
+  const translatedType = useMemo(
+    () => translateExperienceCategory(type, t, type ?? ""),
+    [type, t]
+  );
+  const dateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }),
+    [locale]
+  );
+  const fmt = (d: Date) => dateFormatter.format(d);
+  const formattedPrice = currencyFormatter.format(
+    Number.isFinite(price) ? price : 0
+  );
   const calendarStyles = { "--rdp-cell-size": "1.75rem" } as CSSProperties;
 
   // Live input values (men, women) are only reflected in summary after save.
@@ -124,26 +155,44 @@ export default function ExperienceCard({
   return (
     <CanvasCard className="w-full max-w-3xl mx-auto bg-card shadow-lg rounded-xl overflow-hidden flex flex-col">
       {/* image */}
-      <div className="w-full overflow-hidden h-40 md:h-56 lg:h-64 xl:h-72 rounded-t-xl">
-        <img src={imageUrl} alt={title} className="w-full h-full object-cover block" />
+      <div className="relative w-full overflow-hidden h-40 md:h-56 lg:h-64 xl:h-72 rounded-t-xl">
+        <img
+          src={imageUrl}
+          alt={title}
+          className={`w-full h-full object-cover block transition-opacity duration-300 ${
+            imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
+          }`}
+        />
+        {imageLoading && (
+          <div className="absolute inset-0 animate-pulse bg-muted" />
+        )}
       </div>
 
       {/* header */}
       <div className="w-full px-5 pt-4 pb-5 text-main-dark-green flex flex-col gap-3">
         <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3">
-          <h2 className="font-bold text-sm md:text-base w-full md:w-auto">{title}</h2>
-          <span className="inline-flex items-center justify-center text-xs text-main-dark-green bg-card rounded-full font-bold shadow-inner px-3 py-1 shrink-0">
-            {type}
-          </span>
+          <h2 className="font-bold text-sm md:text-base w-full md:w-auto">
+            {title}
+          </h2>
+          {translatedType && (
+            <span className="inline-flex items-center justify-center text-xs text-main-dark-green bg-card rounded-full font-bold shadow-inner px-3 py-1 shrink-0">
+              {translatedType}
+            </span>
+          )}
           <div className="flex items-center justify-start rounded-full bg-card shadow-sm gap-2 h-8 md:h-9 px-3 shrink-0">
-            <span className="text-xs md:text-sm font-semibold text-main-dark-green">R$ {price.toFixed(2)}</span>
+            <span className="text-xs md:text-sm font-semibold text-main-dark-green">
+              {formattedPrice}
+            </span>
           </div>
           <div className="flex items-center justify-start rounded-full bg-card shadow-sm gap-2 px-3 py-1 w-full md:w-auto md:flex-none flex-1 min-w-0 order-last md:order-none">
             <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white shrink-0">
               <CalendarIcon className="w-3.5 h-3.5" />
             </div>
             <span className="text-xs md:text-sm font-semibold text-main-dark-green whitespace-normal break-words leading-tight">
-              {t("experienceCard.dateRange", { from: fmt(period.start), to: fmt(period.end) })}
+              {t("experienceCard.dateRange", {
+                from: fmt(period.start),
+                to: fmt(period.end),
+              })}
             </span>
           </div>
         </div>
@@ -156,8 +205,8 @@ export default function ExperienceCard({
               open
                 ? t("common.cancel")
                 : saved
-                ? t("experienceCard.editInfo")
-                : t("experienceCard.selectDateAndPeople")
+                  ? t("experienceCard.editInfo")
+                  : t("experienceCard.selectDateAndPeople")
             }
           />
         </div>
@@ -165,13 +214,15 @@ export default function ExperienceCard({
         {saved && savedRange?.from && savedRange?.to && (
           <div className="flex justify-start gap-3">
             <span className="text-xs md:text-sm text-main-dark-green">
-              {t("experienceCard.men")}: <span className="font-bold">{savedMen}</span>
+              {t("experienceCard.men")}:{" "}
+              <span className="font-bold">{savedMen}</span>
             </span>
             <span className="text-xs md:text-sm text-main-dark-green">
-              {t("experienceCard.women")}: <span className="font-bold">{savedWomen}</span>
+              {t("experienceCard.women")}:{" "}
+              <span className="font-bold">{savedWomen}</span>
             </span>
             <span className="text-xs md:text-sm text-main-dark-green">
-              {t("experienceCard.selectedDate")}: {" "}
+              {t("experienceCard.selectedDate")}:{" "}
               <span className="font-bold">
                 {t("experienceCard.dateRange", {
                   from: fmt(savedRange.from),
@@ -185,7 +236,9 @@ export default function ExperienceCard({
 
       {open && (
         <div className="p-3 md:p-4 bg-banner rounded-lg shadow-md flex flex-col gap-4 text-main-dark-green my-3 mx-2 md:mx-3 max-w-none">
-          <h3 className="text-base font-bold">{t("experienceCard.chooseDate")}</h3>
+          <h3 className="text-base font-bold">
+            {t("experienceCard.chooseDate")}
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-10 items-start">
             <div className="flex flex-col items-start gap-3">
               <div className="flex items-center justify-start rounded-full bg-card shadow-md gap-2 h-7 px-3 w-full md:max-w-xs">
@@ -194,7 +247,10 @@ export default function ExperienceCard({
                 </div>
                 <span className="text-sm font-bold text-main-dark-green leading-none">
                   {range?.from && range?.to
-                    ? t("experienceCard.dateRange", { from: fmt(range.from), to: fmt(range.to) })
+                    ? t("experienceCard.dateRange", {
+                        from: fmt(range.from),
+                        to: fmt(range.to),
+                      })
                     : t("experienceCard.selectPeriodOnCalendar")}
                 </span>
               </div>
@@ -211,7 +267,11 @@ export default function ExperienceCard({
                     const { from, to } = value;
 
                     if (from && to && from.getTime() === to.getTime()) {
-                      if (range.from && !range.to && range.from.getTime() === from.getTime()) {
+                      if (
+                        range.from &&
+                        !range.to &&
+                        range.from.getTime() === from.getTime()
+                      ) {
                         setRange({ from, to });
 
                         return;
@@ -228,8 +288,10 @@ export default function ExperienceCard({
                   classNames={{
                     root: "m-0",
                     day_selected: "bg-main-dark-green text-white",
-                    day_range_start: "bg-main-dark-green text-white rounded-l-full",
-                    day_range_end: "bg-main-dark-green text-white rounded-r-full",
+                    day_range_start:
+                      "bg-main-dark-green text-white rounded-l-full",
+                    day_range_end:
+                      "bg-main-dark-green text-white rounded-r-full",
                     day_range_middle: "bg-main-dark-green text-white",
                     day_disabled: "text-gray-400 opacity-50 cursor-not-allowed",
                   }}
@@ -248,7 +310,9 @@ export default function ExperienceCard({
                 </div>
               </div>
               <div className="w-full md:max-w-xs">
-                <Label className="mb-1 block text-sm">{t("experienceCard.malePeople")}</Label>
+                <Label className="mb-1 block text-sm">
+                  {t("experienceCard.malePeople")}
+                </Label>
                 <Input
                   type="text"
                   inputMode="numeric"
@@ -261,7 +325,9 @@ export default function ExperienceCard({
                 />
               </div>
               <div className="w-full md:max-w-xs">
-                <Label className="mb-1 block text-sm">{t("experienceCard.femalePeople")}</Label>
+                <Label className="mb-1 block text-sm">
+                  {t("experienceCard.femalePeople")}
+                </Label>
                 <Input
                   type="text"
                   inputMode="numeric"

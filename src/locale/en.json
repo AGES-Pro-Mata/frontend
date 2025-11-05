@@ -2,6 +2,7 @@
     "home": "Home",
     "reserve": "Reserve",
     "myReservations": "My Reservations",
+    "admin": "Admin",
     "common": {
         "menu": "Menu",
         "back": "Back",
@@ -16,7 +17,17 @@
         "email": "Email",
         "function": "Role",
         "next": "Next",
-        "finish": "Finish"
+        "finish": "Finish",
+        "lab": "Lab",
+        "room": "Room",
+        "event": "Event",
+        "trail": "Trail",
+        "labs": "Labs",
+        "rooms": "Rooms",
+        "events": "Events",
+        "trails": "Trails",
+        "experience": "Experience",
+        "experiences": "Experiences"
     },
     "cartDrawer": {
         "heading": {
@@ -54,11 +65,33 @@
         "cancelada": "Cancelled",
         "desconhecido": "Unknown"
     },
+    "reservation": {
+        "registerPeople": "Register participants",
+        "sendPaymentProof": "Send payment receipt",
+        "cancelReservation": "Cancel reservation",
+        "viewReservation": "View reservation",
+        "cancelRequestSent": "Cancellation request sent!",
+        "peopleRegisteredSuccess": "Participants registered successfully!",
+        "paymentProofSent": "Payment receipt sent successfully!",
+        "openingReservationDetails": "Opening reservation details...",
+        "activities": {
+            "historicalTrail": "Historical-Cultural Trail",
+            "birdWatching": "Birdwatching",
+            "outdoorLab": "Outdoor Lab"
+        }
+    },
     "myReservationsFilter": {
         "searchPlaceholder": "Search reservations...",
         "searchAriaLabel": "Search reservations",
         "status": {
             "all": "All"
+        }
+    },
+    "myReservationsPage": {
+        "empty": {
+            "title": "You don't have any reservations yet.",
+            "description": "Once you book an experience it will appear here. Explore the available options to get started.",
+            "cta": "Browse experiences"
         }
     },
     "nav": {
@@ -116,20 +149,21 @@
         "bookNow": "Book now!",
         "book": "Make a Reservation"
     },
-        "reserveFilter": {
-            "arrivalDateLabel": "Check-in date",
-            "arrivalDatePlaceholder": "Check-in",
-            "departureDateLabel": "Check-out date",
-            "departureDatePlaceholder": "Check-out",
-            "experienceTypes": {
-                "rooms": "Rooms",
-                "events": "Events",
-                "labs": "Laboratories",
-                "trails": "Trails"
-            },
-            "searchPlaceholder": "Search...",
-            "searchAriaLabel": "Search experiences"
+    "reserveFilter": {
+        "arrivalDateLabel": "Check-in date",
+        "arrivalDatePlaceholder": "Check-in",
+        "departureDateLabel": "Check-out date",
+        "departureDatePlaceholder": "Check-out",
+        "experienceTypes": {
+            "rooms": "Rooms",
+            "events": "Events",
+            "labs": "Laboratories",
+            "trails": "Trails"
         },
+        "searchPlaceholder": "Search...",
+        "searchAriaLabel": "Search experiences",
+        "noExperiences": "No experiences found for the selected filters."
+    },
     "experienceCard": {
       "package": "Package",
       "currencySymbol": "$",

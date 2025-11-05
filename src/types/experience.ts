@@ -33,9 +33,8 @@ export interface ExperienceTuningData {
 
 export type TrailDifficulty =
   | "LIGHT"
-  | "EASY"
-  | "MEDIUM"
-  | "HARD"
+  | "MODERATED"
+  | "HEAVY"
   | "EXTREME"
   | (string & { _?: never });
 
@@ -50,10 +49,27 @@ export type ExperienceApiImage =
   | undefined;
 
 export interface ExperienceApiResponse {
+  // API GET retorna sem prefixo
+  id?: string | null;
+  name?: string;
+  description?: string | null;
+  category?: ExperienceCategory;
+  capacity?: RawNumber;
+  image?: ExperienceApiImage;
+  startDate?: string | null;
+  endDate?: string | null;
+  price?: RawNumber;
+  weekDays?: ExperienceWeekDay[] | null;
+  durationMinutes?: RawNumber;
+  trailDifficulty?: TrailDifficulty | null;
+  trailLength?: RawNumber;
+  active?: boolean | string | null;
+
+  // API POST/PATCH usa prefixo experience (mantido para compatibilidade)
   experienceId?: string | null;
-  experienceName: string;
+  experienceName?: string;
   experienceDescription?: string | null;
-  experienceCategory: ExperienceCategory;
+  experienceCategory?: ExperienceCategory;
   experienceCapacity?: RawNumber;
   experienceImage?: ExperienceApiImage;
   experienceStartDate?: string | null;
@@ -61,8 +77,7 @@ export interface ExperienceApiResponse {
   experiencePrice?: RawNumber;
   experienceWeekDays?: ExperienceWeekDay[] | null;
   trailDurationMinutes?: RawNumber;
-  trailDifficulty?: TrailDifficulty | null;
-  trailLength?: RawNumber;
+  experienceActive?: boolean | string | null;
 }
 
 export interface ExperienceDTO {
@@ -80,6 +95,7 @@ export interface ExperienceDTO {
   trailLength?: number | null;
   image?: { url: string } | null;
   imageId?: string | null;
+  active?: boolean | null;
 }
 
 export type Experience = ExperienceDTO;
@@ -125,27 +141,63 @@ const mapImage = (image: ExperienceApiImage): { url: string } | null => {
   return { url: resolveImageUrl(rawUrl) };
 };
 
+const toBooleanOrNull = (value: unknown): boolean | null => {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+
+    if (normalized === "true") {
+      return true;
+    }
+
+    if (normalized === "false") {
+      return false;
+    }
+  }
+
+  return null;
+};
+
 export const mapExperienceApiResponseToDTO = (
   apiExperience: ExperienceApiResponse
 ): Experience => {
-  const category = CATEGORY_CARD_MAP[apiExperience.experienceCategory];
+  // Prioriza campos sem prefixo (GET) e usa prefixo como fallback (POST/PATCH)
+  const rawCategory =
+    apiExperience.category ?? apiExperience.experienceCategory;
+  const category = rawCategory
+    ? CATEGORY_CARD_MAP[rawCategory]
+    : ExperienceCategoryCard.EVENT;
+
+  const id = apiExperience.id ?? apiExperience.experienceId ?? "unknown";
+  const name = apiExperience.name ?? apiExperience.experienceName ?? "";
 
   return {
-    id:
-      apiExperience.experienceId ??
-      `${apiExperience.experienceName}-${apiExperience.experienceCategory}`,
-    name: apiExperience.experienceName,
-    description: apiExperience.experienceDescription ?? null,
-    category: category ?? ExperienceCategoryCard.EVENT,
-    capacity: toNumberOrNull(apiExperience.experienceCapacity),
-    startDate: apiExperience.experienceStartDate ?? null,
-    endDate: apiExperience.experienceEndDate ?? null,
-    price: toNumberOrNull(apiExperience.experiencePrice),
-    weekDays: apiExperience.experienceWeekDays ?? null,
-    durationMinutes: toNumberOrNull(apiExperience.trailDurationMinutes),
+    id,
+    name,
+    description:
+      apiExperience.description ?? apiExperience.experienceDescription ?? null,
+    category,
+    capacity: toNumberOrNull(
+      apiExperience.capacity ?? apiExperience.experienceCapacity
+    ),
+    startDate:
+      apiExperience.startDate ?? apiExperience.experienceStartDate ?? null,
+    endDate: apiExperience.endDate ?? apiExperience.experienceEndDate ?? null,
+    price: toNumberOrNull(apiExperience.price ?? apiExperience.experiencePrice),
+    weekDays:
+      apiExperience.weekDays ?? apiExperience.experienceWeekDays ?? null,
+    durationMinutes: toNumberOrNull(
+      apiExperience.durationMinutes ?? apiExperience.trailDurationMinutes
+    ),
     trailDifficulty: apiExperience.trailDifficulty ?? null,
     trailLength: toNumberOrNull(apiExperience.trailLength),
-    image: mapImage(apiExperience.experienceImage),
+    image: mapImage(apiExperience.image ?? apiExperience.experienceImage),
     imageId: null,
+    active: toBooleanOrNull(
+      apiExperience.active ?? apiExperience.experienceActive ?? null
+    ),
   };
 };
