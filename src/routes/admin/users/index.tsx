@@ -117,10 +117,10 @@ function RouteComponent() {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleDeleteUserClick(row.original.id)}
-                className="cursor-pointer text-red-500 gap-3"
+                className="cursor-pointer text-default-red gap-3"
               >
                 {"Excluir"}
-                <Trash className="size-4 text-red-500" />
+                <Trash className="size-4 text-default-red" />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -129,9 +129,17 @@ function RouteComponent() {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <MoonLoader color="#22c55e" size={40} />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col w-full h-full p-4 gap-6">
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col w-full h-full p-4 gap-6 overflow-hidden">
+      <div className="flex justify-between items-center lex-shrink-0">
         <div className="w-full flex gap-4">
           <Input
             value={searchTerm}
@@ -174,19 +182,19 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
-      <div className="relative">
-      {isLoading && (
-          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+      <div className="flex-1 relative overflow-auto rounded-md border">
+        {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center rounded-lg z-10">
             <MoonLoader size={35} color="#22c55e" />
           </div>
-          )}
-      <DataTable
-        data={items}
-        columns={columns}
-        filters={filters}
-        meta={meta}
-        setFilter={setFilter}
-      />
+        )}
+        <DataTable
+          data={items}
+          columns={columns}
+          filters={filters}
+          meta={meta}
+          setFilter={setFilter}
+        />
       </div>
     </div>
   );
