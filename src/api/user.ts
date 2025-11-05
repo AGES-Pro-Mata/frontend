@@ -84,7 +84,6 @@ export interface RegisterUserPayload {
 export interface UpdateUserAdminPayload {
   name: string;
   email: string;
-  password: string;
   phone: string;
   gender: string;
   document?: string;
@@ -152,7 +151,7 @@ export async function updateUserRequest(
   if (payload.teacherDocument)
     formData.append("teacherDocument", payload.teacherDocument);
 
-  const response = await api.post(`/user/${userId}`, formData);
+  const response = await api.patch(`/user/${userId}`, formData);
 
   return {
     statusCode: response.status,
