@@ -11,31 +11,28 @@ import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useRef } from "react";
 
 export function LoginForm() {
   const { t, i18n } = useTranslation();
   const formSchema = useMemo(
-    ()=> 
-      z
-        .object({
-    email: z.email(t("validation.email")),
-    password: z.string().min(1, t("validation.passwordRequired")),
-  }), 
-  [i18n.language]);
+    () =>
+      z.object({
+        email: z.email(t("validation.email")),
+        password: z.string().min(1, t("validation.passwordRequired")),
+      }),
+    [i18n.language]
+  );
   type FormData = z.infer<typeof formSchema>;
-  const form = useForm<FormData>({
+  const form = useForm<
+    z.input<typeof formSchema>,
+    any,
+    z.output<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    mode: "onBlur",
+    reValidateMode: "onChange",
   });
-
-  useEffect(() => {
-  form.clearErrors();
-  form.trigger();
-  }, [i18n.language]);
 
   const mutation = useLogin();
 
@@ -44,6 +41,19 @@ export function LoginForm() {
 
     mutation.mutate({ ...data, password: hashedPassword });
   };
+
+  const didMountLang = useRef(false);
+  useEffect(() => {
+    if (!didMountLang.current) {
+      didMountLang.current = true;
+      return;
+    }
+    const errorFields = Object.keys(form.formState.errors || {});
+
+    if (errorFields.length > 0) {
+      void form.trigger(errorFields as (keyof FormData)[]);
+    }
+  }, [i18n.language]);
 
   return (
     <AuthCard>
@@ -54,7 +64,10 @@ export function LoginForm() {
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
       <Form {...form}>
-        <form onSubmit={(event) => void form.handleSubmit(onSubmit)(event)} className="space-y-4">
+        <form
+          onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
+          className="space-y-4"
+        >
           <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs">
               <FormField

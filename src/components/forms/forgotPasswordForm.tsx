@@ -16,7 +16,7 @@ import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
 import { useTranslation } from "react-i18next";
 import { appToast } from "@/components/toast/toast";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useRef } from "react";
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
@@ -24,25 +24,41 @@ interface ForgotPasswordFormProps {
 
 export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
   const { t, i18n } = useTranslation();
+
   const formSchema = useMemo(
-    () => 
-      z
-        .object({
-  email: z.email(t("validation.email")),
-  }),  
-  [i18n.language]);
+    () =>
+      z.object({
+        email: z.string().email(t("validation.email")),
+      }),
+    [i18n.language]
+  );
+
   type FormData = z.infer<typeof formSchema>;
-  const form = useForm<FormData>({
+
+  const form = useForm<
+    z.input<typeof formSchema>,
+    any,
+    z.output<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: { email: "" },
   });
 
-  useEffect(() => {
-  form.clearErrors();
-  form.trigger();
-  }, [i18n.language]);
-
   const mutation = useForgotPasswordMutation();
+
+  const didMountLang = useRef(false);
+  useEffect(() => {
+    if (!didMountLang.current) {
+      didMountLang.current = true;
+      return;
+    }
+    const errorFields = Object.keys(form.formState.errors || {});
+    if (errorFields.length > 0) {
+      void form.trigger(errorFields as (keyof FormData)[]);
+    }
+  }, [i18n.language]);
 
   const onSubmit = (data: FormData) => {
     mutation.mutate(
@@ -97,11 +113,10 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
           </div>
           {mutation.isSuccess && mutation.data && (
             <div
-              className={`text-sm rounded p-2 border ${
-                mutation.data.statusCode != 500
+              className={`text-sm rounded p-2 border ${mutation.data.statusCode != 500
                   ? "text-contrast-green bg-contrast-green/4 border-contrast-green"
                   : "text-default-red bg-default-red/4 border-default-red"
-              }`}
+                }`}
             >
               {mutation.data.statusCode != 500
                 ? t("auth.forgot.resultSuccess")
