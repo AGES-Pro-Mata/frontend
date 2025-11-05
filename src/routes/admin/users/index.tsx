@@ -138,8 +138,8 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex flex-col w-full h-full p-4 gap-6">
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col w-full h-full p-4 gap-6 overflow-hidden">
+      <div className="flex justify-between items-center lex-shrink-0">
         <div className="w-full flex gap-4">
           <Input
             value={searchTerm}
@@ -182,7 +182,12 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
-      <div className="relative">
+      <div className="flex-1 relative overflow-auto rounded-md border">
+        {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center rounded-lg z-10">
+            <MoonLoader size={35} color="#22c55e" />
+          </div>
+        )}
         <DataTable
           data={items}
           columns={columns}
