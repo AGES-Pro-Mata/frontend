@@ -184,7 +184,7 @@ function RouteComponent() {
       </div>
       <div className="flex-1 relative overflow-auto rounded-md border">
         {isLoading && (
-          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+          <div className="absolute inset-0 flex justify-center items-center rounded-lg z-10">
             <MoonLoader size={35} color="#22c55e" />
           </div>
         )}
