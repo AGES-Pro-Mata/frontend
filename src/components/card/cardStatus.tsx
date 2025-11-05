@@ -11,7 +11,7 @@ export type CardStatusProps = {
 export const CARD_STATUS_ICON_CLASS = "h-5 w-5";
 
 const CARD_STATUS_BASE_CLASS =
-  "relative inline-flex items-center gap-[8px] px-[10px] py-[2px] rounded-full border-[0.5px] border-dark-gray text-sm w-fit font-bold";
+  "relative inline-flex items-center gap-[8px] px-[10px] py-[2px] rounded-full border-[0.5px] shadow-sm text-sm w-fit font-bold bg-card-light";
 
 function CardStatus({
   icon,

@@ -13,7 +13,7 @@ export const useGetAdminUser = ({ id }: useGetAdminUserParams) => {
     queryKey: [ADMIN_USER_QUERY_KEY, id],
     queryFn: async () => {
       const response = await getUserById(id);
-
+      
       return response;
     },
   });

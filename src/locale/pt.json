@@ -18,7 +18,17 @@
     "email": "Email",
     "function": "Função",
     "next": "Próximo",
-    "finish": "Finalizar"
+    "finish": "Finalizar",
+    "lab": "Laboratório",
+    "room": "Quarto",
+    "event": "Evento",
+    "trail": "Trilha",
+    "labs": "Laboratórios",
+    "rooms": "Quartos",
+    "events": "Eventos",
+    "trails": "Trilhas",
+    "experience": "Experiência",
+    "experiences": "Experiências"
   },
   "cartDrawer": {
     "heading": {
@@ -49,21 +59,45 @@
     "eventDateRange": "{{from}} – {{to}}"
   },
   "status": {
-    "confirmada": "Confirmada",
-    "pagamento_pendente": "Pagamento pendente",
-    "cadastro_pendente": "Cadastro pendente",
-    "aguardando_aprovacao": "Aguardando aprovação",
+    "cadastro_pendente": "Cadastro Pendente",
+    "pagamento_pendente": "Pagamento Pendente",
+    "aguardando_aprovacao": "Aprovação Pendente",
+    "concluida": "Concluída",
     "cancelada": "Cancelada",
-    "desconhecido": "Desconhecido"
+    "cancelamento_pendente": "Aguardando cancelamento"
+  },
+  "reservation": {
+    "registerPeople": "Cadastrar Pessoas",
+    "sendPaymentProof": "Enviar Comprovante",
+    "cancelReservation": "Cancelar Reserva",
+    "viewReservation": "Visualizar Reserva",
+    "cancelRequestSent": "Solicitação de cancelamento enviada!",
+    "peopleRegisteredSuccess": "Pessoas cadastradas com sucesso!",
+    "paymentProofSent": "Comprovante enviado com sucesso!",
+    "openingReservationDetails": "Abrindo detalhes da reserva...",
+    "activities": {
+      "historicalTrail": "Trilha Histórico-Cultural",
+      "birdWatching": "Observação de Aves",
+      "outdoorLab": "Laboratório ao Ar Livre"
+    }
   },
   "myReservationsFilter": {
     "searchPlaceholder": "Buscar reservas...",
     "searchAriaLabel": "Buscar reservas",
     "status": {
-      "all": "Todas"
+      "all": "Todas",
+      "waiting": "Aguardando",
+      "confirmed": "Confirmadas",
+      "cancelled": "Canceladas"
     }
   },
-
+  "myReservationsPage": {
+    "empty": {
+      "title": "Você ainda não possui reservas.",
+      "description": "Assim que fizer uma reserva ela aparecerá por aqui. Explore as experiências disponíveis para encontrar a ideal.",
+      "cta": "Explorar experiências"
+    }
+  },
   "nav": {
     "home": "Início",
     "reserve": "Reservar",
@@ -134,7 +168,8 @@
       "trails": "Trilhas"
     },
     "searchPlaceholder": "Buscar...",
-    "searchAriaLabel": "Buscar experiências"
+    "searchAriaLabel": "Buscar experiências",
+    "noExperiences": "Nenhuma experiência encontrada com os filtros selecionados."
   },
 
   "experienceCard": {
@@ -173,6 +208,13 @@
       "title": "Trilhas",
       "description": "Caminhos ecológicos para exploração e aprendizado."
     }
+  },
+
+  "experienceCategories": {
+    "lab": "Laboratório",
+    "room": "Hospedagem",
+    "event": "Evento",
+    "trail": "Trilha"
   },
 
   "carousel": {
@@ -344,8 +386,7 @@
       "genderOptions": {
         "female": "Feminino",
         "male": "Masculino",
-        "other": "Outro",
-        "notInformed": "Prefiro não informar"
+        "other": "Outro"
       },
       "postConfirmation": {
         "label": "Adicionar as pessoas após a confirmação da reserva"
@@ -359,6 +400,7 @@
       "instructions": "Revise as experiências selecionadas, ajustando datas, quantidade de pessoas e demais detalhes antes de finalizar a reserva.",
       "selectedExperiences": "Experiências selecionadas",
       "error": "Erro ao carregar experiências.",
+      "emptyCart": "Nenhuma experiência selecionada.",
       "fallbackExperiences": {
         "sunriseTrail": {
           "title": "Trilha do Sol Nascente",
@@ -378,8 +420,16 @@
         "type": "Passeio"
       }
     },
+    "validation": {
+      "fillRequired": "Preencha todos os campos obrigatórios.",
+      "personIssue": "Participante {{index}}: {{message}}",
+      "noExperiences": "Adicione pelo menos uma experiência ao carrinho.",
+      "missingExperienceDates": "Selecione as datas da experiência {{title}}.",
+      "unknownExperience": "esta experiência"
+    },
     "toast": {
-      "success": "Reserva atualizada com sucesso!"
+      "success": "Reserva atualizada com sucesso!",
+      "error": "Não foi possível finalizar a reserva."
     }
   },
 
@@ -424,6 +474,8 @@
     "zipRequired": "Informe o CEP",
     "countryRequired": "Informe o país",
     "addressRequired": "Endereço é obrigatório",
+  "birthDateRequired": "Informe a data de nascimento",
+  "cpfRequired": "Informe o CPF",
 
     "cep8": "CEP deve conter 8 dígitos",
     "cpfInvalid": "CPF inválido",
@@ -482,5 +534,35 @@
     "phoneLabel": "Telefone",
     "emailLabel": "E-mail",
     "copyright": "© {{year}} PRÓ-MATA. Todos os direitos reservados."
+  },
+  "paymentProof": {
+    "selectBeforeSend": "Selecione um arquivo antes de enviar!",
+    "instructions": "Envie o comprovante de pagamento para confirmar a reserva",
+    "acceptedProofs": "Hoje, aceitamos os seguintes comprovantes:",
+    "ted": "TED: BANCO",
+    "pix": "PIX: CHAVEPIX",
+    "sendProofWithValue": "Envie o comprovante com o valor de",
+    "paymentProofLabel": "Comprovante de Pagamento",
+    "chooseFile": "Escolher arquivo",
+    "noFileSelected": "Nenhum arquivo selecionado"
+  },
+  "cancelReservation": {
+    "title": "Cancelar reserva?",
+    "confirmation": "Tem certeza de que deseja cancelar sua reserva? Esta ação não poderá ser desfeita.",
+    "keepReservation": "Manter reserva"
+  },
+  "peopleModal": {
+    "title": "Cadastrar Pessoas",
+    "name": "Nome",
+    "phone": "Telefone",
+    "birth": "Nascimento",
+    "cpf": "CPF",
+    "gender": "Gênero",
+    "male": "Masculino",
+    "female": "Feminino",
+    "other": "Outro",
+    "addOnePerson": "Adicionar pessoa",
+    "addPerson": "Adicionar mais uma pessoas",
+    "fillAllFields": "Preencha todos os campos obrigatórios"
   }
 }

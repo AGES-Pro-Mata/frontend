@@ -9,7 +9,7 @@ type ReserveParticipantBase = {
   name: string;
   phone: string;
   birthDate: string;
-  cpf: string;
+  document: string;
 };
 
 export type ReserveParticipantDraft = ReserveParticipantBase & {

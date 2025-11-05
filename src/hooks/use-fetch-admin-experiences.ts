@@ -22,7 +22,7 @@ export const useFetchAdminExperiences = ({
   const query = useQuery({
     queryKey: [ADMIN_EXPERIENCES_QUERY_KEY, filters],
     queryFn: async () => {
-      //await new Promise(r => setTimeout(r, 5000));
+      await new Promise(r => setTimeout(r, 5000));
       const response = await api.get<
         {
           items: TExperienceAdminResponse[];
@@ -44,7 +44,10 @@ export const useFetchAdminExperiences = ({
 
   const parsedItems = items.map((e) => {
     if (!e.startDate || !e.endDate) {
-      return e;
+      return {
+        ...e,
+        date: "Sem intervalo de data",
+      };
     }
 
     const startDate = new Date(e.startDate).toLocaleDateString("pt-BR", {
