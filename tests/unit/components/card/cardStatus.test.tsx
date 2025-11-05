@@ -1,4 +1,4 @@
-import CardStatus from "@/components/cards/cardStatus";
+import CardStatus from "@/components/card/cardStatus";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { Circle } from "lucide-react";
