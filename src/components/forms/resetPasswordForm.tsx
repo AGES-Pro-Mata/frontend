@@ -16,9 +16,7 @@ const formSchema = z
   .object({
     password: z
       .string()
-      .min(6, "validation.passwordMin" as unknown as string)
-      .regex(/[A-Z]/, "validation.passwordUpper" as unknown as string)
-      .regex(/\d/, "validation.passwordNumber" as unknown as string),
+      .min(6, "validation.passwordMin" as unknown as string),
     confirm: z.string(),
   })
   .refine((data) => data.password === data.confirm, {
