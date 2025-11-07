@@ -8,8 +8,8 @@ type ReserveParticipantBase = {
   id: string;
   name: string;
   phone: string;
-  birthDate: Date | string;
-  cpf: string;
+  birthDate: string;
+  document: string;
 };
 
 export type ReserveParticipantDraft = ReserveParticipantBase & {

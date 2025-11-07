@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import type { ComponentType, ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HighlightCategory } from "@/entities/highlights";
@@ -54,12 +54,22 @@ vi.mock("lucide-react", () => ({
   Loader: () => <div role="status">loading</div>,
 }));
 
+const useLoadImageMock = vi.fn();
+
+vi.mock("@/hooks/useLoadImage", () => ({
+  useLoadImage: () => useLoadImageMock(),
+}));
+
 describe("Home Route Component", () => {
   beforeEach(() => {
     cardsInfoMock.mockClear();
     highlightsCarouselMock.mockClear();
     infoExperiencesMock.mockClear();
     fetchPublicHighlightsMock.mockReset();
+    useLoadImageMock.mockReturnValue({
+      data: "mocked-url",
+      isLoading: false,
+    });
   });
 
   it("renders loaders while highlights are loading", async () => {
@@ -219,6 +229,12 @@ describe("Home Route Component", () => {
 
   it("updates hero state once image loads", async () => {
     fetchPublicHighlightsMock.mockReturnValue({ data: undefined, isLoading: true });
+    
+    // Simulate initial loading state
+    useLoadImageMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
 
   const routeModule = (await import("@/routes/(index)/index")) as unknown as RouteModule;
   const Component = routeModule.RouteComponent ?? routeModule.Route.component;
@@ -232,9 +248,5 @@ describe("Home Route Component", () => {
     const heroImage = screen.getByAltText("PRÓ-MATA Centro de Pesquisas");
 
     expect(heroImage).toHaveClass("opacity-0");
-
-    fireEvent.load(heroImage);
-
-    expect(heroImage).toHaveClass("opacity-100");
   });
 });

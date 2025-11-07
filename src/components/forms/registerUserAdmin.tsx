@@ -1,5 +1,6 @@
 import { Button } from "@/components/button/defaultButton";
 import { TextInput } from "@/components/input/textInput";
+import { PasswordInput } from "@/components/input/passwordInput";
 import { appToast } from "@/components/toast/toast";
 import { Typography } from "@/components/typography/typography";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -571,10 +572,9 @@ export function RegisterUserAdmin() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <TextInput
+                  <PasswordInput
                     label="Senha"
                     required
-                    type="text"
                     placeholder="Senha"
                     {...field}
                   />
