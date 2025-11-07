@@ -64,7 +64,7 @@ export function ReserveParticipantInputs({
   const handleCpfChange = (value: string) => {
     const digits = digitsOnly(value).slice(0, 11);
 
-    handleChange("cpf", maskCpf(digits));
+    handleChange("document", maskCpf(digits));
   };
 
   const isReadOnly = readOnly === true;
@@ -125,7 +125,7 @@ export function ReserveParticipantInputs({
         label={t("reserveFlow.peopleStep.fields.cpf.label")}
         required
         placeholder={t("reserveFlow.peopleStep.fields.cpf.placeholder")}
-        value={person.cpf}
+        value={person.document}
         onChange={(event) => handleCpfChange(event.target.value)}
         disabled={disabled}
         readOnly={isReadOnly}

@@ -139,7 +139,7 @@ function ReserveInfoPage() {
       name: member.name || "Não informado",
       phone: member.phone?.replace(/^\+/, "") || "Não informado",
       birthDate: formatDateForInput(member.birthDate),
-      cpf: member.document || "Não informado",
+      document: member.document || "Não informado",
       gender: normalizeGender(member.gender),
     }));
 
