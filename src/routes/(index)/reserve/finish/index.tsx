@@ -130,6 +130,7 @@ function ReserveFlow() {
       },
       imageUrl: experience.image?.url ?? "/mock/landscape-1.jpg",
       experienceId: experience.id,
+      hasValidPeriod: experience.startDate != null && experience.endDate != null
     }));
   }, [cartExperiences, t]);
 

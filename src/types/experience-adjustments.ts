@@ -26,4 +26,5 @@ export type NormalizedExperienceAdjustment = {
   };
   imageUrl: string;
   experienceId?: string;
+  hasValidPeriod?: boolean;
 };
