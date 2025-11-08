@@ -75,13 +75,10 @@ function ExperienceAdjustmentsCard({
 
   const experiencesToRender = useMemo<NormalizedExperienceAdjustment[]>(() => {
     if (hasExternalSource) {
-      console.log("Using EXTERNAL experiences");
-      // Map external experiences to add hasValidPeriod if missing
       return (externalExperiences ?? []).map((exp) => {
-        console.log("External exp:", exp);
         return {
           ...exp,
-          hasValidPeriod: exp.hasValidPeriod ?? true, // Use the value if it exists, otherwise default to true
+          hasValidPeriod: exp.hasValidPeriod ?? true,
         };
       });
     }
@@ -100,7 +97,7 @@ function ExperienceAdjustmentsCard({
       const startInput = exp.period?.start ?? exp.periodStart;
       const endInput = exp.period?.end ?? exp.periodEnd;
 
-      const hasValidPeriod = false;
+      const hasValidPeriod = startInput == null && endInput == null;
       const start = startInput ? new Date(startInput) : new Date();
       const end = endInput ? new Date(endInput) : new Date();
 
