@@ -1,3 +1,5 @@
+//mexer nesta tela
+
 import DataTable from "@/components/table";
 import { useFilters } from "@/hooks/filters/filters";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -80,6 +82,35 @@ function RouteComponent() {
       enableSorting: true,
     },
     {
+  accessorKey: "type",
+  header: "Tipo",
+  enableSorting: true,
+  cell: ({
+    row,
+  }: {
+    row: { original: TExperienceAdminResponse };
+  }) => {
+    const name = row.original.name?.toLowerCase() ?? "";
+
+    let tipo = "evento"; // fallback
+
+    if (name.includes("quarto")) tipo = "quarto";
+    else if (name.includes("trilha")) tipo = "trilha";
+    else if (name.includes("evento")) tipo = "evento";
+    else if (name.includes("laboratório") || name.includes("laboratorio"))
+      tipo = "laboratório";
+
+    return (
+      <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
+        {tipo}
+      </span>
+    );
+  },
+},
+
+
+
+    {
       accessorKey: "active",
       header: "Status",
       enableSorting: true,
@@ -115,6 +146,7 @@ function RouteComponent() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem 
                 className="cursor-pointer gap-4"
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 onClick={() => navigate({ to: "/admin/experiences/$experienceId", params: { experienceId } })}
               >
                 {"Editar"}
