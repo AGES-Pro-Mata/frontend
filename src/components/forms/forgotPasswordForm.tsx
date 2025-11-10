@@ -16,7 +16,7 @@ import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
 import { useTranslation } from "react-i18next";
 import { appToast } from "@/components/toast/toast";
-import { useMemo, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
@@ -28,9 +28,9 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
   const formSchema = useMemo(
     () =>
       z.object({
-        email: z.string().email(t("validation.email")),
+        email: z.email(t("validation.email")),
       }),
-    [i18n.language]
+    [t]
   );
 
   type FormData = z.infer<typeof formSchema>;
@@ -49,16 +49,19 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
   const mutation = useForgotPasswordMutation();
 
   const didMountLang = useRef(false);
+
   useEffect(() => {
     if (!didMountLang.current) {
       didMountLang.current = true;
+
       return;
     }
     const errorFields = Object.keys(form.formState.errors || {});
+
     if (errorFields.length > 0) {
       void form.trigger(errorFields as (keyof FormData)[]);
     }
-  }, [i18n.language]);
+  }, [form, i18n.language]);
 
   const onSubmit = (data: FormData) => {
     mutation.mutate(
@@ -104,8 +107,8 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
                       required
                       {...field}
                     />
+                    <FormMessage className="text-default-red" />
                     <FormDescription>{t("auth.forgot.helper")}</FormDescription>
-                    <FormMessage />
                   </FormItem>
                 )}
               />

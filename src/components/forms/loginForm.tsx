@@ -11,27 +11,24 @@ import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { useMemo, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export function LoginForm() {
   const { t, i18n } = useTranslation();
-  const formSchema = useMemo(
-    () =>
-      z.object({
-        email: z.email(t("validation.email")),
-        password: z.string().min(1, t("validation.passwordRequired")),
-      }),
-    [i18n.language]
-  );
+  const formSchema = z.object({
+    email: z.email(t("validation.email")),
+    password: z.string().min(1, t("validation.passwordMin")),
+  });
+
   type FormData = z.infer<typeof formSchema>;
-  const form = useForm<
-    z.input<typeof formSchema>,
-    any,
-    z.output<typeof formSchema>
-  >({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const mutation = useLogin();
@@ -43,9 +40,11 @@ export function LoginForm() {
   };
 
   const didMountLang = useRef(false);
+
   useEffect(() => {
     if (!didMountLang.current) {
       didMountLang.current = true;
+
       return;
     }
     const errorFields = Object.keys(form.formState.errors || {});
@@ -53,7 +52,7 @@ export function LoginForm() {
     if (errorFields.length > 0) {
       void form.trigger(errorFields as (keyof FormData)[]);
     }
-  }, [i18n.language]);
+  }, [form, i18n.language]);
 
   return (
     <AuthCard>
@@ -82,7 +81,7 @@ export function LoginForm() {
                       required
                       {...field}
                     />
-                    <FormMessage />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
@@ -100,7 +99,7 @@ export function LoginForm() {
                       required
                       {...field}
                     />
-                    <FormMessage />
+                    <FormMessage className="text-default-red" />
                   </FormItem>
                 )}
               />
