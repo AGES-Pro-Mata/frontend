@@ -193,11 +193,15 @@ vi.mock("react-spinners", () => ({
   MoonLoader: () => <div role="status">loading</div>,
 }));
 
+const defaultLoadImageResult = {
+  data: "mocked-url",
+  isLoading: false,
+};
+
+const useLoadImageMock = vi.fn(() => defaultLoadImageResult);
+
 vi.mock("@/hooks/useLoadImage", () => ({
-  useLoadImage: () => ({
-    data: "mocked-url",
-    isLoading: false,
-  }),
+  useLoadImage: () => useLoadImageMock(),
 }));
 
 const createHiddenIcon =
@@ -293,6 +297,9 @@ describe("Admin Highlights Route", () => {
     toastErrorMock.mockReset();
     confirmMock.mockReset();
     alertMock.mockReset();
+  useLoadImageMock.mockReset();
+  useLoadImageMock.mockImplementation(() => defaultLoadImageResult);
+    useLoadImageMock.mockImplementation(() => defaultLoadImageResult);
 
     const routeModule = (await import(
       "@/routes/admin/highlights/index"
@@ -1061,5 +1068,69 @@ describe("Admin Highlights Route", () => {
 
     fireEvent.click(deleteCloseToggle);
     expect(screen.queryByText(/Confirmar exclusão/)).not.toBeInTheDocument();
+  });
+
+  it("shows a placeholder while highlight images are loading", () => {
+    const dataset = buildFetchResponse({
+      [HighlightCategory.LABORATORIO]: [
+        createHighlightItem({
+          id: "lab-loading",
+          title: "Loading highlight",
+          imageUrl: "https://example.com/highlight-loading.png",
+        }),
+      ],
+    });
+
+    fetchHighlightsMock.mockReturnValue(dataset);
+    buildMutations();
+
+    useLoadImageMock
+      .mockImplementationOnce(() => defaultLoadImageResult)
+      .mockImplementationOnce(() => ({ data: "", isLoading: true }))
+      .mockImplementation(() => defaultLoadImageResult);
+
+    const { container } = render(<Component />);
+
+    expect(
+      container.querySelector(".absolute.inset-0.animate-pulse.bg-muted")
+    ).not.toBeNull();
+  });
+
+  it("renders a preview skeleton while uploaded image data loads", () => {
+    const dataset = buildFetchResponse({
+      [HighlightCategory.QUARTO]: [],
+    });
+
+    fetchHighlightsMock.mockReturnValue(dataset);
+    buildMutations();
+
+    useLoadImageMock
+      .mockImplementationOnce(() => defaultLoadImageResult)
+      .mockImplementation(() => ({ data: "", isLoading: true }));
+
+    const { container } = render(<Component />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Quartos/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Adicionar Primeira Imagem/i })
+    );
+
+    const uploadedFile = new File(["content"], "preview-loading.png", {
+      type: "image/png",
+    });
+
+    Object.defineProperty(uploadedFile, "size", { value: 2048 });
+
+    const fileInput = screen.getByLabelText(
+      /Clique para selecionar uma imagem/i
+    );
+
+    fireEvent.change(fileInput, { target: { files: [uploadedFile] } });
+
+    expect(
+      container.querySelector(
+        ".absolute.inset-0.animate-pulse.bg-muted.rounded-lg"
+      )
+    ).not.toBeNull();
   });
 });

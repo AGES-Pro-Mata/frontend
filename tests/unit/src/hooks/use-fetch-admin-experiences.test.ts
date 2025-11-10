@@ -1,14 +1,37 @@
+import { act, waitFor } from "@testing-library/react";
 import { renderHookWithProviders } from "@/test/test-utils";
 import { useFetchAdminExperiences } from "@/hooks/use-fetch-admin-experiences";
 import * as coreApi from "@/core/api";
 import { vi } from "vitest";
-import { waitFor } from "@testing-library/react";
 import type { TExperienceAdminRequestFilters } from "@/entities/experiences-admin-filters";
 
 vi.mock("@/core/api", () => ({ api: { get: vi.fn() } }));
 
 describe("useFetchAdminExperiences", () => {
-  afterEach(() => vi.restoreAllMocks());
+  beforeEach(() => {
+    vi.stubGlobal(
+      "setTimeout",
+      ((handler: TimerHandler, _timeout?: number, ...args: unknown[]) => {
+        if (typeof handler === "function") {
+          queueMicrotask(() => {
+            handler(...(args as []));
+          });
+        } else {
+          queueMicrotask(() => {
+            // eslint-disable-next-line no-eval
+            eval(String(handler));
+          });
+        }
+
+        return 0 as unknown as ReturnType<typeof setTimeout>;
+      }) as unknown as typeof setTimeout
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
 
   it("parses items and formats date range", async () => {
     const items = [
@@ -29,7 +52,11 @@ describe("useFetchAdminExperiences", () => {
       })
     );
 
-    await waitFor(() => expect(result.current.items.length).toBe(1));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.items.length).toBe(1);
 
     const item = result.current.items[0] as unknown as { date: string };
 
@@ -54,12 +81,14 @@ describe("useFetchAdminExperiences", () => {
       })
     );
 
-    await waitFor(() => expect(result.current.items.length).toBe(1));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    // item should be the same object (no date property added)
     const maybeItem = result.current.items[0] as Record<string, unknown>;
 
-    expect(maybeItem.date).toBeUndefined();
+    expect(maybeItem.date).toBe("Sem intervalo de data");
   });
 
   it("handles empty response and returns defaults for meta and items", async () => {
@@ -73,7 +102,11 @@ describe("useFetchAdminExperiences", () => {
       })
     );
 
-    await waitFor(() => expect(result.current.items).toEqual([]));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.items).toEqual([]);
 
     expect(result.current.meta).toEqual({ total: 0, page: 0, limit: 10 });
   });

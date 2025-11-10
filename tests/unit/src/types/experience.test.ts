@@ -1,15 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ExperienceApiResponse } from "@/types/experience";
 
-describe("src/types/experience", () => {
+describe("mapExperienceApiResponseToDTO", () => {
   beforeEach(() => {
     vi.resetModules();
+    vi.restoreAllMocks();
   });
 
-  it("maps api response to DTO with numeric and string fields and resolves image via util", async () => {
-    // mock resolveImageUrl to a predictable output
+  it("prefers non-prefixed fields, normalizes numbers/booleans and resolves image urls", async () => {
+    const resolveImageUrlMock = vi.fn((raw: string) => `cdn/${raw}`);
+
     vi.doMock("@/utils/resolveImageUrl", () => ({
-      resolveImageUrl: (raw: string) => `/resolved/${raw}`,
+      resolveImageUrl: resolveImageUrlMock,
     }));
 
     const { mapExperienceApiResponseToDTO } = await import(
@@ -17,39 +19,51 @@ describe("src/types/experience", () => {
     );
 
     const api = {
-      experienceId: "e-1",
-      experienceName: "Nome",
-      experienceDescription: "desc",
-      experienceCategory: "TRAIL",
-      experienceCapacity: " 12 ",
-      experienceImage: "images/pic.png",
-      experienceStartDate: "2025-01-01",
-      experienceEndDate: null,
-      experiencePrice: 25,
-      experienceWeekDays: ["MONDAY"],
-      trailDurationMinutes: "90",
-      trailDifficulty: "EASY",
-      trailLength: "  120 ",
+      id: "exp-42",
+      name: "Full Experience",
+      description: "A scenic trail",
+      category: "TRAIL",
+      capacity: " 15 ",
+      image: { url: "pictures/main.png" },
+      startDate: "2025-01-02",
+      endDate: "2025-01-03",
+      price: "199.99",
+      weekDays: ["MONDAY", "FRIDAY"],
+      durationMinutes: "180",
+      trailDifficulty: "HEAVY",
+      trailLength: " 2 ",
+      active: "true",
     };
 
     const dto = mapExperienceApiResponseToDTO(
       api as unknown as ExperienceApiResponse
     );
 
-    expect(dto.id).toBe("e-1");
-    expect(dto.name).toBe("Nome");
-    expect(dto.description).toBe("desc");
-    expect(dto.category).toBeDefined();
-    expect(dto.capacity).toBe(12);
-    expect(dto.price).toBe(25);
-    expect(dto.durationMinutes).toBe(90);
-    expect(dto.trailLength).toBe(120);
-    expect(dto.image).toEqual({ url: "/resolved/images/pic.png" });
+    expect(resolveImageUrlMock).toHaveBeenCalledWith("pictures/main.png");
+    expect(dto).toEqual({
+      id: "exp-42",
+      name: "Full Experience",
+      description: "A scenic trail",
+      category: "TRAIL",
+      capacity: 15,
+      startDate: "2025-01-02",
+      endDate: "2025-01-03",
+      price: 199.99,
+      weekDays: ["MONDAY", "FRIDAY"],
+      durationMinutes: 180,
+      trailDifficulty: "HEAVY",
+      trailLength: 2,
+      image: { url: "cdn/pictures/main.png" },
+      imageId: null,
+      active: true,
+    });
   });
 
-  it("generates id when experienceId is missing and falls back category", async () => {
+  it("falls back to prefixed fields when GET fields are absent", async () => {
+    const resolveImageUrlMock = vi.fn((raw: string) => `cdn/${raw}`);
+
     vi.doMock("@/utils/resolveImageUrl", () => ({
-      resolveImageUrl: () => "/x",
+      resolveImageUrl: resolveImageUrlMock,
     }));
 
     const { mapExperienceApiResponseToDTO } = await import(
@@ -57,22 +71,49 @@ describe("src/types/experience", () => {
     );
 
     const api = {
-      experienceName: "NoId",
-      experienceCategory: "UNKNOWN_CATEGORY",
+      experienceId: "legacy-1",
+      experienceName: "Legacy",
+      experienceDescription: null,
+      experienceCategory: "EVENT",
+      experienceCapacity: 30,
+      experienceImage: "legacy/banner.jpg",
+      experienceStartDate: null,
+      experienceEndDate: "2025-12-10",
+      experiencePrice: "120",
+      experienceWeekDays: ["SUNDAY"],
+      trailDurationMinutes: "45",
+      trailDifficulty: null,
+      trailLength: 10,
+      experienceActive: "false",
     };
 
     const dto = mapExperienceApiResponseToDTO(
       api as unknown as ExperienceApiResponse
     );
 
-    expect(dto.id).toBe("NoId-UNKNOWN_CATEGORY");
-    // unknown category should map to default EVENT
-    expect(dto.category).toBeDefined();
+    expect(resolveImageUrlMock).toHaveBeenCalledWith("legacy/banner.jpg");
+    expect(dto).toEqual({
+      id: "legacy-1",
+      name: "Legacy",
+      description: null,
+      category: "EVENT",
+      capacity: 30,
+      startDate: null,
+      endDate: "2025-12-10",
+      price: 120,
+      weekDays: ["SUNDAY"],
+      durationMinutes: 45,
+      trailDifficulty: null,
+      trailLength: 10,
+      image: { url: "cdn/legacy/banner.jpg" },
+      imageId: null,
+      active: false,
+    });
   });
 
-  it("handles null/undefined image shapes and invalid numbers", async () => {
+  it("returns boolean active values without normalization", async () => {
     vi.doMock("@/utils/resolveImageUrl", () => ({
-      resolveImageUrl: () => "/ignored",
+      resolveImageUrl: (raw: string) => `cdn/${raw}`,
     }));
 
     const { mapExperienceApiResponseToDTO } = await import(
@@ -80,23 +121,93 @@ describe("src/types/experience", () => {
     );
 
     const api = {
-      experienceName: "N",
-      experienceCategory: "TRAIL",
-      experienceCapacity: "",
-      experiencePrice: "not-a-number",
-      trailDurationMinutes: Infinity,
-      trailLength: null,
+      id: "bool-1",
+      name: "Boolean Active",
+      category: "HOSTING",
+      capacity: 5,
+      price: 0,
+      durationMinutes: 0,
+      trailLength: 0,
+      active: true,
+    };
+
+    const dto = mapExperienceApiResponseToDTO(
+      api as unknown as ExperienceApiResponse
+    );
+
+    expect(dto.active).toBe(true);
+    expect(dto.category).toBe("ROOM");
+  });
+
+  it("defaults active to null when neither status field is provided", async () => {
+    vi.doMock("@/utils/resolveImageUrl", () => ({
+      resolveImageUrl: (raw: string) => raw,
+    }));
+
+    const { mapExperienceApiResponseToDTO } = await import(
+      "@/types/experience"
+    );
+
+    const api = {
+      id: "no-active",
+      name: "No Active",
+      category: "EVENT",
+    };
+
+    const dto = mapExperienceApiResponseToDTO(
+      api as unknown as ExperienceApiResponse
+    );
+
+    expect(dto.active).toBeNull();
+  });
+
+  it("defaults when values are missing or invalid and avoids resolving empty images", async () => {
+    const resolveImageUrlMock = vi.fn((raw: string) => `cdn/${raw}`);
+
+    vi.doMock("@/utils/resolveImageUrl", () => ({
+      resolveImageUrl: resolveImageUrlMock,
+    }));
+
+    const { mapExperienceApiResponseToDTO } = await import(
+      "@/types/experience"
+    );
+
+    const api = {
+      name: undefined,
+      category: undefined,
+      capacity: "",
+      image: null,
       experienceImage: { url: null },
+      price: "not-a-number",
+      weekDays: null,
+      durationMinutes: Number.POSITIVE_INFINITY,
+      trailDifficulty: null,
+      trailLength: null,
+      active: "maybe",
+      experienceActive: undefined,
     };
 
     const dto = mapExperienceApiResponseToDTO(
       api as unknown as ExperienceApiResponse
     );
 
-    expect(dto.capacity).toBeNull();
-    expect(dto.price).toBeNull();
-    expect(dto.durationMinutes).toBeNull();
-    expect(dto.trailLength).toBeNull();
-    expect(dto.image).toBeNull();
+    expect(resolveImageUrlMock).not.toHaveBeenCalled();
+    expect(dto).toEqual({
+      id: "unknown",
+      name: "",
+      description: null,
+      category: "EVENT",
+      capacity: null,
+      startDate: null,
+      endDate: null,
+      price: null,
+      weekDays: null,
+      durationMinutes: null,
+      trailDifficulty: null,
+      trailLength: null,
+      image: null,
+      imageId: null,
+      active: null,
+    });
   });
 });

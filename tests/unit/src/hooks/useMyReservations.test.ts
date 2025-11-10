@@ -1,45 +1,76 @@
+import { vi } from "vitest";
 import { renderHookWithProviders } from "@/test/test-utils";
 import { useMyReservations } from "@/hooks/useMyReservations";
-import axios from "axios";
-import { vi } from "vitest";
 import { waitFor } from "@testing-library/react";
 
-vi.mock("axios", () => ({ default: { get: vi.fn() } }));
+const axiosMocks = vi.hoisted(() => {
+  const mockGet = vi.fn();
+  const mockCreate = vi.fn(() => ({
+    get: mockGet,
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    patch: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn() },
+      response: { use: vi.fn() },
+    },
+    defaults: {},
+  }));
+
+  return { mockGet, mockCreate };
+});
+
+const mockAxiosGet = axiosMocks.mockGet;
+
+vi.mock("axios", () => ({
+  default: {
+    create: axiosMocks.mockCreate,
+  },
+}));
 
 describe("useMyReservations", () => {
-  afterEach(() => vi.restoreAllMocks());
-
-  it("returns reservations from axios response data.data", async () => {
-    const data = [{ id: "r1" }];
-
-    (axios.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      data: { data },
-    });
-
-    const { result } = renderHookWithProviders(() => useMyReservations());
-
-    await waitFor(() => expect(result.current.data).toEqual(data));
+  afterEach(() => {
+    vi.restoreAllMocks();
+    mockAxiosGet.mockReset();
   });
 
   it("returns reservations when axios response is data directly", async () => {
     const data = [{ id: "r2" }];
 
-    (axios.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+    mockAxiosGet.mockResolvedValue({
       data,
     });
 
-    const { result } = renderHookWithProviders(() => useMyReservations());
+    const { result } = renderHookWithProviders(() =>
+      useMyReservations("ALL")
+    );
 
     await waitFor(() => expect(result.current.data).toEqual(data));
   });
 
-  it("returns an empty array when axios response has no data", async () => {
-    // return a defined but falsy `data` so the expression falls through to []
-    (axios.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      data: "",
+  it("passes through nested data structures without throwing", async () => {
+    const nested = { data: [{ id: "nested" }] };
+
+    mockAxiosGet.mockResolvedValue({
+      data: nested,
     });
 
-    const { result } = renderHookWithProviders(() => useMyReservations());
+    const { result } = renderHookWithProviders(() =>
+      useMyReservations("ALL")
+    );
+
+    await waitFor(() => expect(result.current.data).toEqual(nested));
+  });
+
+  it("returns an empty array when axios response returns empty array", async () => {
+    mockAxiosGet.mockResolvedValue({
+      data: [],
+    });
+
+    const { result } = renderHookWithProviders(() =>
+      useMyReservations("ALL")
+    );
 
     await waitFor(() => expect(result.current.data).toEqual([]));
   });
@@ -47,9 +78,11 @@ describe("useMyReservations", () => {
   it("sets error state when axios.get rejects", async () => {
     const err = new Error("network");
 
-    (axios.get as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(err);
+    mockAxiosGet.mockRejectedValue(err);
 
-    const { result } = renderHookWithProviders(() => useMyReservations());
+    const { result } = renderHookWithProviders(() =>
+      useMyReservations("ALL")
+    );
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error).toBeDefined();

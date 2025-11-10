@@ -9,6 +9,7 @@ import type { Experience } from "@/types/experience";
 import { renderWithProviders } from "@/test/test-utils";
 
 let drawerOnOpenChange: ((open: boolean) => void) | undefined;
+let drawerOnPointerDownOutside: (() => void) | undefined;
 
 vi.mock("@/components/ui/drawer", () => ({
   Drawer: ({
@@ -22,9 +23,17 @@ vi.mock("@/components/ui/drawer", () => ({
 
     return <div data-testid="drawer-root">{children}</div>;
   },
-  DrawerContent: ({ children }: { children: ReactNode }) => (
-    <div>{children}</div>
-  ),
+  DrawerContent: ({
+    children,
+    onPointerDownOutside,
+  }: {
+    children: ReactNode;
+    onPointerDownOutside?: () => void;
+  }) => {
+    drawerOnPointerDownOutside = onPointerDownOutside;
+
+    return <div data-testid="drawer-content">{children}</div>;
+  },
   DrawerHeader: ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
   ),
@@ -97,6 +106,7 @@ describe("CartDrawer", () => {
       useCartStore.setState({ items: [], isOpen: true });
     });
     drawerOnOpenChange = undefined;
+    drawerOnPointerDownOutside = undefined;
   });
 
   afterEach(() => {
@@ -205,6 +215,18 @@ describe("CartDrawer", () => {
 
     act(() => {
       drawerOnOpenChange?.(false);
+    });
+
+    expect(useCartStore.getState().isOpen).toBe(false);
+  });
+
+  it("closes the cart when pointer down occurs outside of the drawer", () => {
+    renderWithProviders(<CartDrawer />);
+
+    expect(drawerOnPointerDownOutside).toBeDefined();
+
+    act(() => {
+      drawerOnPointerDownOutside?.();
     });
 
     expect(useCartStore.getState().isOpen).toBe(false);

@@ -1,5 +1,5 @@
 import { fireEvent, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Carousel } from "@/components/carousel";
 import {
@@ -9,6 +9,12 @@ import {
   getPreviousIndex,
 } from "@/components/carousel/destinations";
 import { renderWithProviders } from "@/test/test-utils";
+
+const useLoadImageMock = vi.fn<(url: string) => { data?: string; isLoading: boolean }>();
+
+vi.mock("@/hooks/useLoadImage", () => ({
+  useLoadImage: (url: string) => useLoadImageMock(url),
+}));
 
 globalThis.ResizeObserver = class ResizeObserver {
   observe() {
@@ -25,6 +31,11 @@ globalThis.ResizeObserver = class ResizeObserver {
 const renderCarousel = () => renderWithProviders(<Carousel />);
 
 describe("Carousel", () => {
+  beforeEach(() => {
+    useLoadImageMock.mockReset();
+    useLoadImageMock.mockImplementation((url) => ({ data: url, isLoading: false }));
+  });
+
   it("displays the carousel heading and subtitle", () => {
     renderCarousel();
 
@@ -118,5 +129,29 @@ describe("Carousel", () => {
 
     expect(getNextIndex(0)).toBe(1);
     expect(getNextIndex(lastIndex)).toBe(lastIndex);
+  });
+
+  it("reveals images once loading completes", () => {
+    renderCarousel();
+
+    const images = screen.getAllByRole("img");
+
+    expect(images[0]).toHaveClass("opacity-100");
+    expect(images[1]).toHaveClass("opacity-100");
+  });
+
+  it("shows skeletons while images load", () => {
+    useLoadImageMock.mockImplementation(() => ({ data: undefined, isLoading: true }));
+
+    const { container } = renderCarousel();
+
+    const images = screen.getAllByRole("img");
+    const skeletons = container.querySelectorAll(
+      ".absolute.inset-0.animate-pulse.bg-muted"
+    );
+
+    expect(images[0].className).toContain("opacity-0");
+    expect(images[1].className).toContain("opacity-0");
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 });

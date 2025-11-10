@@ -83,3 +83,7 @@ export function translateExperienceCategory(
 
   return fallback ?? capitalize(raw);
 }
+
+export const __translateExperienceCategoryTesting = {
+  capitalize,
+};

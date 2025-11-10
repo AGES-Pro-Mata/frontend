@@ -1,17 +1,43 @@
+import { vi } from "vitest";
 import { renderHookWithProviders } from "@/test/test-utils";
 import { useExperienceAdjustments } from "@/hooks/useExperienceAdjustments";
 import type { UseCurrentUserProfileReturn } from "@/hooks/useCurrentUser";
-import axios from "axios";
-import { vi } from "vitest";
 import { waitFor } from "@testing-library/react";
 
-vi.mock("axios", () => ({ default: { get: vi.fn() } }));
+const axiosMocks = vi.hoisted(() => {
+  const mockGet = vi.fn();
+  const mockCreate = vi.fn(() => ({
+    get: mockGet,
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    patch: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn() },
+      response: { use: vi.fn() },
+    },
+    defaults: {},
+  }));
+
+  return { mockGet, mockCreate };
+});
+
+const mockAxiosGet = axiosMocks.mockGet;
+
+vi.mock("axios", () => ({
+  default: {
+    create: axiosMocks.mockCreate,
+  },
+}));
 vi.mock("@/hooks/useCurrentUser", () => ({
   useCurrentUserProfile: () => ({ data: { id: "u1" } }),
 }));
 
 describe("useExperienceAdjustments", () => {
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => {
+    vi.restoreAllMocks();
+    mockAxiosGet.mockReset();
+  });
 
   it("returns adjustments filtered by current user id", async () => {
     const data = [
@@ -19,7 +45,7 @@ describe("useExperienceAdjustments", () => {
       { id: "a2", userId: "other" },
     ];
 
-    (axios.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+    mockAxiosGet.mockResolvedValue({
       data,
     });
 
@@ -40,9 +66,7 @@ describe("useExperienceAdjustments", () => {
       },
     };
 
-    (axios.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
-      payload
-    );
+    mockAxiosGet.mockResolvedValue(payload);
 
     const { result } = renderHookWithProviders(() =>
       useExperienceAdjustments()
@@ -55,7 +79,7 @@ describe("useExperienceAdjustments", () => {
 
   it("returns empty array when API returns an unexpected shape (no data)", async () => {
     // simulate response without data property -> hook normalizes and returns []
-    (axios.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({});
+    mockAxiosGet.mockResolvedValue({});
 
     const { result } = renderHookWithProviders(() =>
       useExperienceAdjustments()
@@ -81,10 +105,45 @@ describe("useExperienceAdjustments", () => {
     expect(result.current.isFetching).toBe(false);
   });
 
-  it("propagates error when axios.get rejects", async () => {
-    (axios.get as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(
-      new Error("boom")
+  it("short-circuits queryFn with empty array when user id is missing", async () => {
+    mockAxiosGet.mockResolvedValue({});
+
+    const userModule = await import("@/hooks/useCurrentUser");
+
+    vi.spyOn(userModule, "useCurrentUserProfile").mockImplementation(
+      () => ({ data: undefined }) as unknown as UseCurrentUserProfileReturn
     );
+
+    const { queryClient } = renderHookWithProviders(() => useExperienceAdjustments());
+
+    const query = queryClient.getQueryCache().find({
+      queryKey: ["experienceAdjustments", undefined],
+    });
+
+  const queryFn = query?.options.queryFn as (() => Promise<unknown>) | undefined;
+
+    expect(queryFn).toBeDefined();
+
+  const result = await queryFn?.();
+
+    expect(result).toEqual([]);
+    expect(mockAxiosGet).not.toHaveBeenCalled();
+  });
+
+  it("respects options.enabled=false even when user id exists", () => {
+    mockAxiosGet.mockResolvedValue({ data: [{ id: "a1", userId: "u1" }] });
+
+    const { result } = renderHookWithProviders(() =>
+      useExperienceAdjustments({ enabled: false })
+    );
+
+    expect(result.current.data).toBeUndefined();
+    expect(result.current.isFetching).toBe(false);
+    expect(mockAxiosGet).not.toHaveBeenCalled();
+  });
+
+  it("propagates error when axios.get rejects", async () => {
+    mockAxiosGet.mockRejectedValue(new Error("boom"));
 
     const { result } = renderHookWithProviders(() =>
       useExperienceAdjustments()

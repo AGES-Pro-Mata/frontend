@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TextInput } from "@/components/input/textInput";
 
@@ -61,11 +61,34 @@ describe("TextInput component", () => {
     fireEvent.focus(input);
     fireEvent.blur(input);
     expect(onBlur).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(input.getAttribute("aria-invalid")).toBe("true");
+      expect(input.getAttribute("class") ?? "").toContain("border-default-red");
+    });
     // state update is async in react testing environment — at minimum ensure handlers were called
     // change to a value -> onChange called
     await userEvent.type(input, "abc");
     expect(onChange).toHaveBeenCalled();
     // input value update is handled internally; at minimum ensure handler was called
     // (we already asserted onChange above)
+  });
+
+  it("shows the error message and invalid styles when error prop is provided", async () => {
+    const { rerender } = render(
+      <TextInput placeholder="ph" error="Something went wrong" />
+    );
+
+    const input = screen.getByPlaceholderText<HTMLInputElement>("ph");
+
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    expect(input.getAttribute("class") ?? "").toContain("border-default-red");
+
+    rerender(<TextInput placeholder="ph" error={null} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Something went wrong")).toBeNull();
+      expect(input.getAttribute("aria-invalid")).not.toBe("true");
+    });
   });
 });

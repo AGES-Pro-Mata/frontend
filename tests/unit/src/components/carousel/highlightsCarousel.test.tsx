@@ -1,14 +1,16 @@
-import {
-  act,
-  fireEvent,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HighlightsCarousel } from "@/components/carousel/highlightsCarousel";
 import type { HighlightResponse } from "@/api/highlights";
 import { HighlightCategory } from "@/entities/highlights";
 import { renderWithProviders } from "@/test/test-utils";
+
+const defaultImageResult = { data: "/highlight.jpg", isLoading: false };
+const useLoadImageMock = vi.fn<(url: string) => { data?: string; isLoading: boolean }>(() => defaultImageResult);
+
+vi.mock("@/hooks/useLoadImage", () => ({
+  useLoadImage: (url: string) => useLoadImageMock(url),
+}));
 
 let highlightCounter = 0;
 
@@ -28,6 +30,8 @@ const createHighlight = (
 describe("HighlightsCarousel", () => {
   beforeEach(() => {
     highlightCounter = 0;
+    useLoadImageMock.mockReset();
+    useLoadImageMock.mockImplementation((url) => ({ data: url, isLoading: false }));
   });
 
   it("renders fallback when no highlights are provided", () => {
@@ -52,7 +56,7 @@ describe("HighlightsCarousel", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("allows navigating highlights via buttons, keyboard, and thumbnails", async () => {
+  it("allows navigating highlights via buttons, keyboard, and thumbnails", () => {
     const highlights: HighlightResponse[] = [
       createHighlight({
         id: "00000000-0000-0000-0000-000000000001",
@@ -79,18 +83,6 @@ describe("HighlightsCarousel", () => {
     const mainContainer = mainImage.closest("div.relative");
 
     expect(mainContainer).not.toBeNull();
-    expect(
-      mainContainer?.querySelector('div[aria-hidden="true"].animate-pulse')
-    ).toBeInTheDocument();
-
-    fireEvent.load(mainImage);
-
-    await waitFor(() => {
-      expect(
-        mainContainer?.querySelector('div[aria-hidden="true"].animate-pulse')
-      ).not.toBeInTheDocument();
-    });
-
     fireEvent.click(screen.getByRole("button", { name: "Próxima imagem" }));
     expect(screen.getByText("Segundo")).toBeInTheDocument();
 
@@ -115,5 +107,39 @@ describe("HighlightsCarousel", () => {
     unmount();
     expect(removeSpy).toHaveBeenCalledWith("keydown", expect.any(Function));
     removeSpy.mockRestore();
+  });
+
+  it("shows image skeletons while assets load", () => {
+    useLoadImageMock.mockImplementation((url) => {
+      if (url === "/pending.jpg") {
+        return { data: undefined, isLoading: true };
+      }
+
+      if (url === "/thumb-loaded.jpg") {
+        return { data: url, isLoading: false };
+      }
+
+      return { data: url, isLoading: false };
+    });
+
+    const highlights: HighlightResponse[] = [
+      createHighlight({ id: "pending", title: "Carregando", imageUrl: "/pending.jpg" }),
+      createHighlight({ id: "loaded", title: "Pronto", imageUrl: "/thumb-loaded.jpg" }),
+    ];
+
+    const { container } = renderWithProviders(<HighlightsCarousel highlights={highlights} />);
+
+    const skeleton = container.querySelector(
+      ".absolute.inset-0.animate-pulse.bg-muted"
+    );
+
+    expect(skeleton).not.toBeNull();
+
+    const decorativeThumbnailImg = container.querySelector(
+      'button[aria-label="Ver Carregando"] img'
+    );
+
+    expect(decorativeThumbnailImg).not.toBeNull();
+    expect(decorativeThumbnailImg?.getAttribute("alt")).toBe("");
   });
 });
