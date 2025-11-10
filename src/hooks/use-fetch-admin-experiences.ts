@@ -1,35 +1,30 @@
-import { api } from "@/core/api";
-import type { TApiPaginationMetaResult } from "@/entities/api-pagination-response";
+import { api } from '@/core/api';
+import type { TApiPaginationMetaResult } from '@/entities/api-pagination-response';
 import {
   ExperienceAdminRequestFilters,
   type TExperienceAdminRequestFilters,
-} from "@/entities/experiences-admin-filters";
-import type { TExperienceAdminResponse } from "@/entities/experiences-admin-response";
+} from '@/entities/experiences-admin-filters';
+import type { TExperienceAdminResponse } from '@/entities/experiences-admin-response';
 
-import { safeParseFilters } from "@/utils/safe-filters";
+import { safeParseFilters } from '@/utils/safe-filters';
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
 
-export const ADMIN_EXPERIENCES_QUERY_KEY = "admin-experience";
+export const ADMIN_EXPERIENCES_QUERY_KEY = 'admin-experience';
 
 type useFetchAdminExperiencesParams = {
   filters: TExperienceAdminRequestFilters;
 };
 
-export const useFetchAdminExperiences = ({
-  filters,
-}: useFetchAdminExperiencesParams) => {
+export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesParams) => {
   const query = useQuery({
     queryKey: [ADMIN_EXPERIENCES_QUERY_KEY, filters],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 5000));
       const response = await api.get<
         {
           items: TExperienceAdminResponse[];
         } & TApiPaginationMetaResult
-      >(
-        `/experience${safeParseFilters(filters, ExperienceAdminRequestFilters)}`
-      );
+      >(`/experience${safeParseFilters(filters, ExperienceAdminRequestFilters)}`);
 
       return response.data;
     },
@@ -46,18 +41,18 @@ export const useFetchAdminExperiences = ({
     if (!e.startDate || !e.endDate) {
       return {
         ...e,
-        date: "Sem intervalo de data",
+        date: 'Sem intervalo de data',
       };
     }
 
-    const startDate = new Date(e.startDate).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
+    const startDate = new Date(e.startDate).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
     });
 
-    const endDate = new Date(e.endDate).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
+    const endDate = new Date(e.endDate).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
     });
 
     const date = `${startDate}-${endDate}`;
