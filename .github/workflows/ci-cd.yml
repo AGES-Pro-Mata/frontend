@@ -184,6 +184,7 @@ jobs:
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}')
+            
           if echo "$RESPONSE" | grep -q '"success":\s*true'; then
             echo "✅ Cloudflare cache purged successfully"
           else
