@@ -192,11 +192,11 @@
 
   "homeCards": {
     "cta": "Ver mais",
-    "labs": {
+    "laboratorys": {
       "title": "Laboratórios",
       "description": "Espaços equipados para pesquisas científicas e projetos acadêmicos."
     },
-    "rooms": {
+    "hostings": {
       "title": "Quartos",
       "description": "Espaços confortáveis para hospedagem acadêmica e turística."
     },
