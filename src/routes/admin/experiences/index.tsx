@@ -1,5 +1,3 @@
-//mexer nesta tela
-
 import DataTable from "@/components/table";
 import { useFilters } from "@/hooks/filters/filters";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -21,6 +19,7 @@ import { useToggleExperienceStatus } from '@/hooks/useToggleExperienceStatus';
 import type { TExperienceAdminRequestFilters } from '@/entities/experiences-admin-filters';
 import type { TExperienceAdminResponse } from '@/entities/experiences-admin-response';
 import { MoonLoader } from "react-spinners";
+
 
 export const Route = createFileRoute("/admin/experiences/")({
   component: RouteComponent,
@@ -82,34 +81,31 @@ function RouteComponent() {
       enableSorting: true,
     },
     {
-  accessorKey: "type",
-  header: "Tipo",
-  enableSorting: true,
-  cell: ({
-    row,
-  }: {
-    row: { original: TExperienceAdminResponse };
-  }) => {
-    const name = row.original.name?.toLowerCase() ?? "";
+      accessorKey: "type",
+      header: "Tipo",
+      enableSorting: true,
+      cell: ({
+        row,
+      }: {
+        row: { original: TExperienceAdminResponse };
+      }) => {
+        const name = row.original.name?.toLowerCase() ?? "";
 
-    let tipo = "evento"; // fallback
+        let tipo = "evento"; // fallback
 
-    if (name.includes("quarto")) tipo = "quarto";
-    else if (name.includes("trilha")) tipo = "trilha";
-    else if (name.includes("evento")) tipo = "evento";
-    else if (name.includes("laboratório") || name.includes("laboratorio"))
-      tipo = "laboratório";
+        if (name.includes("quarto")) tipo = "quarto";
+        else if (name.includes("trilha")) tipo = "trilha";
+        else if (name.includes("evento")) tipo = "evento";
+        else if (name.includes("laboratório") || name.includes("laboratorio"))
+          tipo = "laboratório";
 
-    return (
-      <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
-        {tipo}
-      </span>
-    );
-  },
-},
-
-
-
+        return (
+          <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
+            {tipo}
+          </span>
+        );
+      },
+    },
     {
       accessorKey: "active",
       header: "Status",
@@ -177,22 +173,80 @@ function RouteComponent() {
     },
   ];
 
+  const [filterTipos, setFilterTipos] = useState<string[]>([]);
+
+  const toggleTipo = (tipo: string) => {
+    setFilterTipos((prev) =>
+      prev.includes(tipo)
+        ? prev.filter((t) => t !== tipo) // remove
+        : [...prev, tipo]                // adiciona
+    );
+  };
+
+  
+  const getTipo = (name?: string) => {
+  
+    const lower = name?.toLowerCase() ?? "";
+
+  if (lower.includes("quarto")) return "quarto";
+  if (lower.includes("trilha")) return "trilha";
+  if (lower.includes("evento")) return "evento";
+  if (lower.includes("laboratório") || lower.includes("laboratorio"))
+    return "laboratório";
+
+  return "evento"; // fallback igual tua tabela
+};
+
   const navigateToCreateExperience = () => {
     void navigate({ to: "/admin/experiences/create" });
   };
 
+  const filteredItems = filterTipos.length > 0
+  ? items.filter((item) => filterTipos.includes(getTipo(item.name)))
+  : items;
+
+
+
   return (
     <div className="flex flex-col w-full h-full p-4 gap-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center gap-4">
         <Input
           value={searchTerm}
           className="w-1/3 h-12"
           placeholder="Buscar por nome"
           onChange={onChangeSearch}
         />
+         <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="h-12" >
+              {filterTipos.length === 0
+                ? "Filtrar por Tipo"
+                : `Tipos (${filterTipos.length})`}
+            </Button>
+
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setFilterTipos([])}>
+              Todos
+            </DropdownMenuItem>
+
+
+            {["evento", "quarto", "trilha", "laboratório"].map((t) => (
+              <DropdownMenuItem
+                key={t}
+                onClick={() => toggleTipo(t)}
+                className={filterTipos.includes(t) ? "bg-gray-200" : ""}
+              >
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <Button
           onClick={navigateToCreateExperience}
-          className="bg-contrast-green h-12 hover:bg-contrast-green/90 active:bg-contrast-green/70"
+            className="ml-auto bg-contrast-green h-12 hover:bg-contrast-green/90 active:bg-contrast-green/70"
         >
           <Typography className="text-white" variant="body">
             Criar Nova Experiência
@@ -206,7 +260,7 @@ function RouteComponent() {
           </div>
           )}
       <DataTable
-        data={items}
+        data={filteredItems}
         columns={columns}
         filters={filters}
         meta={meta}
