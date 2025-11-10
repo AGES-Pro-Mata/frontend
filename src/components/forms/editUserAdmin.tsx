@@ -25,7 +25,6 @@ import { useUpdateAdminUser } from "@/hooks/useUpdateAdminUser";
 import { COUNTRIES } from "@/lib/countries";
 import {
   digitsOnly,
-  hashPassword,
   isValidBrazilZip,
   isValidCpf,
   isValidForeignZip,
@@ -35,18 +34,19 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { z } from "zod";
 import { useForm } from "../form";
 import { t } from "i18next";
 import type { UpdateUserAdminPayload } from "@/api/user";
+import { MoonLoader } from "react-spinners";
+import { appToast } from "../toast/toast";
 
 const EditUserAdminSchema = z
   .object({
     name: z.string().min(2, "Informe o nome completo"),
     email: z.email("Digite um e-mail válido"),
     phone: z.string().min(8, "Informe o telefone"),
-    document: z.string().optional().default(""),
+    document: z.string().min(1, "Informe o documento"),
     rg: z.string().optional().default(""),
     gender: z.string(),
     zipCode: z.string().min(5, "Informe o CEP/ZIP"),
@@ -57,7 +57,6 @@ const EditUserAdminSchema = z
     number: z.string().optional(),
     isAdmin: z.boolean().default(false),
     isProfessor: z.boolean().default(false),
-    password: z.string().min(6, "Senha mínima de 6 caracteres"),
   })
   .superRefine((data, ctx) => {
     if (!data.isForeign) {
@@ -92,7 +91,7 @@ const EditUserAdminSchema = z
       if (!data.document || !isValidCpf(data.document)) {
         ctx.addIssue({
           code: "custom",
-          message: "CPF inválido",
+          message: "Documento Inválido",
           path: ["document"],
         });
       }
@@ -120,7 +119,7 @@ type EditUserAdminProps = {
   userId: string;
 };
 export function EditUserAdmin({ userId }: EditUserAdminProps) {
-  const { data, isFetching } = useGetAdminUser({ id: userId });
+  const { data, isFetching, isLoading } = useGetAdminUser({ id: userId });
 
   const navigate = useNavigate();
   const [autoFilled, setAutoFilled] = useState({
@@ -151,12 +150,13 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
         isAdmin: data?.isAdmin,
         isProfessor: data?.isProfessor,
       }),
-      [data],
+      [data]
     ),
   });
 
   const isForeign = form.watch("isForeign");
   const watchedZip = form.watch("zipCode");
+
   const {
     isLoading: isFetchingCep,
     data: cepData,
@@ -185,6 +185,19 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
   useEffect(() => {
     if (isForeign) {
       setAutoFilled({ addressLine: false, city: false });
+    } else {
+      if (cepData?.addressLine) {
+        form.setValue("addressLine", cepData.addressLine, {
+          shouldValidate: true,
+        });
+      }
+      if (cepData?.city) {
+        form.setValue("city", cepData.city, { shouldValidate: true });
+      }
+      setAutoFilled({
+        addressLine: !!cepData?.addressLine,
+        city: !!cepData?.city,
+      });
     }
   }, [isForeign]);
 
@@ -192,12 +205,10 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
     const sanitizedPhone = digitsOnly(data.phone);
 
     // Hash password
-    const hashedPassword = await hashPassword(data.password);
 
     const payload = {
       ...data,
       phone: sanitizedPhone,
-      password: hashedPassword,
       document: data.document
         ? isForeign
           ? data.document
@@ -211,39 +222,45 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
           : "GUEST",
       institution: data.isProfessor ? "PUCRS" : "",
     };
-
+    if (data.isAdmin && data.isProfessor) {
+      return appToast.error(
+        "Um usuário não pode ser administrador e professor ao mesmo tempo."
+      );
+    }
     mutate(
       { id: userId, payload: payload as UpdateUserAdminPayload },
       {
         onSuccess: (response) => {
           if (response.statusCode >= 200 && response.statusCode < 300) {
             form.reset();
-            toast.success("Usuário cadastrado com sucesso", {});
+            appToast.success("Usuário editado com sucesso", {});
             navigate({ to: "/admin/users" });
             setAutoFilled({ addressLine: false, city: false });
           } else {
-            toast.error("Erro ao cadastrar usuário", {});
+            appToast.error("Erro ao editar usuário", {});
           }
         },
         onError: () => {
-          toast.error("Erro ao cadastrar usuário");
+          appToast.error("Erro ao editar usuário");
         },
-      },
+      }
     );
   };
 
   const handleSubmit = form.handleSubmit(onSubmit);
 
-  if (isFetching) return;
-
   return (
     <div className="h-full flex flex-col px-4 overflow-x-hidden overflow-y-auto">
       <div className="space-y-2">
+        {(isLoading || isFetching) && (
+          <div className="absolute inset-0 flex justify-center items-center bg-black/10 z-10">
+            <MoonLoader size={40} color="#22c55e" />
+          </div>
+        )}
         <Typography className="text-2xl font-semibold text-on-banner-text">
           Edição de Usuário
         </Typography>
       </div>
-
       <Form {...form}>
         <div className="mt-6 space-y-3">
           <div className="flex items-center justify-start gap-4">
@@ -265,6 +282,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                         if (checked) {
                           form.setValue("city", "");
                           form.setValue("number", "");
+                          form.setValue("addressLine", "");
                           form.setValue("document", "");
                           form.setValue("rg", "");
                           form.setValue("country", "");
@@ -369,8 +387,6 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               control={form.control}
               name="gender"
               render={({ field }) => {
-                console.log("field.value", field.value);
-
                 return (
                   <FormItem>
                     <div className="flex flex-col gap-0">
