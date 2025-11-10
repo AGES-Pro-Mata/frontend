@@ -73,7 +73,9 @@ export type ReservationGroupStatusFilter = 'APPROVED' | 'CANCELED' | 'PENDING' |
 
 export const MY_RESERVATION_KEY = 'myReservations';
 
-export function useMyReservations(status: ReservationGroupStatusFilter): UseQueryResult<ReservationGroup[], AxiosError> {
+export function useMyReservations(
+  status: ReservationGroupStatusFilter,
+): UseQueryResult<ReservationGroup[], AxiosError> {
   return useQuery<ReservationGroup[], AxiosError>({
     queryKey: [MY_RESERVATION_KEY, status],
     queryFn: async () => {
@@ -83,5 +85,8 @@ export function useMyReservations(status: ReservationGroupStatusFilter): UseQuer
         })
       ).data;
     },
+    staleTime: 15 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }

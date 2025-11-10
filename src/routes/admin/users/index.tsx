@@ -1,46 +1,46 @@
-import DataTable from "@/components/table";
-import { Typography } from "@/components/typography";
-import { Button } from "@/components/ui/button";
+import DataTable from '@/components/table';
+import { Typography } from '@/components/typography';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import type { TUserAdminRequestFilters } from "@/entities/user-admin-filters";
-import { useFilters } from "@/hooks/filters/filters";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Edit, MoreHorizontal, Trash } from "lucide-react";
-import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import type { TUserAdminRequestFilters } from '@/entities/user-admin-filters';
+import { useFilters } from '@/hooks/filters/filters';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Edit, MoreHorizontal, Trash } from 'lucide-react';
+import { useFetchAdminUsers } from '../../../hooks/use-fetch-admin-users';
 
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useDeleteUser } from "@/hooks/use-delete-users";
-import { type ChangeEvent, useState } from "react";
-import { MoonLoader } from "react-spinners";
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useDeleteUser } from '@/hooks/use-delete-users';
+import { type ChangeEvent, useState } from 'react';
+import { MoonLoader } from 'react-spinners';
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
-  ["name"]: "Nome",
-  ["email"]: "Email",
-  ["createdBy"]: "Criador",
+  ['name']: 'Nome',
+  ['email']: 'Email',
+  ['createdBy']: 'Criador',
 } as const;
 
 type FilterKey = keyof typeof PLACE_HOLDER_TRANSLATE_TEXT;
 
-export const Route = createFileRoute("/admin/users/")({
+export const Route = createFileRoute('/admin/users/')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const [selectedFilter, setSelectedFilter] = useState<FilterKey>("name");
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedFilter, setSelectedFilter] = useState<FilterKey>('name');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const {
     filters,
     setFilter,
     reset: resetFilters,
   } = useFilters<TUserAdminRequestFilters>({
-    key: "get-admin-users",
+    key: 'get-admin-users',
     initialFilters: {
       limit: 10,
       page: 0,
@@ -59,7 +59,7 @@ function RouteComponent() {
   const onChangeFilter = (value: FilterKey) => {
     if (!value) return;
     resetFilters();
-    setSearchTerm("");
+    setSearchTerm('');
     setSelectedFilter(value);
   };
 
@@ -68,37 +68,37 @@ function RouteComponent() {
   };
 
   const handleEditUserClick = (userId: string) => {
-    void navigate({ to: "/admin/users/$userId", params: { userId } });
+    void navigate({ to: '/admin/users/$userId', params: { userId } });
   };
 
   const navigateToCreateUser = () => {
-    void navigate({ to: "/admin/users/create" });
+    void navigate({ to: '/admin/users/create' });
   };
 
   const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
   const columns = [
     {
-      accessorKey: "name",
-      header: "Nome",
+      accessorKey: 'name',
+      header: 'Nome',
       enableSorting: true,
     },
     {
-      accessorKey: "createdBy",
-      header: "Criado por",
+      accessorKey: 'createdBy',
+      header: 'Criado por',
       enableSorting: true,
       cell: ({ row }: any) => {
         const createdBy = row.original.createdBy;
 
-        return createdBy?.name || "-";
+        return createdBy?.name || '-';
       },
     },
     {
-      accessorKey: "email",
-      header: "Email",
+      accessorKey: 'email',
+      header: 'Email',
       enableSorting: true,
     },
     {
-      id: "actions",
+      id: 'actions',
       enableHiding: false,
       size: 50,
       cell: ({ row }: any) => {
@@ -112,15 +112,15 @@ function RouteComponent() {
                 onClick={() => handleEditUserClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
-                {"Editar"}
+                {'Editar'}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleDeleteUserClick(row.original.id)}
-                className="cursor-pointer text-red-500 gap-3"
+                className="cursor-pointer text-default-red gap-3"
               >
-                {"Excluir"}
-                <Trash className="size-4 text-red-500" />
+                {'Excluir'}
+                <Trash className="size-4 text-default-red" />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -130,8 +130,8 @@ function RouteComponent() {
   ];
 
   return (
-    <div className="flex flex-col w-full h-full p-4 gap-6">
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col w-full h-full p-4 gap-6 overflow-hidden">
+      <div className="flex justify-between items-center lex-shrink-0">
         <div className="w-full flex gap-4">
           <Input
             value={searchTerm}
@@ -174,19 +174,19 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
-      <div className="relative">
-      {isLoading && (
-          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
+      <div className="flex-1 relative overflow-auto rounded-md border">
+        {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center rounded-lg z-10">
             <MoonLoader size={35} color="#22c55e" />
           </div>
-          )}
-      <DataTable
-        data={items}
-        columns={columns}
-        filters={filters}
-        meta={meta}
-        setFilter={setFilter}
-      />
+        )}
+        <DataTable
+          data={items}
+          columns={columns}
+          filters={filters}
+          meta={meta}
+          setFilter={setFilter}
+        />
       </div>
     </div>
   );
