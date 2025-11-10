@@ -53,6 +53,47 @@ function RouteComponent() {
       });
   }
 
+  const handleUploadProof = async (id: string, file: File | null) => {
+    if (!file) return toast.error("Selecione um arquivo primeiro.");
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch(`/api/reservations/${id}/upload-proof`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Falha ao enviar o comprovante.");
+
+      toast.success("Comprovante enviado com sucesso!");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao enviar comprovante.");
+    }
+  };
+
+  function UploadProofButton({ id }: { id: string }) {
+    const [file, setFile] = useState<File | null>(null);
+
+    return (
+      <div className="flex flex-col items-start gap-3 mt-4">
+        <input
+          type="file"
+          accept="image/*,application/pdf"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          className="text-sm text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20"
+        />
+        <Button
+          type="button"
+          variant="primary"
+          label="Enviar comprovante"
+          onClick={() => handleUploadProof(id, file)}
+        />
+      </div>
+    );
+  }
+
   return (
     <main className="mx-auto flex w-full max-w-[1180px] flex-col gap-12 px-4 py-10 md:px-8">
       <MyReservationsFilterCompact
@@ -82,20 +123,22 @@ function RouteComponent() {
         </section>
       ) : (
         reservations.map((rg) => (
-          <ReservaCard
-            key={rg.id as Key}
-            id={rg.id}
-            titulo={"Pacote personalizado"}
-            preco={+rg.price}
-            periodo={{
-              inicio: new Date(rg.startDate),
-              fim: new Date(rg.endDate),
-            }}
-            reservations={rg.reservations}
-            status={rg.status}
-            handleCancel={handleCancel}
-            handleAddPeople={handleAddPeople}
-          />
+          <div key={rg.id as Key} className="space-y-3">
+            <ReservaCard
+              id={rg.id}
+              titulo={"Pacote personalizado"}
+              preco={+rg.price}
+              periodo={{
+                inicio: new Date(rg.startDate),
+                fim: new Date(rg.endDate),
+              }}
+              reservations={rg.reservations}
+              status={rg.status}
+              handleCancel={handleCancel}
+              handleAddPeople={handleAddPeople}
+            />
+            <UploadProofButton id={rg.id} />
+          </div>
         ))
       )}
     </main>
