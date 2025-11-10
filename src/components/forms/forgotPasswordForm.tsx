@@ -16,25 +16,52 @@ import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
 import { useTranslation } from "react-i18next";
 import { appToast } from "@/components/toast/toast";
-
-const formSchema = z.object({
-  email: z.email("validation.email" as unknown as string),
-});
-
-type FormData = z.infer<typeof formSchema>;
+import { useEffect, useMemo, useRef } from "react";
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
 }
 
 export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
-  const { t } = useTranslation();
-  const form = useForm<FormData>({
+  const { t, i18n } = useTranslation();
+
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        email: z.email(t("validation.email")),
+      }),
+    [t]
+  );
+
+  type FormData = z.infer<typeof formSchema>;
+
+  const form = useForm<
+    z.input<typeof formSchema>,
+    any,
+    z.output<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: { email: "" },
   });
 
   const mutation = useForgotPasswordMutation();
+
+  const didMountLang = useRef(false);
+
+  useEffect(() => {
+    if (!didMountLang.current) {
+      didMountLang.current = true;
+
+      return;
+    }
+    const errorFields = Object.keys(form.formState.errors || {});
+
+    if (errorFields.length > 0) {
+      void form.trigger(errorFields as (keyof FormData)[]);
+    }
+  }, [form, i18n.language]);
 
   const onSubmit = (data: FormData) => {
     mutation.mutate(
@@ -80,8 +107,8 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
                       required
                       {...field}
                     />
+                    <FormMessage className="text-default-red" />
                     <FormDescription>{t("auth.forgot.helper")}</FormDescription>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -89,11 +116,10 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
           </div>
           {mutation.isSuccess && mutation.data && (
             <div
-              className={`text-sm rounded p-2 border ${
-                mutation.data.statusCode != 500
+              className={`text-sm rounded p-2 border ${mutation.data.statusCode != 500
                   ? "text-contrast-green bg-contrast-green/4 border-contrast-green"
                   : "text-default-red bg-default-red/4 border-default-red"
-              }`}
+                }`}
             >
               {mutation.data.statusCode != 500
                 ? t("auth.forgot.resultSuccess")

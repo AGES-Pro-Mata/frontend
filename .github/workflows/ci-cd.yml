@@ -188,7 +188,7 @@ jobs:
           if echo "$RESPONSE" | grep -q '"success":\s*true'; then
             echo "✅ Cloudflare cache purged successfully"
           else
-            echo "❌ Failed to purge Cloudflare cache"
+            echo "Failed to purge Cloudflare cache"            
             echo "$RESPONSE"
             exit 1
           fi

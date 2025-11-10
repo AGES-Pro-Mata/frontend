@@ -434,7 +434,7 @@
     "validation": {
         "email": "Enter a valid email.",
         "passwordRequired": "Enter your password.",
-        "passwordMin": "Password must be at least 6 characters.",
+        "passwordMin": "Password must be at least 8 characters.",
         "passwordUpper": "Password must contain at least one uppercase letter.",
         "passwordNumber": "Password must contain at least one number.",
         "passwordsMustMatch": "Passwords must match.",
