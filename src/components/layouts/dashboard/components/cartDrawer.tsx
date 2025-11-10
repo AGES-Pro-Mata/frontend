@@ -40,9 +40,7 @@ export const CartDrawer = () => {
     return t("cartDrawer.heading.plural", { count: itemCount });
   }, [itemCount, t]);
 
-  const handleCheckoutClick = async (e: MouseEvent) => {
-    e.preventDefault();
-    
+  const handleCheckoutClick = async () => {
     // Verificar se o carrinho está vazio
     if (itemCount === 0) {
       return;
@@ -125,7 +123,7 @@ export const CartDrawer = () => {
               className="w-full justify-center rounded-full py-3"
               disabled={itemCount === 0}
               label={<span>{t("cartDrawer.checkoutButton")}</span>}
-              onClick={(e) => void handleCheckoutClick(e)}
+              onClick={() => void handleCheckoutClick()}
             />
             <span
               className="text-center text-sm font-semibold text-main-dark-green transition-colors hover:text-main-dark-green/80 cursor-pointer"
