@@ -635,7 +635,7 @@ export function CreateExperience() {
               render={({ field }) => (
                 <FormItem>
                   <TextInput
-                    label="Preço R$ (Diária)"
+                    label="Preço R$ (Por pessoa)"
                     placeholder="0,00"
                     value={priceDisplay}
                     onChange={(e) => {

@@ -192,11 +192,11 @@
 
   "homeCards": {
     "cta": "Ver mais",
-    "labs": {
+    "laboratorys": {
       "title": "Laboratórios",
       "description": "Espaços equipados para pesquisas científicas e projetos acadêmicos."
     },
-    "rooms": {
+    "hostings": {
       "title": "Quartos",
       "description": "Espaços confortáveis para hospedagem acadêmica e turística."
     },
@@ -464,7 +464,7 @@
   "validation": {
     "email": "Digite um e-mail válido.",
     "passwordRequired": "Digite sua senha.",
-    "passwordMin": "A senha deve ter no mínimo 6 caracteres.",
+    "passwordMin": "A senha deve ter no mínimo 8 caracteres.",
     "passwordUpper": "A senha deve conter ao menos uma letra maiúscula.",
     "passwordNumber": "A senha deve conter ao menos um número.",
     "passwordsMustMatch": "As senhas devem ser iguais.",
