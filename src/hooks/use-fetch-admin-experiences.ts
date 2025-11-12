@@ -35,6 +35,7 @@ export const useFetchAdminExperiences = ({
     },
   });
 
+  console.log(query.data)
   const { items = [] } = query.data || {};
   const meta = {
     total: query.data?.total ?? 0,

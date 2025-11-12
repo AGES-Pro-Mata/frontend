@@ -19,6 +19,7 @@ import { useToggleExperienceStatus } from '@/hooks/useToggleExperienceStatus';
 import type { TExperienceAdminRequestFilters } from '@/entities/experiences-admin-filters';
 import type { TExperienceAdminResponse } from '@/entities/experiences-admin-response';
 import { MoonLoader } from "react-spinners";
+import { useTranslation } from "react-i18next";
 
 
 export const Route = createFileRoute("/admin/experiences/")({
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/admin/experiences/")({
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const { t } = useTranslation(); 
   const [searchTerm, setSearchTerm] = useState("");
   const { filters, setFilter } = useFilters<TExperienceAdminRequestFilters>({
     key: "get-admin-experience",
@@ -38,6 +40,12 @@ function RouteComponent() {
   const { items, meta, isLoading } = useFetchAdminExperiences({ filters });
   const deleteExperienceMutation = useDeleteExperience();
   const toggleStatusMutation = useToggleExperienceStatus();
+
+  const tiposUnicos: string[] = Array.from(
+  new Set(items.map((item) => item.category ?? "Não Informado"))
+);
+
+
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -81,30 +89,32 @@ function RouteComponent() {
       enableSorting: true,
     },
     {
-      accessorKey: "type",
-      header: "Tipo",
-      enableSorting: true,
-      cell: ({
-        row,
-      }: {
-        row: { original: TExperienceAdminResponse };
-      }) => {
-        const name = row.original.name?.toLowerCase() ?? "";
+  accessorKey: "category",
+  header: "Categoria",
+  enableSorting: true,
+  cell: ({ row }: { row: { original: TExperienceAdminResponse } }) => {
+    const category = row.original.category ?? "unknown";
 
-        let tipo = "evento"; // fallback
+    const mapCategory: Record<string, string> = {
+      LABORATORY: "lab",
+      LAB: "lab",
+      TRAIL: "trail",
+      EVENT: "event",
+      HOSTING: "room",
+    };
 
-        if (name.includes("quarto")) tipo = "quarto";
-        else if (name.includes("trilha")) tipo = "trilha";
-        else if (name.includes("evento")) tipo = "evento";
-        else if (name.includes("laboratório") || name.includes("laboratorio"))
-          tipo = "laboratório";
+    const normalized = mapCategory[category] ?? category.toLowerCase();
+    const translated = t(`experienceCategories.${normalized}`, {
+      defaultValue: category,
+    });
 
-        return (
-          <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
-            {tipo}
-          </span>
-        );
-      },
+    return (
+      <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
+        {translated}
+      </span>
+    );
+  },
+
     },
     {
       accessorKey: "active",
@@ -178,33 +188,25 @@ function RouteComponent() {
   const toggleTipo = (tipo: string) => {
     setFilterTipos((prev) =>
       prev.includes(tipo)
-        ? prev.filter((t) => t !== tipo) // remove
-        : [...prev, tipo]                // adiciona
+        ? prev.filter((t) => t !== tipo) 
+        : [...prev, tipo]               
     );
   };
 
   
-  const getTipo = (name?: string) => {
-  
-    const lower = name?.toLowerCase() ?? "";
+  const filteredItems =
+  filterTipos.length > 0
+    ? items.filter((item) =>
+        filterTipos.includes(item.category ?? "Não Informado")
+      )
+    : items;
 
-  if (lower.includes("quarto")) return "quarto";
-  if (lower.includes("trilha")) return "trilha";
-  if (lower.includes("evento")) return "evento";
-  if (lower.includes("laboratório") || lower.includes("laboratorio"))
-    return "laboratório";
 
-  return "evento"; // fallback igual tua tabela
-};
+
 
   const navigateToCreateExperience = () => {
     void navigate({ to: "/admin/experiences/create" });
   };
-
-  const filteredItems = filterTipos.length > 0
-  ? items.filter((item) => filterTipos.includes(getTipo(item.name)))
-  : items;
-
 
 
   return (
@@ -231,16 +233,31 @@ function RouteComponent() {
               Todos
             </DropdownMenuItem>
 
+{tiposUnicos.map((tipo) => {
+  const mapCategory: Record<string, string> = {
+    LABORATORY: "lab",
+    LAB: "lab",
+    TRAIL: "trail",
+    EVENT: "event",
+    HOSTING: "room",
+  };
 
-            {["evento", "quarto", "trilha", "laboratório"].map((t) => (
-              <DropdownMenuItem
-                key={t}
-                onClick={() => toggleTipo(t)}
-                className={filterTipos.includes(t) ? "bg-gray-200" : ""}
-              >
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </DropdownMenuItem>
-            ))}
+  const normalized = mapCategory[tipo] ?? tipo.toLowerCase();
+  const translated = t(`experienceCategories.${normalized}`, { defaultValue: tipo });
+
+  return (
+    <DropdownMenuItem
+      key={tipo}
+      onClick={() => toggleTipo(tipo)}
+      className={filterTipos.includes(tipo) ? "bg-gray-200" : ""}
+    >
+      {translated}
+    </DropdownMenuItem>
+  );
+})}
+
+
+
           </DropdownMenuContent>
         </DropdownMenu>
 
