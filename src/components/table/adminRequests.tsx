@@ -1,256 +1,416 @@
-import { useCallback, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/table/index";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaRegCalendarCheck, FaUser } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
-import { MdMoreVert, MdVisibility } from "react-icons/md";
-import { useAdminRequests } from "@/hooks/useAdminRequests";
-import { MoonLoader } from "react-spinners";
+import type { TRequestListItem } from "@/entities/request-admin-response";
+import type {
+  TRequestAdminFilters,
+  TRequestAdminTeacherFilters,
+} from "@/entities/request-admin-filters";
+import { useNavigate } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 
-type Request = {
-  id: string;
-  name: string;
-  email: string;
-  status: string;
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Eye } from "lucide-react";
+
+type RequestStatus = NonNullable<TRequestAdminFilters["status"]>[number];
+type RequestTeacherStatus = NonNullable<
+  TRequestAdminTeacherFilters["status"]
+>[number];
+
+const professorStatus: RequestTeacherStatus[] = [
+  "APPROVED",
+  "REJECTED",
+  "CREATED",
+];
+
+const statusTeacherMap: Record<RequestTeacherStatus, string> = {
+  APPROVED: "Aprovada",
+  REJECTED: "Rejeitada",
+  CREATED: "Pendente",
 };
 
-const professorStatus = ["Approved", "Rejected", "Pending"];
-const reservStatus = [
-  "Confirmed",
-  "Pending",
-  "User Requested",
-  "Payment Requested",
-  "Cancellation Requested",
-  "Edit Requested",
+const requestStatus: RequestStatus[] = [
+  "CREATED", // Criadas
+  "APPROVED", // Aprovadas
+  "CANCELED", // Canceladas
+  "CANCELED_REQUESTED", // Cancelamento Solicitado
+  "REJECTED", // Rejeitadas
+  "PEOPLE_REQUESTED", // Usuários Solicitado
+  "PAYMENT_REQUESTED", // Pagamento Solicitado
+  "PEOPLE_SENT", // Participantes Enviados
+  "PAYMENT_SENT", // Pagamento Enviado
+  "DOCUMENT_REQUESTED", // Documento Solicitado
+  "DOCUMENT_APPROVED", // Documento Aprovado
+  "DOCUMENT_REJECTED", // Documento Rejeitado
 ];
 
-const professorColumns: ColumnDef<Request>[] = [
-  {
-    accessorKey: "name",
-    header: () => <span className="font-semibold">Name</span>,
-    cell: (info) => info.getValue(),
-  },
-  {
-    accessorKey: "status",
-    header: () => <span className="font-semibold">Status</span>,
-    cell: (info) => info.getValue(),
-  },
-  {
-    accessorKey: "email",
-    header: () => <span className="font-semibold">Email</span>,
-    cell: (info) => info.getValue(),
-  },
-  {
-    id: "actions",
-    header: () => <span className="font-semibold">Actions</span>,
-    cell: ({ row }) => {
-      const request: Request = row.original;
+const statusMap: Record<RequestStatus, string> = {
+  CREATED: "Criada",
+  APPROVED: "Aprovada",
+  CANCELED: "Cancelada",
+  CANCELED_REQUESTED: "Cancelamento Solicitado",
+  REJECTED: "Rejeitada",
+  PEOPLE_REQUESTED: "Usuários Solicitado",
+  PAYMENT_REQUESTED: "Pagamento Solicitado",
+  PEOPLE_SENT: "Participantes Enviados",
+  PAYMENT_SENT: "Pagamento Enviado",
+  DOCUMENT_REQUESTED: "Documento Solicitado",
+  DOCUMENT_APPROVED: "Documento Aprovado",
+  DOCUMENT_REJECTED: "Documento Rejeitado",
+};
 
-      return (
-        <div className="flex flex-col gap-1">
-          <ApproveButton requestId={request.id} />
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-          >
-            <MdVisibility size={18} /> View
-          </Button>
-        </div>
-      );
-    },
-  },
-];
-
-function ApproveButton({ requestId }: { requestId: string }) {
-  // Usa apenas a mutation, sem filtros
-  const { approveMutation } = useAdminRequests({});
-
-  const handleApprove = useCallback(() => {
-    approveMutation.mutate(requestId);
-  }, [approveMutation, requestId]);
-
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="flex items-center gap-1"
-      onClick={handleApprove}
-      disabled={approveMutation.isPending}
-    >
-      {approveMutation.isPending ? (
-        <span className="animate-spin mr-2">⏳</span>
-      ) : (
-        <MdMoreVert size={18} />
-      )}
-      Approve
-    </Button>
+export default function AdminRequests({
+  initialData,
+  onFilterChange,
+}: {
+  initialData?: any;
+  onFilterChange?: (
+    filters: TRequestAdminFilters | TRequestAdminTeacherFilters
+  ) => void;
+}) {
+  const [tab, setTab] = useState<"professor" | "request">("request");
+  const [selectedStatus, setSelectedStatus] = useState<RequestTeacherStatus[]>(
+    []
   );
-}
+  const [selectedRequestStatus, setSelectedRequestStatus] = useState<
+    RequestStatus[]
+  >([]);
 
-const reservationColumns: ColumnDef<Request>[] = [
-  {
-    accessorKey: "name",
-    header: () => <span className="font-semibold">Name</span>,
-    cell: (info) => info.getValue(),
-  },
-  {
-    accessorKey: "status",
-    header: () => <span className="font-semibold">Status</span>,
-    cell: (info) => info.getValue(),
-  },
-  {
-    accessorKey: "email",
-    header: () => <span className="font-semibold">Email</span>,
-    cell: (info) => info.getValue(),
-  },
-  {
-    id: "actions",
-    header: () => <span className="font-semibold">Actions</span>,
-    cell: ({ row }) => {
-      const request: Request = row.original;
+  const pendingLimitRef = useRef<number | null>(null);
+  const [sortField, setSortField] = useState<string | undefined>(undefined);
+  const [sortDir, setSortDir] = useState<"asc" | "desc" | undefined>(undefined);
 
-      return (
-        <div className="flex flex-col gap-1">
-          <ApproveButton requestId={request.id} />
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1"
-          >
-            <MdVisibility size={18} /> View
-          </Button>
-        </div>
-      );
+  const allRequests: TRequestListItem[] = initialData?.data || [];
+
+  const filteredProfessorRequests = allRequests.filter((d) => {
+    return (
+      professorStatus.includes(d.request.type as RequestTeacherStatus) &&
+      (selectedStatus.length
+        ? selectedStatus.includes(d.request.type as RequestTeacherStatus)
+        : true)
+    );
+  });
+
+  const routerState = useRouterState();
+  const currentPath = routerState.location.pathname;
+
+  useEffect(() => {
+    if (currentPath.includes("/teacher")) {
+      setTab("professor");
+      setSelectedStatus([]);
+    } else {
+      setTab("request");
+      setSelectedRequestStatus([]);
+    }
+  }, [currentPath]);
+
+  const professorColumns: ColumnDef<TRequestListItem>[] = [
+    {
+      accessorKey: "member.name",
+      header: () => <span className="font-semibold">Nome</span>,
+      cell: (info) => info.getValue(),
+      enableSorting: true,
     },
-  },
-];
+    {
+      accessorKey: "request.type",
+      header: () => <span className="font-semibold">Status</span>,
+      cell: (info) =>
+        statusTeacherMap[info.getValue() as RequestTeacherStatus] ||
+        info.getValue(),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "member.email",
+      header: () => <span className="font-semibold">E-mail</span>,
+      cell: (info) => info.getValue(),
+      enableSorting: true,
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const id = row.original.id;
 
-export default function AdminRequests() {
-  const [tab, setTab] = useState<"professor" | "reservation">("professor");
-  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
-  const [filters, setFilters] = useState({
-    page: 0,
-    limit: 10,
-    status: undefined as string | undefined,
-    sort: undefined as string | undefined,
-    dir: undefined as "asc" | "desc" | undefined,
-  });
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  window.location.href = `/admin/requests/${id}`;
+                }}
+                className="cursor-pointer gap-2"
+              >
+                <Eye className="size-4" />
+                Visualizar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
-  // Passa filtros para o hook
-  const { requestsQuery, reservationStatus } = useAdminRequests({
-    page: filters.page,
-    limit: filters.limit,
-    status: selectedStatus.length ? selectedStatus[0] : undefined,
-  });
+  const requestColumns: ColumnDef<TRequestListItem>[] = [
+    {
+      accessorKey: "member.name",
+      header: () => <span className="font-semibold">Nome</span>,
+      cell: (info) => info.getValue(),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "request.type",
+      header: () => <span className="font-semibold">Status</span>,
+      cell: (info) =>
+        statusMap[info.getValue() as RequestStatus] || info.getValue(),
+      enableSorting: true,
+    },
+    {
+      accessorKey: "member.email",
+      header: () => <span className="font-semibold">E-mail</span>,
+      cell: (info) => info.getValue(),
+      enableSorting: true,
+    },
+    {
+      id: "actions",
+      header: () => <span className="font-semibold">Ações</span>,
+      cell: ({ row }) => {
+        const requestId = row.original.id;
 
-  const loading = requestsQuery.isLoading || requestsQuery.isFetching;
-  const error = requestsQuery.error;
-  // Garante que sempre seja array, mesmo que a API retorne objeto
-  const allRequests: Request[] = Array.isArray(requestsQuery.data)
-    ? (requestsQuery.data as Request[])
-    : [];
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  window.location.href = `/admin/requests/${requestId}`;
+                }}
+                className="cursor-pointer gap-2"
+              >
+                <Eye className="size-4" />
+                Visualizar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+      enableSorting: false,
+    },
+  ];
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = (status: RequestTeacherStatus) => {
     setSelectedStatus((prev) =>
       prev.includes(status)
         ? prev.filter((s) => s !== status)
-        : [...prev, status],
+        : [...prev, status]
     );
   };
 
-  // Filtra por status e tab
-  const filteredRequests = allRequests.filter((d) => {
-    if (tab === "professor") {
-      return (
-        professorStatus.includes(d.status) &&
-        (selectedStatus.length ? selectedStatus.includes(d.status) : true)
-      );
-    } else {
-      return (
-        reservationStatus.includes(d.status) &&
-        (selectedStatus.length ? selectedStatus.includes(d.status) : true)
-      );
-    }
-  });
+  const handleRequestStatusChange = (status: RequestStatus) => {
+    const newStatus = selectedRequestStatus.includes(status)
+      ? selectedRequestStatus.filter((s) => s !== status)
+      : [...selectedRequestStatus, status];
 
+    setSelectedRequestStatus(newStatus);
 
-  if (error) {
-    return <div className="p-6 text-red-500">Error loading requests.</div>;
-  }
+    const currentLimit = pendingLimitRef.current ?? initialData?.limit ?? 10;
+
+    onFilterChange?.({
+      page: 1,
+      limit: currentLimit,
+      status: newStatus.length > 0 ? newStatus : undefined,
+      sort: sortField,
+      dir: sortDir,
+    });
+  };
+
+  const requestRequests = initialData?.data || [];
+
+  const currentPage = initialData?.page || 1;
+  const currentLimit = pendingLimitRef.current ?? initialData?.limit ?? 10;
+
+  const navigate = useNavigate();
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow flex flex-col gap-4">
+    <>
       <div className="flex gap-2 mb-4">
-        <button
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
+        <Button
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             tab === "professor"
               ? "bg-contrast-green text-white"
-              : "bg-soft-gray text-gray-700"
+              : "bg-soft-gray text-gray-700 hover:bg-gray-300"
           }`}
           onClick={() => {
             setTab("professor");
             setSelectedStatus([]);
+            navigate({ to: "/admin/requests/teacher" });
           }}
         >
-          <FaUser size={24} /> Professor Requests
-        </button>
-        <button
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
-            tab === "reservation"
+          <FaUser size={24} /> Solicitações de Professor
+        </Button>
+        <Button
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
+            tab === "request"
               ? "bg-contrast-green text-white"
-              : "bg-soft-gray text-gray-700"
+              : "bg-soft-gray text-gray-700 hover:bg-gray-300"
           }`}
           onClick={() => {
-            setTab("reservation");
-            setSelectedStatus([]);
+            setTab("request");
+            setSelectedRequestStatus([]);
+            navigate({ to: "/admin/requests" });
           }}
         >
-          <FaRegCalendarCheck size={24} /> Reservation Requests
-        </button>
+          <FaRegCalendarCheck size={24} /> Solicitações de Reserva
+        </Button>
       </div>
 
-      <div className="mb-4 flex flex-wrap items-center gap-4">
-        <span className="font-semibold">Filters:</span>
-        <span>Status:</span>
-        {(tab === "professor" ? professorStatus : reservStatus).map(
-          (status) => (
-            <label key={status} className="flex items-center gap-1">
-              <Checkbox
-                checked={selectedStatus.includes(status)}
-                onCheckedChange={() => handleStatusChange(status)}
-              />
-              {status}
-            </label>
-          )
-        )}
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <span className="font-semibold">Filtros:</span>
+        <span className="text-gray-600">Status:</span>
+        <div className="flex flex-wrap gap-3">
+          {tab === "professor"
+            ? professorStatus.map((status) => (
+                <label
+                  key={status}
+                  className="flex items-center gap-2 cursor-pointer hover:bg-gray-300 px-2 py-1 rounded"
+                >
+                  <Checkbox
+                    checked={selectedStatus.includes(status)}
+                    onCheckedChange={() => handleStatusChange(status)}
+                  />
+                  <span className="text-sm">
+                    {statusTeacherMap[status as RequestTeacherStatus] ?? status}
+                  </span>
+                </label>
+              ))
+            : requestStatus.map((status) => (
+                <label
+                  key={status}
+                  className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded"
+                >
+                  <Checkbox
+                    checked={selectedRequestStatus.includes(status)}
+                    onCheckedChange={() => handleRequestStatusChange(status)}
+                  />
+                  <span className="text-sm">{statusMap[status]}</span>
+                </label>
+              ))}
+        </div>
       </div>
-      <div className="relative">
-        {loading && (
-          <div className="absolute inset-0 flex justify-center items-center bg-white/70 backdrop-blur-sm rounded-lg z-10">
-            <MoonLoader size={35} color="#22c55e" />
-          </div>
-        )}
+
+      <div className="relative overflow-y-auto max-h-[600px]">
         <DataTable
-          columns={tab === "professor" ? professorColumns : reservationColumns}
-          data={filteredRequests}
-          filters={filters}
-          setFilter={(key, value) =>
-            setFilters((prev) => ({ ...prev, [key]: value }))
+          columns={tab === "professor" ? professorColumns : requestColumns}
+          data={
+            tab === "professor" ? filteredProfessorRequests : requestRequests
           }
+          filters={{
+            page: currentPage - 1,
+            limit: currentLimit,
+            sort: sortField,
+            dir: sortDir,
+          }}
+          setFilter={(key, value) => {
+            if (key === "page") {
+              const newPage = value + 1;
+              const activeLimit = pendingLimitRef.current ?? currentLimit;
+
+              if (tab === "request") {
+                onFilterChange?.({
+                  page: newPage,
+                  limit: activeLimit,
+                  status:
+                    selectedRequestStatus.length > 0
+                      ? selectedRequestStatus
+                      : undefined,
+                  sort: sortField,
+                  dir: sortDir,
+                });
+              }
+            }
+
+            if (key === "limit") {
+              const newLimit = value as number;
+
+              pendingLimitRef.current = newLimit;
+
+              if (tab === "request") {
+                onFilterChange?.({
+                  page: 1,
+                  limit: newLimit,
+                  status:
+                    selectedRequestStatus.length > 0
+                      ? selectedRequestStatus
+                      : undefined,
+                  sort: sortField,
+                  dir: sortDir,
+                });
+              }
+            }
+
+            if (key === "sort") {
+              const newSort = value as string | undefined;
+              setSortField(newSort);
+
+              if (tab === "request") {
+                onFilterChange?.({
+                  page: 1,
+                  limit: currentLimit,
+                  status:
+                    selectedRequestStatus.length > 0
+                      ? selectedRequestStatus
+                      : undefined,
+                  sort: newSort,
+                  dir: sortDir,
+                });
+              }
+            }
+
+            if (key === "dir") {
+              const newDir = value as "asc" | "desc" | undefined;
+              setSortDir(newDir);
+
+              if (tab === "request") {
+                onFilterChange?.({
+                  page: 1,
+                  limit: currentLimit,
+                  status:
+                    selectedRequestStatus.length > 0
+                      ? selectedRequestStatus
+                      : undefined,
+                  sort: sortField,
+                  dir: newDir,
+                });
+              }
+            }
+          }}
           meta={{
-            page: filters.page,
-            limit: filters.limit,
-            total: filteredRequests.length,
+            page: currentPage - 1,
+            limit: currentLimit,
+            total:
+              tab === "professor"
+                ? filteredProfessorRequests.length
+                : initialData?.total || 0,
           }}
         />
       </div>
-
-      {error && (
-        <div className="text-red-500 text-center">Error loading requests.</div>
-      )}
-    </div>
+    </>
   );
 }
-
