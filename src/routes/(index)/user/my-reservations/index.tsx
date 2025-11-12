@@ -53,16 +53,14 @@ function RouteComponent() {
       });
   }
 
-  const handleUploadProof = async (id: string, file: File | null) => {
-    if (!file) return toast.error("Selecione um arquivo primeiro.");
-
-    const formData = new FormData();
-    formData.append("file", file);
+  const handleUploadProof = async (id: string, url: string) => {
+    if (!url.trim()) return toast.error("Por favor, insira o link do comprovante.");
 
     try {
-      const response = await fetch(`/api/reservations/${id}/upload-proof`, {
+      const response = await fetch(`/api/reservation/group/${id}/receipt`, {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
       });
 
       if (!response.ok) throw new Error("Falha ao enviar o comprovante.");
@@ -74,21 +72,22 @@ function RouteComponent() {
   };
 
   function UploadProofButton({ id }: { id: string }) {
-    const [file, setFile] = useState<File | null>(null);
+    const [url, setUrl] = useState("");
 
     return (
       <div className="flex flex-col items-start gap-3 mt-4">
         <input
-          type="file"
-          accept="image/*,application/pdf"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="text-sm text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/20"
+          type="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="Cole aqui o link do comprovante..."
+          className="text-sm w-full rounded-lg border border-input bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         />
         <Button
           type="button"
           variant="primary"
           label="Enviar comprovante"
-          onClick={() => handleUploadProof(id, file)}
+          onClick={() => handleUploadProof(id, url)}
         />
       </div>
     );
@@ -125,6 +124,7 @@ function RouteComponent() {
         reservations.map((rg) => (
           <div key={rg.id as Key} className="space-y-3">
             <ReservaCard
+              key={rg.id as Key}
               id={rg.id}
               titulo={"Pacote personalizado"}
               preco={+rg.price}
