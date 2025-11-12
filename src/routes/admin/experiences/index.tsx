@@ -3,7 +3,7 @@ import { useFilters } from "@/hooks/filters/filters";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/typography";
-import { Edit, Eye, EyeOff, MoreHorizontal, Trash } from "lucide-react";
+import { CalendarIcon, Edit, Eye, EyeOff, MoreHorizontal, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
 import { type ChangeEvent, useEffect, useState } from "react";
@@ -19,7 +19,12 @@ import { useToggleExperienceStatus } from '@/hooks/useToggleExperienceStatus';
 import type { TExperienceAdminRequestFilters } from '@/entities/experiences-admin-filters';
 import type { TExperienceAdminResponse } from '@/entities/experiences-admin-response';
 import { MoonLoader } from "react-spinners";
-import { useTranslation } from "react-i18next";
+
+import type { DateRange } from "react-day-picker";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+
 
 
 export const Route = createFileRoute("/admin/experiences/")({
@@ -28,7 +33,6 @@ export const Route = createFileRoute("/admin/experiences/")({
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const { t } = useTranslation(); 
   const [searchTerm, setSearchTerm] = useState("");
   const { filters, setFilter } = useFilters<TExperienceAdminRequestFilters>({
     key: "get-admin-experience",
@@ -41,11 +45,18 @@ function RouteComponent() {
   const deleteExperienceMutation = useDeleteExperience();
   const toggleStatusMutation = useToggleExperienceStatus();
 
-  const tiposUnicos: string[] = Array.from(
-  new Set(items.map((item) => item.category ?? "Não Informado"))
-);
-
-
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+    
+  useEffect(() => {
+      if (dateRange?.from && dateRange?.to) {
+        setFilter("startDate", dateRange.from.toISOString());
+        setFilter("endDate", dateRange.to.toISOString());
+      } else {
+        setFilter("startDate", undefined);
+        setFilter("endDate", undefined);
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dateRange]);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -89,32 +100,30 @@ function RouteComponent() {
       enableSorting: true,
     },
     {
-  accessorKey: "category",
-  header: "Categoria",
-  enableSorting: true,
-  cell: ({ row }: { row: { original: TExperienceAdminResponse } }) => {
-    const category = row.original.category ?? "unknown";
+      accessorKey: "type",
+      header: "Tipo",
+      enableSorting: true,
+      cell: ({
+        row,
+      }: {
+        row: { original: TExperienceAdminResponse };
+      }) => {
+        const name = row.original.name?.toLowerCase() ?? "";
 
-    const mapCategory: Record<string, string> = {
-      LABORATORY: "lab",
-      LAB: "lab",
-      TRAIL: "trail",
-      EVENT: "event",
-      HOSTING: "room",
-    };
+        let tipo = "evento"; 
 
-    const normalized = mapCategory[category] ?? category.toLowerCase();
-    const translated = t(`experienceCategories.${normalized}`, {
-      defaultValue: category,
-    });
+        if (name.includes("quarto")) tipo = "quarto";
+        else if (name.includes("trilha")) tipo = "trilha";
+        else if (name.includes("evento")) tipo = "evento";
+        else if (name.includes("laboratório") || name.includes("laboratorio"))
+          tipo = "laboratório";
 
-    return (
-      <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
-        {translated}
-      </span>
-    );
-  },
-
+        return (
+          <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
+            {tipo}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "active",
@@ -189,24 +198,32 @@ function RouteComponent() {
     setFilterTipos((prev) =>
       prev.includes(tipo)
         ? prev.filter((t) => t !== tipo) 
-        : [...prev, tipo]               
+        : [...prev, tipo]                
     );
   };
 
   
-  const filteredItems =
-  filterTipos.length > 0
-    ? items.filter((item) =>
-        filterTipos.includes(item.category ?? "Não Informado")
-      )
-    : items;
+  const getTipo = (name?: string) => {
+  
+    const lower = name?.toLowerCase() ?? "";
 
+  if (lower.includes("quarto")) return "quarto";
+  if (lower.includes("trilha")) return "trilha";
+  if (lower.includes("evento")) return "evento";
+  if (lower.includes("laboratório") || lower.includes("laboratorio"))
+    return "laboratório";
 
-
+  return "evento"; 
+};
 
   const navigateToCreateExperience = () => {
     void navigate({ to: "/admin/experiences/create" });
   };
+
+  const filteredItems = filterTipos.length > 0
+  ? items.filter((item) => filterTipos.includes(getTipo(item.name)))
+  : items;
+
 
 
   return (
@@ -233,33 +250,42 @@ function RouteComponent() {
               Todos
             </DropdownMenuItem>
 
-{tiposUnicos.map((tipo) => {
-  const mapCategory: Record<string, string> = {
-    LABORATORY: "lab",
-    LAB: "lab",
-    TRAIL: "trail",
-    EVENT: "event",
-    HOSTING: "room",
-  };
 
-  const normalized = mapCategory[tipo] ?? tipo.toLowerCase();
-  const translated = t(`experienceCategories.${normalized}`, { defaultValue: tipo });
-
-  return (
-    <DropdownMenuItem
-      key={tipo}
-      onClick={() => toggleTipo(tipo)}
-      className={filterTipos.includes(tipo) ? "bg-gray-200" : ""}
-    >
-      {translated}
-    </DropdownMenuItem>
-  );
-})}
-
-
-
+            {["evento", "quarto", "trilha", "laboratório"].map((t) => (
+              <DropdownMenuItem
+                key={t}
+                onClick={() => toggleTipo(t)}
+                className={filterTipos.includes(t) ? "bg-gray-200" : ""}
+              >
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Popover>
+  <PopoverTrigger asChild>
+    <Button variant="outline" className="h-12 flex items-center gap-2">
+      <CalendarIcon className="size-4" />
+      {dateRange?.from && dateRange?.to
+        ? `${format(dateRange.from, "dd/MM/yyyy")} - ${format(
+            dateRange.to,
+            "dd/MM/yyyy",
+          )}`
+        : "Filtrar por Data"}
+    </Button>
+  </PopoverTrigger>
+
+  <PopoverContent className="w-auto p-0" align="start">
+    <Calendar
+      mode="range"
+      selected={dateRange}
+      onSelect={setDateRange}
+      numberOfMonths={2}
+    />
+  </PopoverContent>
+</Popover>
+
 
         <Button
           onClick={navigateToCreateExperience}
