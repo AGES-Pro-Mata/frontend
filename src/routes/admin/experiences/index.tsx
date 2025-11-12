@@ -70,7 +70,7 @@ function RouteComponent() {
   const columns = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: 'Nome',
       enableSorting: true,
     },
     {
