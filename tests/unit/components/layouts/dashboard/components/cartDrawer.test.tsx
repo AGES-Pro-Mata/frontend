@@ -89,6 +89,11 @@ vi.mock("@tanstack/react-router", () => ({
       {children}
     </a>
   ),
+  useNavigate: () => vi.fn(),
+}));
+
+vi.mock("@/api/user", () => ({
+  getCurrentUserRequest: vi.fn(() => Promise.resolve({ id: "user-1", name: "Test User" })),
 }));
 
 describe("CartDrawer", () => {
@@ -135,14 +140,14 @@ describe("CartDrawer", () => {
       "Experiência Teste"
     );
 
-    const checkoutLink = screen.getByRole("link", {
+    const checkoutButton = screen.getByRole("button", {
       name: /finalizar reserva/i,
     });
 
-    expect(checkoutLink).toHaveAttribute("href", "/reserve/finish");
+    expect(checkoutButton).not.toBeDisabled();
     expect(useCartStore.getState().isOpen).toBe(true);
 
-    await userEvent.click(checkoutLink);
+    await userEvent.click(checkoutButton);
 
     expect(useCartStore.getState().isOpen).toBe(false);
 
