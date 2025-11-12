@@ -183,11 +183,11 @@
     },
     "homeCards": {
         "cta": "Learn more",
-        "labs": {
+        "laboratorys": {
             "title": "Laboratories",
             "description": "Spaces equipped for scientific research and academic projects."
         },
-        "rooms": {
+        "hostings": {
             "title": "Rooms",
             "description": "Comfortable spaces for academic and tourist lodging."
         },
@@ -444,7 +444,7 @@
     "validation": {
         "email": "Enter a valid email.",
         "passwordRequired": "Enter your password.",
-        "passwordMin": "Password must be at least 6 characters.",
+        "passwordMin": "Password must be at least 8 characters.",
         "passwordUpper": "Password must contain at least one uppercase letter.",
         "passwordNumber": "Password must contain at least one number.",
         "passwordsMustMatch": "Passwords must match.",
