@@ -2,8 +2,8 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import AdminRequests from "@/components/table/adminRequests";
-import { useAdminRequests as mockUseAdminRequests } from "@/hooks/useAdminRequests";
 import type { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
+import { useAdminRequests as mockUseAdminRequests } from "@/hooks/";
 
 interface Request {
   id: string;
@@ -20,11 +20,7 @@ interface ApproveMutation {
 interface RequestsQuery {
   isLoading: boolean;
   error: Error | null;
-  data?:
-    | Request[]
-    | { data?: Request[] }
-    | { results?: Request[] }
-    | undefined;
+  data?: Request[] | { data?: Request[] } | { results?: Request[] } | undefined;
 }
 
 interface UseAdminRequestsReturn {
@@ -80,13 +76,7 @@ vi.mock("@/components/table/index", () => {
     setFilter?: (key: string, value: unknown) => void;
     filters?: Record<string, unknown>;
     meta?: Record<string, unknown>;
-  }> = ({
-    data,
-    columns,
-    setFilter,
-    filters,
-  }) => {
-
+  }> = ({ data, columns, setFilter, filters }) => {
     React.useEffect(() => {
       if (!columns || columns.length === 0) {
         return;
@@ -122,8 +112,7 @@ vi.mock("@/components/table/index", () => {
                 original: row,
                 getValue: (key: string) => rowRecord[key],
               },
-              getValue: () =>
-                accessorKey ? rowRecord[accessorKey] : undefined,
+              getValue: () => (accessorKey ? rowRecord[accessorKey] : undefined),
             });
           });
         }
@@ -132,7 +121,7 @@ vi.mock("@/components/table/index", () => {
 
     React.useEffect(() => {
       if (setFilter && filters) {
-        console.log('Current filters:', filters);
+        console.log("Current filters:", filters);
       }
     }, [filters, setFilter]);
 
@@ -150,7 +139,7 @@ vi.mock("@/components/table/index", () => {
                 const columnKey =
                   typeof column.id === "string" || typeof column.id === "number"
                     ? String(column.id)
-                    : accessorKey ?? `col-${columnIndex}`;
+                    : (accessorKey ?? `col-${columnIndex}`);
 
                 if (typeof cell === "function") {
                   content = cell({
@@ -158,8 +147,7 @@ vi.mock("@/components/table/index", () => {
                       original: row,
                       getValue: (key: string) => rowRecord[key],
                     },
-                    getValue: () =>
-                      accessorKey ? rowRecord[accessorKey] : undefined,
+                    getValue: () => (accessorKey ? rowRecord[accessorKey] : undefined),
                   });
                 } else if (accessorKey) {
                   content = rowRecord[accessorKey] as React.ReactNode;
@@ -170,10 +158,7 @@ vi.mock("@/components/table/index", () => {
                 }
 
                 return (
-                  <div
-                    key={columnKey}
-                    data-testid={`cell-${columnKey}`}
-                  >
+                  <div key={columnKey} data-testid={`cell-${columnKey}`}>
                     {content}
                   </div>
                 );
@@ -182,10 +167,7 @@ vi.mock("@/components/table/index", () => {
           );
         })}
         {setFilter && (
-          <button 
-            data-testid="trigger" 
-            onClick={() => setFilter("page", 10)}
-          >
+          <button data-testid="trigger" onClick={() => setFilter("page", 10)}>
             Trigger Filter
           </button>
         )}
@@ -222,7 +204,7 @@ vi.mock("@/hooks/useAdminRequests", () => {
       requestsQuery: requestsQueryMock,
       approveMutation: approveMutationMock,
       reservationStatus: ["Approved", "Pending", "Confirmed"],
-    })
+    }),
   );
 
   return { useAdminRequests: hook };
@@ -244,24 +226,21 @@ const setMockUseAdminRequests = (overrides?: Partial<UseAdminRequestsReturn>) =>
       isPending: false,
       ...(overrides?.approveMutation ?? {}),
     } as unknown as UseMutationResult<any, Error, string, unknown>,
-    reservationStatus:
-      overrides?.reservationStatus ?? ["Approved", "Pending", "Confirmed"],
+    reservationStatus: overrides?.reservationStatus ?? ["Approved", "Pending", "Confirmed"],
   });
 };
 
 const getCheckboxByLabel = (labelText: string) => {
-  const allCheckboxes = screen.getAllByTestId('checkbox');
-  
-  const label = screen.getByText(labelText, { selector: 'label' });
-  
-  const checkbox = allCheckboxes.find(checkbox => 
-    label.contains(checkbox)
-  );
-  
+  const allCheckboxes = screen.getAllByTestId("checkbox");
+
+  const label = screen.getByText(labelText, { selector: "label" });
+
+  const checkbox = allCheckboxes.find((checkbox) => label.contains(checkbox));
+
   if (!checkbox) {
     throw new Error(`Checkbox with label "${labelText}" not found`);
   }
-  
+
   return checkbox;
 };
 
@@ -276,25 +255,21 @@ describe("AdminRequests Component", () => {
       requestsQuery: { isLoading: false, error: new Error("fail"), data: [] },
     });
     render(<AdminRequests />);
-    expect(
-      screen.getByText((t) => t.includes("Error loading requests"))
-    ).toBeInTheDocument();
+    expect(screen.getByText((t) => t.includes("Error loading requests"))).toBeInTheDocument();
   });
 
   it("renders professor requests by default", () => {
     render(<AdminRequests />);
     expect(screen.getByText((t) => t.includes("Professor Requests"))).toHaveClass(
-      "bg-contrast-green"
+      "bg-contrast-green",
     );
     expect(screen.getAllByTestId("row")).toHaveLength(2);
   });
 
   it("switches to reservation tab", () => {
     render(<AdminRequests />);
-    const reservationBtn = screen.getByText((t) =>
-      t.includes("Reservation Requests")
-    );
-    
+    const reservationBtn = screen.getByText((t) => t.includes("Reservation Requests"));
+
     fireEvent.click(reservationBtn);
     expect(reservationBtn).toHaveClass("bg-contrast-green");
   });
@@ -303,7 +278,7 @@ describe("AdminRequests Component", () => {
     render(<AdminRequests />);
     const checkboxes = screen.getAllByTestId("checkbox");
     const firstCheckbox = checkboxes[0];
-    
+
     expect(firstCheckbox).not.toBeChecked();
     fireEvent.click(firstCheckbox);
     await waitFor(() => expect(firstCheckbox).toBeChecked());
@@ -311,14 +286,14 @@ describe("AdminRequests Component", () => {
 
   it("calls approveMutation when approve button clicked", () => {
     const mutateMock = vi.fn();
-    
+
     setMockUseAdminRequests({
       approveMutation: { mutate: mutateMock, isPending: false },
     });
-    
+
     render(<AdminRequests />);
     const approveButtons = screen.getAllByText("Approve");
-    
+
     fireEvent.click(approveButtons[0]);
     expect(mutateMock).toHaveBeenCalledTimes(1);
   });
@@ -348,13 +323,9 @@ describe("AdminRequests Component", () => {
 
   it("resets filters when switching back to professor tab", () => {
     render(<AdminRequests />);
-    const reservationBtn = screen.getByText((t) =>
-      t.includes("Reservation Requests")
-    );
-    const professorBtn = screen.getByText((t) =>
-      t.includes("Professor Requests")
-    );
-    
+    const reservationBtn = screen.getByText((t) => t.includes("Reservation Requests"));
+    const professorBtn = screen.getByText((t) => t.includes("Professor Requests"));
+
     fireEvent.click(reservationBtn);
     fireEvent.click(professorBtn);
     expect(professorBtn).toHaveClass("bg-contrast-green");
@@ -370,14 +341,14 @@ describe("AdminRequests Component", () => {
 
   it("calls approveMutation when approving a reservation request", () => {
     const mutateMock = vi.fn();
-    
+
     setMockUseAdminRequests({
       approveMutation: { mutate: mutateMock, isPending: false },
     });
     render(<AdminRequests />);
     fireEvent.click(screen.getByText((t) => t.includes("Reservation Requests")));
     const approveButtons = screen.getAllByText("Approve");
-    
+
     fireEvent.click(approveButtons[0]);
     expect(mutateMock).toHaveBeenCalled();
   });
@@ -394,29 +365,29 @@ describe("AdminRequests Component", () => {
       },
     });
     render(<AdminRequests />);
-    
+
     const rejectedCheckbox = getCheckboxByLabel("Rejected");
-    
+
     fireEvent.click(rejectedCheckbox);
     await waitFor(() => expect(screen.getAllByTestId("row")).toHaveLength(1));
-    
+
     const rows = screen.getAllByTestId("row");
-  
+
     expect(rows[0]).toHaveTextContent("Rejected");
   });
 
   it("toggles off a selected status when checkbox clicked twice", async () => {
     render(<AdminRequests />);
-    
+
     const approvedCheckbox = getCheckboxByLabel("Approved");
-    
+
     fireEvent.click(approvedCheckbox);
     await waitFor(() => expect(approvedCheckbox).toBeChecked());
     fireEvent.click(approvedCheckbox);
     await waitFor(() => expect(approvedCheckbox).not.toBeChecked());
-    
+
     const rows = screen.getAllByTestId("row");
-  
+
     expect(rows.length).toBeGreaterThan(0);
   });
 
@@ -433,28 +404,26 @@ describe("AdminRequests Component", () => {
     });
     render(<AdminRequests />);
     fireEvent.click(screen.getByText((t) => t.includes("Reservation Requests")));
-    
+
     const confirmedCheckbox = getCheckboxByLabel("Confirmed");
-    
+
     fireEvent.click(confirmedCheckbox);
     await waitFor(() => expect(screen.getAllByTestId("row")).toHaveLength(1));
-    
+
     const rows = screen.getAllByTestId("row");
- 
+
     expect(rows[0]).toHaveTextContent("Confirmed");
   });
 
   it("calls approveMutation in reservation tab", () => {
     const mutateMock = vi.fn();
-    
+
     setMockUseAdminRequests({
       approveMutation: { mutate: mutateMock, isPending: false },
       requestsQuery: {
         isLoading: false,
         error: null,
-        data: [
-          { id: "1", name: "Alice", email: "a@test.com", status: "Confirmed" },
-        ],
+        data: [{ id: "1", name: "Alice", email: "a@test.com", status: "Confirmed" }],
       },
     });
     render(<AdminRequests />);
@@ -471,9 +440,7 @@ describe("AdminRequests Component", () => {
       requestsQuery: {
         isLoading: false,
         error: null,
-        data: [
-          { id: "1", name: "Test User", email: "test@mock.com", status: "Approved" },
-        ],
+        data: [{ id: "1", name: "Test User", email: "test@mock.com", status: "Approved" }],
       },
     });
 
@@ -487,15 +454,15 @@ describe("AdminRequests Component", () => {
   describe("ApproveButton internal behavior", () => {
     it("calls approveMutation.mutate when Approve clicked", () => {
       const mutateMock = vi.fn();
-      
+
       setMockUseAdminRequests({
         approveMutation: { mutate: mutateMock, isPending: false },
       });
-      
+
       render(<AdminRequests />);
-      
+
       const approveButtons = screen.getAllByText("Approve");
-  
+
       expect(approveButtons.length).toBeGreaterThan(0);
       expect(approveButtons[0]).toBeInTheDocument();
     });
@@ -504,16 +471,16 @@ describe("AdminRequests Component", () => {
       setMockUseAdminRequests({
         approveMutation: { mutate: vi.fn(), isPending: true },
       });
-      
+
       render(<AdminRequests />);
-      
+
       const loadingIndicators = screen.getAllByText("⏳");
 
       expect(loadingIndicators.length).toBeGreaterThan(0);
-      
+
       const approveButtons = screen.getAllByRole("button", { name: /approve/i });
-  
-      approveButtons.forEach(button => {
+
+      approveButtons.forEach((button) => {
         expect(button).toBeDisabled();
       });
     });
@@ -532,7 +499,7 @@ describe("AdminRequests Component", () => {
       });
 
       render(<AdminRequests />);
-      
+
       const loadingIndicators = screen.getAllByText("⏳");
 
       expect(loadingIndicators).toHaveLength(2);
@@ -553,29 +520,26 @@ describe("AdminRequests Component", () => {
     });
 
     it("handles requestsQuery.data.results array", async () => {
-  setMockUseAdminRequests({
-    requestsQuery: {
-      isLoading: false,
-      error: null,
-      data: [
-        { id: "10", name: "User10", email: "b@b.com", status: "Approved" },
-      ],
-    },
-  });
-  render(<AdminRequests />);
-  expect(await screen.findByText((t) => t.includes("User10"))).toBeInTheDocument();
-});
-
+      setMockUseAdminRequests({
+        requestsQuery: {
+          isLoading: false,
+          error: null,
+          data: [{ id: "10", name: "User10", email: "b@b.com", status: "Approved" }],
+        },
+      });
+      render(<AdminRequests />);
+      expect(await screen.findByText((t) => t.includes("User10"))).toBeInTheDocument();
+    });
   });
 
   describe("DataTable setFilter integration", () => {
     it("calls setFilter to update filters", async () => {
       render(<AdminRequests />);
-      
+
       const triggerButton = await screen.findByTestId("trigger");
-   
+
       expect(triggerButton).toBeInTheDocument();
-      
+
       fireEvent.click(triggerButton);
     });
   });
@@ -599,39 +563,39 @@ describe("AdminRequests Component", () => {
     describe("Filters and pagination logic", () => {
       it("handles filter state updates correctly", () => {
         render(<AdminRequests />);
-        
+
         const dataTable = screen.getByTestId("datatable");
-   
+
         expect(dataTable).toBeInTheDocument();
       });
 
       it("updates filters when setFilter is called with different keys", () => {
         render(<AdminRequests />);
-        
+
         const triggerButton = screen.getByTestId("trigger");
-       
+
         fireEvent.click(triggerButton);
-        
+
         expect(screen.getByTestId("datatable")).toBeInTheDocument();
       });
 
       it("handles page filter updates", () => {
         render(<AdminRequests />);
-        
+
         const triggerButton = screen.getByTestId("trigger");
-    
+
         fireEvent.click(triggerButton);
-        
+
         expect(screen.getByTestId("datatable")).toBeInTheDocument();
       });
 
       it("handles multiple filter types through DataTable interaction", () => {
         render(<AdminRequests />);
-        
+
         const triggerButton = screen.getByTestId("trigger");
-        
+
         fireEvent.click(triggerButton);
-        
+
         expect(screen.getByTestId("datatable")).toBeInTheDocument();
         expect(screen.getAllByTestId("row").length).toBeGreaterThan(0);
       });
@@ -640,19 +604,19 @@ describe("AdminRequests Component", () => {
     describe("ApproveButton component details", () => {
       it("uses useCallback for handleApprove function", () => {
         const mutateMock = vi.fn();
-        
+
         setMockUseAdminRequests({
           approveMutation: { mutate: mutateMock, isPending: false },
         });
-        
+
         render(<AdminRequests />);
-        
+
         const approveButtons = screen.getAllByText("Approve");
-        
+
         fireEvent.click(approveButtons[0]);
         fireEvent.click(approveButtons[0]);
         fireEvent.click(approveButtons[0]);
-        
+
         expect(mutateMock).toHaveBeenCalledTimes(3);
         expect(mutateMock).toHaveBeenCalledWith("1");
       });
@@ -667,10 +631,10 @@ describe("AdminRequests Component", () => {
             data: { data: [] },
           },
         });
-        
+
         render(<AdminRequests />);
         const dataTables = screen.getAllByTestId("datatable");
-        
+
         expect(dataTables[0]).toBeInTheDocument();
       });
 
@@ -682,10 +646,10 @@ describe("AdminRequests Component", () => {
             data: undefined,
           },
         });
-        
+
         render(<AdminRequests />);
         const dataTables = screen.getAllByTestId("datatable");
-        
+
         expect(dataTables[0]).toBeInTheDocument();
       });
 
@@ -701,67 +665,69 @@ describe("AdminRequests Component", () => {
             ],
           },
         });
-        
+
         render(<AdminRequests />);
-        
+
         const approvedCheckbox = getCheckboxByLabel("Approved");
         const rejectedCheckbox = getCheckboxByLabel("Rejected");
-        
+
         fireEvent.click(approvedCheckbox);
         fireEvent.click(rejectedCheckbox);
-        
+
         await waitFor(() => {
           const rows = screen.getAllByTestId("row");
-          
+
           expect(rows).toHaveLength(2);
         });
       });
 
       it("resets status filters when switching tabs", async () => {
-  setMockUseAdminRequests({
-    requestsQuery: {
-      isLoading: false,
-      error: null,
-      data: [
-        { id: "1", name: "John", email: "john@test.com", status: "Approved" },
-        { id: "2", name: "Jane", email: "jane@test.com", status: "Pending" },
-      ],
-    },
-  });
-  
-  render(<AdminRequests />);
-  
-  const approvedCheckbox = getCheckboxByLabel("Approved");
-  
-  fireEvent.click(approvedCheckbox);
-  
-  await waitFor(() => expect(approvedCheckbox).toBeChecked());
-  
-  fireEvent.click(screen.getByText((t) => t.includes("Reservation Requests")));
-  
-  await waitFor(() => {
-    expect(screen.getByText((t) => t.includes("Reservation Requests"))).toHaveClass("bg-contrast-green");
-  });
-  
-  fireEvent.click(screen.getByText((t) => t.includes("Professor Requests")));
-  
-  await waitFor(() => {
-    expect(
-      screen.getByText((t) => t.includes("Professor Requests"))
-    ).toHaveClass("bg-contrast-green");
-  });
-  
-  const resetCheckbox = getCheckboxByLabel("Approved");
-  
-  expect(resetCheckbox).not.toBeChecked();
-});
+        setMockUseAdminRequests({
+          requestsQuery: {
+            isLoading: false,
+            error: null,
+            data: [
+              { id: "1", name: "John", email: "john@test.com", status: "Approved" },
+              { id: "2", name: "Jane", email: "jane@test.com", status: "Pending" },
+            ],
+          },
+        });
+
+        render(<AdminRequests />);
+
+        const approvedCheckbox = getCheckboxByLabel("Approved");
+
+        fireEvent.click(approvedCheckbox);
+
+        await waitFor(() => expect(approvedCheckbox).toBeChecked());
+
+        fireEvent.click(screen.getByText((t) => t.includes("Reservation Requests")));
+
+        await waitFor(() => {
+          expect(screen.getByText((t) => t.includes("Reservation Requests"))).toHaveClass(
+            "bg-contrast-green",
+          );
+        });
+
+        fireEvent.click(screen.getByText((t) => t.includes("Professor Requests")));
+
+        await waitFor(() => {
+          expect(screen.getByText((t) => t.includes("Professor Requests"))).toHaveClass(
+            "bg-contrast-green",
+          );
+        });
+
+        const resetCheckbox = getCheckboxByLabel("Approved");
+
+        expect(resetCheckbox).not.toBeChecked();
+      });
 
       it("handles all reservation status filters", async () => {
         const reservationData = [
           { id: "1", name: "User1", email: "u1@test.com", status: "Confirmed" },
           { id: "2", name: "User2", email: "u2@test.com", status: "Pending" },
         ];
-        
+
         setMockUseAdminRequests({
           requestsQuery: {
             isLoading: false,
@@ -769,42 +735,38 @@ describe("AdminRequests Component", () => {
             data: reservationData,
           },
         });
-        
+
         render(<AdminRequests />);
         fireEvent.click(screen.getByText((t) => t.includes("Reservation Requests")));
-        
+
         const statuses = ["Confirmed", "Pending"];
-        
+
         for (const status of statuses) {
           const checkbox = getCheckboxByLabel(status);
-          
+
           fireEvent.click(checkbox);
-          
+
           await waitFor(() => {
             const rows = screen.getAllByTestId("row");
-            
+
             expect(rows.length).toBeGreaterThan(0);
           });
-          
+
           const rows = screen.getAllByTestId("row");
-          const hasStatus = rows.some(row => row.textContent?.includes(status));
-          
+          const hasStatus = rows.some((row) => row.textContent?.includes(status));
+
           expect(hasStatus).toBe(true);
-          
+
           fireEvent.click(checkbox);
         }
       });
 
       it("handles complex data structures from API", () => {
-        const testCases = [
-          { data: [] }, 
-          { data: { data: [] } },
-          { data: { results: [] } }, 
-        ];
+        const testCases = [{ data: [] }, { data: { data: [] } }, { data: { results: [] } }];
 
         testCases.forEach((testCase) => {
           vi.clearAllMocks();
-          
+
           setMockUseAdminRequests({
             requestsQuery: {
               isLoading: false,
@@ -815,7 +777,7 @@ describe("AdminRequests Component", () => {
 
           const { unmount } = render(<AdminRequests />);
           const dataTables = screen.getAllByTestId("datatable");
-          
+
           expect(dataTables[0]).toBeInTheDocument();
           unmount();
         });
@@ -823,7 +785,7 @@ describe("AdminRequests Component", () => {
 
       it("tests filter state initialization", () => {
         render(<AdminRequests />);
-        
+
         expect(screen.getByTestId("datatable")).toBeInTheDocument();
         expect(screen.getByText((t) => t.includes("Professor Requests"))).toBeInTheDocument();
         expect(screen.getByText((t) => t.includes("Reservation Requests"))).toBeInTheDocument();
@@ -831,12 +793,12 @@ describe("AdminRequests Component", () => {
 
       it("covers handleStatusChange function", async () => {
         render(<AdminRequests />);
-        
+
         const approvedCheckbox = getCheckboxByLabel("Approved");
-        
+
         fireEvent.click(approvedCheckbox);
         await waitFor(() => expect(approvedCheckbox).toBeChecked());
-        
+
         fireEvent.click(approvedCheckbox);
         await waitFor(() => expect(approvedCheckbox).not.toBeChecked());
       });
@@ -852,10 +814,10 @@ describe("AdminRequests Component", () => {
             ],
           },
         });
-        
+
         render(<AdminRequests />);
         const rows = screen.getAllByTestId("row");
-        
+
         expect(rows).toHaveLength(2);
       });
 
@@ -871,21 +833,21 @@ describe("AdminRequests Component", () => {
             ],
           },
         });
-        
+
         render(<AdminRequests />);
-        
+
         const approvedCheckbox = getCheckboxByLabel("Approved");
-       
+
         fireEvent.click(approvedCheckbox);
-        
+
         await waitFor(() => {
           const rows = screen.getAllByTestId("row");
-        
+
           expect(rows).toHaveLength(1);
         });
-        
+
         const rows = screen.getAllByTestId("row");
-       
+
         expect(rows[0]).toHaveTextContent("Approved");
       });
     });

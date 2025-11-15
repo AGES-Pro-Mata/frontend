@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebounce } from "@/hooks";
 
 export type FilterWithDateRange = {
   startDate?: string;
@@ -125,8 +125,7 @@ export function FilterPanel<F extends FilterWithDateRange>({
   };
 
   const selectedValue = filters[toggleKey];
-  const searchValue =
-    typeof filters.search === "string" ? filters.search : undefined;
+  const searchValue = typeof filters.search === "string" ? filters.search : undefined;
 
   const [localSearch, setLocalSearch] = useState(searchValue);
 
@@ -146,7 +145,7 @@ export function FilterPanel<F extends FilterWithDateRange>({
     <section
       className={cn(
         "mx-auto w-full max-w-[1080px] rounded-[48px] border border-card/40 bg-card/20 px-6 py-8 shadow-[0_45px_120px_rgba(46,54,29,0.08)] md:px-12 md:py-12",
-        className
+        className,
       )}
     >
       <div className="flex flex-col gap-10">
@@ -199,7 +198,7 @@ export function FilterPanel<F extends FilterWithDateRange>({
                 className={cn(
                   "group flex h-12 flex-none cursor-pointer items-center justify-center !rounded-full border border-card/70 bg-white px-8 text-sm font-semibold tracking-[0.02em] text-on-banner-text shadow-none transition-none first:!rounded-l-full last:!rounded-r-full",
                   "hover:bg-card/20 hover:text-on-banner-text",
-                  "data-[state=on]:border-transparent data-[state=on]:bg-main-dark-green data-[state=on]:text-white data-[state=on]:shadow-[0_24px_48px_rgba(46,54,29,0.25)]"
+                  "data-[state=on]:border-transparent data-[state=on]:bg-main-dark-green data-[state=on]:text-white data-[state=on]:shadow-[0_24px_48px_rgba(46,54,29,0.25)]",
                 )}
               >
                 {t(labelKey)}

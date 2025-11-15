@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const useMutationMock = vi.fn();
@@ -20,10 +23,10 @@ describe("useDeleteExperience", () => {
   });
 
   it("should call useMutation with deleteExperience function", async () => {
-    const { useDeleteExperience } = await import("@/hooks/useDeleteExperience");
-    
+    const { useDeleteExperience } = await import("@/hooks");
+
     useDeleteExperience();
-    
+
     expect(useMutationMock).toHaveBeenCalledWith({
       mutationFn: expect.any(Function),
       onSuccess: expect.any(Function),
@@ -31,15 +34,15 @@ describe("useDeleteExperience", () => {
   });
 
   it("should call deleteExperience API when mutationFn is executed", async () => {
-    const { useDeleteExperience } = await import("@/hooks/useDeleteExperience");
-    
+    const { useDeleteExperience } = await import("@/hooks");
+
     useDeleteExperience();
-    
+
     const mutationConfig = useMutationMock.mock.calls[0][0];
     const experienceId = "test-experience-id";
-    
+
     await mutationConfig.mutationFn(experienceId);
-    
+
     expect(deleteExperienceMock).toHaveBeenCalledWith(experienceId);
   });
 
@@ -50,14 +53,14 @@ describe("useDeleteExperience", () => {
       invalidateQueries: invalidateQueriesMock,
     });
 
-    const { useDeleteExperience } = await import("@/hooks/useDeleteExperience");
-    
+    const { useDeleteExperience } = await import("@/hooks");
+
     useDeleteExperience();
-    
+
     const mutationConfig = useMutationMock.mock.calls[0][0];
-    
+
     await mutationConfig.onSuccess();
-    
+
     expect(invalidateQueriesMock).toHaveBeenCalledTimes(4);
     expect(invalidateQueriesMock).toHaveBeenCalledWith({ queryKey: ["experiences"] });
     expect(invalidateQueriesMock).toHaveBeenCalledWith({ queryKey: ["experience"] });

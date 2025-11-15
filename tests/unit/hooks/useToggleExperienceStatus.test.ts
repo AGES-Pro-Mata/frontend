@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const useMutationMock = vi.fn();
@@ -20,10 +23,10 @@ describe("useToggleExperienceStatus", () => {
   });
 
   it("should call useMutation with toggleExperienceStatus function", async () => {
-    const { useToggleExperienceStatus } = await import("@/hooks/useToggleExperienceStatus");
-    
+    const { useToggleExperienceStatus } = await import("@/hooks/");
+
     useToggleExperienceStatus();
-    
+
     expect(useMutationMock).toHaveBeenCalledWith({
       mutationFn: expect.any(Function),
       onSuccess: expect.any(Function),
@@ -31,15 +34,15 @@ describe("useToggleExperienceStatus", () => {
   });
 
   it("should call toggleExperienceStatus API when mutationFn is executed", async () => {
-    const { useToggleExperienceStatus } = await import("@/hooks/useToggleExperienceStatus");
-    
+    const { useToggleExperienceStatus } = await import("@/hooks/");
+
     useToggleExperienceStatus();
-    
+
     const mutationConfig = useMutationMock.mock.calls[0][0];
     const params = { experienceId: "test-id", active: true };
-    
+
     await mutationConfig.mutationFn(params);
-    
+
     expect(toggleExperienceStatusMock).toHaveBeenCalledWith("test-id", true);
   });
 
@@ -50,14 +53,14 @@ describe("useToggleExperienceStatus", () => {
       invalidateQueries: invalidateQueriesMock,
     });
 
-    const { useToggleExperienceStatus } = await import("@/hooks/useToggleExperienceStatus");
-    
+    const { useToggleExperienceStatus } = await import("@/hooks/");
+
     useToggleExperienceStatus();
-    
+
     const mutationConfig = useMutationMock.mock.calls[0][0];
-    
+
     await mutationConfig.onSuccess();
-    
+
     expect(invalidateQueriesMock).toHaveBeenCalledTimes(4);
     expect(invalidateQueriesMock).toHaveBeenCalledWith({ queryKey: ["experiences"] });
     expect(invalidateQueriesMock).toHaveBeenCalledWith({ queryKey: ["experience"] });

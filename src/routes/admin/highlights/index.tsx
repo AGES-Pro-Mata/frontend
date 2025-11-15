@@ -3,36 +3,22 @@ import { Typography } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader } from "@/components/ui/card";
 import { HighlightCategory } from "@/entities/highlights";
-import {
-  Bed,
-  Calendar,
-  Edit,
-  FlaskConical,
-  Images,
-  Mountain,
-  Trash2,
-  Upload,
-} from "lucide-react";
+import { Bed, Calendar, Edit, FlaskConical, Images, Mountain, Trash2, Upload } from "lucide-react";
 import { type ChangeEvent, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { appToast } from "@/components/toast/toast";
+import { CanvasCard } from "@/components/card";
+import { MoonLoader } from "react-spinners";
+import { useLoadImage } from "@/hooks";
 import {
   useCreateHighlight,
   useDeleteHighlight,
   useFetchHighlightsByCategories,
   useUpdateHighlight,
-} from "@/hooks/useHighlights";
-import { appToast } from "@/components/toast/toast";
-import { CanvasCard } from "@/components/card";
-import { MoonLoader } from "react-spinners";
-import { useLoadImage } from "@/hooks/useLoadImage";
+} from "@/hooks/shared/useHighlights";
 
 export const Route = createFileRoute("/admin/highlights/")({
   component: RouteComponent,
@@ -46,9 +32,17 @@ type HighlightImage = {
   order: number;
 };
 
-function HighlightImageCard({ image, onEdit, onDelete }: { image: HighlightImage; onEdit: () => void; onDelete: () => void }) {
+function HighlightImageCard({
+  image,
+  onEdit,
+  onDelete,
+}: {
+  image: HighlightImage;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(image.imageUrl);
-  
+
   return (
     <CanvasCard className="overflow-hidden">
       <div className="relative h-48 bg-gray-100">
@@ -59,9 +53,7 @@ function HighlightImageCard({ image, onEdit, onDelete }: { image: HighlightImage
             imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
           }`}
         />
-        {imageLoading && (
-          <div className="absolute inset-0 animate-pulse bg-muted" />
-        )}
+        {imageLoading && <div className="absolute inset-0 animate-pulse bg-muted" />}
         <div className="absolute top-2 right-2 flex gap-2">
           <Button
             size="icon"
@@ -97,11 +89,11 @@ function HighlightImageCard({ image, onEdit, onDelete }: { image: HighlightImage
 
 export function RouteComponent() {
   const [activeCategory, setActiveCategory] = useState<HighlightCategory>(
-    HighlightCategory.LABORATORIO
+    HighlightCategory.LABORATORIO,
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<HighlightCategory>(
-    HighlightCategory.LABORATORIO
+    HighlightCategory.LABORATORIO,
   );
   const [editingImage, setEditingImage] = useState<HighlightImage | null>(null);
   const [formData, setFormData] = useState({
@@ -112,14 +104,9 @@ export function RouteComponent() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(imagePreview || "");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [highlightToDelete, setHighlightToDelete] =
-    useState<HighlightImage | null>(null);
+  const [highlightToDelete, setHighlightToDelete] = useState<HighlightImage | null>(null);
 
-  const {
-    data: highlightsData,
-    isLoading,
-    refetch,
-  } = useFetchHighlightsByCategories();
+  const { data: highlightsData, isLoading, refetch } = useFetchHighlightsByCategories();
   const createMutation = useCreateHighlight();
   const updateMutation = useUpdateHighlight();
   const deleteMutation = useDeleteHighlight();
@@ -149,10 +136,7 @@ export function RouteComponent() {
     }
   };
 
-  const handleOpenDialog = (
-    category: HighlightCategory,
-    image?: HighlightImage
-  ) => {
+  const handleOpenDialog = (category: HighlightCategory, image?: HighlightImage) => {
     setSelectedCategory(category);
     if (image) {
       setEditingImage(image);
@@ -233,7 +217,7 @@ export function RouteComponent() {
           onError: () => {
             appToast.error("Erro ao atualizar destaque");
           },
-        }
+        },
       );
     } else {
       // Adicionar nova imagem
@@ -254,7 +238,7 @@ export function RouteComponent() {
           onError: () => {
             appToast.error("Erro ao criar destaque");
           },
-        }
+        },
       );
     }
   };
@@ -335,9 +319,7 @@ export function RouteComponent() {
                 className="border-contrast-green text-contrast-green hover:bg-contrast-green/10"
               >
                 <Upload className="h-4 w-4 mr-2" />
-                <Typography variant="body">
-                  Adicionar Primeira Imagem
-                </Typography>
+                <Typography variant="body">Adicionar Primeira Imagem</Typography>
               </Button>
             </CardContent>
           </CanvasCard>
@@ -380,15 +362,11 @@ export function RouteComponent() {
   return (
     <div className="flex flex-col w-full h-full p-6 gap-6">
       <div>
-        <Typography
-          variant="h2"
-          className="text-2xl font-bold text-main-dark-green"
-        >
+        <Typography variant="h2" className="text-2xl font-bold text-main-dark-green">
           Gerenciar Destaques
         </Typography>
         <Typography className="text-muted-foreground mt-1">
-          Configure as imagens de destaque para cada categoria e o carrossel da
-          página inicial
+          Configure as imagens de destaque para cada categoria e o carrossel da página inicial
         </Typography>
       </div>
 
@@ -402,7 +380,7 @@ export function RouteComponent() {
               "flex items-center gap-2",
               activeCategory === value
                 ? "bg-contrast-green hover:bg-contrast-green/90 text-white border border-transparent"
-                : "hover:bg-gray-100"
+                : "hover:bg-gray-100",
             )}
             onClick={() => setActiveCategory(value)}
           >
@@ -411,7 +389,7 @@ export function RouteComponent() {
               variant="body"
               className={cn(
                 "transition-colors",
-                activeCategory === value ? "text-white" : "text-foreground"
+                activeCategory === value ? "text-white" : "text-foreground",
               )}
             >
               {label}
@@ -425,7 +403,7 @@ export function RouteComponent() {
 
       <Dialog
         open={isDialogOpen}
-  onOpenChange={(open: boolean) => {
+        onOpenChange={(open: boolean) => {
           if (!open) {
             handleCloseDialog();
           } else {
@@ -439,8 +417,7 @@ export function RouteComponent() {
               {editingImage ? "Editar" : "Adicionar"} Imagem de Destaque
             </Typography>
             <Typography className="text-sm text-muted-foreground">
-              {getCategoryInfo(selectedCategory).label} - Imagem para página
-              inicial
+              {getCategoryInfo(selectedCategory).label} - Imagem para página inicial
             </Typography>
           </DialogHeader>
 
@@ -503,9 +480,7 @@ export function RouteComponent() {
             </div>
 
             <div className="space-y-2">
-              <Typography className="text-sm font-medium">
-                Descrição (opcional)
-              </Typography>
+              <Typography className="text-sm font-medium">Descrição (opcional)</Typography>
               <Textarea
                 id="description"
                 placeholder="Digite uma descrição para a imagem"
@@ -560,10 +535,7 @@ export function RouteComponent() {
             </Typography>
             <Typography className="text-sm text-muted-foreground">
               Tem certeza que deseja excluir o destaque{" "}
-              <span className="font-semibold">
-                {highlightToDelete?.title ?? "selecionado"}
-              </span>
-              ?
+              <span className="font-semibold">{highlightToDelete?.title ?? "selecionado"}</span>?
             </Typography>
           </DialogHeader>
           <DialogFooter>

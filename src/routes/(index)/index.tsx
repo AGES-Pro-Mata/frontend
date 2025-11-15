@@ -6,11 +6,11 @@ import { InfoExperiencies } from "@/components/display/infoExperiencesHome";
 import { Typography } from "@/components/typography/typography";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useFetchPublicHighlightsByCategories } from "@/hooks/useHighlights";
 import { HighlightCategory } from "@/entities/highlights";
 import type { HighlightResponse } from "@/api/highlights";
 import { Loader } from "lucide-react";
-import { useLoadImage } from "@/hooks/useLoadImage";
+import { useLoadImage } from "@/hooks";
+import { useFetchPublicHighlightsByCategories } from "@/hooks/shared/useHighlights";
 
 export const Route = createFileRoute("/(index)/")({
   component: RouteComponent,
@@ -18,15 +18,15 @@ export const Route = createFileRoute("/(index)/")({
 
 export function RouteComponent() {
   const { t } = useTranslation();
-  const heroImageUrl = "https://promata-storage-dev.s3.us-east-2.amazonaws.com/highlights/Promata+Agosto+(1).JPG";
+  const heroImageUrl =
+    "https://promata-storage-dev.s3.us-east-2.amazonaws.com/highlights/Promata+Agosto+(1).JPG";
   const { data: heroLoaded } = useLoadImage(heroImageUrl);
-  const { data: highlightsData, isLoading } =
-    useFetchPublicHighlightsByCategories();
+  const { data: highlightsData, isLoading } = useFetchPublicHighlightsByCategories();
 
   const sortByOrder = useMemo(
     () => (items?: HighlightResponse[]) =>
       items ? [...items].sort((a, b) => a.order - b.order) : [],
-    []
+    [],
   );
 
   const carouselHighlights = useMemo(() => {
@@ -88,17 +88,9 @@ export function RouteComponent() {
 
           <div className="flex flex-col sm:flex-row gap-[clamp(0.75rem,2vw,1rem)] justify-center items-center">
             <Link to="/reserve">
-              <Button
-                label={t("homePage.ctaPrimary")}
-                variant="primary"
-                className="p-5 text-md"
-              />
+              <Button label={t("homePage.ctaPrimary")} variant="primary" className="p-5 text-md" />
             </Link>
-            <a
-              href="https://www.pucrs.br/ima/pro-mata/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://www.pucrs.br/ima/pro-mata/" target="_blank" rel="noopener noreferrer">
               <Button
                 label={t("homePage.ctaSecondary")}
                 variant="secondary"
@@ -133,11 +125,7 @@ export function RouteComponent() {
             {t("homePage.ctaBottomTitle")}
           </Typography>
           <Link to="/reserve">
-            <Button
-              label={t("homePage.ctaBottom")}
-              variant="gray"
-              className="p-5 text-md"
-            />
+            <Button label={t("homePage.ctaBottom")} variant="gray" className="p-5 text-md" />
           </Link>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FaRegCalendarCheck, FaUser } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { MdMoreVert, MdVisibility } from "react-icons/md";
-import { useAdminRequests } from "@/hooks/useAdminRequests";
+import { useAdminRequests } from "@/hooks";
 import { MoonLoader } from "react-spinners";
 
 type Request = {
