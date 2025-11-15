@@ -17,14 +17,13 @@ type ExperienceCardProps = {
   title: string;
   price: number;
   type?: string;
-  period: { start: Date; end: Date };
+  period: { start: Date | null; end: Date | null};
   imageUrl: string;
   experienceId?: string;
   persist?: boolean;
   onSave?: (data: ExperienceTuningData) => void;
   onLoad?: (data: ExperienceTuningData) => void;
   initialData?: ExperienceTuningData | null;
-  hasValidPeriod?: boolean;
 };
 
 export default function ExperienceCard({
@@ -38,7 +37,6 @@ export default function ExperienceCard({
   onSave,
   onLoad,
   initialData,
-  hasValidPeriod = true,
 }: ExperienceCardProps) {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -91,12 +89,16 @@ export default function ExperienceCard({
   const calendarStyles = { "--rdp-cell-size": "1.75rem" } as CSSProperties;
 
   const disabledDates = useMemo(() => {
-    if (hasValidPeriod) {
-      return [{ before: period.start }, { after: period.end }];
+
+    console.log(period.start)
+    console.log(period.end)
+
+    if (!period.end || !period.start) {
+      return [{ before: new Date() }];
     }
-    // When hasValidPeriod is false, only disable dates before period.start
-    return [{ before: period.start }];
-  }, [hasValidPeriod, period.start, period.end]);
+
+    return [{ before: period.start, after: period.end }];
+  }, [period.start, period.end]);
 
   // Live input values (men, women) are only reflected in summary after save.
 
@@ -200,7 +202,7 @@ export default function ExperienceCard({
               {formattedPrice}
             </span>
           </div>
-          {hasValidPeriod && (
+          {period.start && period.end &&(
             <div className="flex items-center justify-start rounded-full bg-card shadow-sm gap-2 px-3 py-1 w-full md:w-auto md:flex-none flex-1 min-w-0 order-last md:order-none">
               <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white shrink-0">
                 <CalendarIcon className="w-3.5 h-3.5" />

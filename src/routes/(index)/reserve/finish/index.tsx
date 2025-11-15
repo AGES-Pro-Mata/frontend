@@ -103,7 +103,7 @@ function ReserveFlow() {
 
     const resolveDate = (value?: string | null) => {
       if (!value) {
-        return new Date();
+        return null;
       }
       const parsed = new Date(value);
 
@@ -130,7 +130,6 @@ function ReserveFlow() {
       },
       imageUrl: experience.image?.url ?? "/mock/landscape-1.jpg",
       experienceId: experience.id,
-      hasValidPeriod: experience.startDate != null && experience.endDate != null
     }));
   }, [cartExperiences, t]);
 

@@ -21,10 +21,9 @@ export type NormalizedExperienceAdjustment = {
   price: number;
   type: string;
   period: {
-    start: Date;
-    end: Date;
+    start: Date | null;
+    end: Date | null;
   };
   imageUrl: string;
   experienceId?: string;
-  hasValidPeriod?: boolean;
 };

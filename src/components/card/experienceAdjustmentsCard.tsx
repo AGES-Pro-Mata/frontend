@@ -78,7 +78,6 @@ function ExperienceAdjustmentsCard({
       return (externalExperiences ?? []).map((exp) => {
         return {
           ...exp,
-          hasValidPeriod: exp.hasValidPeriod ?? true,
         };
       });
     }
@@ -97,7 +96,6 @@ function ExperienceAdjustmentsCard({
       const startInput = exp.period?.start ?? exp.periodStart;
       const endInput = exp.period?.end ?? exp.periodEnd;
 
-      const hasValidPeriod = startInput == null && endInput == null;
       const start = startInput ? new Date(startInput) : new Date();
       const end = endInput ? new Date(endInput) : new Date();
 
@@ -113,7 +111,6 @@ function ExperienceAdjustmentsCard({
         },
         imageUrl: exp.imageUrl || "/mock/landscape-1.jpg",
         experienceId: experienceId != null ? String(experienceId) : undefined,
-        hasValidPeriod: hasValidPeriod,
       } satisfies NormalizedExperienceAdjustment;
     });
   }, [data, externalExperiences, fallbackExperiences, hasExternalSource, t]);
@@ -168,7 +165,6 @@ function ExperienceAdjustmentsCard({
             imageUrl={exp.imageUrl}
             experienceId={exp.experienceId}
             persist={false}
-            hasValidPeriod={exp.hasValidPeriod}
             initialData={
               exp.experienceId
                 ? (adjustments.find(
