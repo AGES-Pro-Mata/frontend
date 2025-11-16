@@ -448,7 +448,11 @@
         "cpf": "CPF",
         "gender": "Gênero"
       },
-      "notes": "Observações da reserva"
+      "notes": "Observações da reserva",
+      "notesPlaceholder": "Observações sobre a reserva",
+      "emptyNotes": "Nenhuma observação adicionada",
+      "emptyPerson": "Sem dados dos participantes cadastrados",
+      "count": "Número de participantes: {{count}}"
     },
     "experiences": {
       "title": "Experiências",

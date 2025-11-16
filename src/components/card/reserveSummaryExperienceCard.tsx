@@ -54,7 +54,7 @@ export function ReserveSummaryExperienceCard({
         from: formatter.format(fromDate),
         to: formatter.format(toDate),
       }),
-      formattedPrice: priceFormatter.format(price),
+      formattedPrice: price ? priceFormatter.format(price) : "Sem valor estipulado",
     };
   }, [startDate, endDate, price, i18n.language, t]);
 

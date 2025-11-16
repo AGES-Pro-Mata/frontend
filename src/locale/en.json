@@ -419,7 +419,11 @@
                 "cpf": "CPF",
                 "gender": "Gender"
             },
-            "notes": "Reservation notes"
+            "notes": "Reservation notes",
+            "emptyNotes": "No notes added",
+            "notesPlaceholder": "Add any important notes about the reservation",
+            "emptyPerson": "No participants data added",
+            "count": "Participants count: {{count}}"
         },
         "experiences": {
             "title": "Experiences",
