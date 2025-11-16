@@ -110,17 +110,17 @@ function RouteComponent() {
       }) => {
         const name = row.original.name?.toLowerCase() ?? "";
 
-        let tipo = "evento"; 
+        let experienceType = "evento"; 
 
-        if (name.includes("quarto")) tipo = "quarto";
-        else if (name.includes("trilha")) tipo = "trilha";
-        else if (name.includes("evento")) tipo = "evento";
+        if (name.includes("quarto")) experienceType  = "quarto";
+        else if (name.includes("trilha")) experienceType  = "trilha";
+        else if (name.includes("evento")) experienceType  = "evento";
         else if (name.includes("laboratório") || name.includes("laboratorio"))
-          tipo = "laboratório";
+          experienceType  = "laboratório";
 
         return (
           <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
-            {tipo}
+            {experienceType }
           </span>
         );
       },
@@ -192,18 +192,18 @@ function RouteComponent() {
     },
   ];
 
-  const [filterTipos, setFilterTipos] = useState<string[]>([]);
+  const [filterType, setFilterType] = useState<string[]>([]);
 
-  const toggleTipo = (tipo: string) => {
-    setFilterTipos((prev) =>
-      prev.includes(tipo)
-        ? prev.filter((t) => t !== tipo) 
-        : [...prev, tipo]                
+  const toggleType = (type: string) => {
+    setFilterType((prev) =>
+      prev.includes(type)
+        ? prev.filter((t) => t !== type) 
+        : [...prev, type]                
     );
   };
 
   
-  const getTipo = (name?: string) => {
+  const getType = (name?: string) => {
   
     const lower = name?.toLowerCase() ?? "";
 
@@ -220,8 +220,8 @@ function RouteComponent() {
     void navigate({ to: "/admin/experiences/create" });
   };
 
-  const filteredItems = filterTipos.length > 0
-  ? items.filter((item) => filterTipos.includes(getTipo(item.name)))
+  const filteredItems = filterType.length > 0
+  ? items.filter((item) => filterType.includes(getType(item.name)))
   : items;
 
 
@@ -238,15 +238,15 @@ function RouteComponent() {
          <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="h-12" >
-              {filterTipos.length === 0
+              {filterType.length === 0
                 ? "Filtrar por Tipo"
-                : `Tipos (${filterTipos.length})`}
+                : `Tipos (${filterType.length})`}
             </Button>
 
           </DropdownMenuTrigger>
 
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setFilterTipos([])}>
+            <DropdownMenuItem onClick={() => setFilterType([])}>
               Todos
             </DropdownMenuItem>
 
@@ -254,8 +254,8 @@ function RouteComponent() {
             {["evento", "quarto", "trilha", "laboratório"].map((t) => (
               <DropdownMenuItem
                 key={t}
-                onClick={() => toggleTipo(t)}
-                className={filterTipos.includes(t) ? "bg-gray-200" : ""}
+                onClick={() => toggleType(t)}
+                className={filterType.includes(t) ? "bg-gray-200" : ""}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
               </DropdownMenuItem>
