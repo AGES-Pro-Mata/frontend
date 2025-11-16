@@ -9,13 +9,23 @@ import {
 } from "@/components/ui/drawer";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "@tanstack/react-router";
-import { CalendarRange, Home, LogIn, LogOut, Menu, PlusCircle, ShoppingCart, User2, XCircle } from "lucide-react";
+import {
+  CalendarRange,
+  Home,
+  LogIn,
+  LogOut,
+  Menu,
+  PlusCircle,
+  ShoppingCart,
+  User2,
+  XCircle,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/api/user";
-import { useLogout } from "@/hooks/useLogout";
 import { useTranslation } from "react-i18next";
 import LanguageSelect from "@/components/button/languageSelector";
 import { useCartStore } from "@/store/cartStore";
+import { useLogout } from "@/hooks";
 
 export function HeaderDrawerMobile() {
   const { t } = useTranslation();
@@ -32,7 +42,11 @@ export function HeaderDrawerMobile() {
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>
-        <Button variant="outline" size="icon" className="flex md:hidden border-main-dark-green text-main-dark-green hover:bg-main-dark-green/10">
+        <Button
+          variant="outline"
+          size="icon"
+          className="flex md:hidden border-main-dark-green text-main-dark-green hover:bg-main-dark-green/10"
+        >
           <Menu className="size-5" />
         </Button>
       </DrawerTrigger>
@@ -45,7 +59,9 @@ export function HeaderDrawerMobile() {
                 <XCircle className="size-5" />
               </button>
             </DrawerClose>
-            <DrawerTitle className="text-lg font-semibold tracking-wide">{t("common.menu")}</DrawerTitle>
+            <DrawerTitle className="text-lg font-semibold tracking-wide">
+              {t("common.menu")}
+            </DrawerTitle>
           </div>
           {/* keep header minimal on mobile */}
         </DrawerHeader>
@@ -53,24 +69,36 @@ export function HeaderDrawerMobile() {
         <nav className="flex-1 flex flex-col gap-1 px-3 py-5 overflow-y-auto text-sm font-medium">
           <section className="flex flex-col gap-1">
             <DrawerClose asChild>
-              <Link to="/" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
+              <Link
+                to="/"
+                className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
+              >
                 <Home className="size-4" /> {t("nav.home")}
               </Link>
             </DrawerClose>
             <DrawerClose asChild>
-              <Link to="/reserve" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
+              <Link
+                to="/reserve"
+                className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
+              >
                 <CalendarRange className="size-4" /> {t("nav.reserve")}
               </Link>
             </DrawerClose>
             {isLoggedIn && (
               <>
                 <DrawerClose asChild>
-                  <Link to="/user/my-reservations" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
+                  <Link
+                    to="/user/my-reservations"
+                    className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
+                  >
                     <CalendarRange className="size-4" /> {t("nav.myReservations")}
                   </Link>
                 </DrawerClose>
                 <DrawerClose asChild>
-                  <Link to="/user/profile" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
+                  <Link
+                    to="/user/profile"
+                    className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
+                  >
                     <User2 className="size-4" /> {t("nav.profile")}
                   </Link>
                 </DrawerClose>
@@ -98,12 +126,18 @@ export function HeaderDrawerMobile() {
           {!isLoggedIn && (
             <section className="flex flex-col gap-1">
               <DrawerClose asChild>
-                <Link to="/auth/login" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
+                <Link
+                  to="/auth/login"
+                  className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
+                >
                   <LogIn className="size-4" /> {t("nav.login")}
                 </Link>
               </DrawerClose>
               <DrawerClose asChild>
-                <Link to="/auth/register" className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors">
+                <Link
+                  to="/auth/register"
+                  className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
+                >
                   <PlusCircle className="size-4" /> {t("nav.register")}
                 </Link>
               </DrawerClose>

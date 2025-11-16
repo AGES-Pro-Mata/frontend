@@ -6,13 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Calendar as CalendarIcon } from "lucide-react";
 
 import { TextInput } from "@/components/input/textInput";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Typography } from "@/components/typography/typography";
 import { Label } from "@/components/ui/label";
 import {
@@ -22,11 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
 import {
@@ -42,10 +32,7 @@ import {
   toIsoFromBR,
 } from "@/lib/utils";
 
-import type {
-  ReserveParticipantDraft,
-  ReserveParticipantGender,
-} from "@/types/reserve";
+import type { ReserveParticipantDraft, ReserveParticipantGender } from "@/types/reserve";
 
 export type ReserveParticipantInputsProps = {
   person: ReserveParticipantDraft;
@@ -53,7 +40,7 @@ export type ReserveParticipantInputsProps = {
   disabled?: boolean;
   onFieldChange?: <K extends keyof ReserveParticipantDraft>(
     field: K,
-    value: ReserveParticipantDraft[K]
+    value: ReserveParticipantDraft[K],
   ) => void;
   className?: string;
 };
@@ -78,13 +65,10 @@ function ReserveParticipantInputs({
           .string()
           .trim()
           .min(1, t("validation.cpfRequired"))
-          .refine(
-            (value) => isValidCpf(digitsOnly(value)),
-            t("validation.cpfInvalid")
-          ),
+          .refine((value) => isValidCpf(digitsOnly(value)), t("validation.cpfInvalid")),
         gender: z.string().trim().min(1, t("validation.genderRequired")),
       }),
-    [t]
+    [t],
   );
 
   type FormValues = z.infer<typeof formSchema>;
@@ -96,7 +80,7 @@ function ReserveParticipantInputs({
     defaultValues: {
       name: person.name ?? "",
       phone: person.phone ?? "",
-      birthDate: toBRForDisplay(person.birthDate || ""),
+      birthDate: toBRForDisplay(person.birthDate),
       document: person.document ?? "",
       gender: person.gender ?? "",
     },
@@ -108,12 +92,12 @@ function ReserveParticipantInputs({
       MALE: t("reserveFlow.peopleStep.genderOptions.male"),
       OTHER: t("reserveFlow.peopleStep.genderOptions.other"),
     }),
-    [t]
+    [t],
   ) as Record<ReserveParticipantGender, string>;
 
   const handleChange = <K extends keyof ReserveParticipantDraft>(
     field: K,
-    value: ReserveParticipantDraft[K]
+    value: ReserveParticipantDraft[K],
   ) => {
     if (onFieldChange) onFieldChange(field, value);
   };
@@ -149,14 +133,7 @@ function ReserveParticipantInputs({
       shouldValidate: false,
       shouldDirty: false,
     });
-  }, [
-    form,
-    person.birthDate,
-    person.document,
-    person.gender,
-    person.name,
-    person.phone,
-  ]);
+  }, [form, person.birthDate, person.document, person.gender, person.name, person.phone]);
 
   return (
     <Form {...form}>
@@ -165,10 +142,7 @@ function ReserveParticipantInputs({
           event.preventDefault();
           void form.handleSubmit(() => undefined)(event);
         }}
-        className={cn(
-          "grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5",
-          className
-        )}
+        className={cn("grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5", className)}
       >
         <FormField
           control={form.control}
@@ -178,9 +152,7 @@ function ReserveParticipantInputs({
               <TextInput
                 label={t("reserveFlow.peopleStep.fields.name.label")}
                 required
-                placeholder={t(
-                  "reserveFlow.peopleStep.fields.name.placeholder"
-                )}
+                placeholder={t("reserveFlow.peopleStep.fields.name.placeholder")}
                 value={field.value}
                 onChange={(event) => {
                   field.onChange(event.target.value);
@@ -195,9 +167,7 @@ function ReserveParticipantInputs({
                 tabIndex={isReadOnly ? -1 : undefined}
                 className={cn(
                   "xl:min-w-[12rem]",
-                  isReadOnly
-                    ? "pointer-events-none text-main-dark-green"
-                    : undefined
+                  isReadOnly ? "pointer-events-none text-main-dark-green" : undefined,
                 )}
               />
               <FormMessage className="text-default-red" />
@@ -213,9 +183,7 @@ function ReserveParticipantInputs({
               <TextInput
                 label={t("reserveFlow.peopleStep.fields.phone.label")}
                 required
-                placeholder={t(
-                  "reserveFlow.peopleStep.fields.phone.placeholder"
-                )}
+                placeholder={t("reserveFlow.peopleStep.fields.phone.placeholder")}
                 value={field.value}
                 onChange={(event) => {
                   const digits = digitsOnly(event.target.value).slice(0, 11);
@@ -233,9 +201,7 @@ function ReserveParticipantInputs({
                 tabIndex={isReadOnly ? -1 : undefined}
                 className={cn(
                   "xl:min-w-[12rem]",
-                  isReadOnly
-                    ? "pointer-events-none text-main-dark-green"
-                    : undefined
+                  isReadOnly ? "pointer-events-none text-main-dark-green" : undefined,
                 )}
               />
               <FormMessage className="text-default-red" />
@@ -249,9 +215,7 @@ function ReserveParticipantInputs({
           render={({ field }) => (
             <FormItem className="flex flex-col gap-0.7 xl:min-w-[12rem]">
               <Typography className="mb-1 flex flex-wrap items-center gap-1 text-foreground font-medium leading-tight">
-                <span>
-                  {t("reserveFlow.peopleStep.fields.birthDate.label")}
-                </span>
+                <span>{t("reserveFlow.peopleStep.fields.birthDate.label")}</span>
                 <span>*</span>
               </Typography>
               <div className="relative">
@@ -282,9 +246,7 @@ function ReserveParticipantInputs({
                   tabIndex={isReadOnly ? -1 : undefined}
                   className={cn(
                     "w-full xl:min-w-[13.3rem] pr-10",
-                    isReadOnly
-                      ? "pointer-events-none text-main-dark-green"
-                      : undefined
+                    isReadOnly ? "pointer-events-none text-main-dark-green" : undefined,
                   )}
                 />
 
@@ -297,21 +259,15 @@ function ReserveParticipantInputs({
                         "inline-flex items-center justify-center rounded-md",
                         "bg-transparent",
                         "text-foreground/80",
-                        "disabled:cursor-not-allowed disabled:opacity-50"
+                        "disabled:cursor-not-allowed disabled:opacity-50",
                       )}
                       disabled={disabled || isReadOnly}
-                      aria-label={t(
-                        "reserveFlow.peopleStep.fields.birthDate.label"
-                      )}
+                      aria-label={t("reserveFlow.peopleStep.fields.birthDate.label")}
                     >
                       <CalendarIcon className="h-4 w-4 pointer-events-none" />
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto p-0"
-                    align="end"
-                    sideOffset={8}
-                  >
+                  <PopoverContent className="w-auto p-0" align="end" sideOffset={8}>
                     <Calendar
                       mode="single"
                       selected={dateForCalendar}
@@ -365,9 +321,7 @@ function ReserveParticipantInputs({
                 tabIndex={isReadOnly ? -1 : undefined}
                 className={cn(
                   "xl:min-w-[12rem]",
-                  isReadOnly
-                    ? "pointer-events-none text-main-dark-green"
-                    : undefined
+                  isReadOnly ? "pointer-events-none text-main-dark-green" : undefined,
                 )}
               />
               <FormMessage className="text-default-red" />
@@ -380,15 +334,11 @@ function ReserveParticipantInputs({
             label={t("reserveFlow.peopleStep.fields.gender.label")}
             required
             value={
-              person.gender && person.gender in genderOptions
-                ? genderOptions[person.gender]
-                : ""
+              person.gender && person.gender in genderOptions ? genderOptions[person.gender] : ""
             }
             readOnly
             tabIndex={-1}
-            className={cn(
-              "xl:min-w-[12rem] pointer-events-none text-main-dark-green"
-            )}
+            className={cn("xl:min-w-[12rem] pointer-events-none text-main-dark-green")}
           />
         ) : (
           <FormField
@@ -404,10 +354,7 @@ function ReserveParticipantInputs({
                   value={field.value}
                   onValueChange={(value) => {
                     field.onChange(value);
-                    handleChange(
-                      "gender",
-                      value as ReserveParticipantGender | ""
-                    );
+                    handleChange("gender", value as ReserveParticipantGender | "");
                   }}
                   disabled={isSelectDisabled}
                 >
@@ -419,25 +366,18 @@ function ReserveParticipantInputs({
                         isSelectDisabled ? "opacity-80" : "",
                         form.formState.errors.gender
                           ? "border-default-red focus:ring-0 focus-visible:ring-0"
-                          : ""
+                          : "",
                       )}
-                      aria-invalid={
-                        form.formState.errors.gender ? true : undefined
-                      }
+                      aria-invalid={form.formState.errors.gender ? true : undefined}
                     >
                       <SelectValue
-                        placeholder={t(
-                          "reserveFlow.peopleStep.fields.gender.placeholder"
-                        )}
+                        placeholder={t("reserveFlow.peopleStep.fields.gender.placeholder")}
                       />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white">
                     {Object.entries(genderOptions).map(([value, label]) => (
-                      <SelectItem
-                        key={value}
-                        value={value as ReserveParticipantGender}
-                      >
+                      <SelectItem key={value} value={value as ReserveParticipantGender}>
                         {label}
                       </SelectItem>
                     ))}

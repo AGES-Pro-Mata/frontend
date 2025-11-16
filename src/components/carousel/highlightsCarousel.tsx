@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Typography } from "@/components/typography/typography";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CanvasCard } from "@/components/card";
-import { useLoadImage } from "@/hooks/useLoadImage";
+import { useLoadImage } from "@/hooks";
 
 interface HighlightsCarouselProps {
   highlights: HighlightResponse[];
@@ -32,26 +32,18 @@ const ImageLoader = memo(function ImageLoader({
         aria-hidden={isDecorative ? true : undefined}
         className={cn(
           "h-full w-full object-cover transition-opacity duration-300",
-          loadedUrl && !isLoading ? "opacity-100" : "opacity-0"
+          loadedUrl && !isLoading ? "opacity-100" : "opacity-0",
         )}
         loading="lazy"
       />
-      {isLoading && (
-        <div
-          className="absolute inset-0 animate-pulse bg-muted"
-          aria-hidden={true}
-        />
-      )}
+      {isLoading && <div className="absolute inset-0 animate-pulse bg-muted" aria-hidden={true} />}
     </div>
   );
 });
 
 ImageLoader.displayName = "ImageLoader";
 
-export function HighlightsCarousel({
-  highlights,
-  className,
-}: HighlightsCarouselProps) {
+export function HighlightsCarousel({ highlights, className }: HighlightsCarouselProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleSelectImage = useCallback((index: number) => {
@@ -153,7 +145,7 @@ export function HighlightsCarousel({
                 "relative aspect-video h-20 shrink-0 overflow-hidden rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-main-dark-green focus:ring-offset-2",
                 index === selectedIndex
                   ? "ring-2 ring-main-dark-green opacity-100"
-                  : "opacity-60 hover:opacity-100"
+                  : "opacity-60 hover:opacity-100",
               )}
               aria-label={`Ver ${highlight.title}`}
               aria-pressed={index === selectedIndex}

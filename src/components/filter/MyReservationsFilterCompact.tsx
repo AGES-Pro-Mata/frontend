@@ -1,5 +1,5 @@
-import type { ReservationGroupStatusFilter } from '@/hooks/useMyReservations';
-import { useTranslation } from 'react-i18next';
+import type { ReservationGroupStatusFilter } from "@/hooks/reservations/useMyReservations";
+import { useTranslation } from "react-i18next";
 
 type ReservationGroupStatusFilterMap = Record<ReservationGroupStatusFilter, string>;
 
@@ -17,10 +17,10 @@ export function MyReservationsFilterCompact({
   const { t } = useTranslation();
 
   const STATUS_MAP: ReservationGroupStatusFilterMap = {
-    ALL: t('myReservationsFilter.status.all'),
-    APPROVED: t('myReservationsFilter.status.confirmed'),
-    CANCELED: t('myReservationsFilter.status.cancelled'),
-    PENDING: t('myReservationsFilter.status.waiting'),
+    ALL: t("myReservationsFilter.status.all"),
+    APPROVED: t("myReservationsFilter.status.confirmed"),
+    CANCELED: t("myReservationsFilter.status.cancelled"),
+    PENDING: t("myReservationsFilter.status.waiting"),
   };
 
   return (
@@ -33,7 +33,7 @@ export function MyReservationsFilterCompact({
         return (
           <button
             key={entryStatus}
-            className={`rounded-full ${entryStatus === status ? 'bg-card-light-active' : ''} py-1 ${entryStatus === status ? '' : 'hover:text-black/60 hover:cursor-pointer'}`}
+            className={`rounded-full ${entryStatus === status ? "bg-card-light-active" : ""} py-1 ${entryStatus === status ? "" : "hover:text-black/60 hover:cursor-pointer"}`}
             onClick={() => handleStatusChange(entryStatus as ReservationGroupStatusFilter)}
           >
             {text}

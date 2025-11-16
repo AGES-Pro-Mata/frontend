@@ -1,46 +1,48 @@
-import DataTable from '@/components/table';
-import { Typography } from '@/components/typography';
-import { Button } from '@/components/ui/button';
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import DataTable from "@/components/table";
+import { Typography } from "@/components/typography";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import type { TUserAdminRequestFilters } from '@/entities/user-admin-filters';
-import { useFilters } from '@/hooks/filters/filters';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { Edit, MoreHorizontal, Trash } from 'lucide-react';
-import { useFetchAdminUsers } from '../../../hooks/use-fetch-admin-users';
-
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { useDeleteUser } from '@/hooks/use-delete-users';
-import { type ChangeEvent, useState } from 'react';
-import { MoonLoader } from 'react-spinners';
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import type { TUserAdminRequestFilters } from "@/entities/user-admin-filters";
+import { useFilters } from "@/hooks/filters/filters";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Edit, MoreHorizontal, Trash } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { type ChangeEvent, useState } from "react";
+import { MoonLoader } from "react-spinners";
+import { useDeleteUser, useFetchAdminUsers } from "@/hooks";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
-  ['name']: 'Nome',
-  ['email']: 'Email',
-  ['createdBy']: 'Criador',
+  ["name"]: "Nome",
+  ["email"]: "Email",
+  ["createdBy"]: "Criador",
 } as const;
 
 type FilterKey = keyof typeof PLACE_HOLDER_TRANSLATE_TEXT;
 
-export const Route = createFileRoute('/admin/users/')({
+export const Route = createFileRoute("/admin/users/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const [selectedFilter, setSelectedFilter] = useState<FilterKey>('name');
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedFilter, setSelectedFilter] = useState<FilterKey>("name");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const {
     filters,
     setFilter,
     reset: resetFilters,
   } = useFilters<TUserAdminRequestFilters>({
-    key: 'get-admin-users',
+    key: "get-admin-users",
     initialFilters: {
       limit: 10,
       page: 0,
@@ -59,7 +61,7 @@ function RouteComponent() {
   const onChangeFilter = (value: FilterKey) => {
     if (!value) return;
     resetFilters();
-    setSearchTerm('');
+    setSearchTerm("");
     setSelectedFilter(value);
   };
 
@@ -68,37 +70,37 @@ function RouteComponent() {
   };
 
   const handleEditUserClick = (userId: string) => {
-    void navigate({ to: '/admin/users/$userId', params: { userId } });
+    void navigate({ to: "/admin/users/$userId", params: { userId } });
   };
 
   const navigateToCreateUser = () => {
-    void navigate({ to: '/admin/users/create' });
+    void navigate({ to: "/admin/users/create" });
   };
 
   const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
   const columns = [
     {
-      accessorKey: 'name',
-      header: 'Nome',
+      accessorKey: "name",
+      header: "Nome",
       enableSorting: true,
     },
     {
-      accessorKey: 'createdBy',
-      header: 'Criado por',
+      accessorKey: "createdBy",
+      header: "Criado por",
       enableSorting: true,
       cell: ({ row }: any) => {
         const createdBy = row.original.createdBy;
 
-        return createdBy?.name || '-';
+        return createdBy?.name || "-";
       },
     },
     {
-      accessorKey: 'email',
-      header: 'Email',
+      accessorKey: "email",
+      header: "Email",
       enableSorting: true,
     },
     {
-      id: 'actions',
+      id: "actions",
       enableHiding: false,
       size: 50,
       cell: ({ row }: any) => {
@@ -109,17 +111,17 @@ function RouteComponent() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => handleEditUserClick(row.original.id)}
+                onClick={() => void handleEditUserClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
-                {'Editar'}
+                {"Editar"}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => handleDeleteUserClick(row.original.id)}
+                onClick={() => void handleDeleteUserClick(row.original.id)}
                 className="cursor-pointer text-default-red gap-3"
               >
-                {'Excluir'}
+                {"Excluir"}
                 <Trash className="size-4 text-default-red" />
               </DropdownMenuItem>
             </DropdownMenuContent>

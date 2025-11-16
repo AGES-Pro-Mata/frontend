@@ -1,12 +1,24 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const useMutationMock = vi.fn();
 const useQueryClientMock = vi.fn();
 
-vi.mock("@tanstack/react-query", () => ({
-  useMutation: (...args: unknown[]) => useMutationMock(...args) as unknown,
-  useQueryClient: () => useQueryClientMock() as unknown,
-}));
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+
+  return {
+    ...actual,
+    useMutation: (
+      ...args: Parameters<typeof actual.useMutation>
+    ): ReturnType<typeof actual.useMutation> =>
+      useMutationMock(...args) as ReturnType<typeof actual.useMutation>,
+    useQueryClient: (): ReturnType<typeof actual.useQueryClient> =>
+      useQueryClientMock() as ReturnType<typeof actual.useQueryClient>,
+  };
+});
 
 const toggleExperienceStatusMock = vi.fn();
 
@@ -20,10 +32,10 @@ describe("useToggleExperienceStatus", () => {
   });
 
   it("should call useMutation with toggleExperienceStatus function", async () => {
-    const { useToggleExperienceStatus } = await import("@/hooks/useToggleExperienceStatus");
-    
+    const { useToggleExperienceStatus } = await import("@/hooks/");
+
     useToggleExperienceStatus();
-    
+
     expect(useMutationMock).toHaveBeenCalledWith({
       mutationFn: expect.any(Function),
       onSuccess: expect.any(Function),
@@ -31,15 +43,15 @@ describe("useToggleExperienceStatus", () => {
   });
 
   it("should call toggleExperienceStatus API when mutationFn is executed", async () => {
-    const { useToggleExperienceStatus } = await import("@/hooks/useToggleExperienceStatus");
-    
+    const { useToggleExperienceStatus } = await import("@/hooks/");
+
     useToggleExperienceStatus();
-    
+
     const mutationConfig = useMutationMock.mock.calls[0][0];
     const params = { experienceId: "test-id", active: true };
-    
+
     await mutationConfig.mutationFn(params);
-    
+
     expect(toggleExperienceStatusMock).toHaveBeenCalledWith("test-id", true);
   });
 
@@ -50,14 +62,14 @@ describe("useToggleExperienceStatus", () => {
       invalidateQueries: invalidateQueriesMock,
     });
 
-    const { useToggleExperienceStatus } = await import("@/hooks/useToggleExperienceStatus");
-    
+    const { useToggleExperienceStatus } = await import("@/hooks/");
+
     useToggleExperienceStatus();
-    
+
     const mutationConfig = useMutationMock.mock.calls[0][0];
-    
+
     await mutationConfig.onSuccess();
-    
+
     expect(invalidateQueriesMock).toHaveBeenCalledTimes(4);
     expect(invalidateQueriesMock).toHaveBeenCalledWith({ queryKey: ["experiences"] });
     expect(invalidateQueriesMock).toHaveBeenCalledWith({ queryKey: ["experience"] });

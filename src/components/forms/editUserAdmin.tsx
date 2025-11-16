@@ -2,13 +2,7 @@ import { Button } from "@/components/button/defaultButton";
 import { TextInput } from "@/components/input/textInput";
 import { Typography } from "@/components/typography/typography";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -19,9 +13,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { useGetAdminUser } from "@/hooks/use-get-admin-user";
-import { useCepQuery } from "@/hooks/useCepQuery";
-import { useUpdateAdminUser } from "@/hooks/useUpdateAdminUser";
 import { COUNTRIES } from "@/lib/countries";
 import {
   digitsOnly,
@@ -40,6 +31,7 @@ import { t } from "i18next";
 import type { UpdateUserAdminPayload } from "@/api/user";
 import { MoonLoader } from "react-spinners";
 import { appToast } from "../toast/toast";
+import { useCepQuery, useGetAdminUser, useUpdateAdminUser } from "@/hooks";
 
 const EditUserAdminSchema = z
   .object({
@@ -150,7 +142,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
         isAdmin: data?.isAdmin,
         isProfessor: data?.isProfessor,
       }),
-      [data]
+      [data],
     ),
   });
 
@@ -201,7 +193,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
     }
   }, [isForeign]);
 
-  const onSubmit = async (data: TEditUserAdminSchema) => {
+  const onSubmit = (data: TEditUserAdminSchema) => {
     const sanitizedPhone = digitsOnly(data.phone);
 
     // Hash password
@@ -209,23 +201,14 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
     const payload = {
       ...data,
       phone: sanitizedPhone,
-      document: data.document
-        ? isForeign
-          ? data.document
-          : maskCpf(data.document)
-        : undefined,
+      document: data.document ? (isForeign ? data.document : maskCpf(data.document)) : undefined,
       rg: data.rg ? data.rg : undefined,
-      userType: data.isAdmin
-        ? "ADMIN"
-        : data.isProfessor
-          ? "PROFESSOR"
-          : "GUEST",
+      userType: data.isAdmin ? "ADMIN" : data.isProfessor ? "PROFESSOR" : "GUEST",
       institution: data.isProfessor ? "PUCRS" : "",
     };
+
     if (data.isAdmin && data.isProfessor) {
-      return appToast.error(
-        "Um usuário não pode ser administrador e professor ao mesmo tempo."
-      );
+      return appToast.error("Um usuário não pode ser administrador e professor ao mesmo tempo.");
     }
     mutate(
       { id: userId, payload: payload as UpdateUserAdminPayload },
@@ -234,7 +217,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
           if (response.statusCode >= 200 && response.statusCode < 300) {
             form.reset();
             appToast.success("Usuário editado com sucesso", {});
-            navigate({ to: "/admin/users" });
+            void navigate({ to: "/admin/users" });
             setAutoFilled({ addressLine: false, city: false });
           } else {
             appToast.error("Erro ao editar usuário", {});
@@ -243,7 +226,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
         onError: () => {
           appToast.error("Erro ao editar usuário");
         },
-      }
+      },
     );
   };
 
@@ -342,12 +325,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <TextInput
-                    label="Telefone"
-                    required
-                    placeholder="(55) 99999-9999"
-                    {...field}
-                  />
+                  <TextInput label="Telefone" required placeholder="(55) 99999-9999" {...field} />
                   <FormMessage />
                 </FormItem>
               )}
@@ -361,12 +339,8 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                   <TextInput
                     label={isForeign ? "Passaporte" : "CPF"}
                     required
-                    placeholder={
-                      isForeign ? "Número do passaporte" : "XXX.XXX.XXX-XX"
-                    }
-                    value={
-                      isForeign ? field.value || "" : maskCpf(field.value || "")
-                    }
+                    placeholder={isForeign ? "Número do passaporte" : "XXX.XXX.XXX-XX"}
+                    value={isForeign ? field.value || "" : maskCpf(field.value || "")}
                     onChange={(e) => {
                       if (isForeign) {
                         field.onChange(e.target.value);
@@ -393,25 +367,16 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                       <Typography className="text-foreground font-medium mb-1">
                         {t("register.fields.gender.label")} *
                       </Typography>
-                      <Select
-                        value={field.value}
-                        onValueChange={(v) => field.onChange(v)}
-                      >
+                      <Select value={field.value} onValueChange={(v) => field.onChange(v)}>
                         <SelectTrigger>
-                          <SelectValue
-                            placeholder={t("register.fields.gender.select")}
-                          />
+                          <SelectValue placeholder={t("register.fields.gender.select")} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="female">
                             {t("register.fields.gender.female")}
                           </SelectItem>
-                          <SelectItem value="male">
-                            {t("register.fields.gender.male")}
-                          </SelectItem>
-                          <SelectItem value="other">
-                            {t("register.fields.gender.other")}
-                          </SelectItem>
+                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
+                          <SelectItem value="other">{t("register.fields.gender.other")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -469,14 +434,9 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium">
-                      País
-                    </Typography>
+                    <Typography className="text-foreground font-medium">País</Typography>
                     {isForeign ? (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o país" />
                         </SelectTrigger>
@@ -512,9 +472,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                     label="Endereço"
                     required
                     placeholder="Rua"
-                    disabled={
-                      isForeign || autoFilled.addressLine || isFetchingCep
-                    }
+                    disabled={isForeign || autoFilled.addressLine || isFetchingCep}
                     {...field}
                   />
                   <FormMessage />
@@ -564,10 +522,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-3">
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                     <FormLabel className="text-sm font-medium text-foreground">
                       Administrador
                     </FormLabel>
@@ -582,10 +537,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-3">
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                     <FormLabel className="text-sm font-medium text-foreground">
                       Professor PUCRS
                     </FormLabel>
@@ -597,15 +549,10 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
 
           <div className="flex justify-end pt-2 gap-2">
             <Link to="/admin/users">
-              <Button
-                type="button"
-                variant="ghost"
-                label="Voltar"
-                className="w-36"
-              />
+              <Button type="button" variant="ghost" label="Voltar" className="w-36" />
             </Link>
             <Button
-              onClick={handleSubmit}
+              onClick={void handleSubmit}
               variant="primary"
               className="w-36"
               label="Salvar"

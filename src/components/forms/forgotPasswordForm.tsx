@@ -2,14 +2,7 @@ import { Typography } from "@/components/typography/typography";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import { useForgotPasswordMutation } from "@/hooks/useForgotPasswordMutation";
+import { Form, FormDescription, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { TextInput } from "@/components/input/textInput";
 import { Link } from "@tanstack/react-router";
 import { AuthCard } from "@/components/auth/authcard";
@@ -17,6 +10,7 @@ import { Button } from "@/components/button/defaultButton";
 import { useTranslation } from "react-i18next";
 import { appToast } from "@/components/toast/toast";
 import { useEffect, useMemo, useRef } from "react";
+import { useForgotPasswordMutation } from "@/hooks";
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
@@ -30,16 +24,12 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
       z.object({
         email: z.email(t("validation.email")),
       }),
-    [t]
+    [t],
   );
 
   type FormData = z.infer<typeof formSchema>;
 
-  const form = useForm<
-    z.input<typeof formSchema>,
-    any,
-    z.output<typeof formSchema>
-  >({
+  const form = useForm<z.input<typeof formSchema>, any, z.output<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
@@ -79,7 +69,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
         onError: () => {
           appToast.error(t("auth.forgot.resultError"));
         },
-      }
+      },
     );
   };
 
@@ -92,7 +82,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs">
               <FormField
@@ -116,10 +106,11 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
           </div>
           {mutation.isSuccess && mutation.data && (
             <div
-              className={`text-sm rounded p-2 border ${mutation.data.statusCode != 500
+              className={`text-sm rounded p-2 border ${
+                mutation.data.statusCode != 500
                   ? "text-contrast-green bg-contrast-green/4 border-contrast-green"
                   : "text-default-red bg-default-red/4 border-default-red"
-                }`}
+              }`}
             >
               {mutation.data.statusCode != 500
                 ? t("auth.forgot.resultSuccess")
@@ -131,21 +122,13 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
               type="submit"
               disabled={mutation.isPending}
               className="w-full sm:w-56"
-              label={
-                mutation.isPending
-                  ? t("auth.forgot.submitting")
-                  : t("auth.forgot.submit")
-              }
+              label={mutation.isPending ? t("auth.forgot.submitting") : t("auth.forgot.submit")}
             />
             <Link
               to="/auth/login"
               className="w-full sm:w-56 text-on-banner-text cursor-pointer text-center block"
             >
-              <Button
-                variant="ghost"
-                className="w-full"
-                label={t("common.back")}
-              />
+              <Button variant="ghost" className="w-full" label={t("common.back")} />
             </Link>
           </div>
         </form>

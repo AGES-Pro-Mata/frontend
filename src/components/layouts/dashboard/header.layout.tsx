@@ -16,7 +16,7 @@ import { useIsAdmin, userQueryOptions } from "@/api/user";
 import CartButton from "@/components/button/cartButton";
 import { HeaderButton } from "@/components/button/headerButton";
 import { useQuery } from "@tanstack/react-query";
-import { useLogout } from "@/hooks/useLogout";
+import { useLogout } from "@/hooks";
 import { MoonLoader } from "react-spinners";
 import { useTranslation } from "react-i18next";
 import LanguageSelect from "@/components/button/languageSelector";

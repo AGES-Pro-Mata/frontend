@@ -9,6 +9,7 @@ interface UseCepQueryOptions {
 export function useCepQuery(cep: string, options: UseCepQueryOptions = {}) {
   const { enabled = true } = options;
   const cleanCep = digitsOnly(cep || "");
+
   return useQuery({
     queryKey: ["cep", cleanCep],
     queryFn: () => fetchAddressByZip(cleanCep),

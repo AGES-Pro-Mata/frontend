@@ -3,8 +3,6 @@ import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva} from "class-variance-authority";
 import { Building2, FileText, Inbox, PanelLeftIcon, Presentation, UserPlus } from "lucide-react";
 import { Link, useMatchRoute } from "@tanstack/react-router";
-
-import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { Typography } from "../typography";
+import { useIsMobile } from "@/hooks/shared/useMobile";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
