@@ -692,7 +692,6 @@ export const Route = createFileRoute("/(index)/reserve/finish/")({
     const currentUser = await getCurrentUserRequest();
     
     if (!currentUser) {
-      appToast.error("Você deve logar primeiro para criar uma reserva");
       throw redirect({ 
         to: "/auth/login",
         search: { redirect: "/reserve/finish" }
@@ -703,7 +702,6 @@ export const Route = createFileRoute("/(index)/reserve/finish/")({
     const cartState = useCartStore.getState();
 
     if (!cartState.items || cartState.items.length === 0) {
-      appToast.error("Seu carrinho está vazio. Adicione experiências antes de finalizar a reserva.");
       throw redirect({ to: "/" });
     }
   },

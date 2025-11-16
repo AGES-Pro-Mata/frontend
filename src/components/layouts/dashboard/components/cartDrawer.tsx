@@ -50,7 +50,7 @@ export const CartDrawer = () => {
     const currentUser = await getCurrentUserRequest();
     
     if (!currentUser) {
-      appToast.error("Você deve logar primeiro para criar uma reserva");
+      appToast.error(t("cartDrawer.toasts.loginRequired"));
       closeCart();
       void navigate({ to: "/auth/login", search: { redirect: "/reserve/finish" } });
 
