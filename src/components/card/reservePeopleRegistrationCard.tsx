@@ -21,7 +21,7 @@ type PeopleRegistrationStepProps = {
   onPersonChange: <K extends keyof PersonForm>(
     personId: string,
     field: K,
-    value: PersonForm[K]
+    value: PersonForm[K],
   ) => void;
   onAddPerson: () => void;
   onRemovePerson: (personId: string) => void;
@@ -50,7 +50,7 @@ export function PeopleRegistrationStep({
         {t("reserveFlow.peopleStep.buttons.addPerson")}
       </span>
     ),
-    [t]
+    [t],
   );
 
   return (
@@ -64,33 +64,28 @@ export function PeopleRegistrationStep({
           {people.map((person, index) => (
             <section
               key={person.id}
-              className="rounded-2xl border border-dark-gray/20 bg-soft-white p-5 shadow-xs"
+              className="rounded-2xl border border-dark-gray/20 bg-soft-white p-5 pt-0 shadow-xs"
             >
-              <header className="flex justify-end">
+              <div className="flex items-center justify-between gap-3">
+                <ReserveParticipantInputs
+                  className="mt-5"
+                  person={person}
+                  disabled={shouldDisableForms}
+                  onFieldChange={(field, value) => onPersonChange(person.id, field, value)}
+                />
                 {people.length > 1 && !shouldDisableForms && (
                   <Button
                     variant="ghost"
                     size="icon"
                     label={<Trash2 className="h-5 w-5" />}
                     onClick={() => onRemovePerson(person.id)}
-                    aria-label={t(
-                      "reserveFlow.peopleStep.buttons.removePersonAria",
-                      {
-                        index: index + 1,
-                      }
-                    )}
+                    aria-label={t("reserveFlow.peopleStep.buttons.removePersonAria", {
+                      index: index + 1,
+                    })}
                     className="ml-auto text-default-red hover:bg-default-red/10"
                   />
                 )}
-              </header>
-              <ReserveParticipantInputs
-                className="mt-5"
-                person={person}
-                disabled={shouldDisableForms}
-                onFieldChange={(field, value) =>
-                  onPersonChange(person.id, field, value)
-                }
-              />
+              </div>
             </section>
           ))}
         </div>
@@ -106,17 +101,12 @@ export function PeopleRegistrationStep({
         />
 
         <section className="flex flex-col gap-4 rounded-2xl border border-dark-gray/20 bg-soft-white p-5 shadow-xs">
-          <Label
-            htmlFor="post-confirmation"
-            className="gap-3 text-sm font-medium text-foreground"
-          >
+          <Label htmlFor="post-confirmation" className="gap-3 text-sm font-medium text-foreground">
             <Checkbox
               id="post-confirmation"
               checked={allowPostConfirmation}
               className="hover:cursor-pointer"
-              onCheckedChange={(checked) =>
-                onToggleAllowPostConfirmation(checked === true)
-              }
+              onCheckedChange={(checked) => onToggleAllowPostConfirmation(checked === true)}
             />
             <span className="select-none">
               {t("reserveFlow.peopleStep.postConfirmation.label")}

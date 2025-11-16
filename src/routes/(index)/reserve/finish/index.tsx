@@ -60,6 +60,16 @@ function createEmptyPerson(): PersonForm {
   return { id, name: "", phone: "", birthDate: "", document: "", gender: "" };
 }
 
+function toNonNegativeNumber(value: unknown): number {
+  const parsed = Number(value ?? 0);
+
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return 0;
+  }
+
+  return parsed;
+}
+
 function ReserveFlow() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -192,6 +202,80 @@ function ReserveFlow() {
     [participantSchema],
   );
 
+  const participantGenderStats = useMemo(() => {
+    if (allowPostConfirmation) {
+      return { male: 0, female: 0, total: 0 };
+    }
+
+    return people.reduce(
+      (acc, person) => {
+        if (!isPersonValidBySchema(person)) {
+          return acc;
+        }
+
+        const gender = (person.gender ?? "").toUpperCase();
+
+        if (gender === "FEMALE") {
+          acc.female += 1;
+        } else if (["MALE", "OTHER", "NOT_INFORMED"].includes(gender)) {
+          acc.male += 1;
+        }
+
+        acc.total = acc.male + acc.female;
+
+        return acc;
+      },
+      { male: 0, female: 0, total: 0 },
+    );
+  }, [allowPostConfirmation, isPersonValidBySchema, people]);
+
+  const hasRegisteredParticipants = participantGenderStats.total > 0;
+
+  const experienceRequirementsMet = useMemo(() => {
+    if (!normalizedCartExperiences.length) {
+      return false;
+    }
+
+    return normalizedCartExperiences.every((experience) => {
+      if (!experience.experienceId) {
+        return false;
+      }
+
+      const adjustment = experienceAdjustments.find(
+        (item) => item.experienceId === experience.experienceId,
+      );
+
+      if (!adjustment) {
+        return false;
+      }
+
+      const men = toNonNegativeNumber(adjustment.men);
+      const women = toNonNegativeNumber(adjustment.women);
+      const total = men + women;
+
+      if (total < 1) {
+        return false;
+      }
+
+      if (hasRegisteredParticipants) {
+        if (men < participantGenderStats.male) {
+          return false;
+        }
+
+        if (women < participantGenderStats.female) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [
+    experienceAdjustments,
+    hasRegisteredParticipants,
+    normalizedCartExperiences,
+    participantGenderStats,
+  ]);
+
   const isPersonPartial = (p: PersonForm) => isPersonStarted(p) && !isPersonValidBySchema(p);
 
   const canGoNextFromPeople = useMemo(() => {
@@ -298,16 +382,6 @@ function ReserveFlow() {
       return;
     }
 
-    const toNonNegativeNumber = (value: unknown) => {
-      const parsed = Number(value ?? 0);
-
-      if (!Number.isFinite(parsed) || parsed < 0) {
-        return 0;
-      }
-
-      return parsed;
-    };
-
     const adjustmentEntries: ReservationAdjustmentPayload[] = experienceAdjustments
       .filter(
         (adjustment): adjustment is ExperienceTuningData & { experienceId: string } =>
@@ -340,7 +414,6 @@ function ReserveFlow() {
       return null;
     };
 
-    const defaultMembersCount = resValid.value.length;
     const reservationsPayload: ReservationPayload[] = [];
     const summaryExperiences: ReserveSummaryExperience[] = [];
 
@@ -365,21 +438,51 @@ function ReserveFlow() {
         return;
       }
 
-      const totalFromAdjustment = adjustment ? adjustment.men + adjustment.women : null;
+      if (!adjustment) {
+        appToast.error(
+          t("reserveFlow.validation.invalidExperienceParticipants", {
+            title: experienceTitle,
+          }),
+        );
+        setCurrentStep(2);
 
-      const membersCount =
-        totalFromAdjustment != null && totalFromAdjustment > 0
-          ? totalFromAdjustment
-          : allowPostConfirmation
-            ? 0
-            : defaultMembersCount;
+        return;
+      }
+
+      const menCount = toNonNegativeNumber(adjustment.men);
+      const womenCount = toNonNegativeNumber(adjustment.women);
+      const membersCount = menCount + womenCount;
+
+      if (membersCount < 1) {
+        appToast.error(
+          t("reserveFlow.validation.invalidExperienceParticipants", {
+            title: experienceTitle,
+          }),
+        );
+        setCurrentStep(2);
+
+        return;
+      }
+
+      if (hasRegisteredParticipants) {
+        if (menCount < participantGenderStats.male || womenCount < participantGenderStats.female) {
+          appToast.error(
+            t("reserveFlow.validation.invalidExperienceParticipants", {
+              title: experienceTitle,
+            }),
+          );
+          setCurrentStep(2);
+
+          return;
+        }
+      }
 
       reservationsPayload.push({
         experienceId: experience.id,
         startDate,
         endDate,
         membersCount,
-        adjustments: adjustment ? [adjustment] : [],
+        adjustments: [adjustment],
       });
 
       const priceValue = Number(experience.price ?? 0);
@@ -446,8 +549,10 @@ function ReserveFlow() {
     experienceAdjustments,
     extractErrorMessage,
     hasExperiences,
+    hasRegisteredParticipants,
     navigate,
     notes,
+    participantGenderStats,
     people,
     setReservationSummary,
     t,
@@ -490,12 +595,13 @@ function ReserveFlow() {
         onClick={() => {
           void submitReservation();
         }}
-        disabled={isSubmitting || !hasExperiences}
+        disabled={isSubmitting || !hasExperiences || !experienceRequirementsMet}
         className="sm:w-auto"
       />,
     ];
   }, [
     currentStep,
+    experienceRequirementsMet,
     goToStep,
     hasExperiences,
     isSubmitting,

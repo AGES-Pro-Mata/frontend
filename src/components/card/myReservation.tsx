@@ -5,6 +5,7 @@ import { ModalPessoas } from "@/components/modals/peopleModal";
 import { CancelReservationModal } from "@/components/modals/cancelReservationModal";
 import { PaymentProofModal } from "@/components/modals/paymentProofModal";
 import { useTranslation } from "react-i18next";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   type ReservationStatus,
   StatusEnum,
@@ -14,6 +15,7 @@ import CanvasCard from "@/components/card/canvasCard";
 import CardStatus from "@/components/card/cardStatus";
 import { Button } from "@/components/button/defaultButton";
 import type { Reservation, ReservationGroupStatus } from "@/hooks/reservations/useMyReservations";
+import { ReservationInfoCard } from "@/components/card/reservationInfoCard";
 
 export type Person = {
   nome: string;
@@ -65,6 +67,7 @@ export default function ReservaCard({
   const [openModalCancel, setOpenModalCancel] = useState(false);
   const [openModalPessoas, setOpenModalPessoas] = useState(false);
   const [openModalComprovante, setOpenModalComprovante] = useState(false);
+  const [openViewReservation, setOpenViewReservation] = useState(false);
   const handleOpenModalPessoas = (open: boolean) => {
     if (open) {
       setDraftPessoas(pessoas.map((p) => ({ ...p })));
@@ -100,6 +103,10 @@ export default function ReservaCard({
   const { className: statusAccent, icon: statusIcon } =
     getReservationStatusStyle(reservationStatus);
   const statusLabel = t(`status.${reservationStatus}`);
+
+  const handleViewReservation = () => {
+    setOpenViewReservation(true);
+  };
 
   return (
     <>
@@ -178,7 +185,7 @@ export default function ReservaCard({
               )}
 
               <Button
-                onClick={() => toast.info(t("reservation.openingReservationDetails"))}
+                onClick={handleViewReservation}
                 className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
                 label={t("reservation.viewReservation")}
               />
@@ -210,6 +217,12 @@ export default function ReservaCard({
           toast.success(t("reservation.paymentProofSent"));
         }}
       />
+
+      <Dialog open={openViewReservation} onOpenChange={setOpenViewReservation}>
+        <DialogContent className="!max-w-none w-[90vw] h-[87vh] bg-white rounded-xl shadow-lg p-6 overflow-y-auto">
+          <ReservationInfoCard reservationId={id} className="mt-3"/>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

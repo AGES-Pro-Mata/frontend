@@ -6,10 +6,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const useMutationMock = vi.fn();
 const useQueryClientMock = vi.fn();
 
-vi.mock("@tanstack/react-query", () => ({
-  useMutation: (...args: unknown[]) => useMutationMock(...args) as unknown,
-  useQueryClient: () => useQueryClientMock() as unknown,
-}));
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+
+  return {
+    ...actual,
+    useMutation: (
+      ...args: Parameters<typeof actual.useMutation>
+    ): ReturnType<typeof actual.useMutation> =>
+      useMutationMock(...args) as ReturnType<typeof actual.useMutation>,
+    useQueryClient: (): ReturnType<typeof actual.useQueryClient> =>
+      useQueryClientMock() as ReturnType<typeof actual.useQueryClient>,
+  };
+});
 
 const deleteExperienceMock = vi.fn();
 

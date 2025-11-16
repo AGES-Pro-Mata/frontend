@@ -106,7 +106,7 @@ type ExperienceTuningMock = {
 
 type HookReturn = ExperienceTuningMock;
 
-vi.mock("@/hooks/useExperienceTuning", () => ({
+vi.mock("@/hooks/experiences/useExperienceTuning", () => ({
   useExperienceTuning: vi.fn(),
 }));
 
