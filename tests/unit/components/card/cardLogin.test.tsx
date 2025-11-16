@@ -29,7 +29,7 @@ vi.mock("@tanstack/react-router", async () => {
 });
 
 // Mock do useLogin hook
-vi.mock("@/hooks/useLogin", () => ({
+vi.mock("@/hooks/auth/useLogin", () => ({
   useLogin: () => ({
     mutate: vi.fn(),
     isPending: false,

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import AdminRequests from "@/components/table/adminRequests";
 import type { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
-import { useAdminRequests as mockUseAdminRequests } from "@/hooks/";
+import { useAdminRequests as mockUseAdminRequests } from "@/hooks/reservations/useAdminRequests";
 
 interface Request {
   id: string;
@@ -184,7 +184,7 @@ vi.mock("@/components/table/index", () => {
 });
 
 // Mock do hook useAdminRequests
-vi.mock("@/hooks/useAdminRequests", () => {
+vi.mock("@/hooks/reservations/useAdminRequests", () => {
   const approveMutationMock: ApproveMutation = {
     mutate: vi.fn(),
     isPending: false,

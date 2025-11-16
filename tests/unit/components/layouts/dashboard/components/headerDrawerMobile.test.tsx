@@ -23,7 +23,7 @@ vi.mock("@tanstack/react-query", async () => {
   };
 });
 
-vi.mock("@/hooks/useLogout", () => ({
+vi.mock("@/hooks/auth/useLogout", () => ({
   useLogout: () => ({ logout: mockLogout }),
 }));
 
