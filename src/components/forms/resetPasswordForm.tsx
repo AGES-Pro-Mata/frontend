@@ -11,29 +11,48 @@ import { useResetPasswordMutation } from "@/hooks/useResetPasswordMutation";
 import { appToast } from "@/components/toast/toast";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-
-const formSchema = z
-  .object({
-    password: z
-      .string()
-      .min(6, "validation.passwordMin" as unknown as string)
-      .regex(/[A-Z]/, "validation.passwordUpper" as unknown as string)
-      .regex(/\d/, "validation.passwordNumber" as unknown as string),
-    confirm: z.string(),
-  })
-  .refine((data) => data.password === data.confirm, {
-    message: "validation.passwordsMustMatch" as unknown as string,
-    path: ["confirm"],
-  });
-
-type FormData = z.infer<typeof formSchema>;
+import { useMemo, useEffect, useRef } from "react";
 
 export function ResetPasswordForm({ token }: { token: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const formSchema = useMemo(
+    () =>
+      z
+        .object({
+          password: z
+            .string()
+            .min(8, t("validation.passwordMin"))
+            .regex(/[A-Z]/, t("validation.passwordUpper"))
+            .regex(/\d/, t("validation.passwordNumber")),
+          confirm: z.string(),
+        })
+        .refine((data) => data.password === data.confirm, {
+          message: t("validation.passwordsMustMatch"),
+          path: ["confirm"],
+        }),
+    [i18n.language]
+  );
+
+  type FormData = z.infer<typeof formSchema>;
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { password: "", confirm: "" },
   });
+
+  const didMountLang = useRef(false);
+  useEffect(() => {
+    form.clearErrors();
+    form.trigger();
+    if (!didMountLang.current) {
+      didMountLang.current = true;
+      return;
+    }
+    const fields = Object.keys(form.formState.errors);
+    if (fields.length > 0) {
+      void form.trigger(fields as (keyof FormData)[]);
+    }
+  }, [i18n.language]);
 
   const mutation = useResetPasswordMutation();
   const navigate = useNavigate();
