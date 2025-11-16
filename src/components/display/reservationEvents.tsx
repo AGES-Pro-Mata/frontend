@@ -1,81 +1,85 @@
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import React from "react";
+import dayjs from "dayjs";
+import type { TEventsReservationRequestAdminResponse } from "@/entities/reservation-request-response";
+import {
+  RESERVATIONS_ADMIN_REQUESTS_QUERY_KEY,
+  useGetReservationsAdminRequest,
+} from "@/hooks/requests/use-get-reservation-request";
+import {
+  REQUESTS_ACTIONS_BUTTONS_ORDER,
+  REQUESTS_ACTIONS_LABEL,
+  REQUESTS_LABEL,
+} from "@/utils/consts/requests-consts";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { RequestsType } from "@/utils/enums/requests-enum";
+import { Button } from "../button/defaultButton";
 
-export type ReservationEvent = {
-  id: string;
-  user: "Usuário" | "Você";
-  status: string;
-  date: string;
-  time: string;
-  avatarUrl?: string;
-};
+import { CreateRequestsRequest } from "@/entities/create-requests-request";
+import type z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormField, FormItem, FormMessage } from "../ui/form";
+import { useCreateAdminRequest } from "@/hooks/requests/use-create-request-admin";
+import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 
 export interface ReservationsLayoutProps {
-  events: ReservationEvent[];
-  className?: string;
+  reservationGroupId: string;
 }
 
-export function ReservationCard({ event }: { event: ReservationEvent }) {
-  const isSelf = event.user === "Você";
-  const statusLines = event.status.split('\n');
+export function ReservationCard({ event }: { event: TEventsReservationRequestAdminResponse }) {
+  const isSelf = event.isSender;
+  const date = dayjs(event.createdAt).format("DD/MM/YYYY");
+  const time = dayjs(event.createdAt).format("HH:mm");
 
-  const isRecusada = event.status.includes("recusada");
-  const userColor = isSelf
-    ? "text-green-600"
-    : isRecusada
-    ? "text-red-600"
-    : "text-green-700";
+  const userColor = "text-green-700";
 
   return (
     <div className={cn("flex", isSelf ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "rounded-xl border shadow-md px-4 py-3 max-w-md",
-          isSelf ? "bg-blue-100 border-blue-200" : "bg-white border-gray-200"
+          "rounded-xl flex flex-col border-[0.5px] border-black shadow-md px-4 py-3 w-[55%] gap-2",
+          isSelf ? "bg-blue-100" : "bg-white",
         )}
       >
         <div className="flex justify-between items-baseline">
-          <p className={cn("font-bold", userColor)}>
-            {event.user}
+          <p className={cn("", { "font-bold": isSelf }, userColor)}>
+            {event.name} {`(${event.email})`}
           </p>
-          <span className="text-xs text-gray-500 ml-4">{event.date}</span>
+          <span className="text-xs text-gray-500 ml-4">{date}</span>
         </div>
 
-        <div className="mt-1">
-          {statusLines.map((line, index) => (
-            <p
-              key={index}
-              className={cn({
-                "text-base font-semibold": index === 0,
-                "text-red-600": index === 0 && isRecusada,
-                "text-black": index === 0 && !isRecusada,
-                "text-sm text-gray-700 italic mt-1": index > 0,
-              })}
-            >
-              {line}
-            </p>
-          ))}
-        </div>
-
-        <div className="text-left text-xs text-gray-500 mt-1">
-          <span>{event.time}</span>
+        <p className="font-semibold text-lg">{REQUESTS_LABEL[event.status ?? ""]}</p>
+        {event.description && <p className="text-sm">{event.description}</p>}
+        <div className="flex justify-between items-center">
+          <div className="text-left text-xs text-gray-500">
+            <span>{time}</span>
+          </div>
+          {event.isRequester && <span className="text-red-500">{"(Solicitante)"}</span>}
         </div>
       </div>
     </div>
   );
 }
 
-// TODO: Fazer os botões funcionarem
 export function ReservationEvents({
   events,
-  className,
 }: {
-  events: ReservationEvent[];
-  className?: string;
+  events: TEventsReservationRequestAdminResponse[];
 }) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const container = containerRef.current;
+
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [events]);
+
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
+    <div ref={containerRef} className={cn("overflow-y-auto flex p-6 h-full flex-col gap-4")}>
       {events.map((event) => (
         <ReservationCard key={event.id} event={event} />
       ))}
@@ -83,54 +87,108 @@ export function ReservationEvents({
   );
 }
 
-export function ReservationsLayout({ events }: ReservationsLayoutProps) {
+export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutProps) {
+  const queryClient = useQueryClient();
+  const { data } = useGetReservationsAdminRequest(reservationGroupId);
+  const { mutateAsync, isPending } = useCreateAdminRequest();
+  const date = dayjs(data?.createdAt).format("DD/MM/YYYY HH:mm");
+  const form = useForm<
+    z.input<typeof CreateRequestsRequest>,
+    z.output<typeof CreateRequestsRequest>
+  >({
+    resolver: zodResolver(CreateRequestsRequest),
+    defaultValues: {
+      reservationGroupId,
+      type: undefined,
+      description: "",
+    },
+  });
+
+  const handleSubmitForm = form.handleSubmit(async (formData) => {
+    await mutateAsync(formData).then(async ({ data }) => {
+      form.reset({
+        reservationGroupId,
+        type: undefined,
+        description: undefined,
+      });
+      await queryClient.refetchQueries({
+        queryKey: [RESERVATIONS_ADMIN_REQUESTS_QUERY_KEY, data.reservationGroupId],
+      });
+    });
+  });
+
+  if (!data) return;
+
   return (
-    <div className="rounded-2xl border-2 shadow-lg w-full max-w-4xl mx-auto overflow-hidden">
-      <div className="flex flex-row items-center justify-between border-b px-6 py-4">
+    <div className="rounded-2xl border-[0.5px] border-black shadow-lg w-full mx-auto overflow-hidden">
+      <div className="flex flex-row items-center justify-between border-b-[0.5px] border-black px-6 py-4">
         <div className="text-xl font-bold text-gray-800">Ações da reserva</div>
-        <span className="text-sm text-gray-500">
-          Data de envio: 13/11/2025
-        </span>
-      </div>
-      <div className="p-6 h-[400px] overflow-y-auto">
-        <ReservationEvents events={events} />
-      </div>
-      <div className="border-t-2 bg-white px-6 py-4">
-        <div className="flex gap-4 mb-4 flex-wrap">
-          <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold">
-            SOLICITAR PAGAMENTO
-          </Button>
-          <Button
-            variant="outline"
-            className="text-gray-700 border-gray-300 hover:bg-gray-100 font-semibold"
-          >
-            SOLICITAR USUÁRIO
-          </Button>
-          <Button
-            variant="outline"
-            className="text-gray-700 border-gray-300 hover:bg-gray-100 font-semibold"
-          >
-            RECUSAR RESERVA
-          </Button>
-          <Button
-            variant="outline"
-            className="text-gray-700 border-gray-300 hover:bg-gray-100 font-semibold"
-          >
-            ACEITAR RESERVA
-          </Button>
+        <div>
+          Status:{" "}
+          <span className="text-lg font-bold text-gray-800">
+            {REQUESTS_LABEL[data.status ?? ""]}
+          </span>
         </div>
-        <div className="flex items-center gap-2">
-          <Input
-            placeholder="Digite para o usuário"
-            className="flex-grow rounded-md border-gray-300 focus-visible:ring-offset-0 focus-visible:ring-2 focus-visible:ring-green-500 h-12"
-          />
-          <Button
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg h-10 w-24"
-          >
-            ENVIAR
-          </Button>
-        </div>
+        <span className="text-sm text-gray-500">Data de criação: {date}</span>
       </div>
+      <div className="h-[500px]">
+        <ReservationEvents events={data.events} />
+      </div>
+      {data.status !== RequestsType.CANCELED && (
+        <div className="flex flex-col border-t-[0.5px] border-black bg-white px-6 py-4 gap-4 w-full">
+          <Form {...form}>
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <ToggleGroup
+                    type="single"
+                    value={field.value}
+                    className="gap-2 w-full"
+                    onValueChange={(action: RequestsType) => field.onChange(action)}
+                  >
+                    {REQUESTS_ACTIONS_BUTTONS_ORDER[data.status].map((action, index) => (
+                      <ToggleGroupItem
+                        key={index}
+                        value={action}
+                        className="border-1 !rounded-2xl border-black h-12 !w-full data-[state=on]:bg-contrast-green data-[state=on]:text-white"
+                      >
+                        {REQUESTS_ACTIONS_LABEL[action]}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex items-center gap-2">
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <Input
+                      onChange={(value) => field.onChange(value)}
+                      value={field.value}
+                      placeholder="Digite para o usuário"
+                      className="flex-grow rounded-md border-gray-300 focus-visible:ring-offset-0 focus-visible:ring-2 focus-visible:ring-green-500 h-12"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                className="text-white font-semibold px-4 py-2 rounded-lg h-10 w-24"
+                label={"ENVIAR"}
+                onClick={() => void handleSubmitForm()}
+                disabled={isPending}
+              />
+            </div>
+          </Form>
+        </div>
+      )}
     </div>
   );
 }
