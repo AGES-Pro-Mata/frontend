@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 
@@ -25,6 +25,7 @@ import { useReservationSummaryStore } from "@/store/reservationSummaryStore";
 import { translateExperienceCategory } from "@/utils/translateExperienceCategory";
 import { digitsOnly, isValidCpf, maskCpf, maskPhone } from "@/lib/utils";
 import { z } from "zod";
+import { getCurrentUserRequest } from "@/api/user";
 import { useCreateGroupReservation } from "@/hooks";
 
 type PersonForm = ReserveParticipantDraft;
@@ -686,4 +687,22 @@ function ReserveFlow() {
 
 export const Route = createFileRoute("/(index)/reserve/finish/")({
   component: ReserveFlow,
+  beforeLoad: async () => {
+    // Verificar se o usuário está autenticado
+    const currentUser = await getCurrentUserRequest();
+    
+    if (!currentUser) {
+      throw redirect({ 
+        to: "/auth/login",
+        search: { redirect: "/reserve/finish" }
+      });
+    }
+
+    // Verificar se o carrinho tem itens
+    const cartState = useCartStore.getState();
+
+    if (!cartState.items || cartState.items.length === 0) {
+      throw redirect({ to: "/" });
+    }
+  },
 });

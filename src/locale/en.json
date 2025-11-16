@@ -41,7 +41,10 @@
         },
         "checkoutButton": "Finish Reservation",
         "browseLink": "See more experiences",
-        "closeButtonAria": "Close cart"
+        "closeButtonAria": "Close cart",
+        "toasts": {
+            "loginRequired": "You must log in before creating a reservation."
+        }
     },
     "cartItem": {
         "capacity_one": "{{count}} person",
@@ -401,7 +404,8 @@
             }
         },
         "toast": {
-            "success": "Reservation updated successfully!"
+            "success": "Reservation updated successfully!",
+            "loginRequired": "You must log in before creating a reservation."
         }
     },
     "reserveSummary": {

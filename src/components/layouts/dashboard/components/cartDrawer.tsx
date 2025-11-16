@@ -10,11 +10,14 @@ import { Button } from "@/components/button/defaultButton";
 import { useCartStore } from "@/store/cartStore";
 import { X } from "lucide-react";
 import { useMemo } from "react";
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { getCurrentUserRequest } from "@/api/user";
+import { appToast } from "@/components/toast/toast";
 
 export const CartDrawer = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const isOpen = useCartStore((state) => state.isOpen);
   const items = useCartStore((state) => state.items);
@@ -36,6 +39,28 @@ export const CartDrawer = () => {
 
     return t("cartDrawer.heading.plural", { count: itemCount });
   }, [itemCount, t]);
+
+  const handleCheckoutClick = async () => {
+    // Verificar se o carrinho está vazio
+    if (itemCount === 0) {
+      return;
+    }
+
+    // Verificar se o usuário está autenticado
+    const currentUser = await getCurrentUserRequest();
+    
+    if (!currentUser) {
+      appToast.error(t("cartDrawer.toasts.loginRequired"));
+      closeCart();
+      void navigate({ to: "/auth/login", search: { redirect: "/reserve/finish" } });
+
+      return;
+    }
+
+    // Se tudo estiver ok, navegar para a página de finalização
+    closeCart();
+    void navigate({ to: "/reserve/finish" });
+  };
 
   return (
     <Drawer
@@ -94,18 +119,12 @@ export const CartDrawer = () => {
           </div>
 
           <div className="mt-2 flex flex-col gap-3 border-t border-banner pt-4">
-            <Link
-              to="/reserve/finish"
-              onClick={() => {
-                closeCart();
-              }}
-            >
-              <Button
-                className="w-full justify-center rounded-full py-3"
-                disabled={itemCount === 0}
-                label={<span>{t("cartDrawer.checkoutButton")}</span>}
-              />
-            </Link>
+            <Button
+              className="w-full justify-center rounded-full py-3"
+              disabled={itemCount === 0}
+              label={<span>{t("cartDrawer.checkoutButton")}</span>}
+              onClick={() => void handleCheckoutClick()}
+            />
             <span
               className="text-center text-sm font-semibold text-main-dark-green transition-colors hover:text-main-dark-green/80 cursor-pointer"
               onClick={closeCart}
