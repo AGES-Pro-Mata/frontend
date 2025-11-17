@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ExperienceCategoryCard, type ExperienceDTO } from "@/types/experience";
 import { resolveImageUrl } from "@/utils/resolveImageUrl";
 import { useTranslation } from "react-i18next";
-import { useLoadImage } from "@/hooks/useLoadImage";
+import { useLoadImage } from "@/hooks/shared/useLoadImage";
 
 export interface CartItemProps {
   experience: ExperienceDTO;

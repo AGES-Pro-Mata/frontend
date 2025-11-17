@@ -41,7 +41,10 @@
         },
         "checkoutButton": "Finish Reservation",
         "browseLink": "See more experiences",
-        "closeButtonAria": "Close cart"
+        "closeButtonAria": "Close cart",
+        "toasts": {
+            "loginRequired": "You must log in before creating a reservation."
+        }
     },
     "cartItem": {
         "capacity_one": "{{count}} person",
@@ -183,11 +186,11 @@
     },
     "homeCards": {
         "cta": "Learn more",
-        "laboratorys": {
+        "labs": {
             "title": "Laboratories",
             "description": "Spaces equipped for scientific research and academic projects."
         },
-        "hostings": {
+        "rooms": {
             "title": "Rooms",
             "description": "Comfortable spaces for academic and tourist lodging."
         },
@@ -401,7 +404,8 @@
             }
         },
         "toast": {
-            "success": "Reservation updated successfully!"
+            "success": "Reservation updated successfully!",
+            "loginRequired": "You must log in before creating a reservation."
         }
     },
     "reserveSummary": {
@@ -419,7 +423,11 @@
                 "cpf": "CPF",
                 "gender": "Gender"
             },
-            "notes": "Reservation notes"
+            "notes": "Reservation notes",
+            "emptyNotes": "No notes added",
+            "notesPlaceholder": "Add any important notes about the reservation",
+            "emptyPerson": "No participants data added",
+            "count": "Participants count: {{count}}"
         },
         "experiences": {
             "title": "Experiences",

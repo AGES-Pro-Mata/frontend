@@ -93,40 +93,51 @@ export function maskDateBR(v: string) {
   const p1 = d.slice(0, 2);
   const p2 = d.slice(2, 4);
   const p3 = d.slice(4, 8);
+
   if (d.length <= 2) return p1;
   if (d.length <= 4) return `${p1}/${p2}`;
+
   return `${p1}/${p2}/${p3}`;
 }
 
 export function toIsoFromBR(v: string) {
   const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec((v || "").trim());
+
   if (!m) return "";
   const [, dd, mm, yyyy] = m;
   const y = Number(yyyy),
     mo = Number(mm),
     d = Number(dd);
+
   if (y < 1900 || y > new Date().getFullYear()) return "";
   if (mo < 1 || mo > 12) return "";
   const lastDay = new Date(y, mo, 0).getDate();
+
   if (d < 1 || d > lastDay) return "";
+
   return `${yyyy}-${mm}-${dd}`;
 }
 
 export function toBRForDisplay(v: string) {
   const iso = (v || "").trim();
   const isoMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+
   if (isoMatch) {
     const [, y, m, d] = isoMatch;
+
     return `${d}/${m}/${y}`;
   }
+
   return maskDateBR(v || "");
 }
 
 export function isoToDate(iso: string): Date | undefined {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((iso || "").trim());
+
   if (!m) return undefined;
   const [, y, mo, d] = m;
   const dt = new Date(Number(y), Number(mo) - 1, Number(d));
+
   return isNaN(dt.getTime()) ? undefined : dt;
 }
 
@@ -134,5 +145,6 @@ export function dateToIso(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
+
   return `${y}-${m}-${d}`;
 }

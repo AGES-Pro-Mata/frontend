@@ -2,7 +2,7 @@ import { memo, useCallback, useState } from "react";
 
 import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
-import { useLoadImage } from "@/hooks/useLoadImage";
+import { useLoadImage } from "@/hooks";
 
 import {
   DESTINATIONS,

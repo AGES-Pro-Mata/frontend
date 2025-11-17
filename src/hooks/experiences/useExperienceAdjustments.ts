@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { api } from "@/core/api";
 import type { RawExperienceAdjustment } from "@/types/experience-adjustments";
-
-import { useCurrentUserProfile } from "./useCurrentUser";
+import { useCurrentUserProfile } from "../users";
 
 type ExperienceAdjustmentsResponse =
 	| RawExperienceAdjustment[]

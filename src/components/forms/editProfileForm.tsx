@@ -11,16 +11,14 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { type FC, useEffect, useRef, useState } from "react";
-import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUpdateUser } from "@/hooks/useUpdateUser";
 import { digitsOnly, maskCep, maskPhone } from "@/lib/utils";
 import { appToast } from "@/components/toast/toast";
-import { useCepQuery } from "@/hooks/useCepQuery";
 import { useTranslation } from "react-i18next";
+import { useCepQuery, useCurrentUserProfile, useUpdateUser } from "@/hooks";
 
 // Normalize multiple backend gender variants into consistent internal values
 function normalizeGender(raw?: string | null): string {
@@ -30,15 +28,7 @@ function normalizeGender(raw?: string | null): string {
   if (["m", "male", "masculino"].includes(g)) return "male";
   if (["f", "female", "feminino"].includes(g)) return "female";
   if (
-    [
-      "o",
-      "other",
-      "outro",
-      "nao-binario",
-      "não-binário",
-      "nao binario",
-      "não binario",
-    ].includes(g)
+    ["o", "other", "outro", "nao-binario", "não-binário", "nao binario", "não binario"].includes(g)
   )
     return "other";
 
@@ -109,7 +99,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
       number: mapped?.number ? String(mapped.number) : "",
       city: mapped?.city || "",
       institution: mapped?.institution || "",
-      function: (mapped as any)?.function || "",
+      function: mapped?.function || "",
       wantsDocencyRegistration: false,
       isForeign: !!mapped?.isForeign,
     },
@@ -168,9 +158,8 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
       number: mapped.number ? String(mapped.number) : "",
       city: mapped.city || "",
       institution: mapped.institution || "",
-      function: (mapped as any)?.function || form.getValues("function") || "",
-      wantsDocencyRegistration:
-        form.getValues("wantsDocencyRegistration") || false,
+      function: mapped?.function || form.getValues("function") || "",
+      wantsDocencyRegistration: form.getValues("wantsDocencyRegistration") || false,
       isForeign: form.getValues("isForeign") || false,
     });
     didSetInitialValues.current = true;
@@ -191,9 +180,8 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
     };
     // If user requested docency and has provided a document (institution changed or not verified) include file
     const wantsDocency = data.wantsDocencyRegistration;
-    const institutionChanged =
-      (data.institution || "") !== (originalInstitutionRef.current || "");
-    const file = (data as any).docencyDocument as File | undefined;
+    const institutionChanged = (data.institution || "") !== (originalInstitutionRef.current || "");
+    const file = data.docencyDocument;
 
     if (wantsDocency && file && (institutionChanged || !verified)) {
       // Build multipart form data manually
@@ -203,7 +191,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
         if (v !== undefined && v !== null) formData.append(k, String(v));
       });
       formData.append("teacherDocument", file);
-      mutate(formData as any, {
+      mutate(formData as never, {
         onSuccess: (res) => {
           if (res.statusCode >= 200 && res.statusCode < 300) {
             appToast.success(t("profile.edit.toasts.success"));
@@ -235,7 +223,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
     <CanvasCard className="w-full max-w-[clamp(40rem,82vw,980px)] mx-auto p-8 sm:p-12 bg-card shadow-md rounded-[20px]">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit((data) => submit(data))}
+          onSubmit={void form.handleSubmit((data) => submit(data))}
           className="flex flex-col gap-8"
           noValidate
         >
@@ -243,10 +231,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
             <Typography className="text-[clamp(1.9rem,4vw,2.4rem)] font-bold text-on-banner-text m-0">
               {t("profile.edit.title")}
             </Typography>
-            <Typography
-              variant="body"
-              className="text-center text-foreground/80"
-            >
+            <Typography variant="body" className="text-center text-foreground/80">
               {t("profile.edit.subtitle")}
             </Typography>
           </header>
@@ -318,25 +303,16 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                       <Typography className="text-foreground font-medium mb-1">
                         {t("register.fields.gender.label")} *
                       </Typography>
-                      <Select
-                        value={field.value}
-                        onValueChange={(v) => field.onChange(v)}
-                      >
+                      <Select value={field.value} onValueChange={(v) => field.onChange(v)}>
                         <SelectTrigger>
-                          <SelectValue
-                            placeholder={t("register.fields.gender.select")}
-                          />
+                          <SelectValue placeholder={t("register.fields.gender.select")} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="female">
                             {t("register.fields.gender.female")}
                           </SelectItem>
-                          <SelectItem value="male">
-                            {t("register.fields.gender.male")}
-                          </SelectItem>
-                          <SelectItem value="other">
-                            {t("register.fields.gender.other")}
-                          </SelectItem>
+                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
+                          <SelectItem value="other">{t("register.fields.gender.other")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -404,9 +380,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                         label={t("register.fields.address")}
                         required={!isForeign}
                         placeholder={t("register.fields.addressPlaceholder")}
-                        disabled={
-                          isForeign || autoFilled.addressLine || isFetchingCep
-                        }
+                        disabled={isForeign || autoFilled.addressLine || isFetchingCep}
                         {...field}
                       />
                       <FormMessage className="text-default-red text-xs" />
@@ -425,9 +399,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                       <TextInput
                         label={t("register.fields.country")}
                         required
-                        placeholder={
-                          isForeign ? t("register.fields.country") : "Brasil"
-                        }
+                        placeholder={isForeign ? t("register.fields.country") : "Brasil"}
                         value={field.value || (isForeign ? "" : "Brasil")}
                         disabled={!isForeign}
                         onChange={(e) => field.onChange(e.target.value)}
@@ -512,14 +484,9 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                       <Typography className="text-foreground font-medium mb-1">
                         {t("register.fields.function.label")}
                       </Typography>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger>
-                          <SelectValue
-                            placeholder={t("register.fields.function.select")}
-                          />
+                          <SelectValue placeholder={t("register.fields.function.select")} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="student">
@@ -556,10 +523,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                       checked={!!field.value}
                       onCheckedChange={(c) => field.onChange(!!c)}
                     />
-                    <label
-                      htmlFor="docency"
-                      className="text-sm text-foreground"
-                    >
+                    <label htmlFor="docency" className="text-sm text-foreground">
                       {t("register.fields.docency.ask")}
                     </label>
                   </div>
@@ -573,8 +537,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                 name="docencyDocument"
                 render={({ field: { value, onChange, ...rest } }) => {
                   const institutionChanged =
-                    (form.watch("institution") || "") !==
-                    (originalInstitutionRef.current || "");
+                    (form.watch("institution") || "") !== (originalInstitutionRef.current || "");
                   const canUpload = institutionChanged || !verified;
 
                   return (
@@ -604,7 +567,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
                           {value && (
                             <Typography className="text-sm text-contrast-green">
                               {t("register.fields.docency.uploaded", {
-                                name: (value).name,
+                                name: value.name,
                               })}
                             </Typography>
                           )}

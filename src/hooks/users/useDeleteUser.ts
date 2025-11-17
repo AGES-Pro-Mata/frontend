@@ -1,6 +1,6 @@
 import { deleteUser } from "@/api/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ADMIN_USERS_QUERY_KEY } from "./use-fetch-admin-users";
+import { ADMIN_USERS_QUERY_KEY } from "./useFetchAdminUsers";
 
 export const DELETE_USER_MUTATION_KEY = ["deleteUser"];
 
