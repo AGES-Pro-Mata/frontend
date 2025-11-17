@@ -536,15 +536,21 @@
     "copyright": "© {{year}} PRÓ-MATA. Todos os direitos reservados."
   },
   "paymentProof": {
-    "selectBeforeSend": "Selecione um arquivo antes de enviar!",
-    "instructions": "Envie o comprovante de pagamento para confirmar a reserva",
-    "acceptedProofs": "Hoje, aceitamos os seguintes comprovantes:",
-    "ted": "TED: BANCO",
-    "pix": "PIX: CHAVEPIX",
-    "sendProofWithValue": "Envie o comprovante com o valor de",
-    "paymentProofLabel": "Comprovante de Pagamento",
-    "chooseFile": "Escolher arquivo",
-    "noFileSelected": "Nenhum arquivo selecionado"
+  "selectBeforeSend": "Selecione um arquivo antes de enviar!",
+  "instructions": "Envie o comprovante de pagamento para confirmar a reserva",
+  "acceptedProofs": "Hoje, aceitamos os seguintes comprovantes:",
+  "ted": "TED: BANCO",
+  "pix": "PIX: CHAVEPIX",
+  "sendProofWithValue": "Envie o comprovante com o valor de",
+  "paymentProofLabel": "Comprovante de Pagamento",
+  "chooseFile": "Escolher arquivo",
+  "noFileSelected": "Nenhum arquivo selecionado",
+  "sendError": "Falha ao enviar o comprovante.",
+  "sendSuccess": "Comprovante enviado com sucesso!",
+  "genericError": "Erro ao enviar comprovante.",
+  "placeholder": "Cole aqui o link do comprovante...",
+  "button": "Enviar comprovante",
+  "emptyUrl": "Por favor, insira o link do comprovante."
   },
   "cancelReservation": {
     "title": "Cancelar reserva?",

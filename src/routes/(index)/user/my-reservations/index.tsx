@@ -14,6 +14,7 @@ import { type Key, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MoonLoader } from "react-spinners";
 import { toast } from "sonner";
+import { sendPaymentProof } from "@/api/my-reservations";
 
 export const Route = createFileRoute("/(index)/user/my-reservations/")({
   component: RouteComponent,
@@ -54,22 +55,17 @@ function RouteComponent() {
   }
 
   const handleUploadProof = async (id: string, url: string) => {
-    if (!url.trim()) return toast.error("Por favor, insira o link do comprovante.");
+    if (!url.trim()) return toast.error(t("paymentProof.emptyUrl"));
 
     try {
-      const response = await fetch(`/api/reservation/group/${id}/receipt`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
+      await sendPaymentProof(id, url);
 
-      if (!response.ok) throw new Error("Falha ao enviar o comprovante.");
-
-      toast.success("Comprovante enviado com sucesso!");
+      toast.success(t("paymentProof.sendSuccess"));
     } catch (error: any) {
-      toast.error(error.message || "Erro ao enviar comprovante.");
+      toast.error(error.message || t("paymentProof.genericError"));
     }
   };
+
 
   function UploadProofButton({ id }: { id: string }) {
     const [url, setUrl] = useState("");
@@ -80,13 +76,13 @@ function RouteComponent() {
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="Cole aqui o link do comprovante..."
+          placeholder={t("paymentProof.placeholder")}
           className="text-sm w-full rounded-lg border border-input bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         />
         <Button
           type="button"
           variant="primary"
-          label="Enviar comprovante"
+          label={t("paymentProof.button")}
           onClick={() => handleUploadProof(id, url)}
         />
       </div>

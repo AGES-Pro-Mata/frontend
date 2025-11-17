@@ -80,6 +80,23 @@
             "outdoorLab": "Outdoor Lab"
         }
     },
+    "paymentProof": {
+    "selectBeforeSend": "Select a file before sending!",
+    "instructions": "Send the payment proof to confirm your reservation",
+    "acceptedProofs": "We currently accept the following proofs:",
+    "ted": "Wire Transfer: BANK",
+    "pix": "PIX: PIXKEY",
+    "sendProofWithValue": "Send the proof with the amount of",
+    "paymentProofLabel": "Payment Proof",
+    "chooseFile": "Choose file",
+    "noFileSelected": "No file selected",
+    "sendError": "Failed to send the receipt.",
+    "sendSuccess": "Receipt successfully uploaded!",
+    "genericError": "Error uploading receipt.",
+    "placeholder": "Paste the receipt link here...",
+    "button": "Upload receipt",
+    "emptyUrl": "Please enter the receipt link."
+    },
     "myReservationsFilter": {
         "searchPlaceholder": "Search reservations...",
         "searchAriaLabel": "Search reservations",
