@@ -5,7 +5,7 @@ import { Typography } from "@/components/typography/typography";
 import { type HomeCard, type HomeCardId, homeCards } from "@/content/cardsInfo";
 import { cn } from "@/lib/utils";
 import type { HighlightResponse } from "@/api/highlights";
-import { useLoadImage } from "@/hooks/useLoadImage";
+import { useLoadImage } from "@/hooks/shared/useLoadImage";
 
 interface TranslatedCard extends HomeCard {
   title: string;

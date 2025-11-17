@@ -1,27 +1,27 @@
-import { api } from '@/core/api';
-import { type UseQueryResult, useQuery } from '@tanstack/react-query';
-import type { AxiosError } from 'axios';
+import { api } from "@/core/api";
+import { type UseQueryResult, useQuery } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 
 export type ReservationGroupStatus =
-  | 'CREATED'
-  | 'CANCELED'
-  | 'CANCELED_REQUESTED'
-  | 'EDITED'
-  | 'REJECTED'
-  | 'APPROVED'
-  | 'PEOPLE_REQUESTED'
-  | 'PAYMENT_REQUESTED'
-  | 'PEOPLE_SENT'
-  | 'PAYMENT_SENT'
-  | 'DOCUMENT_REQUESTED'
-  | 'DOCUMENT_APPROVED'
-  | 'DOCUMENT_REJECTED';
+  | "CREATED"
+  | "CANCELED"
+  | "CANCELED_REQUESTED"
+  | "EDITED"
+  | "REJECTED"
+  | "APPROVED"
+  | "PEOPLE_REQUESTED"
+  | "PAYMENT_REQUESTED"
+  | "PEOPLE_SENT"
+  | "PAYMENT_SENT"
+  | "DOCUMENT_REQUESTED"
+  | "DOCUMENT_APPROVED"
+  | "DOCUMENT_REJECTED";
 
 interface Member {
   id: string;
   name: string;
   document: string | null;
-  gender: 'Male' | 'Female' | 'Other';
+  gender: "Male" | "Female" | "Other";
   createdAt: string;
   updatedAt: string;
   active: boolean;
@@ -32,7 +32,7 @@ interface User {
   name: string;
   phone: string;
   document: string | null;
-  gender: 'Male' | 'Female' | 'Other';
+  gender: "Male" | "Female" | "Other";
 }
 
 interface ExperienceImage {
@@ -69,9 +69,9 @@ interface ReservationGroup {
   endDate: string;
 }
 
-export type ReservationGroupStatusFilter = 'APPROVED' | 'CANCELED' | 'PENDING' | 'ALL';
+export type ReservationGroupStatusFilter = "APPROVED" | "CANCELED" | "PENDING" | "ALL";
 
-export const MY_RESERVATION_KEY = 'myReservations';
+export const MY_RESERVATION_KEY = "myReservations";
 
 export function useMyReservations(
   status: ReservationGroupStatusFilter,
@@ -80,13 +80,13 @@ export function useMyReservations(
     queryKey: [MY_RESERVATION_KEY, status],
     queryFn: async () => {
       return (
-        await api.get<ReservationGroup[]>('/reservation/group/user', {
+        await api.get<ReservationGroup[]>("/reservation/group/user", {
           params: { status },
         })
       ).data;
     },
-    staleTime: 15 * 1000,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    gcTime: 15 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 }

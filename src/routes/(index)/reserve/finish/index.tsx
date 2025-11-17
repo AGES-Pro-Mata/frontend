@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 
@@ -8,7 +8,6 @@ import { ReserveStepLayout } from "@/components/layouts/reserve/ReserveStepLayou
 import { PeopleRegistrationStep } from "@/components/card/reservePeopleRegistrationCard";
 import { ExperienceAdjustmentsStep } from "@/components/card/experienceAdjustmentsStepCard";
 import { appToast } from "@/components/toast/toast";
-import { useCreateGroupReservation } from "@/hooks/useCreateGroupReservation";
 import type { ExperienceTuningData } from "@/types/experience";
 import type {
   GroupReservationParticipantPayload,
@@ -26,6 +25,8 @@ import { useReservationSummaryStore } from "@/store/reservationSummaryStore";
 import { translateExperienceCategory } from "@/utils/translateExperienceCategory";
 import { digitsOnly, isValidCpf, maskCpf, maskPhone } from "@/lib/utils";
 import { z } from "zod";
+import { getCurrentUserRequest } from "@/api/user";
+import { useCreateGroupReservation } from "@/hooks";
 
 type PersonForm = ReserveParticipantDraft;
 type StepId = 1 | 2;
@@ -60,6 +61,16 @@ function createEmptyPerson(): PersonForm {
   return { id, name: "", phone: "", birthDate: "", document: "", gender: "" };
 }
 
+function toNonNegativeNumber(value: unknown): number {
+  const parsed = Number(value ?? 0);
+
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return 0;
+  }
+
+  return parsed;
+}
+
 function ReserveFlow() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -68,16 +79,12 @@ function ReserveFlow() {
   const [people, setPeople] = useState<PersonForm[]>([createEmptyPerson()]);
   const [allowPostConfirmation, setAllowPostConfirmation] = useState(false);
   const [notes, setNotes] = useState("");
-  const [experienceAdjustments, setExperienceAdjustments] = useState<
-    ExperienceTuningData[]
-  >([]);
+  const [experienceAdjustments, setExperienceAdjustments] = useState<ExperienceTuningData[]>([]);
   const createReservation = useCreateGroupReservation();
   const isSubmitting = createReservation.isPending;
   const cartExperiences = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
-  const setReservationSummary = useReservationSummaryStore(
-    (state) => state.setSummary
-  );
+  const setReservationSummary = useReservationSummaryStore((state) => state.setSummary);
   const hasExperiences = cartExperiences.length > 0;
 
   useEffect(() => {
@@ -85,18 +92,14 @@ function ReserveFlow() {
       const filtered = prev.filter(
         (adjustment) =>
           adjustment.experienceId &&
-          cartExperiences.some(
-            (experience) => experience.id === adjustment.experienceId
-          )
+          cartExperiences.some((experience) => experience.id === adjustment.experienceId),
       );
 
       return filtered.length === prev.length ? prev : filtered;
     });
   }, [cartExperiences]);
 
-  const normalizedCartExperiences = useMemo<
-    NormalizedExperienceAdjustment[]
-  >(() => {
+  const normalizedCartExperiences = useMemo<NormalizedExperienceAdjustment[]>(() => {
     if (!cartExperiences.length) {
       return [];
     }
@@ -122,7 +125,7 @@ function ReserveFlow() {
       type: translateExperienceCategory(
         experience.category,
         t,
-        t("reserveFlow.experienceStep.fallbackDefaults.type")
+        t("reserveFlow.experienceStep.fallbackDefaults.type"),
       ),
       period: {
         start: resolveDate(experience.startDate ?? null),
@@ -166,11 +169,8 @@ function ReserveFlow() {
   type ParticipantSchemaOutput = z.infer<typeof participantSchema>;
 
   const peopleSchema = useMemo(
-    () =>
-      z
-        .array(participantSchema)
-        .min(1, t("reserveFlow.validation.fillRequired")),
-    [participantSchema, t]
+    () => z.array(participantSchema).min(1, t("reserveFlow.validation.fillRequired")),
+    [participantSchema, t],
   );
 
   const steps = useMemo(
@@ -188,7 +188,7 @@ function ReserveFlow() {
         subtitle: t("reserveFlow.steps.experiences.subtitle"),
       },
     ],
-    [t]
+    [t],
   );
   const totalSteps = steps.length;
   const activeStep = steps[currentStep - 1];
@@ -196,17 +196,88 @@ function ReserveFlow() {
   const goToStep = useCallback((step: StepId) => setCurrentStep(step), []);
 
   const isPersonStarted = (p: PersonForm) =>
-    (p.name || p.phone || p.birthDate || p.document || p.gender || "")
-      .toString()
-      .trim() !== "";
+    (p.name || p.phone || p.birthDate || p.document || p.gender || "").toString().trim() !== "";
 
   const isPersonValidBySchema = useCallback(
     (p: PersonForm) => participantSchema.safeParse(p).success,
-    [participantSchema]
+    [participantSchema],
   );
 
-  const isPersonPartial = (p: PersonForm) =>
-    isPersonStarted(p) && !isPersonValidBySchema(p);
+  const participantGenderStats = useMemo(() => {
+    if (allowPostConfirmation) {
+      return { male: 0, female: 0, total: 0 };
+    }
+
+    return people.reduce(
+      (acc, person) => {
+        if (!isPersonValidBySchema(person)) {
+          return acc;
+        }
+
+        const gender = (person.gender ?? "").toUpperCase();
+
+        if (gender === "FEMALE") {
+          acc.female += 1;
+        } else if (["MALE", "OTHER", "NOT_INFORMED"].includes(gender)) {
+          acc.male += 1;
+        }
+
+        acc.total = acc.male + acc.female;
+
+        return acc;
+      },
+      { male: 0, female: 0, total: 0 },
+    );
+  }, [allowPostConfirmation, isPersonValidBySchema, people]);
+
+  const hasRegisteredParticipants = participantGenderStats.total > 0;
+
+  const experienceRequirementsMet = useMemo(() => {
+    if (!normalizedCartExperiences.length) {
+      return false;
+    }
+
+    return normalizedCartExperiences.every((experience) => {
+      if (!experience.experienceId) {
+        return false;
+      }
+
+      const adjustment = experienceAdjustments.find(
+        (item) => item.experienceId === experience.experienceId,
+      );
+
+      if (!adjustment) {
+        return false;
+      }
+
+      const men = toNonNegativeNumber(adjustment.men);
+      const women = toNonNegativeNumber(adjustment.women);
+      const total = men + women;
+
+      if (total < 1) {
+        return false;
+      }
+
+      if (hasRegisteredParticipants) {
+        if (men < participantGenderStats.male) {
+          return false;
+        }
+
+        if (women < participantGenderStats.female) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [
+    experienceAdjustments,
+    hasRegisteredParticipants,
+    normalizedCartExperiences,
+    participantGenderStats,
+  ]);
+
+  const isPersonPartial = (p: PersonForm) => isPersonStarted(p) && !isPersonValidBySchema(p);
 
   const canGoNextFromPeople = useMemo(() => {
     if (!hasExperiences) return false;
@@ -221,20 +292,17 @@ function ReserveFlow() {
       const firstIssue = err.issues[0];
       const rawIndex = firstIssue?.path?.[0];
       const index = (typeof rawIndex === "number" ? rawIndex : 0) + 1;
-      const message =
-        firstIssue?.message ?? t("reserveFlow.validation.fillRequired");
+      const message = firstIssue?.message ?? t("reserveFlow.validation.fillRequired");
 
       return t("reserveFlow.validation.personIssue", { index, message });
     },
-    [t]
+    [t],
   );
 
   const validatePeopleOrToast = useCallback(
     (
-      allowEmptyBecausePostConfirm: boolean
-    ):
-      | { ok: true; value: GroupReservationParticipantPayload[] }
-      | { ok: false } => {
+      allowEmptyBecausePostConfirm: boolean,
+    ): { ok: true; value: GroupReservationParticipantPayload[] } | { ok: false } => {
       if (allowEmptyBecausePostConfirm) {
         const emptyParticipants: GroupReservationParticipantPayload[] = [];
 
@@ -249,19 +317,20 @@ function ReserveFlow() {
         return { ok: false };
       }
 
-      const normalizedParticipants: GroupReservationParticipantPayload[] =
-        parsed.data.map((participant) => ({
+      const normalizedParticipants: GroupReservationParticipantPayload[] = parsed.data.map(
+        (participant) => ({
           name: participant.name.trim(),
           phone: participant.phone,
           birthDate: participant.birthDate,
           cpf: participant.document,
           document: participant.document,
           gender: participant.gender,
-        }));
+        }),
+      );
 
       return { ok: true, value: normalizedParticipants };
     },
-    [firstIssueMessageFromZodErrors, people, peopleSchema]
+    [firstIssueMessageFromZodErrors, people, peopleSchema],
   );
 
   const handleNextFromPeople = useCallback(() => {
@@ -276,31 +345,17 @@ function ReserveFlow() {
     }
 
     goToStep(2);
-  }, [
-    allowPostConfirmation,
-    goToStep,
-    hasExperiences,
-    t,
-    validatePeopleOrToast,
-  ]);
+  }, [allowPostConfirmation, goToStep, hasExperiences, t, validatePeopleOrToast]);
 
   const extractErrorMessage = useCallback((error: unknown): string | null => {
     if (isAxiosError(error)) {
-      const data = error.response?.data as
-        | { message?: string }
-        | string
-        | null
-        | undefined;
+      const data = error.response?.data as { message?: string } | string | null | undefined;
 
       if (typeof data === "string" && data.trim().length > 0) {
         return data;
       }
 
-      if (
-        data &&
-        typeof data === "object" &&
-        typeof data.message === "string"
-      ) {
+      if (data && typeof data === "object" && typeof data.message === "string") {
         return data.message;
       }
     }
@@ -328,37 +383,21 @@ function ReserveFlow() {
       return;
     }
 
-    const toNonNegativeNumber = (value: unknown) => {
-      const parsed = Number(value ?? 0);
+    const adjustmentEntries: ReservationAdjustmentPayload[] = experienceAdjustments
+      .filter(
+        (adjustment): adjustment is ExperienceTuningData & { experienceId: string } =>
+          typeof adjustment.experienceId === "string" && adjustment.experienceId.length > 0,
+      )
+      .map((adjustment) => ({
+        experienceId: adjustment.experienceId,
+        men: toNonNegativeNumber(adjustment.men),
+        women: toNonNegativeNumber(adjustment.women),
+        from: adjustment.from,
+        to: adjustment.to,
+        savedAt: adjustment.savedAt,
+      }));
 
-      if (!Number.isFinite(parsed) || parsed < 0) {
-        return 0;
-      }
-
-      return parsed;
-    };
-
-    const adjustmentEntries: ReservationAdjustmentPayload[] =
-      experienceAdjustments
-        .filter(
-          (
-            adjustment
-          ): adjustment is ExperienceTuningData & { experienceId: string } =>
-            typeof adjustment.experienceId === "string" &&
-            adjustment.experienceId.length > 0
-        )
-        .map((adjustment) => ({
-          experienceId: adjustment.experienceId,
-          men: toNonNegativeNumber(adjustment.men),
-          women: toNonNegativeNumber(adjustment.women),
-          from: adjustment.from,
-          to: adjustment.to,
-          savedAt: adjustment.savedAt,
-        }));
-
-    const adjustmentsById = new Map(
-      adjustmentEntries.map((entry) => [entry.experienceId, entry])
-    );
+    const adjustmentsById = new Map(adjustmentEntries.map((entry) => [entry.experienceId, entry]));
 
     const normalizeDateString = (value?: string | Date | null) => {
       if (!value) return null;
@@ -376,7 +415,6 @@ function ReserveFlow() {
       return null;
     };
 
-    const defaultMembersCount = resValid.value.length;
     const reservationsPayload: ReservationPayload[] = [];
     const summaryExperiences: ReserveSummaryExperience[] = [];
 
@@ -387,41 +425,65 @@ function ReserveFlow() {
         ? rawTitle
         : t("reserveFlow.validation.unknownExperience");
 
-      const startDate = normalizeDateString(
-        adjustment?.from ?? experience.startDate ?? null
-      );
-      const endDate = normalizeDateString(
-        adjustment?.to ?? experience.endDate ?? null
-      );
+      const startDate = normalizeDateString(adjustment?.from ?? experience.startDate ?? null);
+      const endDate = normalizeDateString(adjustment?.to ?? experience.endDate ?? null);
 
       if (!startDate || !endDate) {
         appToast.error(
           t("reserveFlow.validation.missingExperienceDates", {
             title: experienceTitle,
-          })
+          }),
         );
         setCurrentStep(2);
 
         return;
       }
 
-      const totalFromAdjustment = adjustment
-        ? adjustment.men + adjustment.women
-        : null;
+      if (!adjustment) {
+        appToast.error(
+          t("reserveFlow.validation.invalidExperienceParticipants", {
+            title: experienceTitle,
+          }),
+        );
+        setCurrentStep(2);
 
-      const membersCount =
-        totalFromAdjustment != null && totalFromAdjustment > 0
-          ? totalFromAdjustment
-          : allowPostConfirmation
-            ? 0
-            : defaultMembersCount;
+        return;
+      }
+
+      const menCount = toNonNegativeNumber(adjustment.men);
+      const womenCount = toNonNegativeNumber(adjustment.women);
+      const membersCount = menCount + womenCount;
+
+      if (membersCount < 1) {
+        appToast.error(
+          t("reserveFlow.validation.invalidExperienceParticipants", {
+            title: experienceTitle,
+          }),
+        );
+        setCurrentStep(2);
+
+        return;
+      }
+
+      if (hasRegisteredParticipants) {
+        if (menCount < participantGenderStats.male || womenCount < participantGenderStats.female) {
+          appToast.error(
+            t("reserveFlow.validation.invalidExperienceParticipants", {
+              title: experienceTitle,
+            }),
+          );
+          setCurrentStep(2);
+
+          return;
+        }
+      }
 
       reservationsPayload.push({
         experienceId: experience.id,
         startDate,
         endDate,
         membersCount,
-        adjustments: adjustment ? [adjustment] : [],
+        adjustments: [adjustment],
       });
 
       const priceValue = Number(experience.price ?? 0);
@@ -439,8 +501,7 @@ function ReserveFlow() {
     const summaryParticipants: ReserveParticipant[] = allowPostConfirmation
       ? []
       : resValid.value.map((participant, index) => {
-          const fallbackId =
-            people[index]?.id ?? `${participant.document}-${index}`;
+          const fallbackId = people[index]?.id ?? `${participant.document}-${index}`;
 
           return {
             id: fallbackId,
@@ -489,8 +550,10 @@ function ReserveFlow() {
     experienceAdjustments,
     extractErrorMessage,
     hasExperiences,
+    hasRegisteredParticipants,
     navigate,
     notes,
+    participantGenderStats,
     people,
     setReservationSummary,
     t,
@@ -533,12 +596,13 @@ function ReserveFlow() {
         onClick={() => {
           void submitReservation();
         }}
-        disabled={isSubmitting || !hasExperiences}
+        disabled={isSubmitting || !hasExperiences || !experienceRequirementsMet}
         className="sm:w-auto"
       />,
     ];
   }, [
     currentStep,
+    experienceRequirementsMet,
     goToStep,
     hasExperiences,
     isSubmitting,
@@ -552,17 +616,14 @@ function ReserveFlow() {
   const handlePersonChange = <K extends keyof PersonForm>(
     personId: string,
     field: K,
-    value: PersonForm[K]
+    value: PersonForm[K],
   ) => {
     setPeople((prev) =>
-      prev.map((person) =>
-        person.id === personId ? { ...person, [field]: value } : person
-      )
+      prev.map((person) => (person.id === personId ? { ...person, [field]: value } : person)),
     );
   };
 
-  const handleAddPerson = () =>
-    setPeople((prev) => [...prev, createEmptyPerson()]);
+  const handleAddPerson = () => setPeople((prev) => [...prev, createEmptyPerson()]);
 
   const handleRemovePerson = (personId: string) => {
     setPeople((prev) => {
@@ -571,10 +632,7 @@ function ReserveFlow() {
 
       if (indexToRemove === -1) return prev;
 
-      return [
-        ...prev.slice(0, indexToRemove),
-        ...prev.slice(indexToRemove + 1),
-      ];
+      return [...prev.slice(0, indexToRemove), ...prev.slice(indexToRemove + 1)];
     });
   };
 
@@ -585,8 +643,7 @@ function ReserveFlow() {
       if (hasPartial) {
         const parsed = peopleSchema.safeParse(people);
 
-        if (!parsed.success)
-          appToast.error(firstIssueMessageFromZodErrors(parsed.error));
+        if (!parsed.success) appToast.error(firstIssueMessageFromZodErrors(parsed.error));
 
         return;
       }
@@ -630,4 +687,22 @@ function ReserveFlow() {
 
 export const Route = createFileRoute("/(index)/reserve/finish/")({
   component: ReserveFlow,
+  beforeLoad: async () => {
+    // Verificar se o usuário está autenticado
+    const currentUser = await getCurrentUserRequest();
+    
+    if (!currentUser) {
+      throw redirect({ 
+        to: "/auth/login",
+        search: { redirect: "/reserve/finish" }
+      });
+    }
+
+    // Verificar se o carrinho tem itens
+    const cartState = useCartStore.getState();
+
+    if (!cartState.items || cartState.items.length === 0) {
+      throw redirect({ to: "/" });
+    }
+  },
 });
