@@ -3,7 +3,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { useLogin } from "@/hooks/useLogin";
 import { TextInput } from "@/components/input/textInput";
 import { PasswordInput } from "@/components/input/passwordInput";
 import { Link } from "@tanstack/react-router";
@@ -12,6 +11,7 @@ import { Button } from "@/components/button/defaultButton";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
+import { useLogin } from "@/hooks";
 
 export function LoginForm() {
   const { t, i18n } = useTranslation();
@@ -63,10 +63,7 @@ export function LoginForm() {
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
       <Form {...form}>
-        <form
-          onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
-          className="space-y-4"
-        >
+        <form onSubmit={(event) => void form.handleSubmit(onSubmit)(event)} className="space-y-4">
           <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs">
               <FormField
@@ -122,19 +119,11 @@ export function LoginForm() {
               type="submit"
               disabled={mutation.isPending}
               className="w-full sm:w-56"
-              label={
-                mutation.isPending
-                  ? t("auth.login.submitting")
-                  : t("auth.login.submit")
-              }
+              label={mutation.isPending ? t("auth.login.submitting") : t("auth.login.submit")}
             />
 
             <Link to="/auth/register" className="w-full sm:w-56">
-              <Button
-                variant="secondary"
-                className="w-full"
-                label={t("auth.login.register")}
-              />
+              <Button variant="secondary" className="w-full" label={t("auth.login.register")} />
             </Link>
           </div>
         </form>

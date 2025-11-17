@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import UserProfileCard from "@/components/card/userProfileCard";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
+import { useCurrentUserProfile } from "@/hooks";
 
 export const Route = createFileRoute("/(index)/user/profile/")({
   component: RouteComponent,
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/(index)/user/profile/")({
 
 function RouteComponent() {
   const { t } = useTranslation();
-  const { status, error, data, mapped, documentStatus } = useCurrentUserProfile();
+  const { status, data, mapped, documentStatus } = useCurrentUserProfile();
   const navigate = useNavigate();
 
   if (status === "pending") {
@@ -21,7 +21,6 @@ function RouteComponent() {
   }
 
   if (status === "error" || !data || !mapped) {
-    console.error("Profile load error", error);
 
     return (
       <div className="w-full min-h-screen flex justify-center items-center bg-background">
@@ -35,10 +34,9 @@ function RouteComponent() {
       <UserProfileCard
         user={mapped}
         documentStatus={documentStatus}
-  onEdit={() => navigate({ to: "/user/profile/edit-profile" })}
+        onEdit={() => void navigate({ to: "/user/profile/edit-profile" })}
         onSendDocument={() => console.log("send doc")}
       />
     </div>
   );
 }
-

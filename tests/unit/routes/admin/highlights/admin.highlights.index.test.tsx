@@ -182,7 +182,7 @@ vi.mock("@/lib/utils", () => ({
   cn: (...classes: unknown[]) => cnMock(...classes),
 }));
 
-vi.mock("@/hooks/useHighlights", () => ({
+vi.mock("@/hooks/shared/useHighlights", () => ({
   useFetchHighlightsByCategories: fetchHighlightsMock,
   useCreateHighlight: createHighlightMock,
   useUpdateHighlight: updateHighlightMock,
@@ -193,7 +193,7 @@ vi.mock("react-spinners", () => ({
   MoonLoader: () => <div role="status">loading</div>,
 }));
 
-vi.mock("@/hooks/useLoadImage", () => ({
+vi.mock("@/hooks", () => ({
   useLoadImage: () => ({
     data: "mocked-url",
     isLoading: false,
