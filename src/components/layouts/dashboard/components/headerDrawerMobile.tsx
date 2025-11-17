@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/button/defaultButton";
 import {
   Drawer,
   DrawerClose,
@@ -45,10 +45,9 @@ export function HeaderDrawerMobile() {
         <Button
           variant="outline"
           size="icon"
-          className="flex md:hidden border-main-dark-green text-main-dark-green hover:bg-main-dark-green/10"
-        >
-          <Menu className="size-5" />
-        </Button>
+          className="md:hidden"
+          label={<Menu className="size-5 text-main-dark-green" />}
+        />
       </DrawerTrigger>
 
       <DrawerContent className="h-full w-80 bg-gradient-to-b from-main-dark-green via-main-dark-green/95 to-main-dark-green/90 text-white border-r border-main-dark-green shadow-xl flex flex-col">
@@ -102,25 +101,26 @@ export function HeaderDrawerMobile() {
                     <User2 className="size-4" /> {t("nav.profile")}
                   </Link>
                 </DrawerClose>
-                <DrawerClose asChild>
-                  <button
-                    type="button"
-                    onClick={handleCartClick}
-                    className="flex items-center gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
-                  >
-                    <span className="relative inline-flex items-center gap-2">
-                      <ShoppingCart className="size-4" />
-                      {cartItemsCount > 0 && (
-                        <span className="inline-flex min-w-5 justify-center rounded-full bg-banner px-2 py-0.5 text-xs font-semibold text-main-dark-green">
-                          {cartItemsCount}
-                        </span>
-                      )}
-                    </span>
-                    {t("common.cart")}
-                  </button>
-                </DrawerClose>
               </>
             )}
+            <DrawerClose asChild>
+              <Button
+                onClick={handleCartClick}
+                variant="ghost"
+                className="justify-start flex text-white items-left gap-3 rounded-md px-3 py-2 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 ring-white/40 transition-colors"
+                label={
+                  <span className="relative inline-flex items-center gap-2">
+                    <ShoppingCart className="size-4" />
+                    {t("common.cart")}
+                    {cartItemsCount > 0 && (
+                      <span className="inline-flex min-w-5 justify-center rounded-full bg-banner px-2 py-0.5 text-xs font-semibold text-main-dark-green">
+                        {cartItemsCount}
+                      </span>
+                    )}
+                  </span>
+                }
+              />
+            </DrawerClose>
           </section>
           <Separator className="my-4 opacity-30" />
           {!isLoggedIn && (

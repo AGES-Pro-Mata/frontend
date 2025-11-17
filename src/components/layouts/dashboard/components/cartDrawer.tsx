@@ -10,7 +10,7 @@ import { Button } from "@/components/button/defaultButton";
 import { useCartStore } from "@/store/cartStore";
 import { X } from "lucide-react";
 import { useMemo } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { getCurrentUserRequest } from "@/api/user";
 import { appToast } from "@/components/toast/toast";
@@ -48,7 +48,7 @@ export const CartDrawer = () => {
 
     // Verificar se o usuário está autenticado
     const currentUser = await getCurrentUserRequest();
-    
+
     if (!currentUser) {
       appToast.error(t("cartDrawer.toasts.loginRequired"));
       closeCart();
@@ -125,12 +125,13 @@ export const CartDrawer = () => {
               label={<span>{t("cartDrawer.checkoutButton")}</span>}
               onClick={() => void handleCheckoutClick()}
             />
-            <span
+            <Link
               className="text-center text-sm font-semibold text-main-dark-green transition-colors hover:text-main-dark-green/80 cursor-pointer"
+              to="/reserve"
               onClick={closeCart}
             >
               {t("cartDrawer.browseLink")}
-            </span>
+            </Link>
           </div>
         </div>
       </DrawerContent>
