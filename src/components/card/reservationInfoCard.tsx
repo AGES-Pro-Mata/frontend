@@ -11,13 +11,23 @@ import { MoonLoader } from "react-spinners";
 
 type ReservationInfoCardProps = {
   reservationId: string;
+  isAdminView?: boolean;
   className?: string;
 };
 
-export function ReservationInfoCard({ reservationId, className }: ReservationInfoCardProps) {
+export function ReservationInfoCard({
+  reservationId,
+  className,
+  isAdminView,
+}: ReservationInfoCardProps) {
   const { t } = useTranslation();
 
-  const { data: reservation, isLoading, isError, isSuccess } = useViewReservation(reservationId);
+  const {
+    data: reservation,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useViewReservation(reservationId, isAdminView);
 
   if (isLoading) {
     return <MoonLoader size={20} color="#000" loading />;

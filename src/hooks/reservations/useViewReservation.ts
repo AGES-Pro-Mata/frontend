@@ -57,11 +57,16 @@ export interface ReservationGroup {
 
 export function useViewReservation(
   reservationId: string,
+  isAdminView = false,
 ): UseQueryResult<ReservationGroup, AxiosError> {
   return useQuery<ReservationGroup, AxiosError>({
     queryKey: ["viewReservation", reservationId],
     queryFn: async () => {
-      return (await api.get<ReservationGroup>(`/reservation/group/user/${reservationId}`)).data;
+      return (
+        await api.get<ReservationGroup>(
+          `/reservation/group/${isAdminView ? "admin" : "user"}/${reservationId}`,
+        )
+      ).data;
     },
     staleTime: 15 * 1000,
     refetchOnWindowFocus: true,

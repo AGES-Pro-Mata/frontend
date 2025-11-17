@@ -712,7 +712,7 @@ export function AdminSideBar() {
             <SidebarButton
               icon={<Inbox className="h-5 w-5" />}
               label="Solicitações"
-              to="/admin/requests/professor"
+              to="/admin/requests"
             />
             <SidebarButton
               icon={<UserPlus className="h-5 w-5" />}

@@ -27,7 +27,7 @@ import { useForm } from "react-hook-form";
 export interface ReservationsLayoutProps {
   reservationGroupId: string;
 }
-
+//TODO: traduzir com i18n
 export function ReservationCard({ event }: { event: TEventsReservationRequestAdminResponse }) {
   const isSelf = event.isSender;
   const date = dayjs(event.createdAt).format("DD/MM/YYYY");
@@ -39,8 +39,8 @@ export function ReservationCard({ event }: { event: TEventsReservationRequestAdm
     <div className={cn("flex", isSelf ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "rounded-xl flex flex-col border-[0.5px] border-black shadow-md px-4 py-3 w-[55%] gap-2",
-          isSelf ? "bg-blue-100" : "bg-white",
+          "rounded-xl flex flex-col border-[0.5px] border-gray-300 shadow-md px-4 py-3 w-[55%] gap-2",
+          isSelf ? "bg-blue-100" : "bg-gray-100",
         )}
       >
         <div className="flex justify-between items-baseline">
@@ -120,8 +120,8 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
   if (!data) return;
 
   return (
-    <div className="rounded-2xl border-[0.5px] border-black shadow-lg w-full mx-auto overflow-hidden">
-      <div className="flex flex-row items-center justify-between border-b-[0.5px] border-black px-6 py-4">
+    <div className="rounded-2xl border-[0.5px] border-gray-300 shadow-lg w-full mx-auto">
+      <div className="flex flex-row items-center justify-between border-b-[0.5px] border-gray-300 px-6 py-4">
         <div className="text-xl font-bold text-gray-800">Ações da reserva</div>
         <div>
           Status:{" "}
@@ -131,11 +131,11 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
         </div>
         <span className="text-sm text-gray-500">Data de criação: {date}</span>
       </div>
-      <div className="h-[500px]">
+      <div className="h-[550px]">
         <ReservationEvents events={data.events} />
       </div>
       {data.status !== RequestsType.CANCELED && (
-        <div className="flex flex-col border-t-[0.5px] border-black bg-white px-6 py-4 gap-4 w-full">
+        <div className="flex flex-col rounded-b-2xl border-t-[0.5px] border-gray-300 bg-white px-6 py-4 gap-4 w-full">
           <Form {...form}>
             <FormField
               control={form.control}
@@ -152,7 +152,7 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
                       <ToggleGroupItem
                         key={index}
                         value={action}
-                        className="border-1 !rounded-2xl border-black h-12 !w-full data-[state=on]:bg-contrast-green data-[state=on]:text-white"
+                        className="border-1 !rounded-2xl border-gray-300 h-12 !w-full data-[state=on]:bg-contrast-green data-[state=on]:text-white"
                       >
                         {REQUESTS_ACTIONS_LABEL[action]}
                       </ToggleGroupItem>

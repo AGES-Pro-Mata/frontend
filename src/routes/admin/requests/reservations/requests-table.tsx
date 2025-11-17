@@ -70,7 +70,7 @@ export default function ReservationRequestsTable() {
                 onClick={() => void handleViewReservationClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
-                {"Editar"}
+                {"Visualizar"}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>
             </DropdownMenuContent>
