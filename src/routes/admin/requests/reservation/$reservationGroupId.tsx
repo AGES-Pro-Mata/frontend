@@ -11,14 +11,16 @@ function RouteComponent() {
   const { reservationGroupId } = Route.useParams();
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      <div className="flex flex-col gap-16 overflow-auto p-4">
+    <div className="flex min-h-screen w-full flex-col p-4">
+      <div className="flex w-full flex-col flex-1 pb-16">
         <ReservationInfoCard reservationId={reservationGroupId} isAdminView />
-        <ReservationsLayout reservationGroupId={reservationGroupId} />
+        <div className="mt-16">
+          <ReservationsLayout reservationGroupId={reservationGroupId} />
+        </div>
       </div>
-      <div className="flex justify-end">
+      <div className="fixed bottom-8 right-10 flex justify-end">
         <Link to="/admin/requests" search={{ tab: "reservation" }}>
-          <Button type="button" variant="ghost" label="Voltar" />
+          <Button type="button" variant="ghost" label="Voltar" className="bg-soft-gray" />
         </Link>
       </div>
     </div>
