@@ -1,15 +1,11 @@
-export type ReserveParticipantGender =
-  | "FEMALE"
-  | "MALE"
-  | "OTHER"
-  | "NOT_INFORMED";
+export type ReserveParticipantGender = "FEMALE" | "MALE" | "OTHER" | "NOT_INFORMED";
 
 type ReserveParticipantBase = {
   id: string;
   name: string;
-  phone: string;
+  phone: string | null;
+  document: string | null;
   birthDate: string;
-  document: string;
 };
 
 export type ReserveParticipantDraft = ReserveParticipantBase & {
@@ -24,7 +20,7 @@ export type ReserveSummaryExperience = {
   title: string;
   startDate: Date | string;
   endDate: Date | string;
-  price: number;
+  price: number | null;
   peopleCount: number;
   imageUrl: string;
 };

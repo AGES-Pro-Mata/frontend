@@ -6,7 +6,7 @@ import { CalendarClock, DollarSign, Map, Timer, Users } from "lucide-react";
 import { BsSpeedometer2 } from "react-icons/bs";
 import { type ComponentType, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useLoadImage } from "@/hooks/useLoadImage";
+import { useLoadImage } from "@/hooks/shared/useLoadImage";
 import { type Experience, ExperienceCategoryCard } from "@/types/experience";
 import { translateExperienceCategory } from "@/utils/translateExperienceCategory";
 

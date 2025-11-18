@@ -46,7 +46,7 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-vi.mock("@/hooks/useHighlights", () => ({
+vi.mock("@/hooks/shared/useHighlights", () => ({
   useFetchPublicHighlightsByCategories: fetchPublicHighlightsMock,
 }));
 
@@ -56,7 +56,7 @@ vi.mock("lucide-react", () => ({
 
 const useLoadImageMock = vi.fn();
 
-vi.mock("@/hooks/useLoadImage", () => ({
+vi.mock("@/hooks", () => ({
   useLoadImage: () => useLoadImageMock(),
 }));
 

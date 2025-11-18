@@ -2,11 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/typography/typography";
 import { cn } from "@/lib/utils";
 import { LogOutIcon } from "lucide-react";
-import { useLogout } from "@/hooks/useLogout";
 import { Link } from "@tanstack/react-router";
+import { useLogout } from "@/hooks";
+import type { ReactNode } from "react";
 
 type HeaderLayoutProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
 };
 
@@ -17,18 +18,11 @@ export function AdminLayoutHeader({ className, children }: HeaderLayoutProps) {
     <div
       className={cn(
         "flex sticky top-0 !w-full h-20 !py-4 !px-6 bg-white drop-shadow-md items-center justify-between gap-4",
-        className
+        className,
       )}
     >
-      <Link
-        to="/"
-        className="cursor-pointer"
-      >
-        <img
-          src="/logo-pro-mata-png.png"
-          alt="Logo Pro Mata"
-          className="w-40 object-fit"
-        />
+      <Link to="/" className="cursor-pointer">
+        <img src="/logo-pro-mata-png.png" alt="Logo Pro Mata" className="w-40 object-fit" />
       </Link>
       <Typography variant="h3" className="text-black">
         Administrador

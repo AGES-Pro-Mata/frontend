@@ -16,20 +16,15 @@ type useFetchAdminExperiencesParams = {
   filters: TExperienceAdminRequestFilters;
 };
 
-export const useFetchAdminExperiences = ({
-  filters,
-}: useFetchAdminExperiencesParams) => {
+export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesParams) => {
   const query = useQuery({
     queryKey: [ADMIN_EXPERIENCES_QUERY_KEY, filters],
     queryFn: async () => {
-      await new Promise(r => setTimeout(r, 5000));
       const response = await api.get<
         {
           items: TExperienceAdminResponse[];
         } & TApiPaginationMetaResult
-      >(
-        `/experience${safeParseFilters(filters, ExperienceAdminRequestFilters)}`
-      );
+      >(`/experience${safeParseFilters(filters, ExperienceAdminRequestFilters)}`);
 
       return response.data;
     },

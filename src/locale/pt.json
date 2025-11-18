@@ -42,7 +42,10 @@
     },
     "checkoutButton": "Finalizar Reserva",
     "browseLink": "Ver mais experiências",
-    "closeButtonAria": "Fechar carrinho"
+    "closeButtonAria": "Fechar carrinho",
+    "toasts": {
+      "loginRequired": "Você deve logar primeiro para criar uma reserva."
+    }
   },
   "cartItem": {
     "capacity_one": "{{count}} pessoa",
@@ -429,7 +432,8 @@
     },
     "toast": {
       "success": "Reserva atualizada com sucesso!",
-      "error": "Não foi possível finalizar a reserva."
+      "error": "Não foi possível finalizar a reserva.",
+      "loginRequired": "Você deve logar primeiro para criar uma reserva."
     }
   },
 
@@ -448,7 +452,11 @@
         "cpf": "CPF",
         "gender": "Gênero"
       },
-      "notes": "Observações da reserva"
+      "notes": "Observações da reserva",
+      "notesPlaceholder": "Observações sobre a reserva",
+      "emptyNotes": "Nenhuma observação adicionada",
+      "emptyPerson": "Sem dados dos participantes cadastrados",
+      "count": "Número de participantes: {{count}}"
     },
     "experiences": {
       "title": "Experiências",
@@ -464,7 +472,7 @@
   "validation": {
     "email": "Digite um e-mail válido.",
     "passwordRequired": "Digite sua senha.",
-    "passwordMin": "A senha deve ter no mínimo 6 caracteres.",
+    "passwordMin": "A senha deve ter no mínimo 8 caracteres.",
     "passwordUpper": "A senha deve conter ao menos uma letra maiúscula.",
     "passwordNumber": "A senha deve conter ao menos um número.",
     "passwordsMustMatch": "As senhas devem ser iguais.",

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import ExperienceCard from "@/components/card/experienceTuningCard";
-import { useExperienceAdjustments } from "@/hooks/useExperienceAdjustments";
+import { useExperienceAdjustments } from "@/hooks/experiences/useExperienceAdjustments";
 import { cn } from "@/lib/utils";
 import type { NormalizedExperienceAdjustment } from "@/types/experience-adjustments";
 import type { ExperienceTuningData } from "@/types/experience";
@@ -28,45 +28,58 @@ function ExperienceAdjustmentsCard({
   const adjustments = Array.isArray(value) ? value : [];
 
   const fallbackExperiences = useMemo<NormalizedExperienceAdjustment[]>(
-    () =>
-      [
-        {
-          title: t("reserveFlow.experienceStep.fallbackExperiences.sunriseTrail.title"),
-          price: 420,
-          type: t("reserveFlow.experienceStep.fallbackExperiences.sunriseTrail.type"),
-          period: {
-            start: new Date(),
-            end: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-          },
-          imageUrl: "/mock/landscape-2.webp",
+    () => [
+      {
+        title: t(
+          "reserveFlow.experienceStep.fallbackExperiences.sunriseTrail.title"
+        ),
+        price: 420,
+        type: t(
+          "reserveFlow.experienceStep.fallbackExperiences.sunriseTrail.type"
+        ),
+        period: {
+          start: new Date(),
+          end: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
         },
-        {
-          title: t("reserveFlow.experienceStep.fallbackExperiences.waterfallBath.title"),
-          price: 280,
-          type: t("reserveFlow.experienceStep.fallbackExperiences.waterfallBath.type"),
-          period: {
-            start: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-            end: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
-          },
-          imageUrl: "/mock/landscape-4.webp",
+        imageUrl: "/mock/landscape-2.webp",
+      },
+      {
+        title: t(
+          "reserveFlow.experienceStep.fallbackExperiences.waterfallBath.title"
+        ),
+        price: 280,
+        type: t(
+          "reserveFlow.experienceStep.fallbackExperiences.waterfallBath.type"
+        ),
+        period: {
+          start: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+          end: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
         },
-        {
-          title: t("reserveFlow.experienceStep.fallbackExperiences.nightSky.title"),
-          price: 360,
-          type: t("reserveFlow.experienceStep.fallbackExperiences.nightSky.type"),
-          period: {
-            start: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            end: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000),
-          },
-          imageUrl: "/mock/landscape-5.jpg",
+        imageUrl: "/mock/landscape-4.webp",
+      },
+      {
+        title: t(
+          "reserveFlow.experienceStep.fallbackExperiences.nightSky.title"
+        ),
+        price: 360,
+        type: t("reserveFlow.experienceStep.fallbackExperiences.nightSky.type"),
+        period: {
+          start: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          end: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000),
         },
-      ],
+        imageUrl: "/mock/landscape-5.jpg",
+      },
+    ],
     [t]
   );
 
   const experiencesToRender = useMemo<NormalizedExperienceAdjustment[]>(() => {
     if (hasExternalSource) {
-      return externalExperiences ?? [];
+      return (externalExperiences ?? []).map((exp) => {
+        return {
+          ...exp,
+        };
+      });
     }
 
     const rawExperiences = Array.isArray(data) ? data : [];
@@ -77,7 +90,8 @@ function ExperienceAdjustmentsCard({
 
     return rawExperiences.map((exp) => {
       const baseTitle = exp.title ?? exp.name;
-      const resolvedTitle = baseTitle ?? t("reserveFlow.experienceStep.fallbackDefaults.title");
+      const resolvedTitle =
+        baseTitle ?? t("reserveFlow.experienceStep.fallbackDefaults.title");
 
       const startInput = exp.period?.start ?? exp.periodStart;
       const endInput = exp.period?.end ?? exp.periodEnd;
@@ -126,7 +140,9 @@ function ExperienceAdjustmentsCard({
       return;
     }
 
-    const next = adjustments.filter((item) => item.experienceId !== adjustment.experienceId);
+    const next = adjustments.filter(
+      (item) => item.experienceId !== adjustment.experienceId
+    );
 
     onChange?.([...next, adjustment]);
   };
@@ -151,7 +167,9 @@ function ExperienceAdjustmentsCard({
             persist={false}
             initialData={
               exp.experienceId
-                ? adjustments.find((item) => item.experienceId === exp.experienceId) ?? null
+                ? (adjustments.find(
+                    (item) => item.experienceId === exp.experienceId
+                  ) ?? null)
                 : null
             }
             onSave={upsertAdjustment}

@@ -10,6 +10,20 @@ import {
 } from "@/entities/edit-user-admin-response";
 import { safeApiCall } from "@/core/http/safe-api-caller";
 
+function mapGenderToApiValue(value?: string | null): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+
+  if (!trimmed) return undefined;
+
+  const normalized = trimmed.toLowerCase();
+
+  if (normalized === "male") return "Masculino";
+  if (normalized === "female") return "Feminino";
+
+  return trimmed;
+}
+
 export type CurrentUser = {
   id?: string;
   userType: UserType;
@@ -118,6 +132,7 @@ export async function registerUserAdminRequest(
     confirmPassword: payload.password,
     number: Number.parseInt(payload.number ?? ""),
     ...payload,
+    gender: mapGenderToApiValue(payload.gender) ?? "",
   });
 
   return {
@@ -136,7 +151,7 @@ export async function updateUserRequest(
   formData.append("name", payload.name);
   formData.append("email", payload.email);
   formData.append("phone", payload.phone);
-  formData.append("gender", payload.gender);
+  formData.append("gender", mapGenderToApiValue(payload.gender) ?? "");
   formData.append("country", payload.country);
   formData.append("userType", payload.userType);
   formData.append("isForeign", payload.isForeign.toString());
@@ -170,7 +185,7 @@ export async function registerUserRequest(
   formData.append("password", payload.password);
   formData.append("confirmPassword", payload.confirmPassword);
   formData.append("phone", payload.phone);
-  formData.append("gender", payload.gender);
+  formData.append("gender", mapGenderToApiValue(payload.gender) ?? "");
   formData.append("country", payload.country);
   formData.append("userType", payload.userType);
   formData.append("isForeign", payload.isForeign.toString());
@@ -329,6 +344,16 @@ export async function updateCurrentUserRequest(
   payload: UpdateUserPayload
 ): Promise<HttpResponse> {
   const body: Record<string, unknown> = { ...payload };
+
+  if (typeof body.gender === "string") {
+    const mappedGender = mapGenderToApiValue(body.gender);
+
+    if (mappedGender) {
+      body.gender = mappedGender;
+    } else {
+      delete body.gender;
+    }
+  }
 
   if (typeof body.isForeign === "boolean") {
     body.isForeign = body.isForeign ? "true" : "false";

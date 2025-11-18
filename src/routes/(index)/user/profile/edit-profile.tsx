@@ -1,9 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 // Use the updated EditProfileCard (with foreign user checkbox) from cards directory
 import { EditProfileCard } from "@/components/forms/editProfileForm";
-import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
-import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { useCurrentUserProfile } from "@/hooks";
 
 export const Route = createFileRoute("/(index)/user/profile/edit-profile")({
   component: RouteComponent,
@@ -34,9 +33,7 @@ function RouteComponent() {
 
   return (
     <div className="w-full min-h-screen flex justify-center items-start py-12 px-4 sm:px-0 bg-background">
-      <EditProfileCard
-        onBack={() => navigate({ to: "/user/profile" })}
-      />
+      <EditProfileCard onBack={() => void navigate({ to: "/user/profile" })} />
     </div>
   );
 }
