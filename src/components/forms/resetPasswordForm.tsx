@@ -11,17 +11,7 @@ import { appToast } from "@/components/toast/toast";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useResetPasswordMutation } from "@/hooks";
-
-const formSchema = z
-  .object({
-    password: z.string().min(6, "validation.passwordMin" as unknown as string),
-    confirm: z.string(),
-  })
-  .refine((data) => data.password === data.confirm, {
-    message: "validation.passwordsMustMatch" as unknown as string,
-    path: ["confirm"],
-  });
-import { useMemo, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const { t, i18n } = useTranslation();
@@ -40,7 +30,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
           message: t("validation.passwordsMustMatch"),
           path: ["confirm"],
         }),
-    [i18n.language]
+    [i18n.language],
   );
 
   type FormData = z.infer<typeof formSchema>;
@@ -51,14 +41,17 @@ export function ResetPasswordForm({ token }: { token: string }) {
   });
 
   const didMountLang = useRef(false);
+
   useEffect(() => {
     form.clearErrors();
-    form.trigger();
+    void form.trigger();
     if (!didMountLang.current) {
       didMountLang.current = true;
+
       return;
     }
     const fields = Object.keys(form.formState.errors);
+
     if (fields.length > 0) {
       void form.trigger(fields as (keyof FormData)[]);
     }
