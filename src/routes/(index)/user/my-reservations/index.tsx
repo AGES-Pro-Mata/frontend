@@ -71,6 +71,7 @@ function RouteComponent() {
           <ReservaCard
             key={rg.id as Key}
             id={rg.id}
+            history={rg.history}
             titulo={"Pacote personalizado"}
             preco={+rg.price}
             periodo={{

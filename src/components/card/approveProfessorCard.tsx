@@ -89,6 +89,7 @@ export function ApproveProfessorCard({ professor }: ApproveProfessorCardProps) {
         <div className="absolute bottom-15 right-15 select-none pointer-events-none">
           <Link
             to="/admin/requests"
+            search={{ tab: "professor" }}
             preload="intent"
             className="pointer-events-auto"
           >

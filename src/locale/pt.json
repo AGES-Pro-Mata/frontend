@@ -74,6 +74,7 @@
     "sendPaymentProof": "Enviar Comprovante",
     "cancelReservation": "Cancelar Reserva",
     "viewReservation": "Visualizar Reserva",
+    "history": "Histórico",
     "cancelRequestSent": "Solicitação de cancelamento enviada!",
     "peopleRegisteredSuccess": "Pessoas cadastradas com sucesso!",
     "paymentProofSent": "Comprovante enviado com sucesso!",
@@ -482,8 +483,8 @@
     "zipRequired": "Informe o CEP",
     "countryRequired": "Informe o país",
     "addressRequired": "Endereço é obrigatório",
-  "birthDateRequired": "Informe a data de nascimento",
-  "cpfRequired": "Informe o CPF",
+    "birthDateRequired": "Informe a data de nascimento",
+    "cpfRequired": "Informe o CPF",
 
     "cep8": "CEP deve conter 8 dígitos",
     "cpfInvalid": "CPF inválido",

@@ -26,7 +26,7 @@ export default function ReservationRequestsTable() {
   const { items, meta, isLoading } = useFetchAdminRequest({ filters });
 
   const handleViewReservationClick = (id: string) => {
-    void navigate({ to: `/admin/requests/reservations/${id}` });
+    void navigate({ to: `/admin/requests/reservation/${id}` });
   };
   const columns = [
     {
@@ -81,7 +81,7 @@ export default function ReservationRequestsTable() {
   ];
 
   return (
-    <div className="flex flex-col w-full h-full p-4 gap-6 overflow-hidden">
+    <div className="flex flex-col w-full h-full gap-6 overflow-hidden">
       <div className="flex-1 relative overflow-auto rounded-md border">
         {isLoading && (
           <div className="absolute inset-0 flex justify-center items-center rounded-lg z-10">
