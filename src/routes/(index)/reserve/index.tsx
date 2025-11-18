@@ -126,6 +126,6 @@ function ReservePage() {
   );
 }
 
-export const Route = createFileRoute("/(index)/reserve/")({
-  component: ReservePage,
-});
+export { ReservePage };
+
+
