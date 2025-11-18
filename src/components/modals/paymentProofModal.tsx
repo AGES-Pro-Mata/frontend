@@ -31,7 +31,16 @@ export function PaymentProofModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog 
+      open={open} 
+      onOpenChange={(isOpen) => {
+        // Limpa o arquivo selecionado ao fechar
+        if (!isOpen) {
+          setSelectedFile(null);
+        }
+        onOpenChange(isOpen);
+      }}
+    >
       <DialogContent className="w-[499px] h-[400px] rounded-2xl bg-card flex flex-col justify-between p-6">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-main-dark-green">
