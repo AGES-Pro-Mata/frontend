@@ -14,7 +14,6 @@ import {
   type TableState,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -62,10 +61,9 @@ export function DataTable<TData, TValue, F extends TApiDefaultFilters = TApiDefa
 
   const tableState: Partial<TableState> = React.useMemo(
     () => ({
-      pagination: { pageIndex, pageSize },
       sorting: sort ? [{ id: sort, desc: dir === "desc" }] : [],
     }),
-    [pageIndex, pageSize, sort, dir],
+    [sort, dir],
   );
 
   const table = useReactTable({
@@ -73,8 +71,7 @@ export function DataTable<TData, TValue, F extends TApiDefaultFilters = TApiDefa
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: tableState,
+    state: tableState,
   });
 
   const total = Number(meta?.total ?? 0);

@@ -26,7 +26,6 @@ export type Person = {
   genero: string;
 };
 
-
 type ReservaCardProps = {
   id: string;
   titulo: string;
@@ -168,8 +167,9 @@ export default function ReservaCard({
               <li key={r.experience.name}>{r.experience.name}</li>
             ))}
           </ul>
-          <div className="w-full mt-6 flex items-center justify-between">
-            <CardStatus icon={statusIcon} label={statusLabel} accentClassName={statusAccent} />
+
+          <CardStatus icon={statusIcon} label={statusLabel} accentClassName={statusAccent} className="mt-4" />
+          <div className="w-full mt-4 flex items-center justify-between">
             <div className="flex gap-3">
               <Button
                 onClick={() => handleOpenHistoryModal()}
