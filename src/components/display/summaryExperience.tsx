@@ -1,8 +1,8 @@
 import { Typography } from "@/components/typography/typography";
+import { useLoadImage } from "@/hooks";
 import type { Locale } from "@/types/locale";
 import { CalendarDays, CircleDollarSign, User } from "lucide-react";
 import type { ComponentType } from "react";
-import { useLoadImage } from "@/hooks/useLoadImage";
 
 type SummaryXpProps = {
   experience: string;

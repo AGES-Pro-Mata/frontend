@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const UserAdminResponse = z.object({
+  id: z.string(),
   name: z.string().max(100).optional(),
   email: z.string().optional(),
   createdBy: z.object({

@@ -8,9 +8,9 @@ import { Label } from "@/components/ui/label";
 import CanvasCard from "@/components/card/canvasCard";
 import { CalendarIcon, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useExperienceTuning } from "@/hooks/useExperienceTuning";
+import { useExperienceTuning } from "@/hooks/experiences/useExperienceTuning";
 import type { ExperienceTuningData } from "@/types/experience";
-import { useLoadImage } from "@/hooks/useLoadImage";
+import { useLoadImage } from "@/hooks/shared/useLoadImage";
 import { translateExperienceCategory } from "@/utils/translateExperienceCategory";
 
 type ExperienceCardProps = {

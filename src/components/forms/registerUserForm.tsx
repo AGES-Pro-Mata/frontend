@@ -7,7 +7,6 @@ import { TextInput } from "@/components/input/textInput";
 import { PasswordInput } from "@/components/input/passwordInput";
 import { Typography } from "@/components/typography/typography";
 import { Button } from "@/components/button/defaultButton";
-import { useRegisterUser } from "@/hooks/useRegisterUser";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,7 +19,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/lib/countries";
 import { appToast } from "@/components/toast/toast";
-import { useCepQuery } from "@/hooks/useCepQuery";
 import {
   digitsOnly,
   hashPassword,
@@ -35,6 +33,7 @@ import type { RegisterUserPayload } from "@/api/user";
 import { CanvasCard } from "@/components/card";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { useCepQuery, useRegisterUser } from "@/hooks";
 
 export function RegisterUser() {
   const { t, i18n } = useTranslation();
@@ -145,7 +144,7 @@ export function RegisterUser() {
           }
         }),
     // Recreate schema when language changes so messages are translated
-    [i18n.language]
+    [i18n.language],
   );
 
   type FormData = z.infer<typeof formSchema>;
@@ -154,11 +153,7 @@ export function RegisterUser() {
     city: false,
   });
   const { mutate: registerUser, isPending } = useRegisterUser();
-  const form = useForm<
-    z.input<typeof formSchema>,
-    any,
-    z.output<typeof formSchema>
-  >({
+  const form = useForm<z.input<typeof formSchema>, any, z.output<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
@@ -250,11 +245,7 @@ export function RegisterUser() {
       confirmPassword: hashedConfirmPassword,
       phone: sanitizedPhone,
       gender: data.gender,
-      document: data.document
-        ? isForeign
-          ? data.document
-          : maskCpf(data.document)
-        : undefined,
+      document: data.document ? (isForeign ? data.document : maskCpf(data.document)) : undefined,
       rg: data.rg || undefined,
       country: data.country,
       userType: data.wantsDocencyRegistration ? "PROFESSOR" : "GUEST",
@@ -338,7 +329,7 @@ export function RegisterUser() {
                                 "addressLine",
                                 "country",
                               ]),
-                            0
+                            0,
                           );
                         }}
                       />
@@ -425,23 +416,14 @@ export function RegisterUser() {
                       }
                       required
                       placeholder={
-                        isForeign
-                          ? t("register.fields.document.passportNumber")
-                          : "XXX.XXX.XXX-XX"
+                        isForeign ? t("register.fields.document.passportNumber") : "XXX.XXX.XXX-XX"
                       }
-                      value={
-                        isForeign
-                          ? field.value || ""
-                          : maskCpf(field.value || "")
-                      }
+                      value={isForeign ? field.value || "" : maskCpf(field.value || "")}
                       onChange={(e) => {
                         if (isForeign) {
                           field.onChange(e.target.value);
                         } else {
-                          const digits = digitsOnly(e.target.value).slice(
-                            0,
-                            11
-                          );
+                          const digits = digitsOnly(e.target.value).slice(0, 11);
                           const masked = maskCpf(digits);
 
                           field.onChange(masked);
@@ -463,25 +445,16 @@ export function RegisterUser() {
                       <Typography className="text-foreground font-medium mb-1">
                         {t("register.fields.gender.label")}
                       </Typography>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger>
-                          <SelectValue
-                            placeholder={t("register.fields.gender.select")}
-                          />
+                          <SelectValue placeholder={t("register.fields.gender.select")} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="female">
                             {t("register.fields.gender.female")}
                           </SelectItem>
-                          <SelectItem value="male">
-                            {t("register.fields.gender.male")}
-                          </SelectItem>
-                          <SelectItem value="other">
-                            {t("register.fields.gender.other")}
-                          </SelectItem>
+                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
+                          <SelectItem value="other">{t("register.fields.gender.other")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -549,14 +522,9 @@ export function RegisterUser() {
                         {t("register.fields.country")}
                       </Typography>
                       {isForeign ? (
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
+                        <Select value={field.value} onValueChange={field.onChange}>
                           <SelectTrigger>
-                            <SelectValue
-                              placeholder={t("register.fields.selectCountry")}
-                            />
+                            <SelectValue placeholder={t("register.fields.selectCountry")} />
                           </SelectTrigger>
                           <SelectContent>
                             {COUNTRIES.map((c) => (
@@ -590,9 +558,7 @@ export function RegisterUser() {
                       label={t("register.fields.address")}
                       required
                       placeholder={t("register.fields.addressPlaceholder")}
-                      disabled={
-                        isForeign || autoFilled.addressLine || isFetchingCep
-                      }
+                      disabled={isForeign || autoFilled.addressLine || isFetchingCep}
                       {...field}
                       onBlur={field.onBlur}
                     />
@@ -693,9 +659,7 @@ export function RegisterUser() {
                     <FormItem>
                       <TextInput
                         label={t("register.fields.institution")}
-                        placeholder={t(
-                          "register.fields.institutionPlaceholder"
-                        )}
+                        placeholder={t("register.fields.institutionPlaceholder")}
                         {...field}
                       />
                       <FormMessage className="text-default-red" />
@@ -712,14 +676,9 @@ export function RegisterUser() {
                         <Typography className="text-foreground font-medium mb-1">
                           {t("register.fields.function.label")}
                         </Typography>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
+                        <Select value={field.value} onValueChange={field.onChange}>
                           <SelectTrigger>
-                            <SelectValue
-                              placeholder={t("register.fields.function.select")}
-                            />
+                            <SelectValue placeholder={t("register.fields.function.select")} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="student">

@@ -22,8 +22,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { useCepQuery } from "@/hooks/useCepQuery";
-import { useRegisterAdmin } from "@/hooks/useRegisterAdmin";
 import { COUNTRIES } from "@/lib/countries";
 import {
   digitsOnly,
@@ -42,6 +40,7 @@ import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { useForm } from "../form";
 import { useTranslation } from "react-i18next";
+import { useCepQuery, useRegisterAdmin } from "@/hooks";
 
 const formSchema = z
   .object({
@@ -126,11 +125,7 @@ export function RegisterUserAdmin() {
     city: false,
   });
   const { mutate: registerAdmin, isPending } = useRegisterAdmin();
-  const form = useForm<
-    z.input<typeof formSchema>,
-    any,
-    z.output<typeof formSchema>
-  >({
+  const form = useForm<z.input<typeof formSchema>, any, z.output<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: useMemo(
       () => ({
@@ -149,7 +144,7 @@ export function RegisterUserAdmin() {
         isProfessor: false,
         password: generateRandomPassword(),
       }),
-      []
+      [],
     ),
   });
 
@@ -196,26 +191,18 @@ export function RegisterUserAdmin() {
       ...data,
       phone: sanitizedPhone,
       password: hashedPassword,
-      document: data.document
-        ? isForeign
-          ? data.document
-          : maskCpf(data.document)
-        : undefined,
+      document: data.document ? (isForeign ? data.document : maskCpf(data.document)) : undefined,
       rg: data.rg ? data.rg : undefined,
-      userType: data.isAdmin
-        ? "ADMIN"
-        : data.isProfessor
-          ? "PROFESSOR"
-          : "GUEST",
+      userType: data.isAdmin ? "ADMIN" : data.isProfessor ? "PROFESSOR" : "GUEST",
       institution: data.isProfessor ? "PUCRS" : "",
     };
 
-    registerAdmin(payload as any, {
+    registerAdmin(payload as never, {
       onSuccess: (response) => {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           form.reset();
           appToast.success("Usuário cadastrado com sucesso");
-          navigate({ to: "/admin/users" });
+          void navigate({ to: "/admin/users" });
           setAutoFilled({ addressLine: false, city: false });
         } else {
           appToast.error("Erro ao cadastrar usuário");
@@ -233,7 +220,7 @@ export function RegisterUserAdmin() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-3">
+        <form onSubmit={void form.handleSubmit(onSubmit)} className="mt-6 space-y-3">
           <div className="flex items-center justify-start gap-4">
             <Typography className="font-medium text-foreground text-lg">
               Informações pessoais
@@ -337,12 +324,8 @@ export function RegisterUserAdmin() {
                   <TextInput
                     label={isForeign ? "Passaporte" : "CPF"}
                     required
-                    placeholder={
-                      isForeign ? "Número do passaporte" : "XXX.XXX.XXX-XX"
-                    }
-                    value={
-                      isForeign ? field.value || "" : maskCpf(field.value || "")
-                    }
+                    placeholder={isForeign ? "Número do passaporte" : "XXX.XXX.XXX-XX"}
+                    value={isForeign ? field.value || "" : maskCpf(field.value || "")}
                     onChange={(e) => {
                       if (isForeign) {
                         field.onChange(e.target.value);
@@ -365,9 +348,7 @@ export function RegisterUserAdmin() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium mb-1">
-                      Gênero
-                    </Typography>
+                    <Typography className="text-foreground font-medium mb-1">Gênero</Typography>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione o gênero" />
@@ -432,14 +413,9 @@ export function RegisterUserAdmin() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium">
-                      País
-                    </Typography>
+                    <Typography className="text-foreground font-medium">País</Typography>
                     {isForeign ? (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o país" />
                         </SelectTrigger>
@@ -475,9 +451,7 @@ export function RegisterUserAdmin() {
                     label="Endereço"
                     required
                     placeholder="Rua"
-                    disabled={
-                      isForeign || autoFilled.addressLine || isFetchingCep
-                    }
+                    disabled={isForeign || autoFilled.addressLine || isFetchingCep}
                     {...field}
                   />
                   <FormMessage />
@@ -517,9 +491,7 @@ export function RegisterUserAdmin() {
                     onChange={(e) => {
                       const digits = digitsOnly(e.target.value);
 
-                      field.onChange(
-                        digits ? Number.parseInt(digits) : undefined
-                      );
+                      field.onChange(digits ? Number.parseInt(digits) : undefined);
                     }}
                   />
                   <FormMessage />
@@ -535,10 +507,7 @@ export function RegisterUserAdmin() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-3">
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                     <FormLabel className="text-sm font-medium text-foreground">
                       Administrador
                     </FormLabel>
@@ -553,10 +522,7 @@ export function RegisterUserAdmin() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-3">
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                     <FormLabel className="text-sm font-medium text-foreground">
                       Professor PUCRS
                     </FormLabel>
@@ -572,15 +538,10 @@ export function RegisterUserAdmin() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <PasswordInput
-                    label="Senha"
-                    required
-                    placeholder="Senha"
-                    {...field}
-                  />
+                  <PasswordInput label="Senha" required placeholder="Senha" {...field} />
                   <FormDescription className="text-sm text-red-400">
-                    A senha foi gerada automaticamente. No primeiro acesso será
-                    solicitado que o usuário a altere.
+                    A senha foi gerada automaticamente. No primeiro acesso será solicitado que o
+                    usuário a altere.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -590,12 +551,7 @@ export function RegisterUserAdmin() {
 
           <div className="flex justify-end pt-2 gap-2">
             <Link to="/admin/users">
-              <Button
-                type="button"
-                variant="ghost"
-                label="Voltar"
-                className="w-36"
-              />
+              <Button type="button" variant="ghost" label="Voltar" className="w-36" />
             </Link>
             <Button
               type="submit"
