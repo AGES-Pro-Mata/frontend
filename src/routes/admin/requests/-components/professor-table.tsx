@@ -10,9 +10,11 @@ import {
 import { Input } from "@/components/ui/input";
 import type { TUserAdminRequestFilters } from "@/entities/user-admin-filters";
 import { useFilters } from "@/hooks/filters/filters";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
+
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
 import { type ChangeEvent, useState } from "react";
 import { MoonLoader } from "react-spinners";
 import { useDeleteUser, useFetchAdminUsers } from "@/hooks";
@@ -26,11 +28,7 @@ const PLACE_HOLDER_TRANSLATE_TEXT = {
 
 type FilterKey = keyof typeof PLACE_HOLDER_TRANSLATE_TEXT;
 
-export const Route = createFileRoute("/admin/users/")({
-  component: RouteComponent,
-});
-
-function RouteComponent() {
+export default function ProfessorRequestsTable() {
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState<FilterKey>("name");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -108,7 +106,7 @@ function RouteComponent() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => void handleEditUserClick(row.original.id)}
+                onClick={() => handleEditUserClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
                 {"Editar"}
