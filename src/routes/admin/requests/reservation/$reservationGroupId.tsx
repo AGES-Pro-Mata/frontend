@@ -14,7 +14,7 @@ function RouteComponent() {
     <div className="flex min-h-screen w-full flex-col p-4">
       <div className="flex w-full flex-col flex-1 pb-16">
         <ReservationInfoCard reservationId={reservationGroupId} isAdminView />
-        <div className="mt-16">
+        <div className="mt-6">
           <ReservationsLayout reservationGroupId={reservationGroupId} />
         </div>
       </div>
