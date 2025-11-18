@@ -106,7 +106,7 @@ function ReserveFlow() {
 
     const resolveDate = (value?: string | null) => {
       if (!value) {
-        return new Date();
+        return null;
       }
       const parsed = new Date(value);
 
