@@ -12,10 +12,10 @@ import {
 import { useEffect, useState } from "react";
 import { useFilters } from "@/hooks/filters/filters";
 import type { TExperienceFilters } from "@/entities/experience-filter";
-import { useGetExperiences } from "@/hooks/useGetExperiences";
 import { ExperienceCategory } from "@/types/experience";
 import { MoonLoader } from "react-spinners";
 import { t } from "i18next";
+import { useGetExperiences } from "@/hooks";
 
 function ReservePage() {
   const PAGE_LIMIT = 12;
@@ -46,9 +46,7 @@ function ReservePage() {
   } = useGetExperiences(filters, Math.max(0, currentPage - 1));
 
   const fetchedExperiences = experiencesData?.items ?? [];
-  const currentExperiences = fetchedExperiences.filter(
-    (experience) => experience.active !== false
-  );
+  const currentExperiences = fetchedExperiences.filter((experience) => experience.active !== false);
   const totalItems = experiencesData?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_LIMIT));
 
@@ -69,9 +67,7 @@ function ReservePage() {
         {isLoading ? (
           <MoonLoader size={40} className="mx-auto" />
         ) : isError ? (
-          <div className="text-center text-default-red">
-            Error loading experiences
-          </div>
+          <div className="text-center text-default-red">Error loading experiences</div>
         ) : (
           <>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2">
@@ -85,13 +81,9 @@ function ReservePage() {
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
-                      onClick={() =>
-                        handlePageChange(Math.max(currentPage - 1, 1))
-                      }
+                      onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
                       className={
-                        currentPage === 1
-                          ? "pointer-events-none opacity-50"
-                          : "cursor-pointer"
+                        currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"
                       }
                     />
                   </PaginationItem>
@@ -110,9 +102,7 @@ function ReservePage() {
 
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() =>
-                        handlePageChange(Math.min(currentPage + 1, totalPages))
-                      }
+                      onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
                       className={
                         currentPage === totalPages
                           ? "pointer-events-none opacity-50"

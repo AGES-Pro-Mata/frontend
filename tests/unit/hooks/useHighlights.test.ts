@@ -1,5 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HighlightCategory } from "@/entities/highlights";
+import {
+  HIGHLIGHTS_QUERY_KEY,
+  useCreateHighlight,
+  useDeleteHighlight,
+  useFetchHighlightById,
+  useFetchHighlights,
+  useFetchHighlightsByCategories,
+  useFetchPublicHighlightsByCategories,
+  useHighlightsOperations,
+  useUpdateHighlight,
+} from "@/hooks/shared/useHighlights";
 
 const useQueryMock = vi.fn();
 const useMutationMock = vi.fn();
@@ -21,28 +32,13 @@ const deleteHighlightMock = vi.fn();
 
 vi.mock("@/api/highlights", () => ({
   getHighlights: (...args: unknown[]) => getHighlightsMock(...args) as unknown,
-  getHighlightById: (...args: unknown[]) =>
-    getHighlightByIdMock(...args) as unknown,
-  getHighlightsByCategories: (...args: unknown[]) =>
-    getGroupedMock(...args) as unknown,
-  getPublicHighlightsByCategories: (...args: unknown[]) =>
-    getPublicGroupedMock(...args) as unknown,
+  getHighlightById: (...args: unknown[]) => getHighlightByIdMock(...args) as unknown,
+  getHighlightsByCategories: (...args: unknown[]) => getGroupedMock(...args) as unknown,
+  getPublicHighlightsByCategories: (...args: unknown[]) => getPublicGroupedMock(...args) as unknown,
   createHighlight: (...args: unknown[]) => createHighlightMock(...args) as unknown,
   updateHighlight: (...args: unknown[]) => updateHighlightMock(...args) as unknown,
   deleteHighlight: (...args: unknown[]) => deleteHighlightMock(...args) as unknown,
 }));
-
-import {
-  HIGHLIGHTS_QUERY_KEY,
-  useCreateHighlight,
-  useDeleteHighlight,
-  useFetchHighlightById,
-  useFetchHighlights,
-  useFetchHighlightsByCategories,
-  useFetchPublicHighlightsByCategories,
-  useHighlightsOperations,
-  useUpdateHighlight,
-} from "@/hooks/useHighlights";
 
 describe("useHighlights hooks", () => {
   beforeEach(() => {

@@ -7,40 +7,62 @@ import { PasswordInput } from "@/components/input/passwordInput";
 import { Typography } from "../typography";
 import { Form, FormField, FormItem, FormMessage } from "../ui/form";
 import { Button } from "../button/defaultButton";
-import { useResetPasswordMutation } from "@/hooks/useResetPasswordMutation";
 import { appToast } from "@/components/toast/toast";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-
-const formSchema = z
-  .object({
-    password: z
-      .string()
-      .min(6, "validation.passwordMin" as unknown as string)
-      .regex(/[A-Z]/, "validation.passwordUpper" as unknown as string)
-      .regex(/\d/, "validation.passwordNumber" as unknown as string),
-    confirm: z.string(),
-  })
-  .refine((data) => data.password === data.confirm, {
-    message: "validation.passwordsMustMatch" as unknown as string,
-    path: ["confirm"],
-  });
-
-type FormData = z.infer<typeof formSchema>;
+import { useResetPasswordMutation } from "@/hooks";
+import { useEffect, useMemo, useRef } from "react";
 
 export function ResetPasswordForm({ token }: { token: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const formSchema = useMemo(
+    () =>
+      z
+        .object({
+          password: z
+            .string()
+            .min(8, t("validation.passwordMin"))
+            .regex(/[A-Z]/, t("validation.passwordUpper"))
+            .regex(/\d/, t("validation.passwordNumber")),
+          confirm: z.string(),
+        })
+        .refine((data) => data.password === data.confirm, {
+          message: t("validation.passwordsMustMatch"),
+          path: ["confirm"],
+        }),
+    [i18n.language],
+  );
+
+  type FormData = z.infer<typeof formSchema>;
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { password: "", confirm: "" },
   });
+
+  const didMountLang = useRef(false);
+
+  useEffect(() => {
+    form.clearErrors();
+    void form.trigger();
+    if (!didMountLang.current) {
+      didMountLang.current = true;
+
+      return;
+    }
+    const fields = Object.keys(form.formState.errors);
+
+    if (fields.length > 0) {
+      void form.trigger(fields as (keyof FormData)[]);
+    }
+  }, [i18n.language]);
 
   const mutation = useResetPasswordMutation();
   const navigate = useNavigate();
 
   if (mutation.isSuccess) {
     appToast.success(t("auth.reset.toastSuccess"));
-    navigate({ to: "/auth/login" });
+    void navigate({ to: "/auth/login" });
   }
 
   if (mutation.isError) {
@@ -68,7 +90,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs flex flex-col gap-4">
               <FormField
@@ -106,11 +128,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
               type="submit"
               disabled={mutation.isPending}
               className="w-full sm:w-56"
-              label={
-                mutation.isPending
-                  ? t("auth.reset.submitting")
-                  : t("auth.reset.submit")
-              }
+              label={mutation.isPending ? t("auth.reset.submitting") : t("auth.reset.submit")}
             />
           </div>
         </form>

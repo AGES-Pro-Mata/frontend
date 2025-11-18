@@ -2,13 +2,7 @@ import { Button } from "@/components/button/defaultButton";
 import { TextInput } from "@/components/input/textInput";
 import { Typography } from "@/components/typography/typography";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -19,13 +13,9 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { useGetAdminUser } from "@/hooks/use-get-admin-user";
-import { useCepQuery } from "@/hooks/useCepQuery";
-import { useUpdateAdminUser } from "@/hooks/useUpdateAdminUser";
 import { COUNTRIES } from "@/lib/countries";
 import {
   digitsOnly,
-  hashPassword,
   isValidBrazilZip,
   isValidCpf,
   isValidForeignZip,
@@ -35,19 +25,20 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { z } from "zod";
 import { useForm } from "../form";
 import { t } from "i18next";
 import type { UpdateUserAdminPayload } from "@/api/user";
 import { MoonLoader } from "react-spinners";
+import { appToast } from "../toast/toast";
+import { useCepQuery, useGetAdminUser, useUpdateAdminUser } from "@/hooks";
 
 const EditUserAdminSchema = z
   .object({
     name: z.string().min(2, "Informe o nome completo"),
     email: z.email("Digite um e-mail válido"),
     phone: z.string().min(8, "Informe o telefone"),
-    document: z.string().optional().default(""),
+    document: z.string().min(1, "Informe o documento"),
     rg: z.string().optional().default(""),
     gender: z.string(),
     zipCode: z.string().min(5, "Informe o CEP/ZIP"),
@@ -58,7 +49,6 @@ const EditUserAdminSchema = z
     number: z.string().optional(),
     isAdmin: z.boolean().default(false),
     isProfessor: z.boolean().default(false),
-    password: z.string().min(6, "Senha mínima de 6 caracteres"),
   })
   .superRefine((data, ctx) => {
     if (!data.isForeign) {
@@ -93,7 +83,7 @@ const EditUserAdminSchema = z
       if (!data.document || !isValidCpf(data.document)) {
         ctx.addIssue({
           code: "custom",
-          message: "CPF inválido",
+          message: "Documento Inválido",
           path: ["document"],
         });
       }
@@ -152,12 +142,13 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
         isAdmin: data?.isAdmin,
         isProfessor: data?.isProfessor,
       }),
-      [data]
+      [data],
     ),
   });
 
   const isForeign = form.watch("isForeign");
   const watchedZip = form.watch("zipCode");
+
   const {
     isLoading: isFetchingCep,
     data: cepData,
@@ -186,50 +177,56 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
   useEffect(() => {
     if (isForeign) {
       setAutoFilled({ addressLine: false, city: false });
+    } else {
+      if (cepData?.addressLine) {
+        form.setValue("addressLine", cepData.addressLine, {
+          shouldValidate: true,
+        });
+      }
+      if (cepData?.city) {
+        form.setValue("city", cepData.city, { shouldValidate: true });
+      }
+      setAutoFilled({
+        addressLine: !!cepData?.addressLine,
+        city: !!cepData?.city,
+      });
     }
   }, [isForeign]);
 
-  const onSubmit = async (data: TEditUserAdminSchema) => {
+  const onSubmit = (data: TEditUserAdminSchema) => {
     const sanitizedPhone = digitsOnly(data.phone);
 
     // Hash password
-    const hashedPassword = await hashPassword(data.password);
 
     const payload = {
       ...data,
       phone: sanitizedPhone,
-      password: hashedPassword,
-      document: data.document
-        ? isForeign
-          ? data.document
-          : maskCpf(data.document)
-        : undefined,
+      document: data.document ? (isForeign ? data.document : maskCpf(data.document)) : undefined,
       rg: data.rg ? data.rg : undefined,
-      userType: data.isAdmin
-        ? "ADMIN"
-        : data.isProfessor
-          ? "PROFESSOR"
-          : "GUEST",
+      userType: data.isAdmin ? "ADMIN" : data.isProfessor ? "PROFESSOR" : "GUEST",
       institution: data.isProfessor ? "PUCRS" : "",
     };
 
+    if (data.isAdmin && data.isProfessor) {
+      return appToast.error("Um usuário não pode ser administrador e professor ao mesmo tempo.");
+    }
     mutate(
       { id: userId, payload: payload as UpdateUserAdminPayload },
       {
         onSuccess: (response) => {
           if (response.statusCode >= 200 && response.statusCode < 300) {
             form.reset();
-            toast.success("Usuário cadastrado com sucesso", {});
-            navigate({ to: "/admin/users" });
+            appToast.success("Usuário editado com sucesso", {});
+            void navigate({ to: "/admin/users" });
             setAutoFilled({ addressLine: false, city: false });
           } else {
-            toast.error("Erro ao cadastrar usuário", {});
+            appToast.error("Erro ao editar usuário", {});
           }
         },
         onError: () => {
-          toast.error("Erro ao cadastrar usuário");
+          appToast.error("Erro ao editar usuário");
         },
-      }
+      },
     );
   };
 
@@ -268,6 +265,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                         if (checked) {
                           form.setValue("city", "");
                           form.setValue("number", "");
+                          form.setValue("addressLine", "");
                           form.setValue("document", "");
                           form.setValue("rg", "");
                           form.setValue("country", "");
@@ -327,12 +325,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <TextInput
-                    label="Telefone"
-                    required
-                    placeholder="(55) 99999-9999"
-                    {...field}
-                  />
+                  <TextInput label="Telefone" required placeholder="(55) 99999-9999" {...field} />
                   <FormMessage />
                 </FormItem>
               )}
@@ -346,12 +339,8 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                   <TextInput
                     label={isForeign ? "Passaporte" : "CPF"}
                     required
-                    placeholder={
-                      isForeign ? "Número do passaporte" : "XXX.XXX.XXX-XX"
-                    }
-                    value={
-                      isForeign ? field.value || "" : maskCpf(field.value || "")
-                    }
+                    placeholder={isForeign ? "Número do passaporte" : "XXX.XXX.XXX-XX"}
+                    value={isForeign ? field.value || "" : maskCpf(field.value || "")}
                     onChange={(e) => {
                       if (isForeign) {
                         field.onChange(e.target.value);
@@ -372,33 +361,22 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               control={form.control}
               name="gender"
               render={({ field }) => {
-                console.log("field.value", field.value);
-
                 return (
                   <FormItem>
                     <div className="flex flex-col gap-0">
                       <Typography className="text-foreground font-medium mb-1">
                         {t("register.fields.gender.label")} *
                       </Typography>
-                      <Select
-                        value={field.value}
-                        onValueChange={(v) => field.onChange(v)}
-                      >
+                      <Select value={field.value} onValueChange={(v) => field.onChange(v)}>
                         <SelectTrigger>
-                          <SelectValue
-                            placeholder={t("register.fields.gender.select")}
-                          />
+                          <SelectValue placeholder={t("register.fields.gender.select")} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="female">
                             {t("register.fields.gender.female")}
                           </SelectItem>
-                          <SelectItem value="male">
-                            {t("register.fields.gender.male")}
-                          </SelectItem>
-                          <SelectItem value="other">
-                            {t("register.fields.gender.other")}
-                          </SelectItem>
+                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
+                          <SelectItem value="other">{t("register.fields.gender.other")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -456,14 +434,9 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium">
-                      País
-                    </Typography>
+                    <Typography className="text-foreground font-medium">País</Typography>
                     {isForeign ? (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o país" />
                         </SelectTrigger>
@@ -499,9 +472,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                     label="Endereço"
                     required
                     placeholder="Rua"
-                    disabled={
-                      isForeign || autoFilled.addressLine || isFetchingCep
-                    }
+                    disabled={isForeign || autoFilled.addressLine || isFetchingCep}
                     {...field}
                   />
                   <FormMessage />
@@ -551,10 +522,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-3">
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                     <FormLabel className="text-sm font-medium text-foreground">
                       Administrador
                     </FormLabel>
@@ -569,10 +537,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-3">
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                     <FormLabel className="text-sm font-medium text-foreground">
                       Professor PUCRS
                     </FormLabel>
@@ -584,15 +549,10 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
 
           <div className="flex justify-end pt-2 gap-2">
             <Link to="/admin/users">
-              <Button
-                type="button"
-                variant="ghost"
-                label="Voltar"
-                className="w-36"
-              />
+              <Button type="button" variant="ghost" label="Voltar" className="w-36" />
             </Link>
             <Button
-              onClick={handleSubmit}
+              onClick={void handleSubmit}
               variant="primary"
               className="w-36"
               label="Salvar"
