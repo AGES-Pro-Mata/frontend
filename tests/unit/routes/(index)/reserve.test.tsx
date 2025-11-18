@@ -13,19 +13,6 @@ const { experienceFilterMock, cardExperienceMock, setFilterMock } = vi.hoisted((
   setFilterMock: vi.fn(),
 }));
 
-const mutateMock = vi.fn();
-
-vi.mock("@tanstack/react-query", () => ({
-  useMutation: vi.fn((opts) => ({
-    mutate: mutateMock,
-    mutateAsync: mutateMock,
-    isPending: false,
-    isSuccess: false,
-    isError: false,
-    ...opts,
-  })),
-}));
-
 vi.mock("@/components/filter/ExperienceFilter", () => ({
   ExperienceFilter: experienceFilterMock,
 }));
