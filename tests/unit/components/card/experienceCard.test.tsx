@@ -1,15 +1,16 @@
-// tests/unit/components/card/experienceCard.test.tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExperienceCategoryCard } from "@/types/experience";
 import type { Experience } from "@/types/experience";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// --------------------
-// Mocks compartilhados
-// --------------------
+const queryClient = new QueryClient();
 
-// Estado mutável pra simular loading da imagem por teste
+function renderWithClient(ui: React.ReactElement) {
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+}
+
 const loadState = { data: true as boolean, isLoading: false as boolean };
 vi.mock("@/hooks/useLoadImage", () => ({
   useLoadImage: () => loadState,
@@ -19,7 +20,6 @@ vi.mock("@/utils/resolveImageUrl", () => ({
   resolveImageUrl: (url?: string | null) => url ?? "/placeholder.jpg",
 }));
 
-// Store (Zustand) com spies
 const addItemMock = vi.fn();
 const openCartMock = vi.fn();
 vi.mock("@/store/cartStore", () => {
@@ -28,7 +28,6 @@ vi.mock("@/store/cartStore", () => {
   return { useCartStore };
 });
 
-// Componentes “bobos” p/ facilitar seleção
 vi.mock("@/components/button/defaultButton", () => ({
   Button: ({ label, onClick }: { label: string; onClick?: () => void }) => (
     <button data-testid="add-to-cart" onClick={onClick}>
@@ -40,7 +39,6 @@ vi.mock("@/components/typography", () => ({
   Typography: ({ children }: any) => <span>{children}</span>,
 }));
 
-// i18n default em pt-BR (com chaves usadas no card)
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, any>) => {
@@ -68,9 +66,6 @@ vi.mock("react-i18next", () => ({
 
 import { CardExperience } from "@/components/card/experienceCard";
 
-// --------------
-// Fixture base
-// --------------
 const baseExperience: Experience = {
   id: "1",
   name: "Trilha das Águas",
@@ -93,20 +88,19 @@ beforeEach(() => {
 });
 
 describe("CardExperience", () => {
-  it("renderiza info principal + preço", () => {
-    render(<CardExperience experience={baseExperience} />);
+  it("renderWithClientiza info principal + preço", () => {
+    renderWithClient(<CardExperience experience={baseExperience} />);
     expect(screen.getByText("Trilha das Águas")).toBeInTheDocument();
     expect(screen.getByText(/Trilhas/i)).toBeInTheDocument();
     expect(screen.getByText(/8 pessoas/)).toBeInTheDocument();
     expect(screen.getByText(/2,5 km/)).toBeInTheDocument();
     expect(screen.getByText(/1,5 h/)).toBeInTheDocument();
     expect(screen.getByText(/Fácil/i)).toBeInTheDocument();
-    // tolerante: qualquer formato com R$
     expect(screen.getByText(/R\$/)).toBeInTheDocument();
   });
 
   it("aciona addItem e openCart ao clicar no botão", async () => {
-    render(<CardExperience experience={baseExperience} />);
+    renderWithClient(<CardExperience experience={baseExperience} />);
     await userEvent.click(screen.getByTestId("add-to-cart"));
     expect(addItemMock).toHaveBeenCalledTimes(1);
     expect(addItemMock).toHaveBeenCalledWith(baseExperience);
@@ -116,84 +110,64 @@ describe("CardExperience", () => {
   it("mostra loader enquanto a imagem carrega", () => {
     loadState.data = false;
     loadState.isLoading = true;
-    const { container } = render(
-      <CardExperience experience={baseExperience} />
-    );
-    // classe típica de skeleton no Tailwind
+    const { container } = renderWithClient(<CardExperience experience={baseExperience} />);
     expect(container.querySelector(".animate-pulse")).not.toBeNull();
   });
 
   it("categoria CUSTOM usa fallback visível", () => {
-    render(
-      <CardExperience
-        experience={{ ...baseExperience, category: "CUSTOM" as any }}
-      />
+    renderWithClient(
+      <CardExperience experience={{ ...baseExperience, category: "CUSTOM" as any }} />,
     );
     expect(screen.getByText(/Custom/i)).toBeInTheDocument();
   });
 
   it("categoria desconhecida usa nome cru", () => {
-    render(
-      <CardExperience
-        experience={{ ...baseExperience, category: "UNKNOWN" as any }}
-      />
+    renderWithClient(
+      <CardExperience experience={{ ...baseExperience, category: "UNKNOWN" as any }} />,
     );
     expect(screen.getByText(/unknown/i)).toBeInTheDocument();
   });
 
   it("preço ausente mostra '-'", () => {
-    render(<CardExperience experience={{ ...baseExperience, price: null }} />);
+    renderWithClient(<CardExperience experience={{ ...baseExperience, price: null }} />);
     expect(screen.getByText("-")).toBeInTheDocument();
   });
 
-  it("duração ausente não renderiza label de horas", () => {
-    render(
-      <CardExperience
-        experience={{ ...baseExperience, durationMinutes: null }}
-      />
-    );
-    // não deve existir algo que termine com ' h'
+  it("duração ausente não renderWithClientiza label de horas", () => {
+    renderWithClient(<CardExperience experience={{ ...baseExperience, durationMinutes: null }} />);
     expect(screen.queryByText(/ h$/i)).toBeNull();
   });
 
   it("dificuldade: MODERATED → Médio", () => {
-    render(
-      <CardExperience
-        experience={{ ...baseExperience, trailDifficulty: "MODERATED" }}
-      />
+    renderWithClient(
+      <CardExperience experience={{ ...baseExperience, trailDifficulty: "MODERATED" }} />,
     );
     expect(screen.getByText(/Médi|Moderad/i)).toBeInTheDocument();
   });
 
   it("dificuldade: HEAVY/HARD → Difícil", () => {
-    render(
-      <CardExperience
-        experience={{ ...baseExperience, trailDifficulty: "HEAVY" }}
-      />
+    renderWithClient(
+      <CardExperience experience={{ ...baseExperience, trailDifficulty: "HEAVY" }} />,
     );
     expect(screen.getByText(/Difícil|Hard/i)).toBeInTheDocument();
   });
 
   it("dificuldade: EXTREME → Extremo", () => {
-    render(
-      <CardExperience
-        experience={{ ...baseExperience, trailDifficulty: "EXTREME" }}
-      />
+    renderWithClient(
+      <CardExperience experience={{ ...baseExperience, trailDifficulty: "EXTREME" }} />,
     );
     expect(screen.getByText(/Extrem/i)).toBeInTheDocument();
   });
 
   it("dificuldade desconhecida não mostra label", () => {
-    render(
-      <CardExperience
-        experience={{ ...baseExperience, trailDifficulty: "UNKNOWN" as any }}
-      />
+    renderWithClient(
+      <CardExperience experience={{ ...baseExperience, trailDifficulty: "UNKNOWN" as any }} />,
     );
     expect(screen.queryByText(/Fácil|Médi|Moderad|Difícil|Extrem/i)).toBeNull();
   });
 
   it("evento com início e fim mostra intervalo (mês/mês)", () => {
-    render(
+    renderWithClient(
       <CardExperience
         experience={{
           ...baseExperience,
@@ -201,15 +175,13 @@ describe("CardExperience", () => {
           startDate: "2023-12-31",
           endDate: "2024-01-02",
         }}
-      />
+      />,
     );
-    // tolerante: 'dez' seguido de 'jan'
     expect(screen.getByText(/dez.*jan/i)).toBeInTheDocument();
   });
 
-  // ===== FIX timezone: usar meio de mês para evitar mudança de dia/mês =====
   it("evento com apenas startDate mostra data única (estável em qualquer TZ)", () => {
-    render(
+    renderWithClient(
       <CardExperience
         experience={{
           ...baseExperience,
@@ -217,13 +189,13 @@ describe("CardExperience", () => {
           startDate: "2024-05-05",
           endDate: undefined,
         }}
-      />
+      />,
     );
     expect(screen.getByText(/mai/i)).toBeInTheDocument();
   });
 
   it("evento com apenas endDate mostra data única (estável em qualquer TZ)", () => {
-    render(
+    renderWithClient(
       <CardExperience
         experience={{
           ...baseExperience,
@@ -231,13 +203,13 @@ describe("CardExperience", () => {
           startDate: undefined,
           endDate: "2024-05-05",
         }}
-      />
+      />,
     );
     expect(screen.getByText(/mai/i)).toBeInTheDocument();
   });
 
   it("evento sem datas não exibe rótulos de mês", () => {
-    render(
+    renderWithClient(
       <CardExperience
         experience={{
           ...baseExperience,
@@ -245,15 +217,12 @@ describe("CardExperience", () => {
           startDate: undefined,
           endDate: undefined,
         }}
-      />
+      />,
     );
-    expect(
-      screen.queryByText(/jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez/i)
-    ).toBeNull();
+    expect(screen.queryByText(/jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez/i)).toBeNull();
   });
 
   it("en-US: traduz categoria para 'Trails'", async () => {
-    // reimporta componente com mock específico de i18n em en-US
     vi.resetModules();
     vi.doMock("react-i18next", () => ({
       useTranslation: () => ({
@@ -270,7 +239,6 @@ describe("CardExperience", () => {
         i18n: { language: "en-US" },
       }),
     }));
-    // manter os demais mocks
     vi.doMock("@/hooks/useLoadImage", () => ({
       useLoadImage: () => ({ data: true, isLoading: false }),
     }));
@@ -293,11 +261,9 @@ describe("CardExperience", () => {
       Typography: ({ children }: any) => <span>{children}</span>,
     }));
 
-    const { CardExperience: CardEN } = await import(
-      "@/components/card/experienceCard"
-    );
+    const { CardExperience: CardEN } = await import("@/components/card/experienceCard");
 
-    render(<CardEN experience={{ ...baseExperience }} />);
+    renderWithClient(<CardEN experience={{ ...baseExperience }} />);
     expect(screen.getByText(/Trails/i)).toBeInTheDocument();
   });
 });
@@ -306,11 +272,10 @@ it("fallback i18n: capacity usa 'pessoas' quando language é pt-BR", async () =>
   vi.resetModules();
   vi.doMock("react-i18next", () => ({
     useTranslation: () => ({
-      t: (k: string) => k, // força fallback: retorna a chave crua
+      t: (k: string) => k,
       i18n: { language: "pt-BR" },
     }),
   }));
-  // manter os demais mocks
   vi.doMock("@/hooks/useLoadImage", () => ({
     useLoadImage: () => ({ data: true, isLoading: false }),
   }));
@@ -335,12 +300,9 @@ it("fallback i18n: capacity usa 'pessoas' quando language é pt-BR", async () =>
     Typography: ({ children }: any) => <span>{children}</span>,
   }));
 
-  const { CardExperience: CardFallbackPT } = await import(
-    "@/components/card/experienceCard"
-  );
+  const { CardExperience: CardFallbackPT } = await import("@/components/card/experienceCard");
 
-  render(<CardFallbackPT experience={{ ...baseExperience, capacity: 8 }} />);
-  // cobre o ramo: i18n.language começa com 'pt' → "pessoas"
+  renderWithClient(<CardFallbackPT experience={{ ...baseExperience, capacity: 8 }} />);
   expect(screen.getByText("8 pessoas")).toBeInTheDocument();
 });
 
@@ -348,11 +310,10 @@ it("fallback i18n: capacity usa 'people' quando language é en-US", async () => 
   vi.resetModules();
   vi.doMock("react-i18next", () => ({
     useTranslation: () => ({
-      t: (k: string) => k, // força fallback
+      t: (k: string) => k,
       i18n: { language: "en-US" },
     }),
   }));
-  // manter os demais mocks
   vi.doMock("@/hooks/useLoadImage", () => ({
     useLoadImage: () => ({ data: true, isLoading: false }),
   }));
@@ -377,11 +338,8 @@ it("fallback i18n: capacity usa 'people' quando language é en-US", async () => 
     Typography: ({ children }: any) => <span>{children}</span>,
   }));
 
-  const { CardExperience: CardFallbackEN } = await import(
-    "@/components/card/experienceCard"
-  );
+  const { CardExperience: CardFallbackEN } = await import("@/components/card/experienceCard");
 
-  render(<CardFallbackEN experience={{ ...baseExperience, capacity: 8 }} />);
-  // cobre o ramo: não-pt → "people"
+  renderWithClient(<CardFallbackEN experience={{ ...baseExperience, capacity: 8 }} />);
   expect(screen.getByText("8 people")).toBeInTheDocument();
 });
