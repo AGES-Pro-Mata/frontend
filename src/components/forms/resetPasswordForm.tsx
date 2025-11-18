@@ -7,10 +7,20 @@ import { PasswordInput } from "@/components/input/passwordInput";
 import { Typography } from "../typography";
 import { Form, FormField, FormItem, FormMessage } from "../ui/form";
 import { Button } from "../button/defaultButton";
-import { useResetPasswordMutation } from "@/hooks/useResetPasswordMutation";
 import { appToast } from "@/components/toast/toast";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { useResetPasswordMutation } from "@/hooks";
+
+const formSchema = z
+  .object({
+    password: z.string().min(6, "validation.passwordMin" as unknown as string),
+    confirm: z.string(),
+  })
+  .refine((data) => data.password === data.confirm, {
+    message: "validation.passwordsMustMatch" as unknown as string,
+    path: ["confirm"],
+  });
 import { useMemo, useEffect, useRef } from "react";
 
 export function ResetPasswordForm({ token }: { token: string }) {
@@ -59,7 +69,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   if (mutation.isSuccess) {
     appToast.success(t("auth.reset.toastSuccess"));
-    navigate({ to: "/auth/login" });
+    void navigate({ to: "/auth/login" });
   }
 
   if (mutation.isError) {
@@ -87,7 +97,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs flex flex-col gap-4">
               <FormField
@@ -125,11 +135,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
               type="submit"
               disabled={mutation.isPending}
               className="w-full sm:w-56"
-              label={
-                mutation.isPending
-                  ? t("auth.reset.submitting")
-                  : t("auth.reset.submit")
-              }
+              label={mutation.isPending ? t("auth.reset.submitting") : t("auth.reset.submit")}
             />
           </div>
         </form>

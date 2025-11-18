@@ -2,18 +2,14 @@ import ReservaCard, { type Person } from "@/components/card/myReservation";
 import { MyReservationsFilterCompact } from "@/components/filter/MyReservationsFilterCompact";
 import { Button } from "@/components/button/defaultButton";
 import { Typography } from "@/components/typography/typography";
-import { useAddPeopleMyReservations } from "@/hooks/useAddPeopleMyReservations";
-import { useCancelReservation } from "@/hooks/useCancelReservation";
-import {
-  type ReservationGroupStatusFilter,
-  useMyReservations,
-} from "@/hooks/useMyReservations";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import type { AxiosError } from "axios";
 import { type Key, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MoonLoader } from "react-spinners";
 import { toast } from "sonner";
+import { useAddPeopleMyReservations, useCancelReservation, useMyReservations } from "@/hooks";
+import type { ReservationGroupStatusFilter } from "@/hooks/reservations/useMyReservations";
 
 export const Route = createFileRoute("/(index)/user/my-reservations/")({
   component: RouteComponent,
@@ -55,10 +51,7 @@ function RouteComponent() {
 
   return (
     <main className="mx-auto flex w-full max-w-[1180px] flex-col gap-12 px-4 py-10 md:px-8">
-      <MyReservationsFilterCompact
-        handleStatusChange={(status) => setStatus(status)}
-        status={status}
-      />
+      <MyReservationsFilterCompact handleStatusChange={setStatus} status={status} />
       {isFetching ? (
         <MoonLoader className="mx-auto my-40" />
       ) : isEmpty ? (
@@ -66,18 +59,11 @@ function RouteComponent() {
           <Typography variant="h3" className="font-semibold text-foreground">
             {t("myReservationsPage.empty.title")}
           </Typography>
-          <Typography
-            variant="body"
-            className="mt-3 max-w-lg text-muted-foreground"
-          >
+          <Typography variant="body" className="mt-3 max-w-lg text-muted-foreground">
             {t("myReservationsPage.empty.description")}
           </Typography>
           <Link to="/reserve" className="mt-8">
-            <Button
-              type="button"
-              variant="primary"
-              label={t("myReservationsPage.empty.cta")}
-            />
+            <Button type="button" variant="primary" label={t("myReservationsPage.empty.cta")} />
           </Link>
         </section>
       ) : (

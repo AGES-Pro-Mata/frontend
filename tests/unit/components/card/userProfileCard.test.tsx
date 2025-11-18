@@ -16,7 +16,7 @@ vi.mock('react-i18next', () => ({
 
 const userProfileState = { verified: false };
 
-vi.mock('@/hooks/useCurrentUser', () => ({
+vi.mock('@/hooks', () => ({
   useCurrentUserProfile: vi.fn(() => userProfileState),
 }));
 

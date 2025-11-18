@@ -8,7 +8,7 @@ import type { DateRange } from "react-day-picker";
 import type { ExperienceTuningData } from "@/types/experience";
 import ExperienceCard from "@/components/card/experienceTuningCard";
 import { renderWithProviders } from "@/test/test-utils";
-import { useExperienceTuning } from "@/hooks/useExperienceTuning";
+import { useExperienceTuning } from "@/hooks";
 
 type RangeValue = DateRange;
 type RangeArgument = DateRange | undefined;
@@ -106,7 +106,7 @@ type ExperienceTuningMock = {
 
 type HookReturn = ExperienceTuningMock;
 
-vi.mock("@/hooks/useExperienceTuning", () => ({
+vi.mock("@/hooks/experiences/useExperienceTuning", () => ({
   useExperienceTuning: vi.fn(),
 }));
 
