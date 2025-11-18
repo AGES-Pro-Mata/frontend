@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
@@ -9,9 +9,9 @@ import { fileURLToPath, URL } from "node:url";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    TanStackRouterVite({ 
+    TanStackRouterVite({
       autoCodeSplitting: true,
-      generatedRouteTree: './src/routeTree.gen.ts'
+      generatedRouteTree: "./src/routeTree.gen.ts",
     }),
     viteReact(),
     tailwindcss(),
@@ -20,13 +20,8 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
-    include: [
-      "src/**/*.{test,spec}.{ts,tsx}",
-      "tests/**/*.{test,spec}.{ts,tsx}"
-    ],
-    exclude: [
-      "tests/e2e/**",
-    ],
+    include: ["src/**/*.{test,spec}.{ts,tsx}", "tests/**/*.{test,spec}.{ts,tsx}"],
+    exclude: ["tests/e2e/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary", "lcov"],
@@ -40,16 +35,16 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'router-vendor': ['@tanstack/react-router'],
-          'query-vendor': ['@tanstack/react-query'],
-          'ui-vendor': ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu']
-        }
-      }
+          "react-vendor": ["react", "react-dom"],
+          "router-vendor": ["@tanstack/react-router"],
+          "query-vendor": ["@tanstack/react-query"],
+          "ui-vendor": ["lucide-react", "@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
+        },
+      },
     },
-    minify: 'esbuild',
+    minify: "esbuild",
     sourcemap: false,
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
   },
   resolve: {
     alias: {

@@ -47,7 +47,7 @@ export function UserProfileCard({
 
   return (
     <CanvasCard
-      className={`w-full max-w-[clamp(40rem,82vw,760px)] mx-auto p-8 sm:p-12 bg-card shadow-md rounded-[20px] ${className}`}
+      className={`w-full max-w-[clamp(40rem,82vw,760px)] mx-auto p-8 sm:p-12 bg-card/20 shadow-md rounded-[20px] ${className}`}
     >
       <div className="flex flex-col gap-8">
         <header className="flex flex-col items-center gap-2">
