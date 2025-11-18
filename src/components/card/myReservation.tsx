@@ -16,6 +16,7 @@ import CardStatus from "@/components/card/cardStatus";
 import { Button } from "@/components/button/defaultButton";
 import type { Reservation, ReservationGroupStatus } from "@/hooks/reservations/useMyReservations";
 import { ReservationInfoCard } from "@/components/card/reservationInfoCard";
+import { HistoryRequestModal } from "../modals/historyRequestModal";
 
 export type Person = {
   nome: string;
@@ -25,6 +26,7 @@ export type Person = {
   genero: string;
 };
 
+
 type ReservaCardProps = {
   id: string;
   titulo: string;
@@ -33,6 +35,7 @@ type ReservaCardProps = {
   periodo: { inicio: Date; fim: Date };
   status: ReservationGroupStatus;
   reservations: Reservation[];
+  history: any[];
   handleCancel: (id: string) => void;
   handleAddPeople: (id: string, people: Person[]) => void;
 };
@@ -45,6 +48,7 @@ export default function ReservaCard({
   periodo,
   status,
   reservations,
+  history,
   handleCancel,
   handleAddPeople,
 }: ReservaCardProps) {
@@ -68,6 +72,7 @@ export default function ReservaCard({
   const [openModalPessoas, setOpenModalPessoas] = useState(false);
   const [openModalComprovante, setOpenModalComprovante] = useState(false);
   const [openViewReservation, setOpenViewReservation] = useState(false);
+  const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
   const handleOpenModalPessoas = (open: boolean) => {
     if (open) {
       setDraftPessoas(pessoas.map((p) => ({ ...p })));
@@ -106,6 +111,10 @@ export default function ReservaCard({
 
   const handleViewReservation = () => {
     setOpenViewReservation(true);
+  };
+
+  const handleOpenHistoryModal = () => {
+    setOpenHistoryDialog(true);
   };
 
   return (
@@ -162,6 +171,11 @@ export default function ReservaCard({
           <div className="w-full mt-6 flex items-center justify-between">
             <CardStatus icon={statusIcon} label={statusLabel} accentClassName={statusAccent} />
             <div className="flex gap-3">
+              <Button
+                onClick={() => handleOpenHistoryModal()}
+                className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
+                label={t("reservation.history")}
+              />
               {status === "PEOPLE_REQUESTED" && (
                 <Button
                   onClick={() => setOpenModalPessoas(true)}
@@ -208,6 +222,12 @@ export default function ReservaCard({
         handleSalvarPessoas={handleSalvarPessoas}
       />
 
+      <HistoryRequestModal
+        open={openHistoryDialog}
+        onOpenChange={setOpenHistoryDialog}
+        history={history}
+      />
+
       <PaymentProofModal
         open={openModalComprovante}
         onOpenChange={setOpenModalComprovante}
@@ -220,7 +240,7 @@ export default function ReservaCard({
 
       <Dialog open={openViewReservation} onOpenChange={setOpenViewReservation}>
         <DialogContent className="!max-w-none w-[90vw] h-[87vh] bg-white rounded-xl shadow-lg p-6 overflow-y-auto">
-          <ReservationInfoCard reservationId={id} className="mt-3"/>
+          <ReservationInfoCard reservationId={id} className="mt-3" />
         </DialogContent>
       </Dialog>
     </>
