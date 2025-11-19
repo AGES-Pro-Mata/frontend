@@ -1,4 +1,4 @@
-import { RequestsType } from "@/utils/enums/requests-enum";
+import { ProfessorRequestsType, RequestsType } from "@/utils/enums/requests-enum";
 import { Check, DollarSign, FileEdit, type LucideIcon, Users, X, XCircle } from "lucide-react";
 
 //TODO: traduzir com i18n
@@ -49,13 +49,9 @@ export const REQUESTS_ACTIONS_BUTTONS_ORDER = {
     RequestsType.PEOPLE_REQUESTED,
   ],
   [RequestsType.PAYMENT_REQUESTED]: [RequestsType.CANCELED, RequestsType.APPROVED],
-  [RequestsType.PAYMENT_SENT]: [
-    RequestsType.CANCELED,
-    RequestsType.APPROVED,
-    RequestsType.PAYMENT_REQUESTED,
-    RequestsType.PEOPLE_REQUESTED,
-  ],
-  [RequestsType.PAYMENT_REJECTED]: [
+  [RequestsType.PAYMENT_SENT]: [RequestsType.PAYMENT_APPROVED, RequestsType.PAYMENT_REJECTED],
+  [RequestsType.PAYMENT_REJECTED]: [RequestsType.CANCELED, RequestsType.PAYMENT_REQUESTED],
+  [RequestsType.PAYMENT_APPROVED]: [
     RequestsType.CANCELED,
     RequestsType.APPROVED,
     RequestsType.PAYMENT_REQUESTED,
@@ -84,3 +80,9 @@ export const REQUESTS_ICONS = {
   [RequestsType.PAYMENT_REJECTED]: XCircle,
   [RequestsType.REJECTED]: X,
 } as Record<string | number, LucideIcon>;
+
+export const PROFESSOR_REQUESTS_LABEL = {
+  [ProfessorRequestsType.DOCUMENT_APPROVED]: "Documento Aprovado",
+  [ProfessorRequestsType.DOCUMENT_REJECTED]: "Documento Rejeitado",
+  [ProfessorRequestsType.DOCUMENT_REQUESTED]: "Documento Enviado",
+} as Record<string | number, string>;

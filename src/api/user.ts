@@ -115,8 +115,13 @@ export interface UpdateUserAdminPayload {
   function?: string; // professional role
 }
 
-export async function getUserById(userId: string): Promise<TEditUserAdminResponse> {
-  const result = await safeApiCall(api.get(`/user/${userId}`), EditUserAdminResponse);
+export async function getUserById(
+  userId?: string
+): Promise<TEditUserAdminResponse> {
+  const result = await safeApiCall(
+    api.get(`/user/${userId}`),
+    EditUserAdminResponse
+  );
 
   return result;
 }
