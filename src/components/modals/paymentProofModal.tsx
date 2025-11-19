@@ -82,7 +82,7 @@ export function PaymentProofModal({
               <input
                 type="file"
                 className="absolute inset-0 opacity-0 cursor-pointer"
-                accept="image/*,application/pdf"
+                accept="application/pdf"
                 onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
               />
             </label>
