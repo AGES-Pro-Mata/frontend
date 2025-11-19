@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { FaRegCalendarCheck, FaUser } from "react-icons/fa";
 
-import ReservationRequestsTable from "./reservations/requests-table";
+import ReservationRequestsTable from "./-components/requests-table";
 
 export const Route = createFileRoute("/admin/requests/")({
   component: RouteComponent,
@@ -29,7 +29,7 @@ function RouteComponent() {
             void navigate({ to: "/admin/requests", search: { tab: "professor" } });
           }}
         >
-          <FaUser size={24} /> Professor Requests
+          <FaUser size={24} /> Solicitações de Professores
         </button>
         <button
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
@@ -39,7 +39,7 @@ function RouteComponent() {
             void navigate({ to: "/admin/requests", search: { tab: "reservation" } });
           }}
         >
-          <FaRegCalendarCheck size={24} /> Reservation Requests
+          <FaRegCalendarCheck size={24} /> Solicitações de Reservas
         </button>
       </div>
       {/* {tab === "professor" && <ProfessorRequestsTable />} */}

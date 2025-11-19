@@ -1,6 +1,6 @@
+import { createFileRoute } from "@tanstack/react-router"
 import { CardExperience } from "@/components/card/experienceCard";
 import { ExperienceFilter } from "@/components/filter/ExperienceFilter";
-import { createFileRoute } from "@tanstack/react-router";
 import {
   Pagination,
   PaginationContent,

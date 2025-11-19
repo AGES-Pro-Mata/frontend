@@ -1,8 +1,9 @@
 import { RequestsType } from "@/utils/enums/requests-enum";
+import { Check, DollarSign, FileEdit, type LucideIcon, Users, X, XCircle } from "lucide-react";
 
 //TODO: traduzir com i18n
 export const REQUESTS_LABEL = {
-  [RequestsType.APPROVED]: "Aprovado",
+  [RequestsType.APPROVED]: "Aprovada",
   [RequestsType.CANCELED]: "Cancelada",
   [RequestsType.CANCELED_REQUESTED]: "Cancelamento Solicitado",
   [RequestsType.CREATED]: "Nova",
@@ -69,3 +70,17 @@ export const REQUESTS_ACTIONS_LABEL = {
   [RequestsType.PAYMENT_REQUESTED]: "SOLICITAR PAGAMENTO",
   [RequestsType.PEOPLE_REQUESTED]: "SOLICITAR PESSOAS",
 } as Record<string | number, string>;
+
+export const REQUESTS_ICONS = {
+  [RequestsType.APPROVED]: Check,
+  [RequestsType.CANCELED]: X,
+  [RequestsType.CANCELED_REQUESTED]: XCircle,
+  [RequestsType.CREATED]: FileEdit,
+  [RequestsType.EDITED]: FileEdit,
+  [RequestsType.PEOPLE_REQUESTED]: Users,
+  [RequestsType.PEOPLE_SENT]: Users,
+  [RequestsType.PAYMENT_REQUESTED]: DollarSign,
+  [RequestsType.PAYMENT_SENT]: DollarSign,
+  [RequestsType.PAYMENT_REJECTED]: XCircle,
+  [RequestsType.REJECTED]: X,
+} as Record<string | number, LucideIcon>;

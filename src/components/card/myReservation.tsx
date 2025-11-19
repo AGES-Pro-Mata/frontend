@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CalendarIcon, DollarSign } from "lucide-react";
 import { toast } from "sonner";
-import { ModalPessoas } from "@/components/modals/peopleModal";
+import { PeopleModal } from "@/components/modals/peopleModal";
 import { CancelReservationModal } from "@/components/modals/cancelReservationModal";
 import { PaymentProofModal } from "@/components/modals/paymentProofModal";
 import { useTranslation } from "react-i18next";
@@ -14,72 +14,74 @@ import {
 import CanvasCard from "@/components/card/canvasCard";
 import CardStatus from "@/components/card/cardStatus";
 import { Button } from "@/components/button/defaultButton";
-import type { Reservation, ReservationGroupStatus } from "@/hooks/reservations/useMyReservations";
+import type {
+  RequestEventAdminHistoryResponse,
+  Reservation,
+  ReservationGroupStatus,
+} from "@/hooks/reservations/useMyReservations";
 import { ReservationInfoCard } from "@/components/card/reservationInfoCard";
+import { HistoryRequestModal } from "../modals/historyRequestModal";
+import { type Person } from "@/types/person";
+import { useSendPaymentProof } from "@/hooks";
 
-export type Person = {
-  nome: string;
-  telefone: string;
-  nascimento: string;
-  cpf: string;
-  genero: string;
-};
-
-type ReservaCardProps = {
+type MyReservationCardProps = {
   id: string;
-  titulo: string;
-  preco: number;
-  tipo?: string;
-  periodo: { inicio: Date; fim: Date };
+  title: string;
+  price: number;
+  type?: string;
+  period: { startDate: Date; endDate: Date };
   status: ReservationGroupStatus;
   reservations: Reservation[];
+  history: RequestEventAdminHistoryResponse[];
   handleCancel: (id: string) => void;
   handleAddPeople: (id: string, people: Person[]) => void;
 };
 
-export default function ReservaCard({
+export default function MyReservationCard({
   id,
-  titulo,
-  preco,
-  tipo,
-  periodo,
+  title,
+  price,
+  type,
+  period,
   status,
   reservations,
+  history,
   handleCancel,
   handleAddPeople,
-}: ReservaCardProps) {
+}: MyReservationCardProps) {
   const { t } = useTranslation();
-  const [draftPessoas, setDraftPessoas] = useState<Person[]>([]);
-  const [pessoas, setPessoas] = useState<Person[]>(
+  const [draftPeople, setDraftPeople] = useState<Person[]>([]);
+  const [people, setPeople] = useState<Person[]>(
     Array.from({ length: 1 }, () => ({
-      nome: "",
-      telefone: "",
-      nascimento: "",
-      cpf: "",
-      genero: "",
+      name: "",
+      phone: "",
+      birthDate: "",
+      document: "",
+      gender: "",
     })),
   );
   const fmt = (d: Date) => d.toLocaleDateString("pt-BR");
-  const handleCancelarReserva = () => {
-    setOpenModalCancel(false);
+  const handleCancelReservation = () => {
+    setOpenCancelModal(false);
     handleCancel(id);
   };
-  const [openModalCancel, setOpenModalCancel] = useState(false);
-  const [openModalPessoas, setOpenModalPessoas] = useState(false);
-  const [openModalComprovante, setOpenModalComprovante] = useState(false);
+  const [openCancelModal, setOpenCancelModal] = useState(false);
+  const [openPeopleModal, setOpenPeopleModal] = useState(false);
+  const [openPaymentProofModal, setOpenPaymentProofModal] = useState(false);
   const [openViewReservation, setOpenViewReservation] = useState(false);
-  const handleOpenModalPessoas = (open: boolean) => {
+  const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
+  const handleOpenPeopleModal = (open: boolean) => {
     if (open) {
-      setDraftPessoas(pessoas.map((p) => ({ ...p })));
+      setDraftPeople(people.map((p) => ({ ...p })));
     } else {
-      setDraftPessoas(pessoas.map((p) => ({ ...p })));
+      setDraftPeople(people.map((p) => ({ ...p })));
     }
-    setOpenModalPessoas(open);
+    setOpenPeopleModal(open);
   };
-  const handleSalvarPessoas = (novasPessoas: Person[]) => {
-    setPessoas(novasPessoas);
-    handleAddPeople(id, novasPessoas);
-    setOpenModalPessoas(false);
+  const handleSavePeople = (newPeople: Person[]) => {
+    setPeople(newPeople);
+    handleAddPeople(id, newPeople);
+    setOpenPeopleModal(false);
   };
 
   const statusMap: Record<ReservationGroupStatus, ReservationStatus> = {
@@ -108,6 +110,25 @@ export default function ReservaCard({
     setOpenViewReservation(true);
   };
 
+  const handleOpenHistoryModal = () => {
+    setOpenHistoryDialog(true);
+  };
+
+  const sendPaymentProofMutation: ReturnType<typeof useSendPaymentProof> = useSendPaymentProof();
+
+  const handleSendPaymentProof = async (file: File) => {
+    try {
+      await sendPaymentProofMutation.mutateAsync({ reservationGroupId: id, file });
+      toast.success(t("reservation.paymentProofSent"));
+    } catch (error: unknown) {
+      toast.error(t("paymentProof.sendError"));
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("PAYMENT_PROOF_SEND_ERROR");
+    }
+  };
+
   return (
     <>
       <CanvasCard className="relative w-[921px] h-[445px] mx-auto bg-card shadow-lg rounded-xl overflow-hidden flex flex-col">
@@ -129,10 +150,10 @@ export default function ReservaCard({
 
         <div className="flex flex-col flex-1 px-6 py-4">
           <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="font-bold text-[20px] text-main-dark-green">{titulo}</h2>
-            {tipo && (
+            <h2 className="font-bold text-[20px] text-main-dark-green">{title}</h2>
+            {type && (
               <span className="inline-flex items-center justify-center text-xs text-main-dark-green bg-card rounded-full font-bold shadow-inner px-3 py-1 border border-main-dark-green">
-                {tipo}
+                {type}
               </span>
             )}
             <div className="flex items-center gap-3 ml-auto">
@@ -141,7 +162,7 @@ export default function ReservaCard({
                   <CalendarIcon className="w-3.5 h-3.5" />
                 </div>
                 <span className="text-sm font-semibold text-main-dark-green whitespace-nowrap">
-                  {fmt(periodo.inicio)} a {fmt(periodo.fim)}
+                  {fmt(period.startDate)} {t("common.to")} {fmt(period.endDate)}
                 </span>
               </div>
               <div className="flex items-center rounded-full bg-card-light shadow-sm gap-2 px-3 py-1">
@@ -149,7 +170,7 @@ export default function ReservaCard({
                   <DollarSign className="w-3.5 h-3.5" />
                 </div>
                 <span className="text-sm font-semibold text-main-dark-green whitespace-nowrap">
-                  R$ {preco.toFixed(2)}
+                  R$ {price.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -159,26 +180,30 @@ export default function ReservaCard({
               <li key={r.experience.name}>{r.experience.name}</li>
             ))}
           </ul>
-          <div className="w-full mt-6 flex items-center justify-between">
-            <CardStatus icon={statusIcon} label={statusLabel} accentClassName={statusAccent} />
-            <div className="flex gap-3">
+
+          <CardStatus
+            icon={statusIcon}
+            label={statusLabel}
+            accentClassName={statusAccent}
+            className="mt-4"
+          />
+          <div className="w-full mt-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={() => handleOpenHistoryModal()}
+                className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
+                label={t("reservation.history")}
+              />
               {status === "PEOPLE_REQUESTED" && (
                 <Button
-                  onClick={() => setOpenModalPessoas(true)}
+                  onClick={() => setOpenPeopleModal(true)}
                   className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
                   label={t("reservation.registerPeople")}
                 />
               )}
-              {status === "PAYMENT_REQUESTED" && (
-                <Button
-                  onClick={() => setOpenModalComprovante(true)}
-                  className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-                  label={t("reservation.sendPaymentProof")}
-                />
-              )}
               {status !== "CANCELED" && status !== "CANCELED_REQUESTED" && (
                 <Button
-                  onClick={() => setOpenModalCancel(true)}
+                  onClick={() => setOpenCancelModal(true)}
                   className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
                   label={t("reservation.cancelReservation")}
                 />
@@ -190,37 +215,48 @@ export default function ReservaCard({
                 label={t("reservation.viewReservation")}
               />
             </div>
+
+            {status === "PAYMENT_REQUESTED" && (
+              <Button
+                onClick={() => setOpenPaymentProofModal(true)}
+                className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
+                label={t("reservation.sendPaymentProof")}
+              />
+            )}
           </div>
         </div>
       </CanvasCard>
 
       <CancelReservationModal
-        open={openModalCancel}
-        onOpenChange={setOpenModalCancel}
-        onConfirm={handleCancelarReserva}
+        open={openCancelModal}
+        onOpenChange={setOpenCancelModal}
+        onConfirm={handleCancelReservation}
       />
-      <ModalPessoas
-        open={openModalPessoas}
-        onOpenChange={handleOpenModalPessoas}
-        draftPessoas={draftPessoas}
-        setDraftPessoas={setDraftPessoas}
-        pessoas={pessoas}
-        handleSalvarPessoas={handleSalvarPessoas}
+      <PeopleModal
+        open={openPeopleModal}
+        onOpenChange={handleOpenPeopleModal}
+        draftPeople={draftPeople}
+        setDraftPeople={setDraftPeople}
+        people={people}
+        handleSavePeople={handleSavePeople}
+      />
+
+      <HistoryRequestModal
+        open={openHistoryDialog}
+        onOpenChange={setOpenHistoryDialog}
+        history={history}
       />
 
       <PaymentProofModal
-        open={openModalComprovante}
-        onOpenChange={setOpenModalComprovante}
-        preco={preco}
-        onConfirm={() => {
-          setOpenModalComprovante(false);
-          toast.success(t("reservation.paymentProofSent"));
-        }}
+        open={openPaymentProofModal}
+        onOpenChange={setOpenPaymentProofModal}
+        price={price}
+        onConfirm={handleSendPaymentProof}
       />
 
       <Dialog open={openViewReservation} onOpenChange={setOpenViewReservation}>
         <DialogContent className="!max-w-none w-[90vw] h-[87vh] bg-white rounded-xl shadow-lg p-6 overflow-y-auto">
-          <ReservationInfoCard reservationId={id} className="mt-3"/>
+          <ReservationInfoCard reservationId={id} className="mt-3" />
         </DialogContent>
       </Dialog>
     </>

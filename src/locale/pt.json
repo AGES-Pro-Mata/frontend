@@ -28,7 +28,8 @@
     "events": "Eventos",
     "trails": "Trilhas",
     "experience": "Experiência",
-    "experiences": "Experiências"
+    "experiences": "Experiências",
+    "to": "a"
   },
   "cartDrawer": {
     "heading": {
@@ -74,6 +75,7 @@
     "sendPaymentProof": "Enviar Comprovante",
     "cancelReservation": "Cancelar Reserva",
     "viewReservation": "Visualizar Reserva",
+    "history": "Histórico",
     "cancelRequestSent": "Solicitação de cancelamento enviada!",
     "peopleRegisteredSuccess": "Pessoas cadastradas com sucesso!",
     "paymentProofSent": "Comprovante enviado com sucesso!",
@@ -484,6 +486,7 @@
     "addressRequired": "Endereço é obrigatório",
     "birthDateRequired": "Informe a data de nascimento",
     "cpfRequired": "Informe o CPF",
+
     "cep8": "CEP deve conter 8 dígitos",
     "cpfInvalid": "CPF inválido",
     "rgInvalid": "RG inválido",

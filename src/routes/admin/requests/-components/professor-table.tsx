@@ -28,7 +28,7 @@ const PLACE_HOLDER_TRANSLATE_TEXT = {
 
 type FilterKey = keyof typeof PLACE_HOLDER_TRANSLATE_TEXT;
 
-export default function RouteComponent() {
+export default function ProfessorRequestsTable() {
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState<FilterKey>("name");
   const [searchTerm, setSearchTerm] = useState<string>("");

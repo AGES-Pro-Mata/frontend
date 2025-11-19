@@ -1,4 +1,4 @@
-import ReservaCard, { type Person } from "@/components/card/myReservation";
+import MyReservationCard from "@/components/card/myReservation";
 import { MyReservationsFilterCompact } from "@/components/filter/MyReservationsFilterCompact";
 import { Button } from "@/components/button/defaultButton";
 import { Typography } from "@/components/typography/typography";
@@ -8,7 +8,7 @@ import { type Key, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MoonLoader } from "react-spinners";
 import { toast } from "sonner";
-import { sendPaymentProof } from "@/api/my-reservations";
+import type { Person } from "@/types/person";
 import { useAddPeopleMyReservations, useCancelReservation, useMyReservations } from "@/hooks";
 import type { ReservationGroupStatusFilter } from "@/hooks/reservations/useMyReservations";
 
@@ -37,10 +37,10 @@ function RouteComponent() {
 
   function handleAddPeople(id: string, people: Person[]): void {
     const modelPeople = people.map((p) => ({
-      name: p.nome,
-      document: p.cpf,
-      phone: p.telefone,
-      gender: p.genero,
+      name: p.name,
+      document: p.document,
+      phone: p.phone,
+      gender: p.gender,
     }));
 
     addPeopleReservation({ id, people: modelPeople })
@@ -48,40 +48,6 @@ function RouteComponent() {
       .catch((e: AxiosError) => {
         toast.error(e.message);
       });
-  }
-
-  const handleUploadProof = async (id: string, url: string) => {
-    if (!url.trim()) return toast.error(t("paymentProof.emptyUrl"));
-
-    try {
-      await sendPaymentProof(id, url);
-
-      toast.success(t("paymentProof.sendSuccess"));
-    } catch (error: any) {
-      toast.error(error.message || t("paymentProof.genericError"));
-    }
-  };
-
-  function UploadProofButton({ id }: { id: string }) {
-    const [url, setUrl] = useState("");
-
-    return (
-      <div className="flex flex-col items-start gap-3 mt-4">
-        <input
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder={t("paymentProof.placeholder")}
-          className="text-sm w-full rounded-lg border border-input bg-background px-4 py-2 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        />
-        <Button
-          type="button"
-          variant="primary"
-          label={t("paymentProof.button")}
-          onClick={() => handleUploadProof(id, url)}
-        />
-      </div>
-    );
   }
 
   return (
@@ -104,21 +70,21 @@ function RouteComponent() {
       ) : (
         reservations.map((rg) => (
           <div key={rg.id as Key} className="space-y-3">
-            <ReservaCard
+            <MyReservationCard
               key={rg.id as Key}
               id={rg.id}
-              titulo={"Pacote personalizado"}
-              preco={+rg.price}
-              periodo={{
-                inicio: new Date(rg.startDate),
-                fim: new Date(rg.endDate),
+              history={rg.history}
+              title={"Pacote personalizado"}
+              price={+rg.price}
+              period={{
+                startDate: new Date(rg.startDate),
+                endDate: new Date(rg.endDate),
               }}
               reservations={rg.reservations}
               status={rg.status}
               handleCancel={handleCancel}
               handleAddPeople={handleAddPeople}
             />
-            <UploadProofButton id={rg.id} />
           </div>
         ))
       )}

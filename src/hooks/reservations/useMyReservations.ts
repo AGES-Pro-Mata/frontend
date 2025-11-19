@@ -1,4 +1,5 @@
 import { api } from "@/core/api";
+import type { RequestsType } from "@/utils/enums/requests-enum";
 import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
@@ -59,11 +60,18 @@ export interface Reservation {
   experience: Experience;
 }
 
+export interface RequestEventAdminHistoryResponse {
+  type: RequestsType;
+  description: string | null;
+  createdAt: string;
+}
+
 interface ReservationGroup {
   id: string;
   price: string;
   members: Member[];
   reservations: Reservation[];
+  history: RequestEventAdminHistoryResponse[];
   status: ReservationGroupStatus;
   startDate: string;
   endDate: string;

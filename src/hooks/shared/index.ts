@@ -5,3 +5,4 @@ export { useDebounce } from "./useDebounce";
 export { useCepQuery } from "./useCepQuery";
 export { useCurrentPath } from "./useCurrentPath";
 export { useLoadImage } from "./useLoadImage";
+export { useLoadPdf } from "./useLoadPdf";

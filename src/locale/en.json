@@ -27,7 +27,8 @@
         "events": "Events",
         "trails": "Trails",
         "experience": "Experience",
-        "experiences": "Experiences"
+        "experiences": "Experiences",
+        "to": "to"
     },
     "cartDrawer": {
         "heading": {
@@ -73,6 +74,7 @@
         "sendPaymentProof": "Send payment receipt",
         "cancelReservation": "Cancel reservation",
         "viewReservation": "View reservation",
+        "history": "History",
         "cancelRequestSent": "Cancellation request sent!",
         "peopleRegisteredSuccess": "Participants registered successfully!",
         "paymentProofSent": "Payment receipt sent successfully!",
