@@ -1,6 +1,6 @@
 import CardStatus from "@/components/card/cardStatus";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { Circle } from "lucide-react";
 
 
@@ -15,6 +15,7 @@ it("renderiza o ícone quando é um elemento React válido", () => {
     <CardStatus label="Ativo" icon={<Circle className="custom-class" />} />
   );
   const icon = container.querySelector("svg.h-5.w-5");
+
   expect(icon).toBeTruthy();
 });
 
@@ -22,6 +23,7 @@ it("renderiza o ícone quando é um elemento React válido", () => {
   it("não renderiza o ícone quando não é um elemento React válido", () => {
     const { container } = render(<CardStatus label="Ativo" icon={"❌"} />);
     const icon = container.querySelector(".h-5.w-5");
+
     expect(icon).toBeNull();
     expect(container).toHaveTextContent("Ativo");
   });
@@ -40,6 +42,7 @@ it("renderiza o ícone quando é um elemento React válido", () => {
       />
     );
     const span = container.querySelector("span");
+
     expect(span?.className).toContain("text-green-500");
     expect(span?.className).toContain("extra-class");
   });
