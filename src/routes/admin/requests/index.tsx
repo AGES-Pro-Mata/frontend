@@ -3,12 +3,15 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FaRegCalendarCheck, FaUser } from "react-icons/fa";
 
 import ReservationRequestsTable from "./-components/requests-table";
+import ProfessorRequestsTable from "./-components/professor-table";
+
+const tabs = ["professor", "reservation"] as string[];
 
 export const Route = createFileRoute("/admin/requests/")({
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      tab: (search.tab as string) || "reservation",
+      tab: tabs.includes(search.tab as string) ? (search.tab as string) : "reservation",
     };
   },
 });
@@ -42,7 +45,7 @@ function RouteComponent() {
           <FaRegCalendarCheck size={24} /> Solicitações de Reservas
         </button>
       </div>
-      {/* {tab === "professor" && <ProfessorRequestsTable />} */}
+      {tab === "professor" && <ProfessorRequestsTable />}
       {tab === "reservation" && <ReservationRequestsTable />}
     </div>
   );

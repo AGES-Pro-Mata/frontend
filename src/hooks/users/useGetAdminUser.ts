@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 export const ADMIN_USER_QUERY_KEY = "admin-user";
 
 type useGetAdminUserParams = {
-  id: string;
+  id?: string;
 };
 
 export const useGetAdminUser = ({ id }: useGetAdminUserParams) => {

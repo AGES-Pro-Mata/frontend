@@ -131,7 +131,7 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
         </div>
         <span className="text-sm text-gray-500">Data de criação: {date}</span>
       </div>
-      <div className="h-[550px]">
+      <div className="h-[450px]">
         <ReservationEvents events={data.events} />
       </div>
       {data.status !== RequestsType.CANCELED && (
@@ -171,7 +171,7 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
                   <FormItem className="w-full">
                     <Input
                       onChange={(value) => field.onChange(value)}
-                      value={field.value}
+                      value={field.value ?? ""}
                       placeholder="Digite para o usuário"
                       className="flex-grow rounded-md border-gray-300 focus-visible:ring-offset-0 focus-visible:ring-2 focus-visible:ring-green-500 h-12"
                     />

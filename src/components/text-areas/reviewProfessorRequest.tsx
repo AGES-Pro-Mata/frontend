@@ -1,171 +1,126 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { CheckCircle2, XCircle } from "lucide-react";
-
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import { type ReactElement, createElement, useState } from "react";
 import { Button } from "../button/defaultButton";
 import { Textarea } from "../ui/textarea";
-import { MarkdownTextArea } from "./markdownTextArea";
+import {
+  GET_PROFESSOR_REQUESTS_QUERY_KEY,
+  useGetProfessorRequest,
+} from "@/hooks/requests/use-get-professor-request-admin";
+import { ProfessorRequestsType } from "@/utils/enums/requests-enum";
+import { useCreateAdminRequest } from "@/hooks/requests/use-create-request-admin";
+import { useQueryClient } from "@tanstack/react-query";
+import { appToast } from "../toast/toast";
+import { CardStatus } from "../card";
+import { CheckCircle2, Clock5, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { UserType } from "@/types/user";
+import { PROFESSOR_REQUESTS_LABEL } from "@/utils/consts/requests-consts";
+import ReceiptPreview from "../dialog/receiptPreview";
+
+type ProfessorStyle = {
+  className: string;
+  icon: ReactElement;
+};
+const STYLES = {
+  [ProfessorRequestsType.DOCUMENT_APPROVED]: {
+    className: "text-contrast-green",
+    icon: createElement(CheckCircle2),
+  },
+  [ProfessorRequestsType.DOCUMENT_REJECTED]: {
+    className: "text-default-red",
+    icon: createElement(XCircle),
+  },
+  [ProfessorRequestsType.DOCUMENT_REQUESTED]: {
+    className: "text-warning",
+    icon: createElement(Clock5),
+  },
+} satisfies Record<ProfessorRequestsType, ProfessorStyle>;
 
 interface ProfessorApprovalProps {
-  markdown: string;
-  placeholder?: string;
-  setMarkdown: (value: string) => void;
-  userType: UserType;
-  statusVersion?: number;
-  onApprove?: (markdown: string) => void;
-  onReject?: (markdown: string) => void;
-  onViewReceipt?: () => void;
+  professorId: string;
 }
 
-const statusMap = {
-  approved: {
-    label: "Aprovado",
-    icon: CheckCircle2,
-    badgeClassName:
-      "bg-contrast-green/10 text-main-dark-green border border-contrast-green/30",
-    iconClassName: "text-contrast-green",
-  },
-  rejected: {
-    label: "Recusado",
-    icon: XCircle,
-    badgeClassName:
-      "bg-default-red/10 text-default-red border border-default-red/20",
-    iconClassName: "text-default-red",
-  },
-} satisfies Record<
-  "approved" | "rejected",
-  {
-    label: string;
-    icon: typeof CheckCircle2;
-    badgeClassName: string;
-    iconClassName: string;
-  }
->;
+export default function ProfessorApproval({ professorId }: ProfessorApprovalProps) {
+  const [openPdfModal, setOpenPdfModal] = useState(false);
+  const { data } = useGetProfessorRequest(professorId);
+  const { mutateAsync, isPending } = useCreateAdminRequest();
+  const [text, setText] = useState(data?.description || "");
+  const queryClient = useQueryClient();
 
-export default function ProfessorApproval({
-  markdown,
-  setMarkdown,
-  userType,
-  statusVersion = 0,
-  onApprove,
-  onReject,
-  onViewReceipt,
-  placeholder,
-}: ProfessorApprovalProps) {
-  const statusKey = useMemo(() => {
-    if (userType === "PROFESSOR") return "approved" as const;
-    if (userType === "GUEST") return "rejected" as const;
+  const canEdit = data?.type === ProfessorRequestsType.DOCUMENT_REQUESTED;
 
-    return null;
-  }, [userType]);
-
-  const isStatusless = statusKey === null;
-  const [isEditing, setIsEditing] = useState(() => isStatusless);
-  const wasStatuslessRef = useRef(isStatusless);
-  const previousStatusKeyRef = useRef<typeof statusKey>(statusKey);
-  const statusVersionRef = useRef(statusVersion);
-
-  const statusConfig = useMemo(() => {
-    if (!statusKey) return null;
-
-    return statusMap[statusKey];
-  }, [statusKey]);
-
-  useEffect(() => {
-    const prevStatusKey = previousStatusKeyRef.current;
-    const versionChanged = statusVersionRef.current !== statusVersion;
-
-    if (!statusKey) {
-      wasStatuslessRef.current = true;
-      setIsEditing(true);
-    } else if (
-      wasStatuslessRef.current ||
-      prevStatusKey !== statusKey ||
-      versionChanged
-    ) {
-      wasStatuslessRef.current = false;
-      setIsEditing(false);
-    }
-
-    previousStatusKeyRef.current = statusKey;
-    statusVersionRef.current = statusVersion;
-  }, [statusKey, statusVersion]);
-
-  const handleApprove = () => {
-    onApprove?.(markdown);
+  const handleAprove = async () => {
+    await mutateAsync({
+      professorId,
+      description: text === "" ? null : text,
+      type: ProfessorRequestsType.DOCUMENT_APPROVED,
+    }).finally(async () => {
+      await queryClient.refetchQueries({
+        queryKey: [GET_PROFESSOR_REQUESTS_QUERY_KEY, professorId],
+      });
+      appToast.success("Professor ACEITO com sucesso!");
+    });
   };
 
-  const handleReject = () => {
-    onReject?.(markdown);
+  const handleReject = async () => {
+    await mutateAsync({
+      professorId,
+      description: text === "" ? null : text,
+      type: ProfessorRequestsType.DOCUMENT_REJECTED,
+    }).finally(async () => {
+      await queryClient.refetchQueries({
+        queryKey: [GET_PROFESSOR_REQUESTS_QUERY_KEY, professorId],
+      });
+      appToast.success("Professor RECUSADO com sucesso!");
+    });
   };
+
+  const handleViewPdf = () => {
+    setOpenPdfModal(true);
+  };
+  const className = data?.type && STYLES[data.type]?.className ? STYLES[data.type].className : "";
+
+  const icon = data?.type && STYLES[data.type]?.icon ? STYLES[data.type].icon : <></>;
+
+  if (!data) return;
 
   return (
-    <div className="flex w-full max-w-xl flex-col rounded-3xl border border-dark-gray bg-white px-8 pb-8 pt-6 shadow-sm">
-      <div className="min-h-[16rem]">
-        {isEditing ? (
-          <MarkdownTextArea
-            value={markdown}
-            onChange={setMarkdown}
-            placeholder={placeholder}
-          />
-        ) : (
-          <Textarea
-            value={markdown}
-            readOnly
-            placeholder={placeholder}
-            className="min-h-[14rem] resize-none rounded-2xl border border-dark-gray/60 bg-white px-4 py-5 text-base text-dark-gray shadow-none focus-visible:ring-0"
-          />
-        )}
+    <div className="flex flex-col min-w-[500px] gap-4">
+      <div className="relative w-full flex">
+        <Textarea
+          disabled={!canEdit}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Digite uma observação"
+          className="min-h-32 resize-none rounded-2xl border border-dark-gray/60 bg-white px-4 py-5 shadow-none focus-visible:ring-0"
+        />
+        <CardStatus
+          icon={icon}
+          label={PROFESSOR_REQUESTS_LABEL[data.type ?? ""]}
+          className={cn("absolute bottom-2 right-2", className)}
+        />
       </div>
-
-      {isEditing ? (
-        <div className="mt-4 flex gap-3">
+      {canEdit && (
+        <div className="flex gap-4 flex-row">
           <Button
+            label={"Aprovar"}
+            className="flex-1"
+            onClick={handleAprove}
+            disabled={isPending}
+          />
+          <Button
+            label={"Rejeitar"}
             variant="destructive"
-            className="flex-1 min-w-0 py-5 px-0 text-white"
-            label="Recusar professor"
-            disabled={!onReject}
+            className="flex-1"
             onClick={handleReject}
-          />
-          <Button
-            className="flex-1 min-w-0 py-5 px-0 text-white"
-            label="Aprovar professor"
-            disabled={!onApprove}
-            onClick={handleApprove}
-          />
-        </div>
-      ) : (
-        <div className="mt-4 flex items-center justify-between gap-4">
-          {statusConfig ? (
-            <span
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold",
-                statusConfig.badgeClassName
-              )}
-            >
-              <statusConfig.icon
-                className={cn("size-4", statusConfig.iconClassName)}
-              />
-              {statusConfig.label}
-            </span>
-          ) : null}
-
-          <Button
-            variant="gray"
-            className="shrink-0 px-6 py-3 text-white"
-            label="Editar"
-            onClick={() => setIsEditing(true)}
+            disabled={isPending}
           />
         </div>
       )}
-
-      <Button
-        variant="secondary"
-        className="mt-4 w-full py-5"
-        disabled={!onViewReceipt}
-        label="Visualizar comprovante"
-        onClick={() => onViewReceipt?.()}
+      <Button label={"Visualizar Comprovante"} variant="outline" onClick={handleViewPdf} />
+      <ReceiptPreview
+        src={data.fileUrl ?? ""}
+        open={openPdfModal}
+        onOpenChange={() => setOpenPdfModal(false)}
       />
     </div>
   );

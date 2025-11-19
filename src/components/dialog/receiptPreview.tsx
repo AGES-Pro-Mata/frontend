@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
 import {
   Dialog,
@@ -41,11 +42,13 @@ export function ReceiptPreview({
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [reloadKey, setReloadKey] = React.useState(0);
 
   React.useEffect(() => {
     if (actualOpen) {
       setIsLoading(true);
       setError(null);
+      setReloadKey((k) => k + 1);
     }
   }, [src, actualOpen]);
 
@@ -72,16 +75,17 @@ export function ReceiptPreview({
       document.body.appendChild(a);
       a.click();
       a.remove();
-      URL.revokeObjectURL(url);
-    } catch (e: any) {
-      console.error(e);
-      setError(e.message || "Erro ao baixar o arquivo");
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      setError("Erro ao baixar o arquivo");
     }
   }
 
   const frameStyles: React.CSSProperties = {
     height: typeof height === "number" ? `${height}px` : height,
     width: typeof width === "number" ? `${width}px` : width,
+    border: 0,
+    background: "#fff",
   };
 
   return (
@@ -89,12 +93,12 @@ export function ReceiptPreview({
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent
         className={cn(
-          "max-w-[90rem] w-full bg-white dark:bg-neutral-900 shadow-xl",
+          "max-w-[90vw] w-full bg-white dark:bg-neutral-900 shadow-xl p-0 sm:p-4",
           className
         )}
         showCloseButton={false}
       >
-        <DialogHeader className="flex flex-row items-center justify-between gap-4">
+        <DialogHeader className="flex flex-row items-center justify-between gap-4 pb-2">
           <div className="flex flex-col gap-1">
             <DialogTitle className="text-base sm:text-lg">{title}</DialogTitle>
           </div>
@@ -124,7 +128,7 @@ export function ReceiptPreview({
             </DialogClose>
           </div>
         </DialogHeader>
-        <div className="relative border rounded-md overflow-hidden bg-white dark:bg-neutral-950">
+        <div className="relative border rounded-md overflow-hidden bg-white dark:bg-neutral-950 min-h-[200px] flex items-center justify-center">
           {isLoading && !error && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background/60 backdrop-blur-sm z-10">
               <Loader2 className="size-6 animate-spin" />
@@ -139,17 +143,22 @@ export function ReceiptPreview({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setError(null)}
+                onClick={() => {
+                  setError(null);
+                  setIsLoading(true);
+                  setReloadKey((k) => k + 1);
+                }}
                 label="Tentar Novamente"
               />
             </div>
           )}
           <iframe
+            key={reloadKey}
             title={title}
             src={src}
             style={frameStyles}
             className={cn(
-              "block w-full transition-opacity duration-300",
+              "block w-full transition-opacity duration-300 min-h-[200px]",
               isLoading || error ? "opacity-0" : "opacity-100"
             )}
             onLoad={() => setIsLoading(false)}
@@ -157,6 +166,9 @@ export function ReceiptPreview({
               setIsLoading(false);
               setError("Não foi possível carregar o PDF");
             }}
+            tabIndex={0}
+            aria-label={title}
+            allowFullScreen
           />
         </div>
       </DialogContent>

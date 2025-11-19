@@ -15,7 +15,7 @@ export type StepperProps = {
 export default function Stepper({ steps = [] }: StepperProps) {
   return (
     <>
-      <div className="h-full flex items-center w-max overflow-x-auto">
+      <div className="h-full flex items-center w-auto max-w-[800px] overflow-x-auto">
         {steps.map((step, index) => {
           const isActive = index === steps.length - 1;
           const isCompleted = index < steps.length - 1;

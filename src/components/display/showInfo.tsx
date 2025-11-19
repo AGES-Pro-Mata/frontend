@@ -6,7 +6,7 @@ type showInfoProps = {
   label: string;
 }
 
-export const ShowInfo = ({header,label}: showInfoProps) => {
+export const ShowInfo = ({header,label = ""}: showInfoProps) => {
   return(
     <div className="flex flex-col gap-[2px] m-2 sm:m-3">
       <Typography className="text-md font-medium text-foreground text-shadow-xl leading-snug">{header}</Typography>

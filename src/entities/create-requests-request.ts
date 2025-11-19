@@ -15,7 +15,7 @@ export const CreateRequestsRequest = z.object({
     .refine((val) => val === undefined || validTypes.includes(val as AllTypes), {
       message: "Tipo de solicitação inválido.",
     }),
-  description: z.string().optional(),
+  description: z.string().optional().nullable(),
   professorId: z.string().optional().nullable(),
   reservationGroupId: z.string().optional().nullable(),
 });
