@@ -19,6 +19,7 @@ import { digitsOnly, maskCep, maskPhone } from "@/lib/utils";
 import { appToast } from "@/components/toast/toast";
 import { useTranslation } from "react-i18next";
 import { useCepQuery, useCurrentUserProfile, useUpdateUser } from "@/hooks";
+import { mapGenderToApiValue, type UpdateUserPayload } from "@/api/user";
 
 // Normalize multiple backend gender variants into consistent internal values
 function normalizeGender(raw?: string | null): string {
@@ -166,10 +167,12 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
   }, [mapped, form]);
 
   const submit = (data: FormData) => {
-    const payload = {
+    const mappedGender = mapGenderToApiValue(data.gender);
+
+    const payload: UpdateUserPayload = {
       name: data.name,
       phone: digitsOnly(data.phone),
-      gender: data.gender,
+      gender: mappedGender,
       addressLine: data.addressLine,
       country: data.country,
       city: data.city,
@@ -177,32 +180,9 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
       zipCode: digitsOnly(data.zipCode),
       institution: data.institution,
       isForeign: data.isForeign,
+      teacherDocument: data.docencyDocument,
     };
-    // If user requested docency and has provided a document (institution changed or not verified) include file
-    const wantsDocency = data.wantsDocencyRegistration;
-    const institutionChanged = (data.institution || "") !== (originalInstitutionRef.current || "");
-    const file = data.docencyDocument;
 
-    if (wantsDocency && file && (institutionChanged || !verified)) {
-      // Build multipart form data manually
-      const formData = new FormData();
-
-      Object.entries(payload).forEach(([k, v]) => {
-        if (v !== undefined && v !== null) formData.append(k, String(v));
-      });
-      formData.append("teacherDocument", file);
-      mutate(formData as never, {
-        onSuccess: (res) => {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            appToast.success(t("profile.edit.toasts.success"));
-            setTimeout(() => onBack?.(), 600);
-          } else appToast.error(t("profile.edit.toasts.error"));
-        },
-        onError: () => appToast.error(t("profile.edit.toasts.error")),
-      });
-
-      return;
-    }
     mutate(payload, {
       onSuccess: (res) => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
@@ -223,7 +203,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
     <CanvasCard className="w-full max-w-[clamp(40rem,82vw,980px)] mx-auto p-8 sm:p-12 bg-card/20 shadow-md rounded-[20px]">
       <Form {...form}>
         <form
-          onSubmit={void form.handleSubmit((data) => submit(data))}
+          onSubmit={(event) => void form.handleSubmit((data) => submit(data))(event)}
           className="flex flex-col gap-8"
           noValidate
         >
