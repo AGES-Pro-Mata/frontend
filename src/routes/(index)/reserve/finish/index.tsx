@@ -160,7 +160,7 @@ function ReserveFlow() {
         .string()
         .transform((s) => digitsOnly(s))
         .refine((s) => isValidCpf(s), t("validation.cpfInvalid")),
-      gender: z.enum(["FEMALE", "MALE", "OTHER", "NOT_INFORMED"] as const, {
+      gender: z.enum(["masculino", "feminino", "outros"] as const, {
         message: t("validation.genderRequired"),
       }),
     });
@@ -690,11 +690,11 @@ export const Route = createFileRoute("/(index)/reserve/finish/")({
   beforeLoad: async () => {
     // Verificar se o usuário está autenticado
     const currentUser = await getCurrentUserRequest();
-    
+
     if (!currentUser) {
-      throw redirect({ 
+      throw redirect({
         to: "/auth/login",
-        search: { redirect: "/reserve/finish" }
+        search: { redirect: "/reserve/finish" },
       });
     }
 
