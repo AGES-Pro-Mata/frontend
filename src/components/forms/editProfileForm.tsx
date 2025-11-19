@@ -220,7 +220,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
   };
 
   return (
-    <CanvasCard className="w-full max-w-[clamp(40rem,82vw,980px)] mx-auto p-8 sm:p-12 bg-card shadow-md rounded-[20px]">
+    <CanvasCard className="w-full max-w-[clamp(40rem,82vw,980px)] mx-auto p-8 sm:p-12 bg-card/20 shadow-md rounded-[20px]">
       <Form {...form}>
         <form
           onSubmit={void form.handleSubmit((data) => submit(data))}

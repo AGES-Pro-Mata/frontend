@@ -16,7 +16,7 @@ permissions:
 env:
   DOCKER_REGISTRY: docker.io
   IMAGE_NAME_BASE: norohim/pro-mata-frontend
-  NODE_VERSION: "22.12.0"
+  NODE_VERSION: "24.11.0"
   
 jobs:
   test:
