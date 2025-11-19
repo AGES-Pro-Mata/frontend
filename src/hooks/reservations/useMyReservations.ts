@@ -15,6 +15,7 @@ export type ReservationGroupStatus =
   | "PEOPLE_SENT"
   | "PAYMENT_SENT"
   | "PAYMENT_APPROVED"
+  | "PAYMENT_REJECTED"
   | "DOCUMENT_REQUESTED"
   | "DOCUMENT_APPROVED"
   | "DOCUMENT_REJECTED";
