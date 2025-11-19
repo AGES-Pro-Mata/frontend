@@ -11,7 +11,7 @@ import { appToast } from "@/components/toast/toast";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { useResetPasswordMutation } from "@/hooks";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const { t, i18n } = useTranslation();
@@ -21,17 +21,18 @@ export function ResetPasswordForm({ token }: { token: string }) {
         .object({
           password: z
             .string()
-            .min(8, t("validation.passwordMin"))
-            .regex(/[A-Z]/, t("validation.passwordUpper"))
-            .regex(/\d/, t("validation.passwordNumber")),
+            .min(8),
           confirm: z.string(),
         })
         .refine((data) => data.password === data.confirm, {
           message: t("validation.passwordsMustMatch"),
           path: ["confirm"],
         }),
-    [i18n.language],
+    [t],
   );
+
+  // Estado para controlar se o formulário foi enviado
+  const [submitted, setSubmitted] = useState(false);
 
   type FormData = z.infer<typeof formSchema>;
 
@@ -45,31 +46,28 @@ export function ResetPasswordForm({ token }: { token: string }) {
   useEffect(() => {
     form.clearErrors();
     void form.trigger();
+
     if (!didMountLang.current) {
       didMountLang.current = true;
-
       return;
     }
+
     const fields = Object.keys(form.formState.errors);
 
     if (fields.length > 0) {
       void form.trigger(fields as (keyof FormData)[]);
     }
-  }, [i18n.language]);
+  }, [i18n.language, form]);
 
   const mutation = useResetPasswordMutation();
   const navigate = useNavigate();
-
-  if (mutation.isSuccess) {
-    appToast.success(t("auth.reset.toastSuccess"));
-    void navigate({ to: "/auth/login" });
-  }
 
   if (mutation.isError) {
     appToast.error(t("auth.reset.toastError"));
   }
 
   const onSubmit = async (data: FormData) => {
+    setSubmitted(true);
     // Hash passwords
     const hashedPassword = await hashPassword(data.password);
     const hashedConfirmPassword = await hashPassword(data.confirm);
@@ -78,6 +76,11 @@ export function ResetPasswordForm({ token }: { token: string }) {
       password: hashedPassword,
       confirmPassword: hashedConfirmPassword,
       token,
+    }).then(() => {
+      appToast.success(t("auth.reset.toastSuccess"));
+      void navigate({ to: "/auth/login" });
+    }).catch(() => {
+      appToast.error(t("auth.reset.toastError"));
     });
   };
 
@@ -90,7 +93,11 @@ export function ResetPasswordForm({ token }: { token: string }) {
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
       <Form {...form}>
-        <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+          noValidate
+        >
           <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs flex flex-col gap-4">
               <FormField
@@ -104,7 +111,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
                       placeholder={t("auth.reset.newPasswordPlaceholder")}
                       {...field}
                     />
-                    <FormMessage />
+                    {/* Só mostra mensagem de erro se o formulário foi enviado */}
+                    {submitted && <FormMessage />}
                   </FormItem>
                 )}
               />
@@ -119,7 +127,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
                       placeholder={t("auth.reset.confirmPasswordPlaceholder")}
                       {...field}
                     />
-                    <FormMessage />
+                    {/* Só mostra mensagem de erro se o formulário foi enviado */}
+                    {submitted && <FormMessage />}
                   </FormItem>
                 )}
               />

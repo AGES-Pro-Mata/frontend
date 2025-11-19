@@ -1,4 +1,4 @@
-import ReservaCard, { type Person } from "@/components/card/myReservation";
+import MyReservationCard from "@/components/card/myReservation";
 import { MyReservationsFilterCompact } from "@/components/filter/MyReservationsFilterCompact";
 import { Button } from "@/components/button/defaultButton";
 import { Typography } from "@/components/typography/typography";
@@ -8,6 +8,7 @@ import { type Key, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MoonLoader } from "react-spinners";
 import { toast } from "sonner";
+import type { Person } from "@/types/person";
 import { useAddPeopleMyReservations, useCancelReservation, useMyReservations } from "@/hooks";
 import type { ReservationGroupStatusFilter } from "@/hooks/reservations/useMyReservations";
 
@@ -36,10 +37,10 @@ function RouteComponent() {
 
   function handleAddPeople(id: string, people: Person[]): void {
     const modelPeople = people.map((p) => ({
-      name: p.nome,
-      document: p.cpf,
-      phone: p.telefone,
-      gender: p.genero,
+      name: p.name,
+      document: p.document,
+      phone: p.phone,
+      gender: p.gender,
     }));
 
     addPeopleReservation({ id, people: modelPeople })
@@ -68,21 +69,23 @@ function RouteComponent() {
         </section>
       ) : (
         reservations.map((rg) => (
-          <ReservaCard
-            key={rg.id as Key}
-            id={rg.id}
-            history={rg.history}
-            titulo={"Pacote personalizado"}
-            preco={+rg.price}
-            periodo={{
-              inicio: new Date(rg.startDate),
-              fim: new Date(rg.endDate),
-            }}
-            reservations={rg.reservations}
-            status={rg.status}
-            handleCancel={handleCancel}
-            handleAddPeople={handleAddPeople}
-          />
+          <div key={rg.id as Key} className="space-y-3">
+            <MyReservationCard
+              key={rg.id as Key}
+              id={rg.id}
+              history={rg.history}
+              title={"Pacote personalizado"}
+              price={+rg.price}
+              period={{
+                startDate: new Date(rg.startDate),
+                endDate: new Date(rg.endDate),
+              }}
+              reservations={rg.reservations}
+              status={rg.status}
+              handleCancel={handleCancel}
+              handleAddPeople={handleAddPeople}
+            />
+          </div>
         ))
       )}
     </main>

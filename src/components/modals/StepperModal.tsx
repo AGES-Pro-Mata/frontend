@@ -31,10 +31,10 @@ export default function Stepper({ steps = [] }: StepperProps) {
                     index === steps.length - 2 && "bg-blue-700",
                     steps[index + 1]?.type == RequestsType.APPROVED &&
                       index === steps.length - 2 &&
-                      "bg-green-600",
+                      "bg-contrast-green",
                     steps[index + 1]?.type == RequestsType.CANCELED &&
                       index === steps.length - 2 &&
-                      "bg-red-600",
+                      "bg-default-red",
                   )}
                 />
               )}
@@ -43,8 +43,8 @@ export default function Stepper({ steps = [] }: StepperProps) {
                   "w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold shadow transition-all",
                   isCompleted && "bg-blue-400",
                   isActive && "bg-blue-700 scale-120",
-                  step.type === RequestsType.APPROVED && "bg-green-600",
-                  step.type === RequestsType.CANCELED && "bg-red-600",
+                  step.type === RequestsType.APPROVED && "bg-contrast-green",
+                  step.type === RequestsType.CANCELED && "bg-default-red",
                 )}
               >
                 {Icon && <Icon />}

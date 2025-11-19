@@ -16,32 +16,26 @@ import { Button } from "@/components/button/defaultButton";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { type Person } from "@/types/person"
 
-type Pessoa = {
-  nome: string;
-  telefone: string;
-  nascimento: string;
-  cpf: string;
-  genero: string;
-};
 
-type ModalPessoasProps = {
+type PeopleModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  draftPessoas: Pessoa[];
-  setDraftPessoas: (pessoas: Pessoa[]) => void;
-  pessoas: Pessoa[];
-  handleSalvarPessoas: (novasPessoas: Pessoa[]) => void;
+  draftPeople: Person[];
+  setDraftPeople: (people: Person[]) => void;
+  people: Person[];
+  handleSavePeople: (newPeople: Person[]) => void;
 };
 
-export function ModalPessoas({
+export function PeopleModal({
   open,
   onOpenChange,
-  draftPessoas,
-  setDraftPessoas,
-  pessoas,
-  handleSalvarPessoas,
-}: ModalPessoasProps) {
+  draftPeople,
+  setDraftPeople,
+  people,
+  handleSavePeople,
+}: PeopleModalProps) {
   const { t } = useTranslation();
 
   return (
@@ -54,7 +48,7 @@ export function ModalPessoas({
         </DialogHeader>
 
         <div className="mt-2 flex flex-col gap-4 flex-grow overflow-y-auto">
-          {draftPessoas.map((pessoa, index) => (
+          {draftPeople.map((person, index) => (
             <div
               key={index}
               className="grid grid-cols-16 gap-4 border-b border-gray-300 pb-4 items-center"
@@ -62,55 +56,55 @@ export function ModalPessoas({
               <Input
                 placeholder={t("peopleModal.name")}
                 className="col-span-3 h-10"
-                value={pessoa.nome}
+                value={person.name}
                 onChange={(e) => {
-                  const updated = [...draftPessoas];
+                  const updated = [...draftPeople];
 
-                  updated[index].nome = e.target.value;
-                  setDraftPessoas(updated);
+                  updated[index].name = e.target.value;
+                  setDraftPeople(updated);
                 }}
               />
               <Input
                 placeholder={t("peopleModal.phone")}
                 className="col-span-3 h-10"
-                value={pessoa.telefone}
+                value={person.phone}
                 onChange={(e) => {
-                  const updated = [...draftPessoas];
+                  const updated = [...draftPeople];
 
-                  updated[index].telefone = e.target.value;
-                  setDraftPessoas(updated);
+                  updated[index].phone = e.target.value;
+                  setDraftPeople(updated);
                 }}
               />
               <Input
                 type="date"
                 className="col-span-3 h-10"
                 placeholder={t("peopleModal.birth")}
-                value={pessoa.nascimento}
+                value={person.birthDate}
                 onChange={(e) => {
-                  const updated = [...draftPessoas];
+                  const updated = [...draftPeople];
 
-                  updated[index].nascimento = e.target.value;
-                  setDraftPessoas(updated);
+                  updated[index].birthDate = e.target.value;
+                  setDraftPeople(updated);
                 }}
               />
               <Input
                 className="col-span-3 h-10"
                 placeholder={t("peopleModal.cpf")}
-                value={pessoa.cpf}
+                value={person.document}
                 onChange={(e) => {
-                  const updated = [...draftPessoas];
+                  const updated = [...draftPeople];
 
-                  updated[index].cpf = e.target.value;
-                  setDraftPessoas(updated);
+                  updated[index].document = e.target.value;
+                  setDraftPeople(updated);
                 }}
               />
               <Select
-                value={pessoa.genero}
+                value={person.gender}
                 onValueChange={(val) => {
-                  const updated = [...draftPessoas];
+                  const updated = [...draftPeople];
 
-                  updated[index].genero = val;
-                  setDraftPessoas(updated);
+                  updated[index].gender = val;
+                  setDraftPeople(updated);
                 }}
               >
                 <SelectTrigger className="col-span-3 !h-10">
@@ -131,9 +125,9 @@ export function ModalPessoas({
               <div className="col-span-1 flex justify-end">
                 <Button
                   onClick={() => {
-                    const updated = draftPessoas.filter((_, i) => i !== index);
+                    const updated = draftPeople.filter((_, i) => i !== index);
 
-                    setDraftPessoas(updated);
+                    setDraftPeople(updated);
                   }}
                   className="bg-default-red text-soft-white rounded-full w-[40px] h-[40px] flex items-center justify-center"
                   label={<Trash2 className="w-4 h-4" />}
@@ -145,20 +139,20 @@ export function ModalPessoas({
           <div className="flex justify-end">
             <Button
               onClick={() =>
-                setDraftPessoas([
-                  ...draftPessoas,
+                setDraftPeople([
+                  ...draftPeople,
                   {
-                    nome: "",
-                    telefone: "",
-                    nascimento: "",
-                    cpf: "",
-                    genero: "",
+                    name: "",
+                    phone: "",
+                    birthDate: "",
+                    document: "",
+                    gender: "",
                   },
                 ])
               }
               className="bg-main-dark-green text-soft-white rounded-full w-[240px] h-[40px] text-sm shadow-md hover:opacity-90"
               label={
-                draftPessoas.length > 0
+                draftPeople.length > 0
                   ? t("peopleModal.addPerson")
                   : t("peopleModal.addOnePerson")
               }
@@ -169,7 +163,7 @@ export function ModalPessoas({
         <div className="flex justify-between mt-4">
           <Button
             onClick={() => {
-              setDraftPessoas(pessoas.map((p) => ({ ...p })));
+              setDraftPeople(people.map((p) => ({ ...p })));
               onOpenChange(false);
             }}
             className="bg-dark-gray text-soft-white rounded-full w-[120px] h-[40px]"
@@ -178,22 +172,22 @@ export function ModalPessoas({
 
           <Button
             onClick={() => {
-              const camposIncompletos = draftPessoas.some(
+              const incompleteFields = draftPeople.some(
                 (p) =>
-                  !p.nome ||
-                  !p.telefone ||
-                  !p.nascimento ||
-                  !p.cpf ||
-                  !p.genero,
+                  !p.name ||
+                  !p.phone ||
+                  !p.birthDate ||
+                  !p.document ||
+                  !p.gender,
               );
 
-              if (camposIncompletos) {
+              if (incompleteFields) {
                 toast.error(t("peopleModal.fillAllFields"));
 
                 return;
               }
 
-              handleSalvarPessoas(draftPessoas.map((p) => ({ ...p })));
+              handleSavePeople(draftPeople.map((p) => ({ ...p })));
             }}
             className="bg-contrast-green text-soft-white rounded-full w-[120px] h-[40px]"
             label={t("common.save")}
