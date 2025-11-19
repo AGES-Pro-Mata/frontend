@@ -9,8 +9,9 @@ import {
   type TEditUserAdminResponse,
 } from "@/entities/edit-user-admin-response";
 import { safeApiCall } from "@/core/http/safe-api-caller";
+import { digitsOnly } from "@/lib/utils";
 
-function mapGenderToApiValue(value?: string | null): string | undefined {
+export function mapGenderToApiValue(value?: string | null): string | undefined {
   if (!value) return undefined;
   const trimmed = value.trim();
 
@@ -331,25 +332,51 @@ export interface UpdateUserPayload {
   country?: string;
   userType?: UserType;
   isForeign?: boolean | string;
+  teacherDocument?: File | undefined;
 }
 
 export async function updateCurrentUserRequest(payload: UpdateUserPayload): Promise<HttpResponse> {
-  const body: Record<string, unknown> = { ...payload };
+  const formData = new FormData();
 
-  if (typeof body.gender === "string") {
-    const mappedGender = mapGenderToApiValue(body.gender);
-
-    if (mappedGender) {
-      body.gender = mappedGender;
-    } else {
-      delete body.gender;
-    }
+  if (payload.name) {
+    formData.append("name", payload.name);
+  }
+  if (payload.phone) {
+    formData.append("phone", payload.phone);
+  }
+  if (payload.gender) {
+    formData.append("gender", payload.gender);
+  }
+  if (payload.addressLine) {
+    formData.append("addressLine", payload.addressLine);
+  }
+  if (payload.country) {
+    formData.append("country", payload.country);
+  }
+  if (payload.city) {
+    formData.append("city", payload.city);
+  }
+  if (payload.number) {
+    formData.append("number", payload.number.toString());
+  }
+  if (payload.zipCode) {
+    formData.append("zipCode", digitsOnly(payload.zipCode));
+  }
+  if (payload.institution) {
+    formData.append("institution", payload.institution);
+  }
+  if (payload.isForeign) {
+    formData.append("isForeign", payload.isForeign.toString());
+  }
+  if (payload.teacherDocument) {
+    formData.append("teacherDocument", payload.teacherDocument);
   }
 
-  if (typeof body.isForeign === "boolean") {
-    body.isForeign = body.isForeign ? "true" : "false";
-  }
-  const response = await api.patch(`/user`, body);
+  const response = await api.patch(`/user`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return {
     statusCode: response.status,
