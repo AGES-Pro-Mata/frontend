@@ -95,7 +95,8 @@ export function useMyReservations(
         })
       ).data;
     },
-    gcTime: 15 * 1000,
+    refetchInterval: 5 * 1000,
+    gcTime: 5 * 1000,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
