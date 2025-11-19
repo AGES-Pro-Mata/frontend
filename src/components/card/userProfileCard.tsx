@@ -5,7 +5,6 @@ import { Button } from "@/components/button/defaultButton";
 import { type ReservationStatus, getReservationStatusStyle } from "@/entities/reservation-status";
 import type { RegisterUserPayload } from "@/api/user";
 import { useTranslation } from "react-i18next";
-import { useCurrentUserProfile } from "@/hooks";
 
 // Mapeia códigos internos de gênero para rótulos exibidos ao usuário
 export function genderLabel(g?: string, t?: (k: string) => string) {
@@ -35,11 +34,8 @@ export function UserProfileCard({
   user,
   documentStatus,
   onEdit,
-  onSendDocument,
-  disableSendDocument = false,
   className = "",
 }: UserProfileCardProps) {
-  const { verified } = useCurrentUserProfile();
   const { t } = useTranslation();
   const { className: documentStatusAccent, icon: documentStatusIcon } =
     getReservationStatusStyle(documentStatus);
