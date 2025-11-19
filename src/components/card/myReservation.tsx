@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CalendarIcon, DollarSign } from "lucide-react";
-import { toast } from "sonner";
+import { appToast } from "@/components/toast/toast";
 import { PeopleModal } from "@/components/modals/peopleModal";
 import { CancelReservationModal } from "@/components/modals/cancelReservationModal";
 import { PaymentProofModal } from "@/components/modals/paymentProofModal";
@@ -121,9 +121,9 @@ export default function MyReservationCard({
   const handleSendPaymentProof = async (file: File) => {
     try {
       await sendPaymentProofMutation.mutateAsync({ reservationGroupId: id, file });
-      toast.success(t("reservation.paymentProofSent"));
+      appToast.success(t("reservation.paymentProofSent") );
     } catch (error: unknown) {
-      toast.error(t("paymentProof.sendError"));
+      appToast.error(t("paymentProof.sendError"));
       if (error instanceof Error) {
         throw error;
       }
