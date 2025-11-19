@@ -95,9 +95,11 @@ export default function MyReservationCard({
     REJECTED: StatusEnum.CANCELADA,
     PEOPLE_SENT: StatusEnum.AGUARDANDO_APROVACAO,
     PAYMENT_SENT: StatusEnum.AGUARDANDO_APROVACAO,
+    PAYMENT_APPROVED: StatusEnum.PAGAMENTO_APROVADO,
     DOCUMENT_REQUESTED: StatusEnum.AGUARDANDO_APROVACAO,
     DOCUMENT_APPROVED: StatusEnum.CONFIRMADA,
     DOCUMENT_REJECTED: StatusEnum.CANCELADA,
+    PAYMENT_REJECTED: StatusEnum.PAGAMENTO_REJEITADO,
   };
 
   const reservationStatus = statusMap[status];
