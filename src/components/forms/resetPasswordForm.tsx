@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
@@ -49,6 +50,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
     if (!didMountLang.current) {
       didMountLang.current = true;
+
       return;
     }
 
@@ -72,16 +74,22 @@ export function ResetPasswordForm({ token }: { token: string }) {
     const hashedPassword = await hashPassword(data.password);
     const hashedConfirmPassword = await hashPassword(data.confirm);
 
-    mutation.mutate({
-      password: hashedPassword,
-      confirmPassword: hashedConfirmPassword,
-      token,
-    }).then(() => {
-      appToast.success(t("auth.reset.toastSuccess"));
-      void navigate({ to: "/auth/login" });
-    }).catch(() => {
-      appToast.error(t("auth.reset.toastError"));
-    });
+    mutation.mutate(
+      {
+        password: hashedPassword,
+        confirmPassword: hashedConfirmPassword,
+        token,
+      },
+      {
+        onSuccess: () => {
+          appToast.success(t("auth.reset.toastSuccess"));
+          void navigate({ to: "/auth/login" });
+        },
+        onError: () => {
+          appToast.error(t("auth.reset.toastError"));
+        },
+      }
+    );
   };
 
   return (
