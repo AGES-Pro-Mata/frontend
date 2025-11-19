@@ -17,7 +17,7 @@ type ExperienceCardProps = {
   title: string;
   price: number;
   type?: string;
-  period: { start: Date | null; end: Date | null};
+  period: { start: Date | null; end: Date | null };
   imageUrl: string;
   experienceId?: string;
   persist?: boolean;
@@ -63,16 +63,13 @@ export default function ExperienceCard({
 
   const locale = useMemo(
     () => (i18n.language?.startsWith("pt") ? "pt-BR" : "en-US"),
-    [i18n.language]
+    [i18n.language],
   );
   const currencyFormatter = useMemo(
     () => new Intl.NumberFormat(locale, { style: "currency", currency: "BRL" }),
-    [locale]
+    [locale],
   );
-  const translatedType = useMemo(
-    () => translateExperienceCategory(type, t, type ?? ""),
-    [type, t]
-  );
+  const translatedType = useMemo(() => translateExperienceCategory(type, t, type ?? ""), [type, t]);
   const dateFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {
@@ -80,24 +77,24 @@ export default function ExperienceCard({
         month: "2-digit",
         year: "numeric",
       }),
-    [locale]
+    [locale],
   );
   const fmt = (d: Date) => dateFormatter.format(d);
-  const formattedPrice = currencyFormatter.format(
-    Number.isFinite(price) ? price : 0
-  );
+  const formattedPrice = currencyFormatter.format(Number.isFinite(price) ? price : 0);
   const calendarStyles = { "--rdp-cell-size": "1.75rem" } as CSSProperties;
 
   const disabledDates = useMemo(() => {
+    const tomorrow = new Date();
 
-    console.log(period.start)
-    console.log(period.end)
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
     if (!period.end || !period.start) {
       return [{ before: new Date() }];
     }
 
-    return [{ before: period.start, after: period.end }];
+    const start = period.start.getTime() <= tomorrow.getTime() ? tomorrow : period.start;
+
+    return [{ before: start, after: period.end }];
   }, [period.start, period.end]);
 
   // Live input values (men, women) are only reflected in summary after save.
@@ -128,10 +125,7 @@ export default function ExperienceCard({
     });
   };
 
-  const handleNumberInput = (
-    e: ChangeEvent<HTMLInputElement>,
-    setter: (val: string) => void
-  ) => {
+  const handleNumberInput = (e: ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
     const raw = e.target.value.replace(/,/g, "");
 
     if (raw === "") {
@@ -146,6 +140,14 @@ export default function ExperienceCard({
   };
 
   const handleDayClick = (day: Date) => {
+    const today = new Date();
+
+    if (day.getTime() < today.getTime()) {
+      setRange({ from: undefined, to: range.to });
+
+      return;
+    }
+
     if (range?.from && range?.to) {
       setRange({ from: day, to: undefined });
 
@@ -181,17 +183,13 @@ export default function ExperienceCard({
             imageLoaded && !imageLoading ? "opacity-100" : "opacity-0"
           }`}
         />
-        {imageLoading && (
-          <div className="absolute inset-0 animate-pulse bg-muted" />
-        )}
+        {imageLoading && <div className="absolute inset-0 animate-pulse bg-muted" />}
       </div>
 
       {/* header */}
       <div className="w-full px-5 pt-4 pb-5 text-main-dark-green flex flex-col gap-3">
         <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3">
-          <h2 className="font-bold text-sm md:text-base w-full md:w-auto">
-            {title}
-          </h2>
+          <h2 className="font-bold text-sm md:text-base w-full md:w-auto">{title}</h2>
           {translatedType && (
             <span className="inline-flex items-center justify-center text-xs text-main-dark-green bg-card rounded-full font-bold shadow-inner px-3 py-1 shrink-0">
               {translatedType}
@@ -202,7 +200,7 @@ export default function ExperienceCard({
               {formattedPrice}
             </span>
           </div>
-          {period.start && period.end &&(
+          {period.start && period.end && (
             <div className="flex items-center justify-start rounded-full bg-card shadow-sm gap-2 px-3 py-1 w-full md:w-auto md:flex-none flex-1 min-w-0 order-last md:order-none">
               <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white shrink-0">
                 <CalendarIcon className="w-3.5 h-3.5" />
@@ -234,12 +232,10 @@ export default function ExperienceCard({
         {saved && savedRange?.from && savedRange?.to && (
           <div className="flex justify-start gap-3">
             <span className="text-xs md:text-sm text-main-dark-green">
-              {t("experienceCard.men")}:{" "}
-              <span className="font-bold">{savedMen}</span>
+              {t("experienceCard.men")}: <span className="font-bold">{savedMen}</span>
             </span>
             <span className="text-xs md:text-sm text-main-dark-green">
-              {t("experienceCard.women")}:{" "}
-              <span className="font-bold">{savedWomen}</span>
+              {t("experienceCard.women")}: <span className="font-bold">{savedWomen}</span>
             </span>
             <span className="text-xs md:text-sm text-main-dark-green">
               {t("experienceCard.selectedDate")}:{" "}
@@ -256,9 +252,7 @@ export default function ExperienceCard({
 
       {open && (
         <div className="p-3 md:p-4 bg-banner rounded-lg shadow-md flex flex-col gap-4 text-main-dark-green my-3 mx-2 md:mx-3 max-w-none">
-          <h3 className="text-base font-bold">
-            {t("experienceCard.chooseDate")}
-          </h3>
+          <h3 className="text-base font-bold">{t("experienceCard.chooseDate")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-10 items-start">
             <div className="flex flex-col items-start gap-3">
               <div className="flex items-center justify-start rounded-full bg-card shadow-md gap-2 h-7 px-3 w-full md:max-w-xs">
@@ -287,11 +281,7 @@ export default function ExperienceCard({
                     const { from, to } = value;
 
                     if (from && to && from.getTime() === to.getTime()) {
-                      if (
-                        range.from &&
-                        !range.to &&
-                        range.from.getTime() === from.getTime()
-                      ) {
+                      if (range.from && !range.to && range.from.getTime() === from.getTime()) {
                         setRange({ from, to });
 
                         return;
@@ -308,10 +298,8 @@ export default function ExperienceCard({
                   classNames={{
                     root: "m-0",
                     day_selected: "bg-main-dark-green text-white",
-                    day_range_start:
-                      "bg-main-dark-green text-white rounded-l-full",
-                    day_range_end:
-                      "bg-main-dark-green text-white rounded-r-full",
+                    day_range_start: "bg-main-dark-green text-white rounded-l-full",
+                    day_range_end: "bg-main-dark-green text-white rounded-r-full",
                     day_range_middle: "bg-main-dark-green text-white",
                     day_disabled: "text-gray-400 opacity-50 cursor-not-allowed",
                   }}
@@ -330,9 +318,7 @@ export default function ExperienceCard({
                 </div>
               </div>
               <div className="w-full md:max-w-xs">
-                <Label className="mb-1 block text-sm">
-                  {t("experienceCard.malePeople")}
-                </Label>
+                <Label className="mb-1 block text-sm">{t("experienceCard.malePeople")}</Label>
                 <Input
                   type="text"
                   inputMode="numeric"
@@ -345,9 +331,7 @@ export default function ExperienceCard({
                 />
               </div>
               <div className="w-full md:max-w-xs">
-                <Label className="mb-1 block text-sm">
-                  {t("experienceCard.femalePeople")}
-                </Label>
+                <Label className="mb-1 block text-sm">{t("experienceCard.femalePeople")}</Label>
                 <Input
                   type="text"
                   inputMode="numeric"

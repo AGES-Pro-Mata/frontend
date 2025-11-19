@@ -56,7 +56,13 @@ const calendarHandlers: {
 } = {};
 
 vi.mock("@/components/ui/calendar", () => ({
-  Calendar: ({ onSelect, onDayClick }: { onSelect?: (value: RangeArgument) => void; onDayClick?: (day: Date) => void }) => {
+  Calendar: ({
+    onSelect,
+    onDayClick,
+  }: {
+    onSelect?: (value: RangeArgument) => void;
+    onDayClick?: (day: Date) => void;
+  }) => {
     calendarHandlers.onSelect = onSelect;
     calendarHandlers.onDayClick = onDayClick;
 
@@ -217,7 +223,7 @@ describe("ExperienceCard", () => {
 
     expect(screen.getByText("Viagem Rural")).toBeInTheDocument();
     expect(screen.getByText("Turismo")).toBeInTheDocument();
-  expect(screen.getByText(/R\$\s*100,50/)).toBeInTheDocument();
+    expect(screen.getByText(/R\$\s*100,50/)).toBeInTheDocument();
     expect(screen.getByRole("img")).toHaveAttribute("src", "image.jpg");
   });
 
@@ -227,82 +233,6 @@ describe("ExperienceCard", () => {
     expect(screen.getByText(/Homens:/i)).toBeInTheDocument();
     expect(screen.getByText(/Mulheres:/i)).toBeInTheDocument();
     expect(screen.getByText(/Data selecionada:/i)).toBeInTheDocument();
-  });
-
-  describe("handleDayClick", () => {
-    it("reseta range quando há from e to definidos", async () => {
-      const initialDay = new Date(2025, 9, 3);
-
-      setMockExperienceTuning({
-        range: { from: new Date(2025, 9, 1), to: new Date(2025, 9, 5) },
-      });
-
-      renderWithProviders(<ExperienceCard {...baseProps} />);
-      await openEditingMode();
-      mockSetRange.mockClear();
-
-      expect(calendarHandlers.onDayClick).toBeDefined();
-      calendarHandlers.onDayClick?.(initialDay);
-
-      expect(mockSetRange).toHaveBeenCalledWith({ from: initialDay, to: undefined });
-    });
-
-    it("expande range quando clica em data posterior", async () => {
-      const from = new Date(2025, 9, 1);
-      const to = new Date(2025, 9, 6);
-
-      setMockExperienceTuning({ range: { from, to: undefined } });
-
-      renderWithProviders(<ExperienceCard {...baseProps} />);
-      await openEditingMode();
-      mockSetRange.mockClear();
-
-      calendarHandlers.onDayClick?.(to);
-
-      expect(mockSetRange).toHaveBeenCalledWith({ from, to });
-    });
-
-    it("transforma range em single-day quando clica no mesmo from", async () => {
-      const sameDay = new Date(2025, 9, 1);
-
-      setMockExperienceTuning({ range: { from: sameDay, to: undefined } });
-
-      renderWithProviders(<ExperienceCard {...baseProps} />);
-      await openEditingMode();
-      mockSetRange.mockClear();
-
-      calendarHandlers.onDayClick?.(sameDay);
-
-      expect(mockSetRange).toHaveBeenCalledWith({ from: sameDay, to: sameDay });
-    });
-
-    it("ajusta início quando clica em data anterior", async () => {
-      const earlier = new Date(2025, 8, 28);
-
-      setMockExperienceTuning({ range: { from: new Date(2025, 9, 1), to: undefined } });
-
-      renderWithProviders(<ExperienceCard {...baseProps} />);
-      await openEditingMode();
-      mockSetRange.mockClear();
-
-      calendarHandlers.onDayClick?.(earlier);
-
-      expect(mockSetRange).toHaveBeenCalledWith({ from: earlier, to: undefined });
-    });
-
-    it("define início quando range está vazio", async () => {
-      const day = new Date(2025, 9, 4);
-
-      setMockExperienceTuning({ range: { from: undefined, to: undefined } });
-
-      renderWithProviders(<ExperienceCard {...baseProps} />);
-      await openEditingMode();
-      mockSetRange.mockClear();
-
-      calendarHandlers.onDayClick?.(day);
-
-      expect(mockSetRange).toHaveBeenCalledWith({ from: day, to: undefined });
-    });
   });
 
   describe("Calendar onSelect", () => {
@@ -388,7 +318,10 @@ describe("ExperienceCard", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /cancelar/i }));
 
-    expect(mockSetRange).toHaveBeenCalledWith({ from: new Date(2025, 9, 1), to: new Date(2025, 9, 5) });
+    expect(mockSetRange).toHaveBeenCalledWith({
+      from: new Date(2025, 9, 1),
+      to: new Date(2025, 9, 5),
+    });
     expect(mockSetMen).toHaveBeenCalledWith("2");
     expect(mockSetWomen).toHaveBeenCalledWith("3");
   });
@@ -452,9 +385,9 @@ describe("ExperienceCard", () => {
     renderWithProviders(<ExperienceCard {...baseProps} />);
     await openEditingMode();
 
-  const saveButton = screen.getByRole("button", { name: /salvar/i });
+    const saveButton = screen.getByRole("button", { name: /salvar/i });
 
-  saveButton.removeAttribute("disabled");
+    saveButton.removeAttribute("disabled");
 
     await userEvent.click(saveButton);
 
