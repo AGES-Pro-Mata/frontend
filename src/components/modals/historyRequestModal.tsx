@@ -16,7 +16,7 @@ export function HistoryRequestModal({ open, onOpenChange, history }: HistoryRequ
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!max-w-none w-[70vw] h-[30%] bg-white rounded-xl shadow-lg p-6 flex flex-col">
+      <DialogContent className="!max-w-none w-[55vw] h-[35%] bg-white rounded-xl shadow-lg p-6 flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-main-dark-green text-2xl font-bold">
             {t("reservation.history")}

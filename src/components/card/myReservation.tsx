@@ -20,7 +20,7 @@ import type {
   ReservationGroupStatus,
 } from "@/hooks/reservations/useMyReservations";
 import { ReservationInfoCard } from "@/components/card/reservationInfoCard";
-import { HistoryRequestModal } from "../modals/historyRequestModal";
+import { HistoryRequestModal } from "@/components/modals/historyRequestModal";
 import { type Person } from "@/types/person";
 import { useSendPaymentProof } from "@/hooks";
 
@@ -91,13 +91,13 @@ export default function MyReservationCard({
     APPROVED: StatusEnum.CONFIRMADA,
     CANCELED: StatusEnum.CANCELADA,
     CANCELED_REQUESTED: StatusEnum.CANCELAMENTO_PENDENTE,
-    EDITED: StatusEnum.DESCONHECIDO,
-    REJECTED: StatusEnum.DESCONHECIDO,
-    PEOPLE_SENT: StatusEnum.DESCONHECIDO,
-    PAYMENT_SENT: StatusEnum.DESCONHECIDO,
-    DOCUMENT_REQUESTED: StatusEnum.DESCONHECIDO,
-    DOCUMENT_APPROVED: StatusEnum.DESCONHECIDO,
-    DOCUMENT_REJECTED: StatusEnum.DESCONHECIDO,
+    EDITED: StatusEnum.AGUARDANDO_APROVACAO,
+    REJECTED: StatusEnum.CANCELADA,
+    PEOPLE_SENT: StatusEnum.AGUARDANDO_APROVACAO,
+    PAYMENT_SENT: StatusEnum.AGUARDANDO_APROVACAO,
+    DOCUMENT_REQUESTED: StatusEnum.AGUARDANDO_APROVACAO,
+    DOCUMENT_APPROVED: StatusEnum.CONFIRMADA,
+    DOCUMENT_REJECTED: StatusEnum.CANCELADA,
   };
 
   const reservationStatus = statusMap[status];

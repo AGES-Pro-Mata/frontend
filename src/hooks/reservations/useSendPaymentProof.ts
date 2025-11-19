@@ -21,7 +21,7 @@ export function useSendPaymentProof(): UseMutationResult<
 
   return useMutation<void, Error, SendPaymentProofParams, unknown>({
     mutationFn: async ({ reservationGroupId, file }: SendPaymentProofParams) => {
-      return await sendPaymentProof(reservationGroupId, file);
+      await sendPaymentProof(reservationGroupId, file);
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: [MY_RESERVATION_KEY] });
