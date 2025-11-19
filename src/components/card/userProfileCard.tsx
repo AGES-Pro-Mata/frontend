@@ -108,17 +108,6 @@ export function UserProfileCard({
               )}
             </div>
             <div className="flex flex-row flex-wrap items-center gap-4">
-              <Button
-                label={
-                  verified
-                    ? t("profile.card.docency.receiptSent")
-                    : t("profile.card.docency.sendReceipt")
-                }
-                variant="gray"
-                className="px-6 py-3 text-sm font-medium rounded-md disabled:opacity-50"
-                onClick={onSendDocument}
-                disabled={verified || disableSendDocument || !onSendDocument}
-              />
               <CardStatus
                 icon={documentStatusIcon}
                 label={documentStatusLabel}
