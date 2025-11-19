@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useState } from "react";
 import { CalendarIcon, DollarSign } from "lucide-react";
 import { appToast } from "@/components/toast/toast";
@@ -72,8 +76,6 @@ export default function MyReservationCard({
   const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
   const handleOpenPeopleModal = (open: boolean) => {
     if (open) {
-      setDraftPeople(people.map((p) => ({ ...p })));
-    } else {
       setDraftPeople(people.map((p) => ({ ...p })));
     }
     setOpenPeopleModal(open);
@@ -189,42 +191,39 @@ export default function MyReservationCard({
             accentClassName={statusAccent}
             className="mt-4"
           />
-          <div className="w-full mt-4 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap gap-3">
+          <div className="w-full mt-4 flex flex-row items-center justify-between gap-3">
+            <Button
+              onClick={() => handleOpenHistoryModal()}
+              className="text-soft-white rounded-full flex-1 w-full h-10 text-sm shadow-md hover:opacity-70"
+              variant="gray"
+              label={t("reservation.history")}
+            />
+            {status !== "CANCELED" && status !== "CANCELED_REQUESTED" && (
               <Button
-                onClick={() => handleOpenHistoryModal()}
-                className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
-                label={t("reservation.history")}
+                onClick={() => setOpenCancelModal(true)}
+                className="bg-default-red hover:bg-default-red text-soft-white w-full flex-1 h-10 text-sm shadow-md hover:opacity-70 rounded-full"
+                label={t("reservation.cancelReservation")}
               />
-              {status === "PEOPLE_REQUESTED" && (
-                <Button
-                  onClick={() => setOpenPeopleModal(true)}
-                  className="bg-contrast-green text-soft-white rounded-full w-[150px] h-[40px] text-sm shadow-md hover:opacity-90"
-                  label={t("reservation.registerPeople")}
-                />
-              )}
-              {status !== "CANCELED" && status !== "CANCELED_REQUESTED" && (
-                <Button
-                  onClick={() => setOpenCancelModal(true)}
-                  className="bg-dark-gray text-soft-white w-[150px] h-[40px] text-sm shadow-md hover:opacity-90 rounded-full"
-                  label={t("reservation.cancelReservation")}
-                />
-              )}
-
+            )}
+            {status === "PEOPLE_REQUESTED" && (
               <Button
-                onClick={handleViewReservation}
-                className="bg-main-dark-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
-                label={t("reservation.viewReservation")}
+                onClick={() => setOpenPeopleModal(true)}
+                className="bg-main-dark-green hover:bg-main-dark-green text-soft-white flex-1  rounded-full w-full h-10 text-sm shadow-md hover:opacity-70"
+                label={t("reservation.registerPeople")}
               />
-            </div>
-
+            )}
             {status === "PAYMENT_REQUESTED" && (
               <Button
                 onClick={() => setOpenPaymentProofModal(true)}
-                className="bg-contrast-green text-soft-white rounded-full w-[200px] h-[40px] text-sm shadow-md hover:opacity-90"
+                className="bg-main-dark-green hover:bg-main-dark-green text-soft-white flex-1  rounded-full w-full h-10 text-sm shadow-md hover:opacity-70"
                 label={t("reservation.sendPaymentProof")}
               />
             )}
+            <Button
+              onClick={handleViewReservation}
+              className="bg-main-dark-green hover:bg-main-dark-green text-soft-white flex-1  rounded-full w-full h-10 text-sm shadow-md hover:opacity-70"
+              label={t("reservation.viewReservation")}
+            />
           </div>
         </div>
       </CanvasCard>

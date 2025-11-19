@@ -19,7 +19,7 @@ import { digitsOnly, maskCep, maskPhone } from "@/lib/utils";
 import { appToast } from "@/components/toast/toast";
 import { useTranslation } from "react-i18next";
 import { useCepQuery, useCurrentUserProfile, useUpdateUser } from "@/hooks";
-import { mapGenderToApiValue, type UpdateUserPayload } from "@/api/user";
+import { type UpdateUserPayload, mapGenderToApiValue } from "@/api/user";
 
 // Normalize multiple backend gender variants into consistent internal values
 function normalizeGender(raw?: string | null): string {

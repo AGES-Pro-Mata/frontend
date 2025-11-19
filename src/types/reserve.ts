@@ -1,4 +1,4 @@
-export type ReserveParticipantGender = "FEMALE" | "MALE" | "OTHER" | "NOT_INFORMED";
+export type ReserveParticipantGender = "masculino" | "feminino" | "outros";
 
 type ReserveParticipantBase = {
   id: string;

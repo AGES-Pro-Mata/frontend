@@ -23,12 +23,15 @@ import { Form, FormField, FormItem, FormMessage } from "../ui/form";
 import { useCreateAdminRequest } from "@/hooks/requests/use-create-request-admin";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { MoonLoader } from "react-spinners";
+import ReceiptPreview from "../dialog/receiptPreview";
 
 export interface ReservationsLayoutProps {
   reservationGroupId: string;
 }
 //TODO: traduzir com i18n
 export function ReservationCard({ event }: { event: TEventsReservationRequestAdminResponse }) {
+  const [openPdfModal, setOpenPdfModal] = React.useState(false);
   const isSelf = event.isSender;
   const date = dayjs(event.createdAt).format("DD/MM/YYYY");
   const time = dayjs(event.createdAt).format("HH:mm");
@@ -52,6 +55,13 @@ export function ReservationCard({ event }: { event: TEventsReservationRequestAdm
 
         <p className="font-semibold text-lg">{REQUESTS_LABEL[event.status ?? ""]}</p>
         {event.description && <p className="text-sm">{event.description}</p>}
+        {event.fileUrl && (
+          <Button
+            label="Visualizar Comprovante"
+            variant="outline"
+            onClick={() => setOpenPdfModal(true)}
+          />
+        )}
         <div className="flex justify-between items-center">
           <div className="text-left text-xs text-gray-500">
             <span>{time}</span>
@@ -59,6 +69,11 @@ export function ReservationCard({ event }: { event: TEventsReservationRequestAdm
           {event.isRequester && <span className="text-red-500">{"(Solicitante)"}</span>}
         </div>
       </div>
+      <ReceiptPreview
+        src={event.fileUrl ?? ""}
+        open={openPdfModal}
+        onOpenChange={() => setOpenPdfModal(false)}
+      />
     </div>
   );
 }
@@ -131,7 +146,8 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
         </div>
         <span className="text-sm text-gray-500">Data de criação: {date}</span>
       </div>
-      <div className="h-[450px]">
+
+      <div className="h-[450px] relative">
         <ReservationEvents events={data.events} />
       </div>
       {data.status !== RequestsType.CANCELED && (
@@ -150,6 +166,7 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
                   >
                     {REQUESTS_ACTIONS_BUTTONS_ORDER[data.status].map((action, index) => (
                       <ToggleGroupItem
+                        disabled={isPending}
                         key={index}
                         value={action}
                         className="border-1 !rounded-2xl border-gray-300 h-12 !w-full data-[state=on]:bg-contrast-green data-[state=on]:text-white"
@@ -170,6 +187,7 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <Input
+                      disabled={isPending}
                       onChange={(value) => field.onChange(value)}
                       value={field.value ?? ""}
                       placeholder="Digite para o usuário"
@@ -181,7 +199,7 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
               />
               <Button
                 className="text-white font-semibold px-4 py-2 rounded-lg h-10 w-24"
-                label={"ENVIAR"}
+                label={isPending ? <MoonLoader size={22} color="#006324" /> : "ENVIAR"}
                 onClick={() => void handleSubmitForm()}
                 disabled={isPending}
               />

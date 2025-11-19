@@ -1,3 +1,6 @@
+/* eslint-disable padding-line-between-statements */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
 import {
@@ -27,14 +30,12 @@ type ReceiptPreviewProps = {
 
 export function ReceiptPreview({
   src,
-  title = "Visualizar PDF",
+  title = "Visualizar Arquivo",
   trigger,
   open,
   onOpenChange,
   downloadFileName,
   className,
-  height = "70vh",
-  width = "100%",
 }: ReceiptPreviewProps) {
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isControlled = open !== undefined;
@@ -65,7 +66,7 @@ export function ReceiptPreview({
     try {
       const response = await fetch(src);
 
-      if (!response.ok) throw new Error("Falha ao baixar o PDF");
+      if (!response.ok) throw new Error("Falha ao baixar o arquivo");
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -82,19 +83,44 @@ export function ReceiptPreview({
   }
 
   const frameStyles: React.CSSProperties = {
-    height: typeof height === "number" ? `${height}px` : height,
-    width: typeof width === "number" ? `${width}px` : width,
+    height: "100%",
+    width: "100%",
     border: 0,
     background: "#fff",
+    display: "block",
   };
+
+  async function getFileTypeByHeader(url: string): Promise<"image" | "pdf" | "other"> {
+    try {
+      const response = await fetch(url, { method: "HEAD" });
+
+      const contentType = response.headers.get("Content-Type") || "";
+
+      if (contentType.startsWith("image/")) return "image";
+      if (contentType === "application/pdf") return "pdf";
+    } catch {
+      // fallback
+    }
+
+    return "other";
+  }
+
+  const [fileType, setFileType] = React.useState<"image" | "pdf" | "other">("other");
+
+  React.useEffect(() => {
+    (async () => {
+      const headerType = await getFileTypeByHeader(src);
+      setFileType(headerType);
+    })();
+  }, [src]);
 
   return (
     <Dialog open={actualOpen} onOpenChange={handleOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent
         className={cn(
-          "max-w-[90vw] w-full bg-white dark:bg-neutral-900 shadow-xl p-0 sm:p-4",
-          className
+          "w-full bg-white dark:bg-neutral-900 shadow-xl p-0 sm:p-4 !max-w-[1000px]",
+          className,
         )}
         showCloseButton={false}
       >
@@ -128,13 +154,11 @@ export function ReceiptPreview({
             </DialogClose>
           </div>
         </DialogHeader>
-        <div className="relative border rounded-md overflow-hidden bg-white dark:bg-neutral-950 min-h-[200px] flex items-center justify-center">
+        <div className="relative border rounded-md overflow-hidden bg-white dark:bg-neutral-950 min-h-[200px] flex items-center justify-center w-full h-[70vh]">
           {isLoading && !error && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background/60 backdrop-blur-sm z-10">
               <Loader2 className="size-6 animate-spin" />
-              <span className="text-xs text-muted-foreground">
-                Carregando PDF...
-              </span>
+              <span className="text-xs text-muted-foreground">Carregando Arquivo...</span>
             </div>
           )}
           {error && (
@@ -152,24 +176,41 @@ export function ReceiptPreview({
               />
             </div>
           )}
-          <iframe
-            key={reloadKey}
-            title={title}
-            src={src}
-            style={frameStyles}
-            className={cn(
-              "block w-full transition-opacity duration-300 min-h-[200px]",
-              isLoading || error ? "opacity-0" : "opacity-100"
-            )}
-            onLoad={() => setIsLoading(false)}
-            onError={() => {
-              setIsLoading(false);
-              setError("Não foi possível carregar o PDF");
-            }}
-            tabIndex={0}
-            aria-label={title}
-            allowFullScreen
-          />
+          {fileType === "pdf" ? (
+            <iframe
+              key={reloadKey}
+              title={title}
+              src={src}
+              style={frameStyles}
+              className={cn(
+                "flex w-full h-full transition-opacity duration-300 min-h-[200px]",
+                isLoading || error ? "opacity-0" : "opacity-100",
+              )}
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setError("Não foi possível carregar o PDF");
+              }}
+              tabIndex={0}
+              aria-label={title}
+              allowFullScreen
+            />
+          ) : (
+            <img
+              key={reloadKey}
+              src={src}
+              alt={title}
+              style={frameStyles}
+              className={cn(
+                "flex w-full h-full object-cover transition-opacity duration-300 min-h-[200px]",
+              )}
+              onLoad={() => setIsLoading(false)}
+              onError={() => {
+                setIsLoading(false);
+                setError("Não foi possível carregar a imagem");
+              }}
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>

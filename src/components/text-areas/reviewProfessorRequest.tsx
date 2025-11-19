@@ -15,6 +15,7 @@ import { CheckCircle2, Clock5, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PROFESSOR_REQUESTS_LABEL } from "@/utils/consts/requests-consts";
 import ReceiptPreview from "../dialog/receiptPreview";
+import { MoonLoader } from "react-spinners";
 
 type ProfessorStyle = {
   className: string;
@@ -84,10 +85,10 @@ export default function ProfessorApproval({ professorId }: ProfessorApprovalProp
   if (!data) return;
 
   return (
-    <div className="flex flex-col min-w-[500px] gap-4">
+    <div className="flex flex-col min-w-[500px] gap-4 relative">
       <div className="relative w-full flex">
         <Textarea
-          disabled={!canEdit}
+          disabled={!canEdit || isPending}
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Digite uma observação"
@@ -102,13 +103,13 @@ export default function ProfessorApproval({ professorId }: ProfessorApprovalProp
       {canEdit && (
         <div className="flex gap-4 flex-row">
           <Button
-            label={"Aprovar"}
+            label={isPending ? <MoonLoader size={22} color="#000000" /> : "Aprovar"}
             className="flex-1"
             onClick={handleAprove}
             disabled={isPending}
           />
           <Button
-            label={"Rejeitar"}
+            label={isPending ? <MoonLoader size={22} color="#000000" /> : "Rejeitar"}
             variant="destructive"
             className="flex-1"
             onClick={handleReject}

@@ -65,6 +65,8 @@ export const REQUESTS_ACTIONS_LABEL = {
   [RequestsType.CANCELED]: "CANCELAR",
   [RequestsType.PAYMENT_REQUESTED]: "SOLICITAR PAGAMENTO",
   [RequestsType.PEOPLE_REQUESTED]: "SOLICITAR PESSOAS",
+  [RequestsType.PAYMENT_APPROVED]: "CONFIRMAR PAGAMENTO",
+  [RequestsType.PAYMENT_REJECTED]: "REJEITAR PAGAMENTO",
 } as Record<string | number, string>;
 
 export const REQUESTS_ICONS = {
