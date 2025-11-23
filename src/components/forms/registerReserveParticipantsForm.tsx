@@ -88,9 +88,9 @@ function ReserveParticipantInputs({
 
   const genderOptions = useMemo(
     () => ({
-      masculino: t("reserveFlow.peopleStep.genderOptions.female"),
-      feminino: t("reserveFlow.peopleStep.genderOptions.male"),
-      outros: t("reserveFlow.peopleStep.genderOptions.other"),
+      MALE: t("reserveFlow.peopleStep.genderOptions.male"),
+      FEMALE: t("reserveFlow.peopleStep.genderOptions.female"),
+      OTHER: t("reserveFlow.peopleStep.genderOptions.other"),
     }),
     [t],
   ) as Record<ReserveParticipantGender, string>;
