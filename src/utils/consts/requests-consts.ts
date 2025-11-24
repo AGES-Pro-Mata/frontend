@@ -15,7 +15,6 @@ export const REQUESTS_LABEL = {
   [RequestsType.PAYMENT_REJECTED]: "Pagamento Rejeitado",
   [RequestsType.PAYMENT_APPROVED]: "Pagamento Aprovado",
   [RequestsType.REJECTED]: "Rejeitada",
-  [RequestsType.PAYMENT_APPROVED]: "Pagamento Aprovado",
   [RequestsType.CANCEL_REJECTED]: "Cancelamento Rejeitado",
 } as Record<string | number, string>;
 
