@@ -6,6 +6,7 @@ export const REQUESTS_LABEL = {
   [RequestsType.APPROVED]: "Aprovada",
   [RequestsType.CANCELED]: "Cancelada",
   [RequestsType.CANCELED_REQUESTED]: "Cancelamento Solicitado",
+  [RequestsType.CANCEL_REJECTED]: "Cancelamento Rejeitado",
   [RequestsType.CREATED]: "Nova",
   [RequestsType.EDITED]: "Edição pendente",
   [RequestsType.PEOPLE_REQUESTED]: "Pessoas Solicitadas",
@@ -23,7 +24,8 @@ export const REQUESTS_ACTIONS_BUTTONS_ORDER = {
     RequestsType.PEOPLE_REQUESTED,
   ],
   [RequestsType.CANCELED]: [],
-  [RequestsType.CANCELED_REQUESTED]: [
+  [RequestsType.CANCELED_REQUESTED]: [RequestsType.CANCELED, RequestsType.CANCEL_REJECTED],
+  [RequestsType.CANCEL_REJECTED]: [
     RequestsType.CANCELED,
     RequestsType.APPROVED,
     RequestsType.PAYMENT_REQUESTED,
@@ -63,6 +65,7 @@ export const REQUESTS_ACTIONS_BUTTONS_ORDER = {
 export const REQUESTS_ACTIONS_LABEL = {
   [RequestsType.APPROVED]: "APROVAR",
   [RequestsType.CANCELED]: "CANCELAR",
+  [RequestsType.CANCEL_REJECTED]: "REPROVAR CANCELAMENTO",
   [RequestsType.PAYMENT_REQUESTED]: "SOLICITAR PAGAMENTO",
   [RequestsType.PEOPLE_REQUESTED]: "SOLICITAR PESSOAS",
   [RequestsType.PAYMENT_APPROVED]: "CONFIRMAR PAGAMENTO",
@@ -73,6 +76,7 @@ export const REQUESTS_ICONS = {
   [RequestsType.APPROVED]: Check,
   [RequestsType.CANCELED]: X,
   [RequestsType.CANCELED_REQUESTED]: XCircle,
+  [RequestsType.CANCEL_REJECTED]: XCircle,
   [RequestsType.CREATED]: FileEdit,
   [RequestsType.EDITED]: FileEdit,
   [RequestsType.PEOPLE_REQUESTED]: Users,

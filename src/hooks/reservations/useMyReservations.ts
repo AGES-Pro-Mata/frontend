@@ -7,6 +7,7 @@ export type ReservationGroupStatus =
   | "CREATED"
   | "CANCELED"
   | "CANCELED_REQUESTED"
+  | "CANCEL_REJECTED"
   | "EDITED"
   | "REJECTED"
   | "APPROVED"

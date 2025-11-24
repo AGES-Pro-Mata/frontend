@@ -69,6 +69,7 @@
     "concluida": "Concluída",
     "cancelada": "Cancelada",
     "cancelamento_pendente": "Aguardando cancelamento",
+    "cancelamento_rejeitado": "Cancelamento rejeitado",
     "pagamento_rejeitado": "Pagamento rejeitado",
     "pagamento_aprovado": "Pagamento aprovado"
   },

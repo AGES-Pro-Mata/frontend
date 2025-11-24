@@ -164,16 +164,24 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
                     className="gap-2 w-full"
                     onValueChange={(action: RequestsType) => field.onChange(action)}
                   >
-                    {REQUESTS_ACTIONS_BUTTONS_ORDER[data.status].map((action, index) => (
-                      <ToggleGroupItem
-                        disabled={isPending}
-                        key={index}
-                        value={action}
-                        className="border-1 !rounded-2xl border-gray-300 h-12 !w-full data-[state=on]:bg-contrast-green data-[state=on]:text-white"
-                      >
-                        {REQUESTS_ACTIONS_LABEL[action]}
-                      </ToggleGroupItem>
-                    ))}
+                    {REQUESTS_ACTIONS_BUTTONS_ORDER[data.status].map(
+                      (action: RequestsType, index: number) => (
+                        <ToggleGroupItem
+                          disabled={isPending}
+                          key={index}
+                          value={action}
+                          className="border-1 !rounded-2xl border-gray-300 h-12 !w-full data-[state=on]:bg-contrast-green data-[state=on]:text-white"
+                        >
+                          {data.status === RequestsType.CANCELED_REQUESTED &&
+                          action === RequestsType.CANCELED
+                            ? "APROVAR CANCELAMENTO"
+                            : data.status === RequestsType.CANCELED_REQUESTED &&
+                                action === RequestsType.CANCEL_REJECTED
+                              ? "REPROVAR CANCELAMENTO"
+                              : REQUESTS_ACTIONS_LABEL[action]}
+                        </ToggleGroupItem>
+                      ),
+                    )}
                   </ToggleGroup>
                   <FormMessage />
                 </FormItem>

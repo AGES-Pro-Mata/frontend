@@ -4,6 +4,7 @@ const reservationStatus = [
   "CREATED",
   "CANCELED",
   "CANCELED_REQUESTED",
+  "CANCEL_REJECTED",
   "EDITED",
   "REJECTED",
   "APPROVED",
@@ -30,16 +31,12 @@ async function fetchRequests({
   return response.data;
 }
 
-export function useAdminRequests(filters: {
-  page?: number;
-  limit?: number;
-  status?: string;
-}) {
+export function useAdminRequests(filters: { page?: number; limit?: number; status?: string }) {
   const queryClient = useQueryClient();
 
   const requestsQuery = useQuery({
     queryKey: ["adminRequests", filters],
-    queryFn: () => fetchRequests(filters)
+    queryFn: () => fetchRequests(filters),
   });
 
   // Exemplo de mutation para aprovar (ajuste endpoint se necessário)
@@ -60,4 +57,3 @@ export function useAdminRequests(filters: {
     reservationStatus,
   };
 }
-
