@@ -6,7 +6,7 @@ export const ProfessorRequestsAdminFilters = z.object({
   ...ApiDefaultFilters.shape,
   name: z.string().max(100).optional(),
   email: z.string().optional(),
-  status: z.enum(ProfessorRequestsType).optional(),
+  status: z.array(z.enum(ProfessorRequestsType)).optional(),
 });
 
 export type TProfessorRequestsAdminFilters = z.infer<typeof ProfessorRequestsAdminFilters>;

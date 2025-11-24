@@ -6,7 +6,7 @@ export const RequestsAdminFilters = z.object({
   ...ApiDefaultFilters.shape,
   experiences: z.string().max(100).optional(),
   email: z.string().optional(),
-  status: z.enum(RequestsType).optional(),
+  status: z.array(z.enum(RequestsType)).optional(),
 });
 
 export type TRequestsAdminFilters = z.infer<typeof RequestsAdminFilters>;

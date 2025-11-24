@@ -6,7 +6,6 @@ export const REQUESTS_LABEL = {
   [RequestsType.APPROVED]: "Aprovada",
   [RequestsType.CANCELED]: "Cancelada",
   [RequestsType.CANCELED_REQUESTED]: "Cancelamento Solicitado",
-  [RequestsType.CANCEL_REJECTED]: "Cancelamento Rejeitado",
   [RequestsType.CREATED]: "Nova",
   [RequestsType.EDITED]: "Edição pendente",
   [RequestsType.PEOPLE_REQUESTED]: "Pessoas Solicitadas",
@@ -16,6 +15,8 @@ export const REQUESTS_LABEL = {
   [RequestsType.PAYMENT_REJECTED]: "Pagamento Rejeitado",
   [RequestsType.PAYMENT_APPROVED]: "Pagamento Aprovado",
   [RequestsType.REJECTED]: "Rejeitada",
+  [RequestsType.PAYMENT_APPROVED]: "Pagamento Aprovado",
+  [RequestsType.CANCEL_REJECTED]: "Cancelamento Rejeitado",
 } as Record<string | number, string>;
 
 export const REQUESTS_ACTIONS_BUTTONS_ORDER = {
