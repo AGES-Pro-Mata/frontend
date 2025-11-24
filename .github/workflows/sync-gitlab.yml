@@ -1,0 +1,82 @@
+name: Sync to GitLab AGES
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+      - 'fix/**'
+  workflow_dispatch:  # Permite execução manual
+
+jobs:
+  mirror:
+    name: Mirror to GitLab
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Histórico completo para mirror
+      
+      - name: Setup SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITLAB_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          
+          # Adicionar GitLab AGES aos known hosts
+          ssh-keyscan -H tools.ages.pucrs.br >> ~/.ssh/known_hosts
+          
+          # Configurar SSH para usar a chave correta
+          cat > ~/.ssh/config << EOF
+          Host tools.ages.pucrs.br
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          EOF
+          
+          chmod 600 ~/.ssh/config
+      
+      - name: Test SSH Connection
+        run: |
+          echo "Testando conexão SSH com GitLab AGES..."
+          ssh -T git@tools.ages.pucrs.br || true
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "noreply@github.com"
+      
+      - name: Mirror to GitLab
+        run: |
+          echo "Configurando remote GitLab..."
+          git remote add gitlab git@tools.ages.pucrs.br:pro-mata/frontend.git 2>/dev/null || \
+          git remote set-url gitlab git@tools.ages.pucrs.br:pro-mata/frontend.git
+          
+          echo "Sincronizando com GitLab AGES..."
+          git push gitlab --mirror --force
+          
+          echo "✅ Sincronização concluída com sucesso!"
+      
+      - name: Summary
+        if: success()
+        run: |
+          echo "### ✅ Sincronização GitLab AGES" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Repository**: frontend" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **GitLab**: https://tools.ages.pucrs.br/pro-mata/frontend" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "### ❌ Falha na Sincronização" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Verifique:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Deploy key configurada no GitLab" >> $GITHUB_STEP_SUMMARY
+          echo "2. Write permissions habilitada" >> $GITHUB_STEP_SUMMARY
+          echo "3. Secret GITLAB_SSH_PRIVATE_KEY configurado" >> $GITHUB_STEP_SUMMARY
