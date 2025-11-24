@@ -6,21 +6,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useFilters } from "@/hooks/filters/filters";
-import { Edit, MoreHorizontal } from "lucide-react";
+import { Edit, FilterXIcon, MoreHorizontal } from "lucide-react";
 import { MoonLoader } from "react-spinners";
 import type { TRequestsAdminFilters } from "@/entities/requests-admin-filter";
 import { useFetchAdminRequest } from "@/hooks/requests/use-fetch-request-admin";
 import { REQUESTS_LABEL } from "../../../../utils/consts/requests-consts";
 import { useNavigate } from "@tanstack/react-router";
 import type { TRequestAdminResponse } from "@/entities/request-admin-response";
+import { Input } from "@/components/ui/input";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import React, { type ChangeEvent, useState } from "react";
+import { useDebounce } from "@/hooks";
+import { RequestsType } from "@/utils/enums/requests-enum";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { Button } from "@/components/ui/button";
+
+const PLACE_HOLDER_TRANSLATE_TEXT = {
+  ["experiences"]: "Experiências",
+  ["email"]: "Email",
+} as const;
+
+type FilterKey = keyof typeof PLACE_HOLDER_TRANSLATE_TEXT;
 
 export default function ReservationRequestsTable() {
   const navigate = useNavigate();
-  const { filters, setFilter } = useFilters<TRequestsAdminFilters>({
+  const [selectedFilter, setSelectedFilter] = useState<FilterKey>("experiences");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const {
+    filters,
+    setFilter,
+    reset: resetFilters,
+  } = useFilters<TRequestsAdminFilters>({
     key: "get-requests-admin",
     initialFilters: {
       limit: 10,
       page: 0,
+      status: [],
     },
   });
   const { items, meta, isLoading } = useFetchAdminRequest({ filters });
@@ -28,6 +50,29 @@ export default function ReservationRequestsTable() {
   const handleViewReservationClick = (id: string) => {
     void navigate({ to: `/admin/requests/reservation/${id}` });
   };
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 200);
+
+  const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    setSearchTerm(value);
+  };
+
+  React.useEffect(() => {
+    if (filters[selectedFilter] !== debouncedSearchTerm) {
+      setFilter(selectedFilter, debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm, selectedFilter, setFilter, filters]);
+
+  const onChangeFilter = (value: FilterKey) => {
+    if (!value) return;
+    setFilter(selectedFilter, undefined);
+    setSelectedFilter(value);
+  };
+
+  const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
+
   const columns = [
     {
       accessorKey: "experiences",
@@ -80,8 +125,63 @@ export default function ReservationRequestsTable() {
     },
   ];
 
+  const selectOptions = Object.values(RequestsType).map((request) => {
+    return { label: REQUESTS_LABEL[request], value: request };
+  });
+
+  const handleChangeStatusFilter = (status: string[]) => {
+    setFilter("status", status as RequestsType[]);
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setSelectedFilter("experiences");
+    resetFilters();
+  };
+
   return (
     <div className="flex flex-col w-full h-full gap-6 overflow-hidden">
+      <div className="flex w-full justify-between">
+        <div className="w-full flex gap-4 items-center lex-shrink-0">
+          <Input
+            value={searchTerm}
+            className="w-1/3 h-12"
+            placeholder={searchInputPlaceholder}
+            onChange={onChangeSearch}
+          />
+          <ToggleGroup
+            type="single"
+            value={selectedFilter}
+            onValueChange={onChangeFilter}
+            className="gap-2 w-1/2"
+          >
+            <ToggleGroupItem
+              className="border-1 h-12 !rounded-full !w-auto data-[state=on]:bg-contrast-green data-[state=on]:text-white"
+              value="experiences"
+            >
+              Experiências
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              className="border-1 h-12 !rounded-full !w-auto data-[state=on]:bg-contrast-green data-[state=on]:text-white"
+              value="email"
+            >
+              Email
+            </ToggleGroupItem>
+            <MultiSelect
+              onChange={handleChangeStatusFilter}
+              value={(filters.status as string[]) ?? []}
+              options={selectOptions}
+            />
+          </ToggleGroup>
+        </div>
+        <Button
+          onClick={handleClearFilters}
+          variant="outline"
+          className="w-12 h-12 rounded-full bg-red-500"
+        >
+          <FilterXIcon className="size-6 text-white" />
+        </Button>
+      </div>
       <div className="flex-1 relative overflow-auto rounded-md border">
         {isLoading && (
           <div className="absolute inset-0 flex justify-center items-center rounded-lg z-10">
