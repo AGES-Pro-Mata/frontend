@@ -258,8 +258,7 @@ describe("Reserve Route", () => {
 
     await waitFor(() => expect(useGetExperiencesMock).toHaveBeenCalledTimes(1));
     expect(useGetExperiencesMock).toHaveBeenCalledWith(
-      expect.objectContaining({ limit: 12 }),
-      0,
+      expect.objectContaining({ limit: 12, page: 0 }),
     );
   });
 
@@ -292,7 +291,6 @@ describe("Reserve Route", () => {
     await waitFor(() => expect(useGetExperiencesMock).toHaveBeenCalledTimes(1));
     expect(useGetExperiencesMock).toHaveBeenCalledWith(
       expect.objectContaining({ limit: 12 }),
-      0,
     );
   });
 
