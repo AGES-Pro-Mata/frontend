@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 import {
   Table,
   TableBody,
@@ -20,6 +21,7 @@ import {
 import * as React from "react";
 import { IoIosArrowBack, IoIosArrowDown, IoIosArrowForward, IoIosArrowUp } from "react-icons/io";
 import { Button } from "../ui/button";
+import NotFound from "./empty";
 
 type DataTableProps<TData, TValue, F extends TApiDefaultFilters = TApiDefaultFilters> = {
   columns: ColumnDef<TData, TValue>[];
@@ -118,9 +120,9 @@ export function DataTable<TData, TValue, F extends TApiDefaultFilters = TApiDefa
         </TableHeader>
       </Table>
 
-      <div className="flex-1 overflow-auto">
-        <Table className="w-full table-fixed">
-          <TableBody>
+      <div className="flex-1 overflow-auto flex flex-col h-full">
+        <Table className="w-full table-fixed h-full">
+          <TableBody className="h-full">
             {table.getRowModel().rows?.length
               ? table.getRowModel().rows.map((row) => (
                   <TableRow
@@ -147,9 +149,11 @@ export function DataTable<TData, TValue, F extends TApiDefaultFilters = TApiDefa
                   </TableRow>
                 ))
               : !isLoading && (
-                  <TableRow className="border-b border-slate-300">
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      No results.
+                  <TableRow className="border-b border-slate-300 h-full">
+                    <TableCell colSpan={columns.length} className="h-full">
+                      <div className="mt-20">
+                        <NotFound />
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
