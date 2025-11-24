@@ -14,10 +14,11 @@ import type {
   ReservationAdjustmentPayload,
   ReservationPayload,
 } from "@/api/reserve";
-import type {
-  ReserveParticipant,
-  ReserveParticipantDraft,
-  ReserveSummaryExperience,
+import {
+  type ReserveParticipant,
+  type ReserveParticipantDraft,
+  ReserveParticipantGender,
+  type ReserveSummaryExperience,
 } from "@/types/reserve";
 import type { NormalizedExperienceAdjustment } from "@/types/experience-adjustments";
 import { useCartStore } from "@/store/cartStore";
@@ -160,7 +161,7 @@ function ReserveFlow() {
         .string()
         .transform((s) => digitsOnly(s))
         .refine((s) => isValidCpf(s), t("validation.cpfInvalid")),
-      gender: z.enum(["masculino", "feminino", "outros"] as const, {
+      gender: z.enum(ReserveParticipantGender, {
         message: t("validation.genderRequired"),
       }),
     });

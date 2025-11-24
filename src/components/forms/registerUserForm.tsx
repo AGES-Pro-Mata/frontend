@@ -450,10 +450,10 @@ export function RegisterUser() {
                           <SelectValue placeholder={t("register.fields.gender.select")} />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
                           <SelectItem value="female">
                             {t("register.fields.gender.female")}
                           </SelectItem>
-                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
                           <SelectItem value="other">{t("register.fields.gender.other")}</SelectItem>
                         </SelectContent>
                       </Select>

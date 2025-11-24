@@ -93,6 +93,7 @@ export default function MyReservationCard({
     APPROVED: StatusEnum.CONFIRMADA,
     CANCELED: StatusEnum.CANCELADA,
     CANCELED_REQUESTED: StatusEnum.CANCELAMENTO_PENDENTE,
+    CANCEL_REJECTED: StatusEnum.CANCELAMENTO_REJEITADO,
     EDITED: StatusEnum.AGUARDANDO_APROVACAO,
     REJECTED: StatusEnum.CANCELADA,
     PEOPLE_SENT: StatusEnum.AGUARDANDO_APROVACAO,
@@ -123,7 +124,7 @@ export default function MyReservationCard({
   const handleSendPaymentProof = async (file: File) => {
     try {
       await sendPaymentProofMutation.mutateAsync({ reservationGroupId: id, file });
-      appToast.success(t("reservation.paymentProofSent") );
+      appToast.success(t("reservation.paymentProofSent"));
     } catch (error: unknown) {
       appToast.error(t("paymentProof.sendError"));
       if (error instanceof Error) {

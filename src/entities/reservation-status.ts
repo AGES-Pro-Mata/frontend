@@ -11,6 +11,7 @@ export const StatusEnum = {
   DESCONHECIDO: "desconhecido",
   PAGAMENTO_APROVADO: "pagamento_aprovado",
   PAGAMENTO_REJEITADO: "pagamento_rejeitado",
+  CANCELAMENTO_REJEITADO: "cancelamento_rejeitado",
 } as const;
 
 export type ReservationStatus = (typeof StatusEnum)[keyof typeof StatusEnum];
@@ -49,6 +50,10 @@ export const RESERVATIONS_STATUS_STYLES = {
   [StatusEnum.PAGAMENTO_REJEITADO]: {
     className: "text-warning",
     icon: createElement(Clock5),
+  },
+  [StatusEnum.CANCELAMENTO_REJEITADO]: {
+    className: "text-default-red",
+    icon: createElement(XCircle),
   },
   [StatusEnum.DESCONHECIDO]: {
     className: "text-on-banner-text",
