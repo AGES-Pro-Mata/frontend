@@ -1,5 +1,5 @@
 /* eslint-disable padding-line-between-statements */
-/* eslint-disable react-hooks/exhaustive-deps */
+ 
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";

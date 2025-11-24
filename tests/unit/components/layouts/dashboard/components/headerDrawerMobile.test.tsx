@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { screen, within, act } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import type { ReactNode } from "react";
 
 import { HeaderDrawerMobile } from "@/components/layouts/dashboard/components/headerDrawerMobile";

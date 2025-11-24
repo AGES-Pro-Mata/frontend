@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { screen, act } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 
 import { renderWithProviders } from "@/test/test-utils";
