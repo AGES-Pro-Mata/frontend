@@ -13,8 +13,8 @@ export const REQUESTS_LABEL = {
   [RequestsType.PAYMENT_REQUESTED]: "Pagamento Solicitado",
   [RequestsType.PAYMENT_SENT]: "Pagamento Enviado",
   [RequestsType.PAYMENT_REJECTED]: "Pagamento Rejeitado",
-  [RequestsType.REJECTED]: "Rejeitada",
   [RequestsType.PAYMENT_APPROVED]: "Pagamento Aprovado",
+  [RequestsType.REJECTED]: "Rejeitada",
   [RequestsType.CANCEL_REJECTED]: "Cancelamento Rejeitado",
 } as Record<string | number, string>;
 

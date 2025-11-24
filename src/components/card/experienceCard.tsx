@@ -91,6 +91,7 @@ export function CardExperience({ experience }: CardExperienceProps) {
           const key = "cartItem.length";
           const formatted = decimalFormatter.format(experience.trailLength);
           const txt = t(key, { length: formatted });
+
           return txt === key ? `${formatted} km` : txt;
         })()
       : undefined;
@@ -103,6 +104,7 @@ export function CardExperience({ experience }: CardExperienceProps) {
             minutesToHours(experience.durationMinutes) ?? 0
           );
           const txt = t(key, { value: hours });
+
           return txt === key ? `${hours} h` : txt;
         })()
       : undefined;
@@ -111,6 +113,7 @@ export function CardExperience({ experience }: CardExperienceProps) {
     const easyPT = "Fácil";
     const mediumPT = "Médio";
     const hardPT = "Difícil";
+
     switch (experience.trailDifficulty) {
       case "LIGHT":
         return t("cartItem.difficulty.light") === "cartItem.difficulty.light"
@@ -158,10 +161,12 @@ export function CardExperience({ experience }: CardExperienceProps) {
       const from = dateFormatter.format(new Date(experience.startDate));
       const to = dateFormatter.format(new Date(experience.endDate));
       const txt = t(key, { from, to });
+
       return txt === key ? `${from} – ${to}` : txt;
     }
 
     const singleDate = experience.startDate ?? experience.endDate;
+
     return singleDate ? dateFormatter.format(new Date(singleDate)) : undefined;
   })();
 
@@ -198,6 +203,7 @@ export function CardExperience({ experience }: CardExperienceProps) {
   const addToCartLabel = (() => {
     const key = "experienceCard.addToCart";
     const txt = t(key);
+
     return txt === key
       ? i18n.language?.startsWith("pt")
         ? "Adicionar ao carrinho"
