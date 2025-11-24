@@ -9,6 +9,21 @@ import {
   type TEditUserAdminResponse,
 } from "@/entities/edit-user-admin-response";
 import { safeApiCall } from "@/core/http/safe-api-caller";
+import { digitsOnly } from "@/lib/utils";
+
+export function mapGenderToApiValue(value?: string | null): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+
+  if (!trimmed) return undefined;
+
+  const normalized = trimmed.toLowerCase();
+
+  if (normalized === "male") return "Masculino";
+  if (normalized === "female") return "Feminino";
+
+  return trimmed;
+}
 
 export type CurrentUser = {
   id?: string;
@@ -84,7 +99,6 @@ export interface RegisterUserPayload {
 export interface UpdateUserAdminPayload {
   name: string;
   email: string;
-  password: string;
   phone: string;
   gender: string;
   document?: string;
@@ -102,7 +116,7 @@ export interface UpdateUserAdminPayload {
 }
 
 export async function getUserById(
-  userId: string
+  userId?: string
 ): Promise<TEditUserAdminResponse> {
   const result = await safeApiCall(
     api.get(`/user/${userId}`),
@@ -113,12 +127,13 @@ export async function getUserById(
 }
 
 export async function registerUserAdminRequest(
-  payload: RegisterUserAdminPayload
+  payload: RegisterUserAdminPayload,
 ): Promise<HttpResponse> {
   const response = await api.post(`/auth/create-root-user`, {
     confirmPassword: payload.password,
     number: Number.parseInt(payload.number ?? ""),
     ...payload,
+    gender: mapGenderToApiValue(payload.gender) ?? "",
   });
 
   return {
@@ -130,14 +145,14 @@ export async function registerUserAdminRequest(
 
 export async function updateUserRequest(
   payload: UpdateUserAdminPayload,
-  userId: string
+  userId: string,
 ): Promise<HttpResponse> {
   const formData = new FormData();
 
   formData.append("name", payload.name);
   formData.append("email", payload.email);
   formData.append("phone", payload.phone);
-  formData.append("gender", payload.gender);
+  formData.append("gender", mapGenderToApiValue(payload.gender) ?? "");
   formData.append("country", payload.country);
   formData.append("userType", payload.userType);
   formData.append("isForeign", payload.isForeign.toString());
@@ -149,10 +164,13 @@ export async function updateUserRequest(
   if (payload.document) formData.append("document", payload.document);
   if (payload.number) formData.append("number", payload.number.toString());
   if (payload.rg) formData.append("rg", payload.rg);
-  if (payload.teacherDocument)
-    formData.append("teacherDocument", payload.teacherDocument);
+  if (payload.teacherDocument) formData.append("teacherDocument", payload.teacherDocument);
 
-  const response = await api.post(`/user/${userId}`, formData);
+  const response = await api.patch(`/user/${userId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return {
     statusCode: response.status,
@@ -161,9 +179,7 @@ export async function updateUserRequest(
   };
 }
 
-export async function registerUserRequest(
-  payload: RegisterUserPayload
-): Promise<HttpResponse> {
+export async function registerUserRequest(payload: RegisterUserPayload): Promise<HttpResponse> {
   const formData = new FormData();
 
   formData.append("name", payload.name);
@@ -171,7 +187,7 @@ export async function registerUserRequest(
   formData.append("password", payload.password);
   formData.append("confirmPassword", payload.confirmPassword);
   formData.append("phone", payload.phone);
-  formData.append("gender", payload.gender);
+  formData.append("gender", mapGenderToApiValue(payload.gender) ?? "");
   formData.append("country", payload.country);
   formData.append("userType", payload.userType);
   formData.append("isForeign", payload.isForeign.toString());
@@ -183,10 +199,13 @@ export async function registerUserRequest(
   if (payload.document) formData.append("document", payload.document);
   if (payload.number) formData.append("number", payload.number.toString());
   if (payload.rg) formData.append("rg", payload.rg);
-  if (payload.teacherDocument)
-    formData.append("teacherDocument", payload.teacherDocument);
+  if (payload.teacherDocument) formData.append("teacherDocument", payload.teacherDocument);
 
-  const response = await api.post(`/auth/signUp`, formData);
+  const response = await api.post(`/auth/signUp`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return {
     statusCode: response.status,
@@ -195,9 +214,7 @@ export async function registerUserRequest(
   };
 }
 
-export async function loginRequest(
-  payload: LoginPayload
-): Promise<HttpResponse> {
+export async function loginRequest(payload: LoginPayload): Promise<HttpResponse> {
   const response = await api.post(`/auth/signIn`, payload);
 
   return {
@@ -207,9 +224,7 @@ export async function loginRequest(
   };
 }
 
-export async function forgotPasswordRequest(
-  payload: ForgotPasswordPayload
-): Promise<HttpResponse> {
+export async function forgotPasswordRequest(payload: ForgotPasswordPayload): Promise<HttpResponse> {
   const response = await api.post(`/auth/forgot`, payload);
 
   return {
@@ -235,9 +250,7 @@ export interface ResetPasswordPayload {
   confirmPassword: string;
 }
 
-export async function resetPasswordRequest(
-  payload: ResetPasswordPayload
-): Promise<HttpResponse> {
+export async function resetPasswordRequest(payload: ResetPasswordPayload): Promise<HttpResponse> {
   const response = await api.patch(`/auth/forgot`, payload);
 
   return {
@@ -324,17 +337,51 @@ export interface UpdateUserPayload {
   country?: string;
   userType?: UserType;
   isForeign?: boolean | string;
+  teacherDocument?: File | undefined;
 }
 
-export async function updateCurrentUserRequest(
-  payload: UpdateUserPayload
-): Promise<HttpResponse> {
-  const body: Record<string, unknown> = { ...payload };
+export async function updateCurrentUserRequest(payload: UpdateUserPayload): Promise<HttpResponse> {
+  const formData = new FormData();
 
-  if (typeof body.isForeign === "boolean") {
-    body.isForeign = body.isForeign ? "true" : "false";
+  if (payload.name) {
+    formData.append("name", payload.name);
   }
-  const response = await api.patch(`/user`, body);
+  if (payload.phone) {
+    formData.append("phone", payload.phone);
+  }
+  if (payload.gender) {
+    formData.append("gender", payload.gender);
+  }
+  if (payload.addressLine) {
+    formData.append("addressLine", payload.addressLine);
+  }
+  if (payload.country) {
+    formData.append("country", payload.country);
+  }
+  if (payload.city) {
+    formData.append("city", payload.city);
+  }
+  if (payload.number) {
+    formData.append("number", payload.number.toString());
+  }
+  if (payload.zipCode) {
+    formData.append("zipCode", digitsOnly(payload.zipCode));
+  }
+  if (payload.institution) {
+    formData.append("institution", payload.institution);
+  }
+  if (payload.isForeign) {
+    formData.append("isForeign", payload.isForeign.toString());
+  }
+  if (payload.teacherDocument) {
+    formData.append("teacherDocument", payload.teacherDocument);
+  }
+
+  const response = await api.patch(`/user`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return {
     statusCode: response.status,

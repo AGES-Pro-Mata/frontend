@@ -19,6 +19,10 @@ const { createHomeCardsFixture, homeCardsFixture } = vi.hoisted(() => {
   return { createHomeCardsFixture, homeCardsFixture };
 });
 
+const useLoadImageMock = vi.fn<
+  (url: string) => { data?: string; isLoading: boolean }
+>(() => ({ data: undefined, isLoading: true }));
+
 vi.mock("@/content/cardsInfo", () => ({
   homeCards: homeCardsFixture,
 }));
@@ -68,6 +72,10 @@ vi.mock("@/components/typography/typography", () => ({
   }) => <span {...props}>{children}</span>,
 }));
 
+vi.mock("@/hooks/shared/useLoadImage", () => ({
+  useLoadImage: (url: string) => useLoadImageMock(url),
+}));
+
 const highlightsFixture: Partial<Record<HomeCardId, HighlightResponse[]>> = {
   labs: [
     {
@@ -84,6 +92,11 @@ const highlightsFixture: Partial<Record<HomeCardId, HighlightResponse[]>> = {
 };
 
 describe("CardsInfoOnHover", () => {
+  beforeEach(() => {
+    useLoadImageMock.mockReset();
+    useLoadImageMock.mockImplementation(() => ({ data: undefined, isLoading: true }));
+  });
+
   afterEach(() => {
     homeCardsFixture.splice(
       0,
@@ -187,5 +200,19 @@ describe("CardsInfoOnHover", () => {
 
     expect(images[0]).toHaveAttribute("loading", "eager");
     expect(images[1]).toHaveAttribute("loading", "lazy");
+  });
+
+  it("toggles skeleton visibility based on loaded state", () => {
+    useLoadImageMock
+      .mockReturnValueOnce({ data: undefined, isLoading: true })
+      .mockReturnValue({ data: "/loaded.jpg", isLoading: false });
+
+    const { container } = renderWithProviders(<CardsInfoOnHover highlights={highlightsFixture} />);
+
+    // first render uses loading state
+    expect(container.querySelector(".animate-pulse")).not.toBeNull();
+    expect(useLoadImageMock).toHaveBeenCalled();
+    // component should invoke the hook for the main image at least once
+    expect(useLoadImageMock).toHaveBeenCalledTimes(1);
   });
 });

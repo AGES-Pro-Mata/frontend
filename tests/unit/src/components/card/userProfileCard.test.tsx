@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { PropsWithChildren, ReactNode } from 'react';
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import {
   UserProfileCard,
@@ -14,7 +14,7 @@ import {
 import type { RegisterUserPayload } from "@/api/user";
 
 // mocks
-vi.mock('react-i18next', () => ({
+vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
@@ -22,13 +22,13 @@ vi.mock('react-i18next', () => ({
 
 const userProfileState = { verified: false };
 
-vi.mock('@/hooks/useCurrentUser', () => ({
+vi.mock("@/hooks", () => ({
   useCurrentUserProfile: vi.fn(() => userProfileState),
 }));
 
-vi.mock('@/entities/reservation-status', async () => {
-  const actual = await vi.importActual<typeof import('@/entities/reservation-status')>(
-    '@/entities/reservation-status',
+vi.mock("@/entities/reservation-status", async () => {
+  const actual = await vi.importActual<typeof import("@/entities/reservation-status")>(
+    "@/entities/reservation-status",
   );
 
   return {
@@ -40,7 +40,7 @@ vi.mock('@/entities/reservation-status', async () => {
   };
 });
 
-vi.mock('@/components/typography/typography', () => ({
+vi.mock("@/components/typography/typography", () => ({
   Typography: ({
     children,
     className,
@@ -64,7 +64,7 @@ vi.mock("@/components/card", () => ({
   ),
 }));
 
-vi.mock('@/components/display', () => ({
+vi.mock("@/components/display", () => ({
   ShowInfo: ({ header, label }: { header: ReactNode; label: ReactNode }) => (
     <div>
       <span>{header}</span>
@@ -73,7 +73,7 @@ vi.mock('@/components/display', () => ({
   ),
 }));
 
-vi.mock('@/components/button/defaultButton', () => ({
+vi.mock("@/components/button/defaultButton", () => ({
   Button: ({
     label,
     onClick,
@@ -90,22 +90,22 @@ vi.mock('@/components/button/defaultButton', () => ({
 }));
 
 const mockUser: Partial<RegisterUserPayload> = {
-  name: 'João da Silva',
-  email: 'joao.silva@example.com',
-  phone: '51999998888',
-  document: '123.456.789-00',
+  name: "João da Silva",
+  email: "joao.silva@example.com",
+  phone: "51999998888",
+  document: "123.456.789-00",
   isForeign: false,
-  gender: 'male',
-  rg: '1234567890',
-  zipCode: '90000-000',
-  addressLine: 'Rua das Flores, 123',
-  city: 'Porto Alegre',
+  gender: "male",
+  rg: "1234567890",
+  zipCode: "90000-000",
+  addressLine: "Rua das Flores, 123",
+  city: "Porto Alegre",
   number: 123,
-  institution: 'Universidade Federal',
-  function: 'Estudante',
+  institution: "Universidade Federal",
+  function: "Estudante",
 };
 
-describe('UserProfileCard', () => {
+describe("UserProfileCard", () => {
   beforeEach(() => {
     userProfileState.verified = false;
   });
@@ -138,19 +138,19 @@ describe('UserProfileCard', () => {
     expect(screen.getAllByText("-").length).toBeGreaterThanOrEqual(1);
   });
 
-  it('should not render fields if they are not provided', () => {
-    const minimalUser = { name: 'Maria', email: 'maria@test.com' };
+  it("should not render fields if they are not provided", () => {
+    const minimalUser = { name: "Maria", email: "maria@test.com" };
 
     render(<UserProfileCard user={minimalUser} documentStatus={StatusEnum.CADASTRO_PENDENTE} />);
-    expect(screen.getByText('Maria')).toBeInTheDocument();
-    expect(screen.queryByText('register.fields.document.cpf')).not.toBeInTheDocument();
+    expect(screen.getByText("Maria")).toBeInTheDocument();
+    expect(screen.queryByText("register.fields.document.cpf")).not.toBeInTheDocument();
   });
 
-  it('should display Passport label for foreign users', () => {
+  it("should display Passport label for foreign users", () => {
     const foreignUser = { ...mockUser, isForeign: true };
 
     render(<UserProfileCard user={foreignUser} documentStatus={StatusEnum.AGUARDANDO_APROVACAO} />);
-    expect(screen.getByText('register.fields.document.passport')).toBeInTheDocument();
+    expect(screen.getByText("register.fields.document.passport")).toBeInTheDocument();
   });
 
   it('shows document value and CPF header for non-foreign users', () => {
@@ -163,7 +163,7 @@ describe('UserProfileCard', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows document value and Passport header for foreign users', () => {
+  it("shows document value and Passport header for foreign users", () => {
     const foreignUser = { ...mockUser, isForeign: true };
 
     render(
@@ -180,120 +180,40 @@ describe('UserProfileCard', () => {
     ).toBeInTheDocument();
   });
 
-  it('should display document status correctly for new statuses', () => {
+  it("should display document status correctly for new statuses", () => {
     const { rerender } = render(
       <UserProfileCard user={mockUser} documentStatus={StatusEnum.CONFIRMADA} />,
     );
 
-    expect(screen.getByText('status.concluida')).toBeInTheDocument();
+    expect(screen.getByText("status.concluida")).toBeInTheDocument();
 
     rerender(<UserProfileCard user={mockUser} documentStatus={StatusEnum.CANCELADA} />);
-    expect(screen.getByText('status.cancelada')).toBeInTheDocument();
+    expect(screen.getByText("status.cancelada")).toBeInTheDocument();
 
     rerender(<UserProfileCard user={mockUser} documentStatus={StatusEnum.PAGAMENTO_PENDENTE} />);
-    expect(screen.getByText('status.pagamento_pendente')).toBeInTheDocument();
-    expect(screen.getByTestId('icon-pagamento_pendente')).toBeInTheDocument();
+    expect(screen.getByText("status.pagamento_pendente")).toBeInTheDocument();
+    expect(screen.getByTestId("icon-pagamento_pendente")).toBeInTheDocument();
   });
 
-  describe('Button Interactions', () => {
-    it('should call onEdit when edit button is clicked', async () => {
+  describe("Button Interactions", () => {
+    it("should call onEdit when edit button is clicked", async () => {
       const onEdit = vi.fn();
 
       render(
         <UserProfileCard user={mockUser} documentStatus={StatusEnum.CONFIRMADA} onEdit={onEdit} />,
       );
-      await userEvent.click(screen.getByRole('button', { name: 'profile.card.editButton' }));
+      await userEvent.click(screen.getByRole("button", { name: "profile.card.editButton" }));
       expect(onEdit).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call onSendDocument when send document button is clicked', async () => {
-      const onSendDocument = vi.fn();
-
-      render(
-        <UserProfileCard
-          user={mockUser}
-          documentStatus={StatusEnum.AGUARDANDO_APROVACAO}
-          onSendDocument={onSendDocument}
-        />,
-      );
-      await userEvent.click(
-        screen.getByRole('button', { name: 'profile.card.docency.sendReceipt' }),
-      );
-      expect(onSendDocument).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('Send Document Button Logic', () => {
-    it('should be enabled by default when user is not verified', () => {
-      const onSendDocument = vi.fn();
-
-      render(
-        <UserProfileCard
-          user={mockUser}
-          documentStatus={StatusEnum.AGUARDANDO_APROVACAO}
-          onSendDocument={onSendDocument}
-        />,
-      );
-      const sendButton = screen.getByRole('button', {
-        name: 'profile.card.docency.sendReceipt',
-      });
-
-      expect(sendButton).not.toBeDisabled();
-    });
-
-    it("should be disabled and show 'receipt sent' if user is verified", () => {
-      userProfileState.verified = true;
-      const onSendDocument = vi.fn();
-
-      render(
-        <UserProfileCard
-          user={mockUser}
-          documentStatus={StatusEnum.CONFIRMADA}
-          onSendDocument={onSendDocument}
-        />,
-      );
-      const sendButton = screen.getByRole('button', {
-        name: 'profile.card.docency.receiptSent',
-      });
-
-      expect(sendButton).toBeDisabled();
-    });
-
-    it('should be disabled if disableSendDocument prop is true', () => {
-      const onSendDocument = vi.fn();
-
-      render(
-        <UserProfileCard
-          user={mockUser}
-          documentStatus={StatusEnum.AGUARDANDO_APROVACAO}
-          onSendDocument={onSendDocument}
-          disableSendDocument={true}
-        />,
-      );
-      const sendButton = screen.getByRole('button', {
-        name: 'profile.card.docency.sendReceipt',
-      });
-
-      expect(sendButton).toBeDisabled();
-    });
-
-    it('should be disabled if onSendDocument callback is not provided', () => {
-      render(<UserProfileCard user={mockUser} documentStatus={StatusEnum.AGUARDANDO_APROVACAO} />);
-      const sendButton = screen.getByRole('button', {
-        name: 'profile.card.docency.sendReceipt',
-      });
-
-      expect(sendButton).toBeDisabled();
     });
   });
 });
 
-describe('genderLabel (imported)', () => {
+describe("genderLabel (imported)", () => {
   const typedGenderLabel = genderLabel as (g?: string, t?: (key: string) => string) => string;
   const t = (key: string) => `t(${key})`;
 
   it("returns '-' for undefined or null input", () => {
-    expect(typedGenderLabel(undefined)).toBe('-');
+    expect(typedGenderLabel(undefined)).toBe("-");
   });
 
   it("returns translated and default labels for male/female/other variants", () => {

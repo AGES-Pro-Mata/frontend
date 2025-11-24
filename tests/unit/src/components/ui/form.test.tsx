@@ -170,7 +170,7 @@ describe("form.tsx shadcn-style wrappers", () => {
 });
 
 function FullFormResolverUndefinedMessage() {
-  const resolver: Resolver<FV> = (values) => {
+  const resolver: Resolver<FV> = () => {
     const errors: FieldErrors<FV> = {
       name: {
         type: "custom",
@@ -178,7 +178,7 @@ function FullFormResolverUndefinedMessage() {
     };
 
     return Promise.resolve({
-      values,
+      values: {},
       errors,
     });
   };

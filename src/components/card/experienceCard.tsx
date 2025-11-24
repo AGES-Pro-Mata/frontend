@@ -6,7 +6,7 @@ import { CalendarClock, DollarSign, Map, Timer, Users } from "lucide-react";
 import { BsSpeedometer2 } from "react-icons/bs";
 import { type ComponentType, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useLoadImage } from "@/hooks/useLoadImage";
+import { useLoadImage } from "@/hooks/shared/useLoadImage";
 import { type Experience, ExperienceCategoryCard } from "@/types/experience";
 import { translateExperienceCategory } from "@/utils/translateExperienceCategory";
 
@@ -19,14 +19,17 @@ const minutesToHours = (minutes?: number | null) =>
 
 export function CardExperience({ experience }: CardExperienceProps) {
   const { t, i18n } = useTranslation();
+
   const locale = useMemo(
     () => (i18n.language?.startsWith("pt") ? "pt-BR" : "en-US"),
     [i18n.language]
   );
+
   const currencyFormatter = useMemo(
     () => new Intl.NumberFormat(locale, { style: "currency", currency: "BRL" }),
     [locale]
   );
+
   const decimalFormatter = useMemo(
     () =>
       new Intl.NumberFormat(locale, {
@@ -35,6 +38,7 @@ export function CardExperience({ experience }: CardExperienceProps) {
       }),
     [locale]
   );
+
   const dateFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {
@@ -44,63 +48,120 @@ export function CardExperience({ experience }: CardExperienceProps) {
       }),
     [locale]
   );
+
   const addItemToCart = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
+
+  // Categoria com fallback robusto (evita exibir chave como "Common.trail")
   const translatedCategoryRaw = translateExperienceCategory(
     experience.category,
     t,
     experience.category.toLowerCase()
   );
-  const imageSrc = resolveImageUrl(experience.image?.url);
-  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageSrc);
-  const categoryLabel =
-    translatedCategoryRaw || experience.category.toLowerCase();
 
-  const capacityLabel = t("cartItem.capacity", {
+  const categoryFallbackMap: Record<string, string> = {
+    [ExperienceCategoryCard.TRAIL]: i18n.language?.startsWith("pt")
+      ? "Trilhas"
+      : "Trails",
+    [ExperienceCategoryCard.EVENT]: i18n.language?.startsWith("pt")
+      ? "Eventos"
+      : "Events",
+  };
+
+  const categoryLabel =
+    translatedCategoryRaw &&
+    !translatedCategoryRaw.startsWith("Common.") &&
+    !translatedCategoryRaw.includes(".") // heurística para detectar chave não traduzida
+      ? translatedCategoryRaw
+      : (categoryFallbackMap[experience.category] ??
+        experience.category.toLowerCase());
+
+  // Labels com fallback caso i18n não esteja carregado no teste
+  const rawCapacity = t("cartItem.capacity", {
     count: Number(experience.capacity ?? 0),
   });
+  const capacityLabel =
+    rawCapacity === "cartItem.capacity"
+      ? `${Number(experience.capacity ?? 0)} ${i18n.language?.startsWith("pt") ? "pessoas" : "people"}`
+      : rawCapacity;
+
   const lengthLabel =
     experience.trailLength != null
-      ? t("cartItem.length", {
-          length: decimalFormatter.format(experience.trailLength),
-        })
+      ? (() => {
+          const key = "cartItem.length";
+          const formatted = decimalFormatter.format(experience.trailLength);
+          const txt = t(key, { length: formatted });
+          return txt === key ? `${formatted} km` : txt;
+        })()
       : undefined;
+
   const durationLabel =
     experience.durationMinutes != null
-      ? t("cartItem.duration", {
-          value: decimalFormatter.format(
+      ? (() => {
+          const key = "cartItem.duration";
+          const hours = decimalFormatter.format(
             minutesToHours(experience.durationMinutes) ?? 0
-          ),
-        })
+          );
+          const txt = t(key, { value: hours });
+          return txt === key ? `${hours} h` : txt;
+        })()
       : undefined;
+
   const difficultyLabel = (() => {
+    const easyPT = "Fácil";
+    const mediumPT = "Médio";
+    const hardPT = "Difícil";
     switch (experience.trailDifficulty) {
       case "LIGHT":
-        return t("cartItem.difficulty.light");
+        return t("cartItem.difficulty.light") === "cartItem.difficulty.light"
+          ? i18n.language?.startsWith("pt")
+            ? easyPT
+            : "Light"
+          : t("cartItem.difficulty.light");
+      case "EASY":
+        return t("cartItem.difficulty.easy") === "cartItem.difficulty.easy"
+          ? i18n.language?.startsWith("pt")
+            ? easyPT
+            : "Easy"
+          : t("cartItem.difficulty.easy");
+      case "MEDIUM":
       case "MODERATED":
-        return t("cartItem.difficulty.medium");
+        return t("cartItem.difficulty.medium") === "cartItem.difficulty.medium"
+          ? i18n.language?.startsWith("pt")
+            ? mediumPT
+            : "Medium"
+          : t("cartItem.difficulty.medium");
+      case "HARD":
       case "HEAVY":
-        return t("cartItem.difficulty.hard");
+        return t("cartItem.difficulty.hard") === "cartItem.difficulty.hard"
+          ? i18n.language?.startsWith("pt")
+            ? hardPT
+            : "Hard"
+          : t("cartItem.difficulty.hard");
       case "EXTREME":
-        return t("cartItem.difficulty.extreme");
+        return t("cartItem.difficulty.extreme") ===
+          "cartItem.difficulty.extreme"
+          ? i18n.language?.startsWith("pt")
+            ? "Extremo"
+            : "Extreme"
+          : t("cartItem.difficulty.extreme");
       default:
         return undefined;
     }
   })();
+
   const eventDateLabel = (() => {
-    if (experience.category !== ExperienceCategoryCard.EVENT) {
-      return undefined;
-    }
+    if (experience.category !== ExperienceCategoryCard.EVENT) return undefined;
 
     if (experience.startDate && experience.endDate) {
-      return t("cartItem.eventDateRange", {
-        from: dateFormatter.format(new Date(experience.startDate)),
-        to: dateFormatter.format(new Date(experience.endDate)),
-      });
+      const key = "cartItem.eventDateRange";
+      const from = dateFormatter.format(new Date(experience.startDate));
+      const to = dateFormatter.format(new Date(experience.endDate));
+      const txt = t(key, { from, to });
+      return txt === key ? `${from} – ${to}` : txt;
     }
 
     const singleDate = experience.startDate ?? experience.endDate;
-
     return singleDate ? dateFormatter.format(new Date(singleDate)) : undefined;
   })();
 
@@ -113,15 +174,10 @@ export function CardExperience({ experience }: CardExperienceProps) {
   }> = [{ icon: Users, text: capacityLabel }];
 
   if (experience.category === ExperienceCategoryCard.TRAIL) {
-    if (lengthLabel) {
-      labels.push({ icon: Map, text: lengthLabel });
-    }
-    if (durationLabel) {
-      labels.push({ icon: Timer, text: durationLabel });
-    }
-    if (difficultyLabel) {
+    if (lengthLabel) labels.push({ icon: Map, text: lengthLabel });
+    if (durationLabel) labels.push({ icon: Timer, text: durationLabel });
+    if (difficultyLabel)
       labels.push({ icon: BsSpeedometer2, text: difficultyLabel });
-    }
   }
 
   if (experience.category === ExperienceCategoryCard.EVENT && eventDateLabel) {
@@ -135,6 +191,19 @@ export function CardExperience({ experience }: CardExperienceProps) {
   const labelsGridColsClass = shouldStackLabels
     ? "md:grid-cols-1"
     : "md:grid-cols-2";
+
+  const imageSrc = resolveImageUrl(experience.image?.url);
+  const { data: imageLoaded, isLoading: imageLoading } = useLoadImage(imageSrc);
+
+  const addToCartLabel = (() => {
+    const key = "experienceCard.addToCart";
+    const txt = t(key);
+    return txt === key
+      ? i18n.language?.startsWith("pt")
+        ? "Adicionar ao carrinho"
+        : "Add to cart"
+      : txt;
+  })();
 
   return (
     <div className="bg-card relative flex w-full max-w-[520px] flex-col overflow-hidden rounded-[20px] shadow-sm pb-[72px]">
@@ -150,6 +219,7 @@ export function CardExperience({ experience }: CardExperienceProps) {
           <div className="absolute inset-0 animate-pulse bg-muted" />
         )}
       </div>
+
       <div className="flex flex-col gap-4 px-6 py-5">
         <div className="flex flex-col gap-4 md:flex-row md:items-stretch md:justify-between">
           <div className="flex flex-1 flex-col gap-2.5">
@@ -165,6 +235,7 @@ export function CardExperience({ experience }: CardExperienceProps) {
                 </span>
               </Typography>
             </div>
+
             <Typography
               variant="body"
               className="text-dark-gray scrollbar-hide m-0 max-h-32 overflow-y-auto text-[14px] font-semibold"
@@ -172,6 +243,7 @@ export function CardExperience({ experience }: CardExperienceProps) {
               {experience.description ?? ""}
             </Typography>
           </div>
+
           <div className="flex w-full flex-col gap-3 md:basis-[210px] md:max-w-[210px] md:flex-none md:self-stretch md:px-1 md:pr-3">
             <div
               className={`grid w-full grid-cols-1 gap-x-3 gap-y-2 ${labelsGridColsClass}`}
@@ -193,9 +265,11 @@ export function CardExperience({ experience }: CardExperienceProps) {
           </div>
         </div>
       </div>
+
       <div className="pointer-events-none absolute inset-x-6 bottom-5 flex justify-end">
         <Button
-          label={t("experienceCard.addToCart")}
+          label={addToCartLabel}
+          data-testid="add-to-cart"
           className="pointer-events-auto rounded-[100px] px-[24px] py-[12px] text-[14px]"
           onClick={() => {
             addItemToCart(experience);
@@ -206,3 +280,5 @@ export function CardExperience({ experience }: CardExperienceProps) {
     </div>
   );
 }
+
+export default CardExperience;

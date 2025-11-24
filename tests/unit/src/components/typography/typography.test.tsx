@@ -4,9 +4,7 @@ import { Typography } from "@/components/typography";
 
 describe("Typography component", () => {
   it("renders children and defaults to paragraph (body) variant", () => {
-    const { container } = renderWithProviders(
-      <Typography>hello world</Typography>
-    );
+    const { container } = renderWithProviders(<Typography>hello world</Typography>);
 
     // default variant is body -> renders a <p>
     const p = container.querySelector("p");
@@ -21,9 +19,7 @@ describe("Typography component", () => {
   });
 
   it("respects variant and renders the right element and classes", () => {
-    const { container } = renderWithProviders(
-      <Typography variant="h1">big title</Typography>
-    );
+    const { container } = renderWithProviders(<Typography variant="h1">big title</Typography>);
 
     const h1 = container.querySelector("h1");
 
@@ -37,7 +33,7 @@ describe("Typography component", () => {
 
   it("applies light variants with text-white and the same element", () => {
     const { container } = renderWithProviders(
-      <Typography variant="h2_light">light title</Typography>
+      <Typography variant="h2_light">light title</Typography>,
     );
 
     const h2 = container.querySelector("h2");
@@ -54,7 +50,7 @@ describe("Typography component", () => {
     const { container } = renderWithProviders(
       <Typography className="my-extra" id="typography-id">
         xyz
-      </Typography>
+      </Typography>,
     );
 
     const p = container.querySelector("p#typography-id");
@@ -66,15 +62,9 @@ describe("Typography component", () => {
 
   it("falls back to <p> when variant is not present in mapping (runtime)", () => {
     // Create the element dynamically so we can pass an unknown variant at runtime
-    const elem = React.createElement(
-      Typography as any,
-      { variant: "nonexistent" },
-      "ok"
-    );
+    const elem = React.createElement(Typography as any, { variant: "nonexistent" }, "ok");
 
-    const { container } = renderWithProviders(
-      elem as unknown as React.ReactElement
-    );
+    const { container } = renderWithProviders(elem as unknown as React.ReactElement);
 
     const p = container.querySelector("p");
 

@@ -8,11 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import type { UpdateExperiencePayload } from "@/api/experience";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -21,9 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useUpdateExperience } from "@/hooks/useUpdateExperience";
-import { useGetExperience } from "@/hooks/useGetExperience";
-import { useLoadImage } from "@/hooks/useLoadImage";
 import { ExperienceCategory } from "@/types/experience";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -42,13 +35,12 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
+import { useGetExperience, useLoadImage, useUpdateExperience } from "@/hooks";
 
 const formSchema = z
   .object({
     experienceName: z.string().min(2, "Informe o nome da experiência"),
-    experienceDescription: z
-      .string()
-      .min(2, "Informe a descrição da experiência"),
+    experienceDescription: z.string().min(2, "Informe a descrição da experiência"),
     experienceCategory: z.nativeEnum(ExperienceCategory),
     experienceCapacity: z.string().min(1, "Informe a quantidade de pessoas"),
     experienceImage: z.union([z.instanceof(File), z.string()]).optional(),
@@ -84,8 +76,7 @@ const formSchema = z
 
     if (data.experienceCategory === ExperienceCategory.TRILHA) {
       const hasValidMinutes =
-        !!data.trailDurationMinutes &&
-        parseFloat(data.trailDurationMinutes) > 0;
+        !!data.trailDurationMinutes && parseFloat(data.trailDurationMinutes) > 0;
 
       if (!hasValidMinutes) {
         ctx.addIssue({
@@ -130,7 +121,7 @@ const DIFFICULTY_LEVELS = [
   { value: "EXTREME", label: "Extremo" },
 ];
 
-const getCategoryIcon = (category: string) => {
+const getCategoryIcon = (category: ExperienceCategory) => {
   switch (category) {
     case ExperienceCategory.LABORATORIO:
       return <FlaskConical className="h-4 w-4" />;
@@ -165,20 +156,13 @@ interface EditExperienceProps {
 
 export function EditExperience({ experienceId }: EditExperienceProps) {
   const navigate = useNavigate();
-  const { data: experience, isLoading: isLoadingExperience } =
-    useGetExperience(experienceId);
+  const { data: experience, isLoading: isLoadingExperience } = useGetExperience(experienceId);
   const { mutate } = useUpdateExperience(experienceId);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(
-    imagePreview || ""
-  );
+  const { data: previewLoaded, isLoading: previewLoading } = useLoadImage(imagePreview || "");
   const [priceDisplay, setPriceDisplay] = useState<string>("");
 
-  const form = useForm<
-    z.input<typeof formSchema>,
-    any,
-    z.output<typeof formSchema>
-  >({
+  const form = useForm<z.input<typeof formSchema>, any, z.output<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       experienceName: "",
@@ -233,13 +217,15 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
         experienceEndDate: experience.endDate || undefined,
         experiencePrice: experience.price ? String(experience.price) : "0",
         experienceWeekDays: experience.weekDays || [],
-        trailDurationMinutes: experience.durationMinutes ? String(experience.durationMinutes) : undefined,
+        trailDurationMinutes: experience.durationMinutes
+          ? String(experience.durationMinutes)
+          : undefined,
         trailDifficulty: experience.trailDifficulty || undefined,
         trailLength: experience.trailLength ? String(experience.trailLength) : undefined,
         experienceImage: experience.image?.url || undefined,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [experience]);
 
   useEffect(() => {
@@ -257,9 +243,9 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
           : null;
 
     if (startDate && endDate && endDate < startDate) {
-      form.setValue("experienceEndDate", undefined as any);
+      form.setValue("experienceEndDate", undefined);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchedStartDate, watchedEndDate]);
 
   const getDisabledDates = (isStartDate: boolean) => {
@@ -324,9 +310,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
       experienceStartDate: data.experienceStartDate,
       experienceEndDate: data.experienceEndDate,
       experiencePrice: data.experiencePrice || "0",
-      experienceWeekDays: (data.experienceWeekDays ?? []).map((day) =>
-        day.toUpperCase()
-      ),
+      experienceWeekDays: (data.experienceWeekDays ?? []).map((day) => day.toUpperCase()),
       trailDurationMinutes: data.trailDurationMinutes,
       trailDifficulty: data.trailDifficulty,
       trailLength: data.trailLength,
@@ -387,9 +371,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
                           src={imagePreview}
                           alt="Preview"
                           className={`max-w-full max-h-48 object-cover rounded-lg transition-opacity duration-300 ${
-                            previewLoaded && !previewLoading
-                              ? "opacity-100"
-                              : "opacity-0"
+                            previewLoaded && !previewLoading ? "opacity-100" : "opacity-0"
                           }`}
                         />
                         {previewLoading && (
@@ -406,8 +388,8 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
                     )}
                   </label>
                   <Typography className="text-sm text-muted-foreground mt-2">
-                    Sua imagem deve ser dimensionada em 400x200, nos formatos
-                    .PNG, .JPG e .JPEG, com limite de tamanho de 10MB
+                    Sua imagem deve ser dimensionada em 400x200, nos formatos .PNG, .JPG e .JPEG,
+                    com limite de tamanho de 10MB
                   </Typography>
                 </div>
                 <FormMessage className="text-red-500" />
@@ -450,15 +432,10 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
                             <div className="flex items-center gap-2">
                               {getCategoryIcon(field.value)}
                               <Typography>
-                                {field.value ===
-                                  ExperienceCategory.LABORATORIO &&
-                                  "Laboratório"}
-                                {field.value === ExperienceCategory.TRILHA &&
-                                  "Trilha"}
-                                {field.value ===
-                                  ExperienceCategory.HOSPEDAGEM && "Hospedagem"}
-                                {field.value === ExperienceCategory.EVENTO &&
-                                  "Evento"}
+                                {field.value === ExperienceCategory.LABORATORIO && "Laboratório"}
+                                {field.value === ExperienceCategory.TRILHA && "Trilha"}
+                                {field.value === ExperienceCategory.HOSPEDAGEM && "Hospedagem"}
+                                {field.value === ExperienceCategory.EVENTO && "Evento"}
                               </Typography>
                             </div>
                           )}
@@ -544,24 +521,17 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
                       <PopoverContent className="w-full p-0" align="start">
                         <div className="p-4 space-y-2">
                           {WEEK_DAYS.map((day) => (
-                            <div
-                              key={day.value}
-                              className="flex items-center space-x-2"
-                            >
+                            <div key={day.value} className="flex items-center space-x-2">
                               <Checkbox
                                 id={day.value}
-                                checked={
-                                  field.value?.includes(day.value) || false
-                                }
+                                checked={field.value?.includes(day.value) || false}
                                 onCheckedChange={(checked) => {
                                   const currentDays = field.value || [];
 
                                   if (checked) {
                                     field.onChange([...currentDays, day.value]);
                                   } else {
-                                    field.onChange(
-                                      currentDays.filter((d) => d !== day.value)
-                                    );
+                                    field.onChange(currentDays.filter((d) => d !== day.value));
                                   }
                                 }}
                               />
@@ -608,9 +578,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium">
-                      Data de início
-                    </Typography>
+                    <Typography className="text-foreground font-medium">Data de início</Typography>
                     <Popover>
                       <PopoverTrigger asChild>
                         <ShadcnButton
@@ -620,13 +588,11 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value ? (
                             format(
-                              field.value instanceof Date
-                                ? field.value
-                                : new Date(field.value),
+                              field.value instanceof Date ? field.value : new Date(field.value),
                               "dd/MM/yyyy",
                               {
                                 locale: ptBR,
-                              }
+                              },
                             )
                           ) : (
                             <Typography>Selecione a data</Typography>
@@ -661,9 +627,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex flex-col gap-0">
-                    <Typography className="text-foreground font-medium">
-                      Data de fim
-                    </Typography>
+                    <Typography className="text-foreground font-medium">Data de fim</Typography>
                     <Popover>
                       <PopoverTrigger asChild>
                         <ShadcnButton
@@ -673,13 +637,11 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value ? (
                             format(
-                              field.value instanceof Date
-                                ? field.value
-                                : new Date(field.value),
+                              field.value instanceof Date ? field.value : new Date(field.value),
                               "dd/MM/yyyy",
                               {
                                 locale: ptBR,
-                              }
+                              },
                             )
                           ) : (
                             <Typography>Selecione a data</Typography>
@@ -714,7 +676,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
               render={({ field }) => (
                 <FormItem>
                   <TextInput
-                    label="Preço R$ (Diária)"
+                    label="Preço R$ (Por Pessoa)"
                     placeholder="0,00"
                     value={priceDisplay}
                     onChange={(e) => {
@@ -764,10 +726,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
                         <Typography className="text-foreground font-medium mb-1">
                           Dificuldade *
                         </Typography>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
+                        <Select value={field.value} onValueChange={field.onChange}>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione a dificuldade" />
                           </SelectTrigger>
@@ -790,12 +749,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
                   name="trailLength"
                   render={({ field }) => (
                     <FormItem>
-                      <TextInput
-                        label="Distância (km)"
-                        required
-                        placeholder="Ex: 5.2"
-                        {...field}
-                      />
+                      <TextInput label="Distância (km)" required placeholder="Ex: 5.2" {...field} />
                       <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
@@ -810,13 +764,13 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
               variant="ghost"
               label="Cancelar"
               className="w-36"
-              onClick={() => navigate({ to: "/admin/experiences" })}
+              onClick={() => void navigate({ to: "/admin/experiences" })}
             />
             <Button
               type="submit"
               variant="primary"
               className="w-36"
-              onClick={onSubmit}
+              onClick={void onSubmit}
               label="Salvar"
             />
           </div>

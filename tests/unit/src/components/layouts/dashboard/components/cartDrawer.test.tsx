@@ -7,9 +7,16 @@ import { CartDrawer } from "@/components/layouts/dashboard/components/cartDrawer
 import { useCartStore } from "@/store/cartStore";
 import type { Experience } from "@/types/experience";
 import { renderWithProviders } from "@/test/test-utils";
+import { appToast } from "@/components/toast/toast";
 
 let drawerOnOpenChange: ((open: boolean) => void) | undefined;
 let drawerOnPointerDownOutside: (() => void) | undefined;
+const navigateMock = vi.fn();
+const getCurrentUserRequest = vi.hoisted(() =>
+  vi.fn(() =>
+    Promise.resolve<{ id: string; name: string } | null>({ id: "user-1", name: "Test User" }),
+  ),
+);
 
 vi.mock("@/components/ui/drawer", () => ({
   Drawer: ({
@@ -34,9 +41,7 @@ vi.mock("@/components/ui/drawer", () => ({
 
     return <div data-testid="drawer-content">{children}</div>;
   },
-  DrawerHeader: ({ children }: { children: ReactNode }) => (
-    <div>{children}</div>
-  ),
+  DrawerHeader: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   DrawerTitle: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   DrawerClose: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
@@ -51,11 +56,7 @@ vi.mock("@/components/card/cartItem", () => ({
   }) => (
     <div data-testid="cart-item">
       <span>{experience.name}</span>
-      <button
-        type="button"
-        data-testid="remove-item"
-        onClick={() => onRemove(experience.id)}
-      >
+      <button type="button" data-testid="remove-item" onClick={() => onRemove(experience.id)}>
         remover
       </button>
     </div>
@@ -79,15 +80,7 @@ vi.mock("@/components/button/defaultButton", () => ({
 }));
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({
-    to,
-    children,
-    onClick,
-  }: {
-    to: string;
-    children: ReactNode;
-    onClick?: () => void;
-  }) => (
+  Link: ({ to, children, onClick }: { to: string; children: ReactNode; onClick?: () => void }) => (
     <a
       href={to}
       onClick={(event) => {
@@ -98,10 +91,20 @@ vi.mock("@tanstack/react-router", () => ({
       {children}
     </a>
   ),
+  useNavigate: () => navigateMock,
+}));
+
+vi.mock("@/api/user", () => ({
+  getCurrentUserRequest,
+}));
+
+vi.mock("@/components/toast/toast", () => ({
+  appToast: { error: vi.fn() },
 }));
 
 describe("CartDrawer", () => {
   beforeEach(() => {
+    getCurrentUserRequest.mockClear();
     act(() => {
       useCartStore.setState({ items: [], isOpen: true });
     });
@@ -119,12 +122,8 @@ describe("CartDrawer", () => {
     renderWithProviders(<CartDrawer />);
 
     expect(screen.getByText(/^seu carrinho está vazio$/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /finalizar reserva/i })
-    ).toBeDisabled();
-    expect(
-      screen.getByRole("button", { name: /fechar carrinho/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /finalizar reserva/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /fechar carrinho/i })).toBeInTheDocument();
   });
 
   it("lists cart items and closes drawer when navigating to checkout", async () => {
@@ -141,18 +140,16 @@ describe("CartDrawer", () => {
     renderWithProviders(<CartDrawer />);
 
     expect(screen.getByText(/experiência marcada/i)).toBeInTheDocument();
-    expect(screen.getByTestId("cart-item")).toHaveTextContent(
-      "Experiência Teste"
-    );
+    expect(screen.getByTestId("cart-item")).toHaveTextContent("Experiência Teste");
 
-    const checkoutLink = screen.getByRole("link", {
+    const checkoutButton = screen.getByRole("button", {
       name: /finalizar reserva/i,
     });
 
-    expect(checkoutLink).toHaveAttribute("href", "/reserve/finish");
+    expect(checkoutButton).not.toBeDisabled();
     expect(useCartStore.getState().isOpen).toBe(true);
 
-    await userEvent.click(checkoutLink);
+    await userEvent.click(checkoutButton);
 
     expect(useCartStore.getState().isOpen).toBe(false);
 
@@ -193,9 +190,7 @@ describe("CartDrawer", () => {
     await userEvent.click(screen.getAllByTestId("remove-item")[0]);
 
     expect(useCartStore.getState().items).toHaveLength(1);
-    expect(
-      screen.getByText(/você possui 1 experiência marcada/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/você possui 1 experiência marcada/i)).toBeInTheDocument();
   });
 
   it("syncs drawer store state via onOpenChange callbacks", () => {
@@ -229,6 +224,46 @@ describe("CartDrawer", () => {
       drawerOnPointerDownOutside?.();
     });
 
+    expect(useCartStore.getState().isOpen).toBe(false);
+  });
+
+  it("skips checkout when cart is empty", async () => {
+    act(() => {
+      useCartStore.setState({ items: [], isOpen: true });
+    });
+
+    renderWithProviders(<CartDrawer />);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /finalizar reserva/i }),
+    );
+
+    expect(getCurrentUserRequest).not.toHaveBeenCalled();
+  });
+
+  it("prompts login and closes when user is not authenticated", async () => {
+    const experience: Experience = {
+      id: "exp-unauth",
+      name: "Teste",
+      category: "EVENT",
+    } as Experience;
+
+    act(() => {
+      useCartStore.setState({ items: [experience], isOpen: true });
+    });
+    getCurrentUserRequest.mockResolvedValueOnce(null);
+
+    renderWithProviders(<CartDrawer />);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /finalizar reserva/i }),
+    );
+
+    expect(appToast.error).toHaveBeenCalled();
+    expect(navigateMock).toHaveBeenCalledWith({
+      to: "/auth/login",
+      search: { redirect: "/reserve/finish" },
+    });
     expect(useCartStore.getState().isOpen).toBe(false);
   });
 });

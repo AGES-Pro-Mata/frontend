@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { screen, within } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import type { ReactNode } from "react";
 
 import { HeaderDrawerMobile } from "@/components/layouts/dashboard/components/headerDrawerMobile";
@@ -12,9 +12,8 @@ const mockUseQuery = vi.fn();
 const mockLogout = vi.fn();
 
 vi.mock("@tanstack/react-query", async () => {
-  const actual = await vi.importActual<typeof import("@tanstack/react-query")>(
-    "@tanstack/react-query",
-  );
+  const actual =
+    await vi.importActual<typeof import("@tanstack/react-query")>("@tanstack/react-query");
 
   return {
     ...actual,
@@ -23,7 +22,7 @@ vi.mock("@tanstack/react-query", async () => {
   };
 });
 
-vi.mock("@/hooks/useLogout", () => ({
+vi.mock("@/hooks/auth/useLogout", () => ({
   useLogout: () => ({ logout: mockLogout }),
 }));
 
@@ -47,22 +46,36 @@ vi.mock("@tanstack/react-router", () => ({
 describe("HeaderDrawerMobile", () => {
   beforeEach(() => {
     mockUseQuery.mockReturnValue({ data: undefined });
-    useCartStore.setState({ items: [], isOpen: false });
+    act(() => {
+      useCartStore.setState({ items: [], isOpen: false });
+    });
     mockLogout.mockReset();
   });
 
   afterEach(() => {
-    useCartStore.setState({ items: [], isOpen: false });
+    act(() => {
+      useCartStore.setState({ items: [], isOpen: false });
+    });
   });
 
-  it("shows authentication links when logged out", () => {
+  it("shows authentication links when logged out", async () => {
     renderWithProviders(<HeaderDrawerMobile />);
 
     expect(screen.getByRole("link", { name: /início/i })).toHaveAttribute("href", "/");
     expect(screen.getByRole("link", { name: /reservar/i })).toHaveAttribute("href", "/reserve");
     expect(screen.getByRole("link", { name: /entrar/i })).toHaveAttribute("href", "/auth/login");
-    expect(screen.getByRole("link", { name: /cadastrar/i })).toHaveAttribute("href", "/auth/register");
-    expect(screen.queryByRole("button", { name: /carrinho/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /cadastrar/i })).toHaveAttribute(
+      "href",
+      "/auth/register",
+    );
+    const cartButton = screen.getByRole("button", { name: /carrinho/i });
+
+    expect(cartButton).toBeInTheDocument();
+    expect(useCartStore.getState().isOpen).toBe(false);
+
+    await userEvent.click(cartButton);
+
+    expect(useCartStore.getState().isOpen).toBe(true);
   });
 
   it("renders user shortcuts and opens cart when authenticated", async () => {
@@ -72,7 +85,9 @@ describe("HeaderDrawerMobile", () => {
       category: "EVENT",
     } as Experience;
 
-    useCartStore.setState({ items: [experience, experience], isOpen: false });
+    act(() => {
+      useCartStore.setState({ items: [experience, experience], isOpen: false });
+    });
     mockUseQuery.mockReturnValue({ data: { name: "Maria" } });
 
     renderWithProviders(<HeaderDrawerMobile />);
@@ -81,11 +96,14 @@ describe("HeaderDrawerMobile", () => {
       "href",
       "/user/my-reservations",
     );
-    expect(screen.getByRole("link", { name: /meu perfil/i })).toHaveAttribute("href", "/user/profile");
+    expect(screen.getByRole("link", { name: /meu perfil/i })).toHaveAttribute(
+      "href",
+      "/user/profile",
+    );
 
-  const cartButton = screen.getByRole("button", { name: /carrinho/i });
+    const cartButton = screen.getByRole("button", { name: /carrinho/i });
 
-  expect(cartButton).toBeInTheDocument();
+    expect(cartButton).toBeInTheDocument();
     expect(within(cartButton).getByText("2")).toBeInTheDocument();
     expect(useCartStore.getState().isOpen).toBe(false);
 

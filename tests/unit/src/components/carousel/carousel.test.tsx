@@ -12,7 +12,7 @@ import { renderWithProviders } from "@/test/test-utils";
 
 const useLoadImageMock = vi.fn<(url: string) => { data?: string; isLoading: boolean }>();
 
-vi.mock("@/hooks/useLoadImage", () => ({
+vi.mock("@/hooks", () => ({
   useLoadImage: (url: string) => useLoadImageMock(url),
 }));
 

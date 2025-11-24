@@ -1,19 +1,16 @@
-import ReservaCard, { type Person } from "@/components/card/myReservation";
+import MyReservationCard from "@/components/card/myReservation";
 import { MyReservationsFilterCompact } from "@/components/filter/MyReservationsFilterCompact";
 import { Button } from "@/components/button/defaultButton";
 import { Typography } from "@/components/typography/typography";
-import { useAddPeopleMyReservations } from "@/hooks/useAddPeopleMyReservations";
-import { useCancelReservation } from "@/hooks/useCancelReservation";
-import {
-  type ReservationGroupStatusFilter,
-  useMyReservations,
-} from "@/hooks/useMyReservations";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import type { AxiosError } from "axios";
 import { type Key, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MoonLoader } from "react-spinners";
 import { toast } from "sonner";
+import type { Person } from "@/types/person";
+import { useAddPeopleMyReservations, useCancelReservation, useMyReservations } from "@/hooks";
+import type { ReservationGroupStatusFilter } from "@/hooks/reservations/useMyReservations";
 
 export const Route = createFileRoute("/(index)/user/my-reservations/")({
   component: RouteComponent,
@@ -40,10 +37,10 @@ function RouteComponent() {
 
   function handleAddPeople(id: string, people: Person[]): void {
     const modelPeople = people.map((p) => ({
-      name: p.nome,
-      document: p.cpf,
-      phone: p.telefone,
-      gender: p.genero,
+      name: p.name,
+      document: p.document,
+      phone: p.phone,
+      gender: p.gender,
     }));
 
     addPeopleReservation({ id, people: modelPeople })
@@ -55,10 +52,7 @@ function RouteComponent() {
 
   return (
     <main className="mx-auto flex w-full max-w-[1180px] flex-col gap-12 px-4 py-10 md:px-8">
-      <MyReservationsFilterCompact
-        handleStatusChange={(status) => setStatus(status)}
-        status={status}
-      />
+      <MyReservationsFilterCompact handleStatusChange={setStatus} status={status} />
       {isFetching ? (
         <MoonLoader className="mx-auto my-40" />
       ) : isEmpty ? (
@@ -66,36 +60,32 @@ function RouteComponent() {
           <Typography variant="h3" className="font-semibold text-foreground">
             {t("myReservationsPage.empty.title")}
           </Typography>
-          <Typography
-            variant="body"
-            className="mt-3 max-w-lg text-muted-foreground"
-          >
+          <Typography variant="body" className="mt-3 max-w-lg text-muted-foreground">
             {t("myReservationsPage.empty.description")}
           </Typography>
           <Link to="/reserve" className="mt-8">
-            <Button
-              type="button"
-              variant="primary"
-              label={t("myReservationsPage.empty.cta")}
-            />
+            <Button type="button" variant="primary" label={t("myReservationsPage.empty.cta")} />
           </Link>
         </section>
       ) : (
         reservations.map((rg) => (
-          <ReservaCard
-            key={rg.id as Key}
-            id={rg.id}
-            titulo={"Pacote personalizado"}
-            preco={+rg.price}
-            periodo={{
-              inicio: new Date(rg.startDate),
-              fim: new Date(rg.endDate),
-            }}
-            reservations={rg.reservations}
-            status={rg.status}
-            handleCancel={handleCancel}
-            handleAddPeople={handleAddPeople}
-          />
+          <div key={rg.id as Key} className="space-y-3">
+            <MyReservationCard
+              key={rg.id as Key}
+              id={rg.id}
+              history={rg.history}
+              title={"Pacote personalizado"}
+              price={+rg.price}
+              period={{
+                startDate: new Date(rg.startDate),
+                endDate: new Date(rg.endDate),
+              }}
+              reservations={rg.reservations}
+              status={rg.status}
+              handleCancel={handleCancel}
+              handleAddPeople={handleAddPeople}
+            />
+          </div>
         ))
       )}
     </main>

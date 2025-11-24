@@ -14,39 +14,27 @@ import {
   type TableState,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
-import {
-  IoIosArrowBack,
-  IoIosArrowDown,
-  IoIosArrowForward,
-  IoIosArrowUp,
-} from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowDown, IoIosArrowForward, IoIosArrowUp } from "react-icons/io";
 import { Button } from "../ui/button";
 
-type DataTableProps<
-  TData,
-  TValue,
-  F extends TApiDefaultFilters = TApiDefaultFilters,
-> = {
+type DataTableProps<TData, TValue, F extends TApiDefaultFilters = TApiDefaultFilters> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   meta?: TApiPaginationMetaResult;
   pageSizeOptions?: number[];
   filters: F;
+  isLoading?: boolean;
   setFilter: <K extends keyof F>(key: K, value: F[K]) => void;
 };
 
-export function DataTable<
-  TData,
-  TValue,
-  F extends TApiDefaultFilters = TApiDefaultFilters,
->({
+export function DataTable<TData, TValue, F extends TApiDefaultFilters = TApiDefaultFilters>({
   columns,
   data,
+  isLoading = false,
   meta = { total: 10, page: 0, limit: 10 },
   pageSizeOptions = [10, 25, 50],
   setFilter,
@@ -57,7 +45,8 @@ export function DataTable<
   const pageIndex = Number(meta?.page ?? 0);
   const pageSize = Number(meta?.limit ?? 10);
 
-  const handleSortColumn = (columnId: string) => {
+  const handleSortColumn = (columnId: string, canSort: boolean) => {
+    if (!canSort) return;
     if (sort === columnId) {
       if (dir === "asc") setFilter("dir", "desc");
       else if (dir === "desc") {
@@ -72,10 +61,9 @@ export function DataTable<
 
   const tableState: Partial<TableState> = React.useMemo(
     () => ({
-      pagination: { pageIndex, pageSize },
       sorting: sort ? [{ id: sort, desc: dir === "desc" }] : [],
     }),
-    [pageIndex, pageSize, sort, dir]
+    [sort, dir],
   );
 
   const table = useReactTable({
@@ -83,8 +71,7 @@ export function DataTable<
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: tableState,
+    state: tableState,
   });
 
   const total = Number(meta?.total ?? 0);
@@ -107,19 +94,13 @@ export function DataTable<
                     style={{ width: header.column.columnDef.size || "auto" }}
                   >
                     <div
-                      className={cn(
-                        "flex items-center gap-1 select-none min-w-0",
-                        {
-                          "cursor-pointer": canSort,
-                        }
-                      )}
-                      onClick={() => handleSortColumn(header.column.id)}
+                      className={cn("flex items-center gap-1 select-none min-w-0", {
+                        "cursor-pointer": canSort,
+                      })}
+                      onClick={() => handleSortColumn(header.column.id, canSort)}
                     >
                       <div className="truncate overflow-hidden whitespace-nowrap">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        {flexRender(header.column.columnDef.header, header.getContext())}
                       </div>
 
                       {canSort && sort === header.column.id && (
@@ -140,44 +121,38 @@ export function DataTable<
       <div className="flex-1 overflow-auto">
         <Table className="w-full table-fixed">
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() ? "selected" : undefined}
-                  className="h-16 !border-b border-slate-300"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className="px-4 py-4"
-                      style={{ width: cell.column.columnDef.size || "auto" }}
-                    >
-                      <div className="min-w-0">
-                        <div
-                          className="truncate overflow-hidden whitespace-nowrap"
-                          title={String(cell.getValue() ?? "")}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
+            {table.getRowModel().rows?.length
+              ? table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() ? "selected" : undefined}
+                    className="h-16 !border-b border-slate-300"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="px-4 py-4"
+                        style={{ width: cell.column.columnDef.size || "auto" }}
+                      >
+                        <div className="min-w-0">
+                          <div
+                            className="truncate overflow-hidden whitespace-nowrap"
+                            title={String(cell.getValue() ?? "")}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </div>
                         </div>
-                      </div>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              : !isLoading && (
+                  <TableRow className="border-b border-slate-300">
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No results.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow className="border-b border-slate-300">
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
+                  </TableRow>
+                )}
           </TableBody>
         </Table>
       </div>
@@ -220,7 +195,7 @@ export function DataTable<
           <div className="py-1 select-none">
             {`Página ${meta.page + 1} de ${Math.max(
               1,
-              Math.ceil(Number(meta?.total) / Number(meta.limit))
+              Math.ceil(Number(meta?.total) / Number(meta.limit)),
             )}`}
           </div>
 

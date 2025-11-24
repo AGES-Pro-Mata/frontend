@@ -8,16 +8,16 @@ import { Label } from "@/components/ui/label";
 import CanvasCard from "@/components/card/canvasCard";
 import { CalendarIcon, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useExperienceTuning } from "@/hooks/useExperienceTuning";
+import { useExperienceTuning } from "@/hooks/experiences/useExperienceTuning";
 import type { ExperienceTuningData } from "@/types/experience";
-import { useLoadImage } from "@/hooks/useLoadImage";
+import { useLoadImage } from "@/hooks/shared/useLoadImage";
 import { translateExperienceCategory } from "@/utils/translateExperienceCategory";
 
 type ExperienceCardProps = {
   title: string;
   price: number;
   type?: string;
-  period: { start: Date; end: Date };
+  period: { start: Date | null; end: Date | null};
   imageUrl: string;
   experienceId?: string;
   persist?: boolean;
@@ -53,7 +53,13 @@ export default function ExperienceCard({
     save,
     savedMen,
     savedWomen,
-  } = useExperienceTuning({ experienceId, persist, initialData, onSave, onLoad });
+  } = useExperienceTuning({
+    experienceId,
+    persist,
+    initialData,
+    onSave,
+    onLoad,
+  });
 
   const locale = useMemo(
     () => (i18n.language?.startsWith("pt") ? "pt-BR" : "en-US"),
@@ -81,6 +87,18 @@ export default function ExperienceCard({
     Number.isFinite(price) ? price : 0
   );
   const calendarStyles = { "--rdp-cell-size": "1.75rem" } as CSSProperties;
+
+  const disabledDates = useMemo(() => {
+
+    console.log(period.start)
+    console.log(period.end)
+
+    if (!period.end || !period.start) {
+      return [{ before: new Date() }];
+    }
+
+    return [{ before: period.start, after: period.end }];
+  }, [period.start, period.end]);
 
   // Live input values (men, women) are only reflected in summary after save.
 
@@ -184,17 +202,19 @@ export default function ExperienceCard({
               {formattedPrice}
             </span>
           </div>
-          <div className="flex items-center justify-start rounded-full bg-card shadow-sm gap-2 px-3 py-1 w-full md:w-auto md:flex-none flex-1 min-w-0 order-last md:order-none">
-            <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white shrink-0">
-              <CalendarIcon className="w-3.5 h-3.5" />
+          {period.start && period.end &&(
+            <div className="flex items-center justify-start rounded-full bg-card shadow-sm gap-2 px-3 py-1 w-full md:w-auto md:flex-none flex-1 min-w-0 order-last md:order-none">
+              <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white shrink-0">
+                <CalendarIcon className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-xs md:text-sm font-semibold text-main-dark-green whitespace-normal break-words leading-tight">
+                {t("experienceCard.dateRange", {
+                  from: fmt(period.start),
+                  to: fmt(period.end),
+                })}
+              </span>
             </div>
-            <span className="text-xs md:text-sm font-semibold text-main-dark-green whitespace-normal break-words leading-tight">
-              {t("experienceCard.dateRange", {
-                from: fmt(period.start),
-                to: fmt(period.end),
-              })}
-            </span>
-          </div>
+          )}
         </div>
 
         <div className="flex justify-end mt-2 mb-1">
@@ -283,7 +303,7 @@ export default function ExperienceCard({
                     setRange(value);
                   }}
                   onDayClick={handleDayClick}
-                  disabled={[{ before: period.start }, { after: period.end }]}
+                  disabled={disabledDates}
                   style={calendarStyles}
                   classNames={{
                     root: "m-0",

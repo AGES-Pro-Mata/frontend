@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,10 +22,7 @@ const formSchema = z
   .object({
     nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
     email: z.email("E-mail inválido"),
-    idade: z.coerce
-      .number()
-      .min(18, "Idade mínima é 18 anos")
-      .max(120, "Idade máxima é 120 anos"),
+    idade: z.coerce.number().min(18, "Idade mínima é 18 anos").max(120, "Idade máxima é 120 anos"),
     senha: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
     confirmarSenha: z.string(),
     termos: z.boolean().refine((val) => val === true, {
@@ -43,11 +41,7 @@ export function AdvancedFeaturesExample() {
   const [submittedData, setSubmittedData] = useState<FormData | null>(null);
   const [customError, setCustomError] = useState<string | null>(null);
 
-  const form = useForm<
-    z.input<typeof formSchema>,
-    any,
-    z.output<typeof formSchema>
-  >({
+  const form = useForm<z.input<typeof formSchema>, any, z.output<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nome: "",
@@ -76,9 +70,7 @@ export function AdvancedFeaturesExample() {
         type: "manual",
         message: "Erro ao enviar formulário. Tente novamente.",
       });
-      setCustomError(
-        "Erro interno do servidor. Tente novamente em alguns minutos."
-      );
+      setCustomError("Erro interno do servidor. Tente novamente em alguns minutos.");
     } finally {
       setIsSubmitting(false);
     }
@@ -149,11 +141,7 @@ export function AdvancedFeaturesExample() {
                 <FormItem>
                   <FormLabel>E-mail *</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="seu@email.com"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="seu@email.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -175,9 +163,7 @@ export function AdvancedFeaturesExample() {
                       value={field.value as number | undefined}
                       onChange={(e) =>
                         field.onChange(
-                          e.currentTarget.value === ""
-                            ? undefined
-                            : Number(e.currentTarget.value)
+                          e.currentTarget.value === "" ? undefined : Number(e.currentTarget.value),
                         )
                       }
                       className={fieldState.error ? "border-red-500" : ""}
@@ -211,11 +197,7 @@ export function AdvancedFeaturesExample() {
                 <FormItem>
                   <FormLabel>Senha *</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Mínimo 6 caracteres"
-                      {...field}
-                    />
+                    <Input type="password" placeholder="Mínimo 6 caracteres" {...field} />
                   </FormControl>
                   <FormDescription>Mínimo de 6 caracteres</FormDescription>
                   <FormMessage />
@@ -230,15 +212,9 @@ export function AdvancedFeaturesExample() {
                 <FormItem>
                   <FormLabel>Confirmar Senha *</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Confirme sua senha"
-                      {...field}
-                    />
+                    <Input type="password" placeholder="Confirme sua senha" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Digite a mesma senha novamente
-                  </FormDescription>
+                  <FormDescription>Digite a mesma senha novamente</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -261,9 +237,7 @@ export function AdvancedFeaturesExample() {
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>Li e aceito os termos de uso</FormLabel>
-                  <FormDescription>
-                    Você deve aceitar os termos para continuar
-                  </FormDescription>
+                  <FormDescription>Você deve aceitar os termos para continuar</FormDescription>
                 </div>
               </FormItem>
             )}
@@ -272,25 +246,17 @@ export function AdvancedFeaturesExample() {
           {/* Erro global */}
           {form.formState.errors.root && (
             <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-              <Typography
-                variant="h4"
-                className="text-sm font-medium text-red-800 mb-1"
-              >
+              <Typography variant="h4" className="text-sm font-medium text-red-800 mb-1">
                 Erro do Formulário
               </Typography>
-              <p className="text-sm text-red-700">
-                {form.formState.errors.root.message}
-              </p>
+              <p className="text-sm text-red-700">{form.formState.errors.root.message}</p>
             </div>
           )}
 
           {/* Erro customizado */}
           {customError && (
             <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-              <Typography
-                variant="h4"
-                className="text-sm font-medium text-red-800 mb-1"
-              >
+              <Typography variant="h4" className="text-sm font-medium text-red-800 mb-1">
                 Erro do Sistema
               </Typography>
               <p className="text-sm text-red-700">{customError}</p>
@@ -310,12 +276,7 @@ export function AdvancedFeaturesExample() {
               )}
             </Button>
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleReset}
-              disabled={isSubmitting}
-            >
+            <Button type="button" variant="outline" onClick={handleReset} disabled={isSubmitting}>
               Limpar
             </Button>
           </div>
@@ -327,10 +288,7 @@ export function AdvancedFeaturesExample() {
         <>
           <Separator />
           <div className="space-y-4">
-            <Typography
-              variant="h3"
-              className="text-lg font-semibold text-green-600"
-            >
+            <Typography variant="h3" className="text-lg font-semibold text-green-600">
               ✅ Formulário enviado com sucesso!
             </Typography>
 
@@ -338,9 +296,7 @@ export function AdvancedFeaturesExample() {
               <Typography variant="h4" className="text-sm font-medium mb-3">
                 Dados enviados:
               </Typography>
-              <pre className="text-sm overflow-auto">
-                {JSON.stringify(submittedData, null, 2)}
-              </pre>
+              <pre className="text-sm overflow-auto">{JSON.stringify(submittedData, null, 2)}</pre>
             </div>
           </div>
         </>
@@ -354,27 +310,22 @@ export function AdvancedFeaturesExample() {
         </Typography>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 ml-4">
           <li>
-            <strong>Estados de Loading:</strong> Botão desabilitado e spinner
-            durante envio
+            <strong>Estados de Loading:</strong> Botão desabilitado e spinner durante envio
           </li>
           <li>
-            <strong>Validação Cross-field:</strong> Senha e confirmação devem
-            ser iguais
+            <strong>Validação Cross-field:</strong> Senha e confirmação devem ser iguais
           </li>
           <li>
-            <strong>Validação Customizada:</strong> Botão para validar idade com
-            regras específicas
+            <strong>Validação Customizada:</strong> Botão para validar idade com regras específicas
           </li>
           <li>
             <strong>Tratamento de Erros:</strong> Erros globais e por campo
           </li>
           <li>
-            <strong>Feedback Visual:</strong> Campos com erro destacados em
-            vermelho
+            <strong>Feedback Visual:</strong> Campos com erro destacados em vermelho
           </li>
           <li>
-            <strong>Reset Inteligente:</strong> Limpa formulário e estados após
-            sucesso
+            <strong>Reset Inteligente:</strong> Limpa formulário e estados após sucesso
           </li>
         </ul>
       </div>

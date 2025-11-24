@@ -182,7 +182,7 @@ vi.mock("@/lib/utils", () => ({
   cn: (...classes: unknown[]) => cnMock(...classes),
 }));
 
-vi.mock("@/hooks/useHighlights", () => ({
+vi.mock("@/hooks/shared/useHighlights", () => ({
   useFetchHighlightsByCategories: fetchHighlightsMock,
   useCreateHighlight: createHighlightMock,
   useUpdateHighlight: updateHighlightMock,
@@ -200,7 +200,7 @@ const defaultLoadImageResult = {
 
 const useLoadImageMock = vi.fn(() => defaultLoadImageResult);
 
-vi.mock("@/hooks/useLoadImage", () => ({
+vi.mock("@/hooks", () => ({
   useLoadImage: () => useLoadImageMock(),
 }));
 
@@ -217,6 +217,7 @@ const createNamedIcon =
 
 vi.mock("lucide-react", () => ({
   Bed: createHiddenIcon(),
+  CheckCircle2: createHiddenIcon(),
   Calendar: createHiddenIcon(),
   Edit: createNamedIcon("Edit"),
   FlaskConical: createHiddenIcon(),

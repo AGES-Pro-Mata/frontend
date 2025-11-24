@@ -84,6 +84,23 @@ describe("Carousel UI", () => {
     expect(api.off).toHaveBeenCalledWith("select", expect.any(Function));
   });
 
+  it("ignores non-arrow keyboard input", () => {
+    render(
+      <Carousel>
+        <CarouselContent>
+          <CarouselItem>Slide</CarouselItem>
+        </CarouselContent>
+      </Carousel>
+    );
+
+    const region = screen.getByRole("region");
+
+    fireEvent.keyDown(region, { key: "Tab" });
+
+    expect(api.scrollPrev).not.toHaveBeenCalled();
+    expect(api.scrollNext).not.toHaveBeenCalled();
+  });
+
   it("ignores onSelect callbacks when the carousel api is missing", () => {
     const setApi = vi.fn();
 

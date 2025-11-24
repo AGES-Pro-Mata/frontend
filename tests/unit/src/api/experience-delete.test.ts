@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockDelete = vi.fn();
-const mockPatch = vi.fn();
+const mockDelete = vi.fn<(id: string) => Promise<void> | void>();
+const mockPatch = vi.fn<(id: string, active: boolean) => Promise<void> | void>();
 
 vi.mock("@/api/experience", () => ({
-  deleteExperience: (...args: unknown[]) => mockDelete(...args),
-  toggleExperienceStatus: (...args: unknown[]) => mockPatch(...args),
+  deleteExperience: (experienceId: string) => mockDelete(experienceId),
+  toggleExperienceStatus: (experienceId: string, active: boolean) =>
+    mockPatch(experienceId, active),
 }));
 
 describe("Experience API - Delete and Status", () => {

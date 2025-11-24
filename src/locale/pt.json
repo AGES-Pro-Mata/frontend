@@ -28,7 +28,8 @@
     "events": "Eventos",
     "trails": "Trilhas",
     "experience": "Experiência",
-    "experiences": "Experiências"
+    "experiences": "Experiências",
+    "to": "a"
   },
   "cartDrawer": {
     "heading": {
@@ -42,7 +43,10 @@
     },
     "checkoutButton": "Finalizar Reserva",
     "browseLink": "Ver mais experiências",
-    "closeButtonAria": "Fechar carrinho"
+    "closeButtonAria": "Fechar carrinho",
+    "toasts": {
+      "loginRequired": "Você deve logar primeiro para criar uma reserva."
+    }
   },
   "cartItem": {
     "capacity_one": "{{count}} pessoa",
@@ -71,6 +75,7 @@
     "sendPaymentProof": "Enviar Comprovante",
     "cancelReservation": "Cancelar Reserva",
     "viewReservation": "Visualizar Reserva",
+    "history": "Histórico",
     "cancelRequestSent": "Solicitação de cancelamento enviada!",
     "peopleRegisteredSuccess": "Pessoas cadastradas com sucesso!",
     "paymentProofSent": "Comprovante enviado com sucesso!",
@@ -429,7 +434,8 @@
     },
     "toast": {
       "success": "Reserva atualizada com sucesso!",
-      "error": "Não foi possível finalizar a reserva."
+      "error": "Não foi possível finalizar a reserva.",
+      "loginRequired": "Você deve logar primeiro para criar uma reserva."
     }
   },
 
@@ -448,7 +454,11 @@
         "cpf": "CPF",
         "gender": "Gênero"
       },
-      "notes": "Observações da reserva"
+      "notes": "Observações da reserva",
+      "notesPlaceholder": "Observações sobre a reserva",
+      "emptyNotes": "Nenhuma observação adicionada",
+      "emptyPerson": "Sem dados dos participantes cadastrados",
+      "count": "Número de participantes: {{count}}"
     },
     "experiences": {
       "title": "Experiências",
@@ -464,7 +474,7 @@
   "validation": {
     "email": "Digite um e-mail válido.",
     "passwordRequired": "Digite sua senha.",
-    "passwordMin": "A senha deve ter no mínimo 6 caracteres.",
+    "passwordMin": "A senha deve ter no mínimo 8 caracteres.",
     "passwordUpper": "A senha deve conter ao menos uma letra maiúscula.",
     "passwordNumber": "A senha deve conter ao menos um número.",
     "passwordsMustMatch": "As senhas devem ser iguais.",
@@ -474,8 +484,8 @@
     "zipRequired": "Informe o CEP",
     "countryRequired": "Informe o país",
     "addressRequired": "Endereço é obrigatório",
-  "birthDateRequired": "Informe a data de nascimento",
-  "cpfRequired": "Informe o CPF",
+    "birthDateRequired": "Informe a data de nascimento",
+    "cpfRequired": "Informe o CPF",
 
     "cep8": "CEP deve conter 8 dígitos",
     "cpfInvalid": "CPF inválido",
@@ -544,7 +554,13 @@
     "sendProofWithValue": "Envie o comprovante com o valor de",
     "paymentProofLabel": "Comprovante de Pagamento",
     "chooseFile": "Escolher arquivo",
-    "noFileSelected": "Nenhum arquivo selecionado"
+    "noFileSelected": "Nenhum arquivo selecionado",
+    "sendError": "Falha ao enviar o comprovante.",
+    "sendSuccess": "Comprovante enviado com sucesso!",
+    "genericError": "Erro ao enviar comprovante.",
+    "placeholder": "Cole aqui o link do comprovante...",
+    "button": "Enviar comprovante",
+    "emptyUrl": "Por favor, insira o link do comprovante."
   },
   "cancelReservation": {
     "title": "Cancelar reserva?",

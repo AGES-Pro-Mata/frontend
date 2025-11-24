@@ -342,6 +342,34 @@ describe("FilterPanel", () => {
     expect(filters.endDate).toBeUndefined();
   });
 
+  it("keeps the end date when the new start date is before it", async () => {
+    const filtersKey = "filter-panel-keep-end";
+
+    renderFilter({
+      filtersKey,
+      initialFilters: {
+        type: "rooms",
+        startDate: "2025-05-05",
+        endDate: "2025-05-20",
+      },
+    });
+
+    const arrivalPlaceholder = i18n.t("reserveFilter.arrivalDatePlaceholder");
+    const startCalendar = await screen.findByTestId(
+      calendarMock.getTestId(arrivalPlaceholder)
+    );
+
+    act(() => {
+      calendarMock.setNextValue(arrivalPlaceholder, new Date(2025, 4, 10));
+      fireEvent.click(startCalendar);
+    });
+
+    const filters = getFiltersForKey(filtersKey);
+
+    expect(filters.startDate).toBe("2025-05-10");
+    expect(filters.endDate).toBe("2025-05-20");
+  });
+
   it("clears the end date when the start date moves past it", async () => {
     const filtersKey = "filter-panel-reset-end";
 

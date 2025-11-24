@@ -3,69 +3,113 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
-import type { ChangeEvent, InputHTMLAttributes } from "react";
+import type {
+  ButtonHTMLAttributes,
+  ChangeEvent,
+  InputHTMLAttributes,
+  MouseEvent as ReactMouseEvent,
+  ReactNode,
+} from "react";
 import type { DateRange } from "react-day-picker";
 import type { ExperienceTuningData } from "@/types/experience";
 import ExperienceCard from "@/components/card/experienceTuningCard";
 import { renderWithProviders } from "@/test/test-utils";
-import { useExperienceTuning } from "@/hooks/useExperienceTuning";
+import { useExperienceTuning } from "@/hooks/experiences/useExperienceTuning";
 
 type RangeValue = DateRange;
 type RangeArgument = DateRange | undefined;
 type Setter<T> = (value: T | ((prev: T) => T)) => void;
 
+let translationLanguage = "pt-BR";
+
+const setTranslationLanguage = (language: string) => {
+  translationLanguage = language;
+};
+
 vi.mock("react-i18next", async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal<typeof import("react-i18next")>();
 
   return {
-    ...(actual ?? {}),
-    useTranslation: (): {
-      t: (key: string, params?: Record<string, string>) => string;
-    } => ({
-      t: (key, params) => {
-        if (params?.from && params?.to)
-          return `De ${params.from} até ${params.to}`;
+    ...actual,
+    useTranslation: () => {
+      const translationMock = {
+        t: (key: string, params?: Record<string, string>) => {
+          if (params?.from && params?.to)
+            return `De ${params.from} até ${params.to}`;
 
-        const map: Record<string, string> = {
-          "common.cancel": "Cancelar",
-          "common.save": "Salvar",
-          "common.turismo": "Turismo",
-          "experienceCard.editInfo": "Editar informações",
-          "experienceCard.selectDateAndPeople": "Selecionar data e pessoas",
-          "experienceCard.dateRange": "Período",
-          "experienceCard.men": "Homens",
-          "experienceCard.women": "Mulheres",
-          "experienceCard.selectedDate": "Data selecionada",
-          "experienceCard.chooseDate": "Escolha as datas",
-          "experienceCard.selectAmountOfPeople":
-            "Selecione a quantidade de pessoas",
-          "experienceCard.malePeople": "Homens",
-          "experienceCard.femalePeople": "Mulheres",
-          "experienceCard.selectPeriodOnCalendar": "Selecione o período",
-        };
+          const map: Record<string, string> = {
+            "common.cancel": "Cancelar",
+            "common.save": "Salvar",
+            "common.turismo": "Turismo",
+            "experienceCard.editInfo": "Editar informações",
+            "experienceCard.selectDateAndPeople": "Selecionar data e pessoas",
+            "experienceCard.dateRange": "Período",
+            "experienceCard.men": "Homens",
+            "experienceCard.women": "Mulheres",
+            "experienceCard.selectedDate": "Data selecionada",
+            "experienceCard.chooseDate": "Escolha as datas",
+            "experienceCard.selectAmountOfPeople":
+              "Selecione a quantidade de pessoas",
+            "experienceCard.malePeople": "Homens",
+            "experienceCard.femalePeople": "Mulheres",
+            "experienceCard.selectPeriodOnCalendar": "Selecione o período",
+          };
 
-        return map[key] ?? key;
-      },
-      i18n: { language: "pt-BR" },
-    }),
-  };
+          return map[key] ?? key;
+        },
+        i18n: { language: translationLanguage },
+      };
+
+      return translationMock as ReturnType<typeof actual.useTranslation>;
+    },
+  } satisfies typeof import("react-i18next");
 });
+
+const buttonHandlers: Array<{
+  label?: ReactNode;
+  onClick?: (event: ReactMouseEvent<HTMLButtonElement>) => void;
+  disabled?: boolean;
+}> = [];
+
+vi.mock("@/components/button/defaultButton", () => ({
+  Button: (props: Record<string, unknown>) => {
+    const { label, onClick, disabled, ...rest } = props as {
+      label?: ReactNode;
+      onClick?: (event: ReactMouseEvent<HTMLButtonElement>) => void;
+      disabled?: boolean;
+    } & ButtonHTMLAttributes<HTMLButtonElement>;
+
+    buttonHandlers.push({ label, onClick, disabled });
+
+    return (
+      <button type="button" disabled={disabled} onClick={onClick} {...rest}>
+        {label}
+      </button>
+    );
+  },
+}));
 
 const calendarHandlers: {
   onSelect?: (value: RangeArgument) => void;
   onDayClick?: (day: Date) => void;
+  disabled?: Array<{ before?: Date; after?: Date }>;
 } = {};
 
 vi.mock("@/components/ui/calendar", () => ({
   Calendar: ({
     onSelect,
     onDayClick,
+    disabled,
   }: {
     onSelect?: (value: RangeArgument) => void;
     onDayClick?: (day: Date) => void;
+    disabled?: unknown;
   }) => {
     calendarHandlers.onSelect = onSelect;
     calendarHandlers.onDayClick = onDayClick;
+    calendarHandlers.disabled = Array.isArray(disabled)
+      ? (disabled as Array<{ before?: Date; after?: Date }>)
+      : undefined;
 
     return <div data-testid="calendar-mock" />;
   },
@@ -85,6 +129,18 @@ vi.mock("@/components/ui/input", () => ({
 
     return <input {...rest} onChange={onChange} />;
   },
+}));
+
+type LoadImageState = { data: boolean; isLoading: boolean };
+
+let loadImageState: LoadImageState = { data: true, isLoading: false };
+
+const setMockLoadImageState = (state: LoadImageState) => {
+  loadImageState = state;
+};
+
+vi.mock("@/hooks/shared/useLoadImage", () => ({
+  useLoadImage: vi.fn(() => ({ ...loadImageState })),
 }));
 
 const mockSave = vi.fn<() => ExperienceTuningData | undefined>();
@@ -118,7 +174,7 @@ type ExperienceTuningMock = {
 
 type HookReturn = ExperienceTuningMock;
 
-vi.mock("@/hooks/useExperienceTuning", () => ({
+vi.mock("@/hooks/experiences/useExperienceTuning", () => ({
   useExperienceTuning: vi.fn(),
 }));
 
@@ -221,7 +277,11 @@ describe("ExperienceCard", () => {
     vi.clearAllMocks();
     calendarHandlers.onSelect = undefined;
     calendarHandlers.onDayClick = undefined;
+    calendarHandlers.disabled = undefined;
     inputHandlers.length = 0;
+    buttonHandlers.length = 0;
+    setTranslationLanguage("pt-BR");
+    setMockLoadImageState({ data: true, isLoading: false });
     setMockExperienceTuning();
   });
 
@@ -240,6 +300,8 @@ describe("ExperienceCard", () => {
     expect(screen.getByText(/Homens:/i)).toBeInTheDocument();
     expect(screen.getByText(/Mulheres:/i)).toBeInTheDocument();
     expect(screen.getByText(/Data selecionada:/i)).toBeInTheDocument();
+
+    expect(buttonHandlers[0]?.label).toBe("Editar informações");
   });
 
   describe("handleDayClick", () => {
@@ -400,6 +462,20 @@ describe("ExperienceCard", () => {
     expect(screen.queryByText(/Data selecionada:/i)).not.toBeInTheDocument();
   });
 
+  it("oculta categoria quando type não é informado", () => {
+    renderWithProviders(<ExperienceCard {...baseProps} type={undefined} />);
+
+    expect(screen.queryByText("Turismo")).not.toBeInTheDocument();
+  });
+
+  it("usa locale en-US para formatar preço quando idioma não é português", () => {
+    setTranslationLanguage("en-US");
+
+    renderWithProviders(<ExperienceCard {...baseProps} price={Number.NaN} />);
+
+    expect(screen.getByText(/R\$\s*0\.00/)).toBeInTheDocument();
+  });
+
   it("desabilita o botão salvar quando range incompleto", async () => {
     setMockExperienceTuning({
       saved: false,
@@ -509,5 +585,31 @@ describe("ExperienceCard", () => {
       from: undefined,
       to: undefined,
     });
+  });
+
+  it("fornece datas desabilitadas padrão quando período não possui limites", async () => {
+    renderWithProviders(
+      <ExperienceCard
+        {...baseProps}
+        period={{ start: null, end: null }}
+        experienceId="sem-periodo"
+      />
+    );
+
+    await openEditingMode();
+
+    expect(calendarHandlers.disabled).toBeDefined();
+    expect(calendarHandlers.disabled?.[0]?.before).toBeInstanceOf(Date);
+  });
+
+  it("exibe skeleton durante carregamento da imagem", () => {
+    setMockLoadImageState({ data: false, isLoading: true });
+
+    const { container } = renderWithProviders(
+      <ExperienceCard {...baseProps} imageUrl="pending.jpg" />
+    );
+
+    expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+    expect(screen.getByRole("img")).toHaveClass("opacity-0");
   });
 });

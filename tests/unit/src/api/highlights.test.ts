@@ -1,17 +1,8 @@
 import type { AxiosResponse } from "axios";
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
-
 import { HighlightCategory } from "@/entities/highlights";
 import { api } from "@/core/api";
-import * as highlightsApi from "@/api/highlights";
-
-const {
+import {
+  type GetHighlightsParams,
   createHighlight,
   deleteHighlight,
   getHighlightById,
@@ -19,214 +10,172 @@ const {
   getHighlightsByCategories,
   getPublicHighlightsByCategories,
   updateHighlight,
-} = highlightsApi;
+} from "@/api/highlights";
 
-type CreateHighlightPayload = highlightsApi.CreateHighlightPayload;
-type GetHighlightsParams = highlightsApi.GetHighlightsParams;
-type HighlightResponse = highlightsApi.HighlightResponse;
+vi.mock("@/core/api", () => ({
+  api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+}));
 
-vi.mock("@/core/api", () => {
-  return {
-    api: {
-      get: vi.fn(),
-      post: vi.fn(),
-      put: vi.fn(),
-      delete: vi.fn(),
-    },
-  };
-});
-
-type ViMock = ReturnType<typeof vi.fn>;
-
-type ApiMock = {
-  get: ViMock;
-  post: ViMock;
-  put: ViMock;
-  delete: ViMock;
-};
-
-const mockedApi = api as unknown as ApiMock;
-
-const createAxiosResponse = <T>(data: T): AxiosResponse<T> => ({
-  data,
-  status: 200,
-  statusText: "OK",
-  headers: {},
-  config: { headers: {} } as unknown as AxiosResponse<T>["config"],
-});
-
-describe("api/highlights", () => {
+describe("src/api/highlights", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("builds query string when fetching highlights with params", async () => {
-    const params: GetHighlightsParams = {
-      category: HighlightCategory.EVENTO,
+  it("builds query params correctly in getHighlights", async () => {
+    const response: AxiosResponse<{ items: unknown[] }> = {
+      data: { items: [] },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {} as never,
+    };
+    const getSpy = vi.spyOn(api, "get").mockResolvedValue(response);
+
+    const params = {
+      category: HighlightCategory.CARROSSEL,
       limit: 5,
       page: 2,
-    };
-    const responseData = {
-      items: [] as HighlightResponse[],
-      total: 0,
-      page: 1,
-      limit: 10,
-    };
+    } satisfies GetHighlightsParams;
 
-    mockedApi.get.mockResolvedValueOnce(createAxiosResponse(responseData));
+    await getHighlights(params);
+    expect(getSpy).toHaveBeenCalledWith("/highlights?category=CAROUSEL&limit=5&page=2");
 
-    const result = await getHighlights(params);
-
-    expect(mockedApi.get).toHaveBeenCalledWith(
-      "/highlights?category=EVENT&limit=5&page=2"
-    );
-    expect(result).toStrictEqual(responseData);
+    await getHighlights();
+    expect(getSpy).toHaveBeenCalledWith("/highlights");
   });
 
-  it("falls back to base path when fetching highlights without params", async () => {
-    const responseData = {
-      items: [] as HighlightResponse[],
-      total: 0,
-      page: 1,
-      limit: 10,
+  it("appends optional description and order when creating a highlight", async () => {
+    const postResponse: AxiosResponse<{ id: string }> = {
+      data: { id: "1" },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {} as never,
     };
+    const postSpy = vi.spyOn(api, "post").mockResolvedValue(postResponse);
+    const file = new File(["img"], "img.png", { type: "image/png" });
 
-    mockedApi.get.mockResolvedValueOnce(createAxiosResponse(responseData));
-
-    const result = await getHighlights();
-
-    expect(mockedApi.get).toHaveBeenCalledWith("/highlights");
-    expect(result).toStrictEqual(responseData);
-  });
-
-  it("fetches a highlight by id", async () => {
-    const highlight = { id: "1" } as HighlightResponse;
-
-    mockedApi.get.mockResolvedValueOnce(createAxiosResponse(highlight));
-
-    const result = await getHighlightById("1");
-
-    expect(mockedApi.get).toHaveBeenCalledWith("/highlights/1");
-    expect(result).toBe(highlight);
-  });
-
-  it("creates highlight with full payload", async () => {
-    const payload: CreateHighlightPayload = {
-      category: HighlightCategory.EVENTO,
-      image: new File(["file"], "event.png", { type: "image/png" }),
-      title: "Event highlight",
-      description: "A highlight",
-      order: 3,
-    };
-    const responseData = { id: "1" };
-
-    mockedApi.post.mockResolvedValueOnce(createAxiosResponse(responseData));
-
-    const result = await createHighlight(payload);
-
-    expect(mockedApi.post).toHaveBeenCalledWith(
-      "/highlights",
-      expect.any(FormData),
-      expect.anything()
-    );
-
-    const formData = mockedApi.post.mock.calls[0][1] as FormData;
-    const entries = Object.fromEntries(formData.entries());
-
-    const postConfig = mockedApi.post.mock.calls[0][2] as {
-      headers?: Record<string, string>;
-    };
-
-    expect(entries).toMatchObject({
-      category: payload.category,
-      title: payload.title,
-      description: payload.description,
-      order: String(payload.order),
-    });
-    expect(formData.get("image")).toBeInstanceOf(File);
-    expect(postConfig?.headers).toMatchObject({
-      "Content-Type": "multipart/form-data",
-    });
-    expect(result).toBe(responseData);
-  });
-
-  it("omits optional fields when updating highlight", async () => {
-    const responseData = { id: "99" };
-
-    mockedApi.put.mockResolvedValueOnce(createAxiosResponse(responseData));
-
-    const result = await updateHighlight("99", {
-      title: "Updated",
-      description: "Something",
-      order: 4,
-      image: new File(["a"], "updated.png", { type: "image/png" }),
+    const res = await createHighlight({
+      category: HighlightCategory.CARROSSEL,
+      image: file,
+      title: "Title",
+      description: "desc",
+      order: 7,
     });
 
-    expect(mockedApi.put).toHaveBeenCalledWith(
-      "/highlights/99",
-      expect.any(FormData),
-      expect.anything()
-    );
+    expect(res).toEqual({ id: "1" });
+    const form = postSpy.mock.calls[0][1] as FormData;
 
-    const formData = mockedApi.put.mock.calls[0][1] as FormData;
-    const entries = Object.fromEntries(formData.entries());
+    expect(form.get("description")).toBe("desc");
+    expect(form.get("order")).toBe("7");
+  });
 
-    const putConfig = mockedApi.put.mock.calls[0][2] as {
-      headers?: Record<string, string>;
+  it("omits optional fields when not provided in create and updateHighlight", async () => {
+    const postResponse: AxiosResponse<{ id: string }> = {
+      data: { id: "2" },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {} as never,
+    };
+    const putResponse: AxiosResponse<{ id: string }> = {
+      data: { id: "2" },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {} as never,
     };
 
-    expect(entries).toMatchObject({
-      title: "Updated",
-      description: "Something",
-      order: "4",
+    const postSpy = vi.spyOn(api, "post").mockResolvedValue(postResponse);
+    const putSpy = vi.spyOn(api, "put").mockResolvedValue(putResponse);
+
+    const file = new File(["img"], "img.png", { type: "image/png" });
+
+    await createHighlight({
+      category: HighlightCategory.CARROSSEL,
+      image: file,
+      title: "No optionals",
     });
-    expect(formData.get("image")).toBeInstanceOf(File);
-    expect(putConfig?.headers).toMatchObject({
-      "Content-Type": "multipart/form-data",
-    });
-    expect(result).toBe(responseData);
+
+    const createForm = postSpy.mock.calls[0][1] as FormData;
+
+    expect(createForm.has("description")).toBe(false);
+    expect(createForm.has("order")).toBe(false);
+
+    await updateHighlight("hid", { title: "up" });
+    const updateForm = putSpy.mock.calls[0][1] as FormData;
+
+    expect(updateForm.has("title")).toBe(true);
+    expect(updateForm.has("description")).toBe(false);
+
+    const image = new File(["new"], "new.png", { type: "image/png" });
+
+    await updateHighlight("hid-full", { title: "full", description: "desc", order: 9, image });
+    const updateFullForm = putSpy.mock.calls[1][1] as FormData;
+
+    expect(updateFullForm.get("title")).toBe("full");
+    expect(updateFullForm.get("description")).toBe("desc");
+    expect(updateFullForm.get("order")).toBe("9");
+    expect(updateFullForm.get("image")).toBe(image);
+
+    await updateHighlight("hid-minimal", { description: "only-desc" });
+    const updateMinimalForm = putSpy.mock.calls[2][1] as FormData;
+
+    expect(updateMinimalForm.get("title")).toBeNull();
+    expect(updateMinimalForm.get("description")).toBe("only-desc");
   });
 
-  it("skips unset optional fields when updating highlight", async () => {
-    mockedApi.put.mockResolvedValueOnce(createAxiosResponse({ id: "50" }));
+  it("fetches by id and grouped highlights", async () => {
+    const getSpy = vi.spyOn(api, "get");
+    const deleteSpy = vi.spyOn(api, "delete").mockResolvedValue({
+      data: { ok: true },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {} as never,
+    } as AxiosResponse<{ ok: boolean }>);
 
-    await updateHighlight("50", {});
+    getSpy.mockResolvedValueOnce({
+      data: { id: "hid" },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {} as never,
+    } as AxiosResponse<{ id: string }>);
 
-    const formData = mockedApi.put.mock.calls[0][1] as FormData;
+    getSpy.mockResolvedValueOnce({
+      data: { CARROSSEL: [] },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {} as never,
+    } as AxiosResponse<Record<string, unknown[]>>);
 
-    expect(Array.from(formData.entries())).toHaveLength(0);
-  });
+    getSpy.mockResolvedValueOnce({
+      data: { CARROSSEL: [] },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {} as never,
+    } as AxiosResponse<Record<string, unknown[]>>);
 
-  it("deletes highlight", async () => {
-    const responseData = { success: true };
+    const byId = await getHighlightById("hid");
 
-    mockedApi.delete.mockResolvedValueOnce(createAxiosResponse(responseData));
+    expect(byId).toEqual({ id: "hid" });
+    expect(getSpy).toHaveBeenCalledWith("/highlights/hid");
 
-    const result = await deleteHighlight("123");
+    await deleteHighlight("hid");
 
-    expect(mockedApi.delete).toHaveBeenCalledWith("/highlights/123");
-    expect(result).toEqual(responseData);
-  });
+    expect(deleteSpy).toHaveBeenCalledWith("/highlights/hid");
 
-  it("fetches grouped highlights", async () => {
-    const responseData = { LAB: [] };
+    const grouped = await getHighlightsByCategories();
 
-    mockedApi.get.mockResolvedValueOnce(createAxiosResponse(responseData));
+    expect(grouped).toEqual({ CARROSSEL: [] });
+    expect(getSpy).toHaveBeenCalledWith("/highlights/grouped");
 
-    const result = await getHighlightsByCategories();
+    const publicGrouped = await getPublicHighlightsByCategories();
 
-    expect(mockedApi.get).toHaveBeenCalledWith("/highlights/grouped");
-    expect(result).toBe(responseData);
-  });
-
-  it("fetches public grouped highlights", async () => {
-    const responseData = { PUBLIC: [] };
-
-    mockedApi.get.mockResolvedValueOnce(createAxiosResponse(responseData));
-
-    const result = await getPublicHighlightsByCategories();
-
-    expect(mockedApi.get).toHaveBeenCalledWith("/highlights/public/grouped");
-    expect(result).toBe(responseData);
+    expect(publicGrouped).toEqual({ CARROSSEL: [] });
+    expect(getSpy).toHaveBeenCalledWith("/highlights/public/grouped");
   });
 });

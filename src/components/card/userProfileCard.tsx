@@ -2,12 +2,8 @@ import { Typography } from "@/components/typography/typography";
 import { CanvasCard, CardStatus } from "@/components/card";
 import { ShowInfo } from "@/components/display";
 import { Button } from "@/components/button/defaultButton";
-import {
-  type ReservationStatus,
-  getReservationStatusStyle,
-} from "@/entities/reservation-status";
+import { type ReservationStatus, getReservationStatusStyle } from "@/entities/reservation-status";
 import type { RegisterUserPayload } from "@/api/user";
-import { useCurrentUserProfile } from "@/hooks/useCurrentUser";
 import { useTranslation } from "react-i18next";
 
 // Mapeia códigos internos de gênero para rótulos exibidos ao usuário
@@ -38,11 +34,8 @@ export function UserProfileCard({
   user,
   documentStatus,
   onEdit,
-  onSendDocument,
-  disableSendDocument = false,
   className = "",
 }: UserProfileCardProps) {
-  const { verified } = useCurrentUserProfile();
   const { t } = useTranslation();
   const { className: documentStatusAccent, icon: documentStatusIcon } =
     getReservationStatusStyle(documentStatus);
@@ -50,7 +43,7 @@ export function UserProfileCard({
 
   return (
     <CanvasCard
-      className={`w-full max-w-[clamp(40rem,82vw,760px)] mx-auto p-8 sm:p-12 bg-card shadow-md rounded-[20px] ${className}`}
+      className={`w-full max-w-[clamp(40rem,82vw,760px)] mx-auto p-8 sm:p-12 bg-card/20 shadow-md rounded-[20px] ${className}`}
     >
       <div className="flex flex-col gap-8">
         <header className="flex flex-col items-center gap-2">
@@ -66,15 +59,9 @@ export function UserProfileCard({
           </Typography>
           <div className="w-full h-px bg-on-banner-text/60" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-1">
-            <ShowInfo
-              header={t("register.fields.fullName")}
-              label={user.name || "-"}
-            />
+            <ShowInfo header={t("register.fields.fullName")} label={user.name || "-"} />
             <ShowInfo header={t("common.email")} label={user.email || "-"} />
-            <ShowInfo
-              header={t("register.fields.phone")}
-              label={user.phone || "-"}
-            />
+            <ShowInfo header={t("register.fields.phone")} label={user.phone || "-"} />
             {user.document && (
               <ShowInfo
                 header={
@@ -92,33 +79,15 @@ export function UserProfileCard({
               />
             )}
             {user.rg && <ShowInfo header="RG" label={user.rg} />}
-            {user.zipCode && (
-              <ShowInfo
-                header={t("register.fields.zip")}
-                label={user.zipCode}
-              />
-            )}
+            {user.zipCode && <ShowInfo header={t("register.fields.zip")} label={user.zipCode} />}
             {user.addressLine && (
-              <ShowInfo
-                header={t("register.fields.address")}
-                label={user.addressLine}
-              />
+              <ShowInfo header={t("register.fields.address")} label={user.addressLine} />
             )}
-            {user.city && (
-              <ShowInfo header={t("register.fields.city")} label={user.city} />
-            )}
+            {user.city && <ShowInfo header={t("register.fields.city")} label={user.city} />}
             {user.number !== undefined && (
-              <ShowInfo
-                header={t("register.fields.number")}
-                label={String(user.number)}
-              />
+              <ShowInfo header={t("register.fields.number")} label={String(user.number)} />
             )}
-            {(user as any).function && (
-              <ShowInfo
-                header={t("common.function")}
-                label={(user as any).function}
-              />
-            )}
+            {user.function && <ShowInfo header={t("common.function")} label={user.function} />}
           </div>
         </section>
 
@@ -131,24 +100,10 @@ export function UserProfileCard({
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex-1 grid grid-cols-1">
               {user.institution && (
-                <ShowInfo
-                  header={t("register.fields.institution")}
-                  label={user.institution}
-                />
+                <ShowInfo header={t("register.fields.institution")} label={user.institution} />
               )}
             </div>
             <div className="flex flex-row flex-wrap items-center gap-4">
-              <Button
-                label={
-                  verified
-                    ? t("profile.card.docency.receiptSent")
-                    : t("profile.card.docency.sendReceipt")
-                }
-                variant="gray"
-                className="px-6 py-3 text-sm font-medium rounded-md disabled:opacity-50"
-                onClick={onSendDocument}
-                disabled={verified || disableSendDocument || !onSendDocument}
-              />
               <CardStatus
                 icon={documentStatusIcon}
                 label={documentStatusLabel}
@@ -159,11 +114,7 @@ export function UserProfileCard({
         </section>
 
         <div className="flex justify-center pt-2">
-          <Button
-            label={t("profile.card.editButton")}
-            variant="primary"
-            onClick={onEdit}
-          />
+          <Button label={t("profile.card.editButton")} variant="primary" onClick={onEdit} />
         </div>
       </div>
     </CanvasCard>

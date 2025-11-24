@@ -38,4 +38,13 @@ export const handlers = [
 
     return HttpResponse.json({ message: "Invalid credentials" }, { status: 401 });
   }),
+  http.get("*/requests/professor/:id", ({ params }) => {
+    // Retorna um mock para o professor request
+    return HttpResponse.json({
+      id: params.id ?? "prof-1",
+      description: "Mock description",
+      type: "DOCUMENT_REQUESTED",
+      fileUrl: "https://example.com/receipt.pdf",
+    });
+  }),
 ];

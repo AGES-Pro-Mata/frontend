@@ -5,7 +5,7 @@ describe("src/test/msw/handlers", () => {
     vi.resetModules();
   });
 
-  it("exports three handlers and their resolvers behave as expected", async () => {
+  it("exports four handlers and their resolvers behave as expected", async () => {
     // Fake msw exports so we can inspect how handlers are built and run resolvers.
     const fakeHttpResponse = {
       json: (payload: unknown, opts?: Record<string, unknown>) => ({
@@ -42,9 +42,10 @@ describe("src/test/msw/handlers", () => {
     };
 
     expect(Array.isArray(handlers)).toBe(true);
-    expect(handlers).toHaveLength(3);
+    expect(handlers).toHaveLength(4);
 
-    const [healthHandler, experiencesHandler, authHandler] = handlers;
+    const [healthHandler, experiencesHandler, authHandler, professorRequestHandler] =
+      handlers;
 
     // Check basic handler metadata
     expect(healthHandler.method).toBe("GET");
@@ -55,6 +56,9 @@ describe("src/test/msw/handlers", () => {
 
     expect(authHandler.method).toBe("POST");
     expect(typeof authHandler.resolver).toBe("function");
+
+    expect(professorRequestHandler.method).toBe("GET");
+    expect(typeof professorRequestHandler.resolver).toBe("function");
 
     // Execute resolvers to exercise branches
     type JsonResponse = { payload: unknown; opts?: Record<string, unknown> };
@@ -118,5 +122,16 @@ describe("src/test/msw/handlers", () => {
       "Invalid credentials"
     );
     expect(failJson.opts).toMatchObject({ status: 401 });
+
+    const requestResult = await (
+      professorRequestHandler.resolver as (...a: unknown[]) => Promise<unknown>
+    )({ params: { id: "req-1" } });
+
+    const requestJson = requestResult as JsonResponse;
+
+    expect(requestJson.payload && (requestJson.payload as any)).toMatchObject({
+      id: "req-1",
+      type: "DOCUMENT_REQUESTED",
+    });
   });
 });

@@ -1,0 +1,21 @@
+import { api } from "@/core/api";
+
+
+
+export async function sendPaymentProof(reservationGroupId: string, file: File) {
+  const formData = new FormData();
+
+  formData.append("paymentReceipt", file);
+
+  const response = await api.post(
+    `/reservation/group/${reservationGroupId}/request/receipt`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+  
+  return response.data;
+}

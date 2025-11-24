@@ -24,9 +24,7 @@ describe("TextInput component", () => {
   });
 
   it("renders label, required marker and merges className", () => {
-    render(
-      <TextInput label="Label" required className="my-class" placeholder="ph" />
-    );
+    render(<TextInput label="Label" required className="my-class" placeholder="ph" />);
 
     expect(screen.getByText("Label")).toBeDefined();
     // required marker
@@ -42,14 +40,7 @@ describe("TextInput component", () => {
     const onChange = vi.fn();
     const onBlur = vi.fn();
 
-    render(
-      <TextInput
-        placeholder="ph"
-        required
-        onChange={onChange}
-        onBlur={onBlur}
-      />
-    );
+    render(<TextInput placeholder="ph" required onChange={onChange} onBlur={onBlur} />);
 
     const input = screen.getByPlaceholderText<HTMLInputElement>("ph");
 
@@ -74,9 +65,7 @@ describe("TextInput component", () => {
   });
 
   it("shows the error message and invalid styles when error prop is provided", async () => {
-    const { rerender } = render(
-      <TextInput placeholder="ph" error="Something went wrong" />
-    );
+    const { rerender } = render(<TextInput placeholder="ph" error="Something went wrong" />);
 
     const input = screen.getByPlaceholderText<HTMLInputElement>("ph");
 

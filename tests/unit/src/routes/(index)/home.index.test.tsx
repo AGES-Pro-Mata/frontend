@@ -48,7 +48,7 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-vi.mock("@/hooks/useHighlights", () => ({
+vi.mock("@/hooks/shared/useHighlights", () => ({
   useFetchPublicHighlightsByCategories: fetchPublicHighlightsMock,
 }));
 
@@ -58,8 +58,12 @@ vi.mock("lucide-react", () => ({
 
 const useLoadImageMock = vi.fn();
 
-vi.mock("@/hooks/useLoadImage", () => ({
-  useLoadImage: () => useLoadImageMock(),
+vi.mock("@/hooks", () => ({
+  useLoadImage: () =>
+    useLoadImageMock() as {
+      data?: string;
+      isLoading: boolean;
+    },
 }));
 
 describe("Home Route Component", () => {

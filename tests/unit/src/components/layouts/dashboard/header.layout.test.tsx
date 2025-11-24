@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 
 import { renderWithProviders } from "@/test/test-utils";
@@ -27,9 +27,8 @@ vi.mock("@/api/user", () => ({
 }));
 
 vi.mock("@tanstack/react-query", async () => {
-  const actual = await vi.importActual<typeof import("@tanstack/react-query")>(
-    "@tanstack/react-query",
-  );
+  const actual =
+    await vi.importActual<typeof import("@tanstack/react-query")>("@tanstack/react-query");
 
   return {
     ...actual,
@@ -37,7 +36,7 @@ vi.mock("@tanstack/react-query", async () => {
   };
 });
 
-vi.mock("@/hooks/useLogout", () => ({
+vi.mock("@/hooks/auth/useLogout", () => ({
   useLogout: () => ({ logout: mockUseLogout }),
 }));
 
@@ -91,9 +90,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 vi.mock("react-spinners", () => ({
-  MoonLoader: ({ size }: { size: number }) => (
-    <div data-testid="loader">loader-{size}</div>
-  ),
+  MoonLoader: ({ size }: { size: number }) => <div data-testid="loader">loader-{size}</div>,
 }));
 
 describe("HeaderLayout", () => {
@@ -102,24 +99,36 @@ describe("HeaderLayout", () => {
     linkClickHandler = undefined;
     mockUseIsAdmin.mockReturnValue(false);
     mockUseQuery.mockReturnValue({ data: undefined, isPending: false });
-    useCartStore.setState({ items: [], isOpen: false });
+    act(() => {
+      useCartStore.setState({ items: [], isOpen: false });
+    });
     scrollSpy = vi.fn();
     window.scrollTo = scrollSpy as typeof window.scrollTo;
   });
 
   afterEach(() => {
-    useCartStore.setState({ items: [], isOpen: false });
+    act(() => {
+      useCartStore.setState({ items: [], isOpen: false });
+    });
     vi.clearAllMocks();
     window.scrollTo = originalScrollTo;
   });
 
-  it("renders navigation for guests", () => {
+  it("renders navigation for guests", async () => {
     renderWithProviders(<HeaderLayout />);
 
     expect(screen.getByRole("button", { name: /início/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /reservar/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /entrar/i })).toBeInTheDocument();
-    expect(screen.queryByTestId("cart-button")).not.toBeInTheDocument();
+
+    const cartButton = screen.getByTestId("cart-button");
+
+    expect(cartButton).toHaveTextContent("Carrinho (0)");
+    expect(useCartStore.getState().isOpen).toBe(false);
+
+    await userEvent.click(cartButton);
+
+    expect(useCartStore.getState().isOpen).toBe(true);
     expect(screen.getByTestId("language-select")).toBeInTheDocument();
   });
 
@@ -130,7 +139,9 @@ describe("HeaderLayout", () => {
       category: "TRAIL",
     } as Experience;
 
-    useCartStore.setState({ items: [experience], isOpen: false });
+    act(() => {
+      useCartStore.setState({ items: [experience], isOpen: false });
+    });
     mockUseIsAdmin.mockReturnValue(true);
     mockUseQuery.mockReturnValue({ data: { name: "Maria" }, isPending: false });
 

@@ -12,12 +12,11 @@ import type { TUserAdminRequestFilters } from "@/entities/user-admin-filters";
 import { useFilters } from "@/hooks/filters/filters";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
-import { useFetchAdminUsers } from "../../../hooks/use-fetch-admin-users";
-
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useDeleteUser } from "@/hooks/use-delete-users";
 import { type ChangeEvent, useState } from "react";
 import { MoonLoader } from "react-spinners";
+import { useDeleteUser, useFetchAdminUsers } from "@/hooks";
+import type { TUserAdminResponse } from "@/entities/user-admin-response";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
   ["name"]: "Nome",
@@ -86,7 +85,7 @@ function RouteComponent() {
       accessorKey: "createdBy",
       header: "Criado por",
       enableSorting: true,
-      cell: ({ row }: any) => {
+      cell: ({ row }: { row: { original: TUserAdminResponse } }) => {
         const createdBy = row.original.createdBy;
 
         return createdBy?.name || "-";
@@ -101,7 +100,7 @@ function RouteComponent() {
       id: "actions",
       enableHiding: false,
       size: 50,
-      cell: ({ row }: any) => {
+      cell: ({ row }: { row: { original: TUserAdminResponse } }) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -109,14 +108,14 @@ function RouteComponent() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => handleEditUserClick(row.original.id)}
+                onClick={() => void handleEditUserClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
                 {"Editar"}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => handleDeleteUserClick(row.original.id)}
+                onClick={() => void handleDeleteUserClick(row.original.id)}
                 className="cursor-pointer text-default-red gap-3"
               >
                 {"Excluir"}
@@ -129,17 +128,9 @@ function RouteComponent() {
     },
   ];
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <MoonLoader color="#22c55e" size={40} />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col w-full h-full p-4 gap-6">
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col w-full h-full p-4 gap-6 overflow-hidden">
+      <div className="flex justify-between items-center lex-shrink-0">
         <div className="w-full flex gap-4">
           <Input
             value={searchTerm}
@@ -182,7 +173,12 @@ function RouteComponent() {
           </Typography>
         </Button>
       </div>
-      <div className="relative">
+      <div className="flex-1 relative overflow-auto rounded-md border">
+        {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center rounded-lg z-10">
+            <MoonLoader size={35} color="#22c55e" />
+          </div>
+        )}
         <DataTable
           data={items}
           columns={columns}

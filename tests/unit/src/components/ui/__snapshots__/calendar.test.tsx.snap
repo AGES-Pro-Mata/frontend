@@ -19,6 +19,7 @@ exports[`Calendar component > renders with custom className passed to Calendar 1
           type="button"
         >
           <svg
+            aria-hidden="true"
             class="lucide lucide-chevron-left size-4 rdp-chevron"
             fill="none"
             height="24"
@@ -41,6 +42,7 @@ exports[`Calendar component > renders with custom className passed to Calendar 1
           type="button"
         >
           <svg
+            aria-hidden="true"
             class="lucide lucide-chevron-right size-4 rdp-chevron"
             fill="none"
             height="24"
