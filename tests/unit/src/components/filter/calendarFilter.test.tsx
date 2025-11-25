@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/test/test-utils";
 
@@ -100,3 +100,31 @@ describe("Calendar22", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 });
+
+
+describe("Calendar22 uncovered branches", () => {
+    it("should handle no displayFormat and no value", () => {
+      render(<Calendar22 value={undefined} />);
+      // Should render the default placeholder text
+      expect(screen.getByRole("button", { name: /select date/i })).toBeInTheDocument();
+    });
+  it("should call displayFormat if provided", () => {
+    const displayFormat = vi.fn(() => "formatted");
+
+    render(<Calendar22 value={new Date()} displayFormat={displayFormat} />);
+    expect(displayFormat).toHaveBeenCalled();
+    expect(screen.getByText("formatted")).toBeInTheDocument();
+  });
+
+  it("should handle null value and show placeholder", () => {
+    render(<Calendar22 value={null as any} placeholder="Test Placeholder" />);
+    expect(screen.getByText("Test Placeholder")).toBeInTheDocument();
+  });
+
+  it("should cover else branch for displayFormat and placeholder", () => {
+    // Covers line 43, branch 1 (no displayFormat, no date, no placeholder)
+    render(<Calendar22 value={undefined} />);
+    expect(screen.getByRole("button", { name: /select date/i })).toBeInTheDocument();
+  });
+});
+

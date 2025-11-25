@@ -50,6 +50,7 @@ describe("LanguageSelect", () => {
     expect(navArgs.replace).toBe(true);
     expect(navArgs.to).toBe(".");
     expect(navArgs.search?.({})).toEqual({ lang: "en" });
+    expect(navArgs.search?.(undefined as never)).toEqual({ lang: "en" });
   });
 
   it("uses drawer + horizontal styles and switches to PT", async () => {
@@ -89,5 +90,25 @@ describe("LanguageSelect", () => {
     render(<LanguageSelect />);
 
     expect(changeLanguage).not.toHaveBeenCalled();
+  });
+
+  it("does not resync when the url matches the current language", () => {
+    language = "en";
+    routerState.location.search = { lang: "en" };
+
+    render(<LanguageSelect />);
+
+    expect(changeLanguage).not.toHaveBeenCalled();
+  });
+
+  it("falls back to default PT when url and i18n language are missing", () => {
+    language = undefined as unknown as string;
+    routerState.location.search = {};
+
+    render(<LanguageSelect variant="drawer" />);
+
+    const ptButton = screen.getByText("PT");
+
+    expect(ptButton.className).toContain("bg-white/15");
   });
 });

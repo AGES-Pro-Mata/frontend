@@ -58,32 +58,28 @@ describe("ExperienceFilters schema", () => {
     }
   });
 
-  it("rejects negative page values", () => {
+  it("accepts negative page values without coercion", () => {
     const result = ExperienceFilters.safeParse({
       page: -1,
       limit: 12,
       category: ExperienceCategory.HOSPEDAGEM,
     });
 
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      const paths = result.error.issues.map((e) => e.path.join("."));
-
-      expect(paths).toContain("page");
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(-1);
     }
   });
 
-  it("requires the page property (no implicit default applied here)", () => {
+  it("applies default page zero when property is missing", () => {
     const result = ExperienceFilters.safeParse({
       limit: 12,
       category: ExperienceCategory.LABORATORIO,
     });
 
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      const paths = result.error.issues.map((e) => e.path.join("."));
-
-      expect(paths).toContain("page");
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(0);
     }
   });
 });

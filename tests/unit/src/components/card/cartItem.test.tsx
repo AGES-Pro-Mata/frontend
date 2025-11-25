@@ -316,4 +316,31 @@ describe('CartItem', () => {
       await user.click(removeButton);
     }
   });
+
+  it('shows loader and opacity states when image is loading', async () => {
+    vi.resetModules();
+    vi.doMock('@/hooks/shared/useLoadImage', () => ({
+      useLoadImage: () => ({ data: false, isLoading: true }),
+    }));
+
+    const { default: CartItemLoaded } = await import('@/components/card/cartItem');
+
+    const { container } = renderWithProviders(<CartItemLoaded experience={makeExperience()} />);
+
+    expect(container.querySelector('.animate-pulse')).toBeTruthy();
+  });
+
+  it('renders image with opacity-100 when loaded', async () => {
+    vi.resetModules();
+    vi.doMock('@/hooks/shared/useLoadImage', () => ({
+      useLoadImage: () => ({ data: true, isLoading: false }),
+    }));
+
+    const { default: CartItemLoaded } = await import('@/components/card/cartItem');
+
+    const { container } = renderWithProviders(<CartItemLoaded experience={makeExperience()} />);
+
+    const img = container.querySelector('img');
+    expect(img).toHaveClass('opacity-100');
+  });
 });

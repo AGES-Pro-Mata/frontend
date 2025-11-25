@@ -166,6 +166,32 @@ describe("CardsInfoOnHover", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  it("shows CTA while hovering and hides it after leaving", () => {
+    const { container } = renderWithProviders(
+      <CardsInfoOnHover highlights={highlightsFixture} />,
+    );
+
+    const ctaButton = screen.getAllByRole("button", { name: /saiba mais/i })[0];
+
+    // Initially, the first card is active, so the button should have opacity-100
+    expect(ctaButton.className).toMatch(/opacity-100/);
+    expect(ctaButton.className).toMatch(/pointer-events-auto/);
+
+    // Simulate hover on the second card
+    const secondCard = screen.getAllByRole("group")[1];
+    fireEvent.mouseEnter(secondCard);
+    const ctaButtonSecond = screen.getAllByRole("button", { name: /saiba mais/i })[1];
+    expect(ctaButtonSecond.className).toMatch(/opacity-100/);
+    expect(ctaButtonSecond.className).toMatch(/pointer-events-auto/);
+
+    // After mouse leave, the second card's button should return to opacity-0
+    fireEvent.mouseLeave(secondCard);
+    expect(ctaButtonSecond.className).toMatch(/opacity-0/);
+    expect(ctaButtonSecond.className).not.toMatch(/pointer-events-auto/);
+
+    expect(container.querySelectorAll(".pointer-events-auto").length).toBeGreaterThan(0);
+  });
+
   it("marks the first gallery image as eager and the rest as lazy", () => {
     const highlights = {
       labs: [
@@ -209,10 +235,28 @@ describe("CardsInfoOnHover", () => {
 
     const { container } = renderWithProviders(<CardsInfoOnHover highlights={highlightsFixture} />);
 
-    // first render uses loading state
     expect(container.querySelector(".animate-pulse")).not.toBeNull();
-    expect(useLoadImageMock).toHaveBeenCalled();
-    // component should invoke the hook for the main image at least once
-    expect(useLoadImageMock).toHaveBeenCalledTimes(1);
+
+    const hookResults = useLoadImageMock.mock.results
+      .map((entry) => entry.value)
+      .filter(
+        (value): value is { data?: string; isLoading: boolean } =>
+          typeof value === "object" && value !== null,
+      );
+
+    expect(hookResults.some((result) => result.isLoading)).toBe(true);
+    expect(hookResults.some((result) => result.isLoading)).toBe(true);
+  });
+
+  it("renders loaded image when hook resolves", () => {
+    useLoadImageMock.mockReturnValue({ data: "/loaded.jpg", isLoading: false });
+
+    const { container } = renderWithProviders(<CardsInfoOnHover highlights={highlightsFixture} />);
+
+    const firstImage = container.querySelector("img");
+    const overlay = container.querySelector("[aria-hidden='true']");
+
+    expect(firstImage?.className).toContain("opacity-100");
+    expect(overlay?.className).toContain("opacity-0");
   });
 });

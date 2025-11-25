@@ -104,6 +104,7 @@ export function ReservationInfoCard({
                 <Textarea
                   value={reservation.notes ?? t("reserveSummary.people.emptyNotes")}
                   readOnly
+                  disabled
                   placeholder={t("reserveSummary.people.notesPlaceholder")}
                   className="min-h-[140px] resize-vertical border-dark-gray/30 bg-soft-white/80"
                 />

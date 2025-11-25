@@ -65,7 +65,9 @@ const createExperience = (overrides: Partial<Experience> = {}): Experience => ({
   ...overrides,
 });
 
-const createExperiencesData = (overrides: Partial<ExperiencesResponse> = {}): ExperiencesResponse => ({
+const createExperiencesData = (
+  overrides: Partial<ExperiencesResponse> = {},
+): ExperiencesResponse => ({
   items: [],
   page: 0,
   limit: 12,
@@ -108,11 +110,12 @@ const createUseGetExperiencesResult = (
   const merged = { ...base, ...overrides } as UseGetExperiencesResult;
 
   merged.refetch =
-    overrides.refetch ?? (vi.fn(() => Promise.resolve(merged)) as UseGetExperiencesResult["refetch"]);
+    overrides.refetch ??
+    (vi.fn(() => Promise.resolve(merged)) as UseGetExperiencesResult["refetch"]);
   merged.promise =
     overrides.promise ??
     Promise.resolve(
-      (merged.data ?? createExperiencesData()) as NonNullable<UseGetExperiencesResult["data"]>
+      (merged.data ?? createExperiencesData()) as NonNullable<UseGetExperiencesResult["data"]>,
     );
 
   return merged;
@@ -175,9 +178,7 @@ vi.mock("@/components/ui/pagination", () => ({
     className?: string;
   }) => {
     const label =
-      typeof children === "string" || typeof children === "number"
-        ? String(children)
-        : "page";
+      typeof children === "string" || typeof children === "number" ? String(children) : "page";
 
     return (
       <button
@@ -238,28 +239,25 @@ describe("Reserve Route", () => {
   it("chama useGetExperiences com os filtros e página zero-based", async () => {
     const hooksModule = await import("@/hooks");
     const experiencesData = createExperiencesData();
-    const useGetExperiencesMock = vi
-      .spyOn(hooksModule, "useGetExperiences")
-      .mockReturnValue(
-        createUseGetExperiencesResult({
-          data: experiencesData,
-          fetchStatus: "idle",
-          isError: false,
-          isFetched: true,
-          isFetchedAfterMount: true,
-          isLoading: false,
-          isPending: false,
-          isSuccess: true,
-          status: "success",
-        }),
-      );
+    const useGetExperiencesMock = vi.spyOn(hooksModule, "useGetExperiences").mockReturnValue(
+      createUseGetExperiencesResult({
+        data: experiencesData,
+        fetchStatus: "idle",
+        isError: false,
+        isFetched: true,
+        isFetchedAfterMount: true,
+        isLoading: false,
+        isPending: false,
+        isSuccess: true,
+        status: "success",
+      }),
+    );
 
     render(<ReservePageComponent />);
 
     await waitFor(() => expect(useGetExperiencesMock).toHaveBeenCalledTimes(1));
     expect(useGetExperiencesMock).toHaveBeenCalledWith(
-      expect.objectContaining({ limit: 12 }),
-      0,
+      expect.objectContaining({ limit: 12, page: 0 }),
     );
   });
 
@@ -271,28 +269,25 @@ describe("Reserve Route", () => {
 
     const experiencesData = createExperiencesData();
 
-    const useGetExperiencesMock = vi
-      .spyOn(hooksModule, "useGetExperiences")
-      .mockReturnValue(
-        createUseGetExperiencesResult({
-          data: experiencesData,
-          fetchStatus: "idle",
-          isError: false,
-          isFetched: true,
-          isFetchedAfterMount: true,
-          isLoading: false,
-          isPending: false,
-          isSuccess: true,
-          status: "success",
-        }),
-      );
+    const useGetExperiencesMock = vi.spyOn(hooksModule, "useGetExperiences").mockReturnValue(
+      createUseGetExperiencesResult({
+        data: experiencesData,
+        fetchStatus: "idle",
+        isError: false,
+        isFetched: true,
+        isFetchedAfterMount: true,
+        isLoading: false,
+        isPending: false,
+        isSuccess: true,
+        status: "success",
+      }),
+    );
 
     render(<ReservePageComponent />);
 
     await waitFor(() => expect(useGetExperiencesMock).toHaveBeenCalledTimes(1));
     expect(useGetExperiencesMock).toHaveBeenCalledWith(
-      expect.objectContaining({ limit: 12 }),
-      0,
+      expect.objectContaining({ limit: 12, page: undefined }),
     );
   });
 

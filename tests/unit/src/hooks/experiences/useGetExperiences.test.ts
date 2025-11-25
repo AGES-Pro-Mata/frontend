@@ -21,7 +21,7 @@ describe("useGetExperiences", () => {
     );
 
     const { result } = renderHookWithProviders(() =>
-      useGetExperiences({}, 0, 12)
+      useGetExperiences({ page: 0, limit: 12 })
     );
 
     await waitFor(() => expect(result.current.data).toEqual(payload));

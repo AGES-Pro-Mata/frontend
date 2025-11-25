@@ -1,4 +1,8 @@
-export type ReserveParticipantGender = "FEMALE" | "MALE" | "OTHER" | "NOT_INFORMED";
+export enum ReserveParticipantGender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  OTHER = "OTHER",
+}
 
 type ReserveParticipantBase = {
   id: string;

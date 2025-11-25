@@ -7,6 +7,7 @@ export type ReservationGroupStatus =
   | "CREATED"
   | "CANCELED"
   | "CANCELED_REQUESTED"
+  | "CANCEL_REJECTED"
   | "EDITED"
   | "REJECTED"
   | "APPROVED"
@@ -14,6 +15,8 @@ export type ReservationGroupStatus =
   | "PAYMENT_REQUESTED"
   | "PEOPLE_SENT"
   | "PAYMENT_SENT"
+  | "PAYMENT_APPROVED"
+  | "PAYMENT_REJECTED"
   | "DOCUMENT_REQUESTED"
   | "DOCUMENT_APPROVED"
   | "DOCUMENT_REJECTED";

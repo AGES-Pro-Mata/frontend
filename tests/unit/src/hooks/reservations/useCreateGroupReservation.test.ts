@@ -5,6 +5,7 @@ import type {
   CreateGroupReservationResponse,
 } from "@/api/reserve";
 import { useCreateGroupReservation } from "@/hooks/reservations/useCreateGroupReservation";
+import { ReserveParticipantGender } from "@/types/reserve";
 import { MY_RESERVATION_KEY } from "@/hooks/reservations/useMyReservations";
 
 const apiMocks = vi.hoisted(() => ({
@@ -65,7 +66,7 @@ const buildPayload = (): CreateGroupReservationPayload => ({
       birthDate: "2000-01-01",
       cpf: "00000000000",
       document: "ID",
-      gender: "FEMALE",
+      gender: ReserveParticipantGender.FEMALE,
     },
   ],
   reservations: [

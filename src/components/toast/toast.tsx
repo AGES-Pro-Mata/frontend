@@ -8,7 +8,7 @@ interface AppToastOptions extends Omit<ExternalToast, "description"> {
   position?: ToasterProps["position"];
 }
 
-function base(content: React.ReactNode, opts?: AppToastOptions) {
+export function base(content: React.ReactNode, opts?: AppToastOptions) {
   const { icon, description, className, position, ...rest } = opts ?? {};
   const baseClasses =
     "mx-auto w-full max-w-md sm:max-w-lg rounded-2xl p-4 shadow-xl flex items-start gap-4";

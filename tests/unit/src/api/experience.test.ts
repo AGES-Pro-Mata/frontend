@@ -161,7 +161,9 @@ describe("src/api/experience", () => {
       limit?: number;
     });
 
-    expect(getSpy).toHaveBeenCalledWith("/experience/search", { params: {} });
+    expect(getSpy).toHaveBeenCalledWith("/experience/search", {
+      params: { page: 0, limit: 12 },
+    });
     expect(res.items.length).toBe(1);
     expect(res.total).toBe(100);
   });

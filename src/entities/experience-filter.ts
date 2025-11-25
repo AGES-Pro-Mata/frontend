@@ -5,10 +5,9 @@ import { ExperienceCategory } from "@/types/experience";
 export const ExperienceFilters = z.object({
   ...ApiDefaultFilters.shape,
   search: z.string().max(100).optional(),
-  category: z.enum(Object.values(ExperienceCategory)),
+  category: z.nativeEnum(ExperienceCategory),
   startDate: z.string().max(100).optional(),
   endDate: z.string().max(100).optional(),
-  page: z.number().min(0),
   limit: z.number().default(12),
 });
 

@@ -17,6 +17,7 @@ const getCurrentUserRequest = vi.hoisted(() =>
     Promise.resolve<{ id: string; name: string } | null>({ id: "user-1", name: "Test User" }),
   ),
 );
+const buttonHandlers: Array<{ onClick?: () => void; disabled?: boolean }> = [];
 
 vi.mock("@/components/ui/drawer", () => ({
   Drawer: ({
@@ -72,11 +73,15 @@ vi.mock("@/components/button/defaultButton", () => ({
     label: ReactNode;
     disabled?: boolean;
     onClick?: () => void;
-  }) => (
-    <button type="button" disabled={disabled} onClick={onClick}>
-      {label}
-    </button>
-  ),
+  }) => {
+    buttonHandlers.push({ disabled, onClick });
+
+    return (
+      <button type="button" disabled={disabled} onClick={onClick}>
+        {label}
+      </button>
+    );
+  },
 }));
 
 vi.mock("@tanstack/react-router", () => ({
@@ -110,6 +115,7 @@ describe("CartDrawer", () => {
     });
     drawerOnOpenChange = undefined;
     drawerOnPointerDownOutside = undefined;
+    buttonHandlers.length = 0;
   });
 
   afterEach(() => {
@@ -234,9 +240,11 @@ describe("CartDrawer", () => {
 
     renderWithProviders(<CartDrawer />);
 
-    await userEvent.click(
-      screen.getByRole("button", { name: /finalizar reserva/i }),
-    );
+    const checkoutHandler = buttonHandlers[0];
+
+    expect(checkoutHandler?.disabled).toBe(true);
+
+    checkoutHandler?.onClick?.();
 
     expect(getCurrentUserRequest).not.toHaveBeenCalled();
   });

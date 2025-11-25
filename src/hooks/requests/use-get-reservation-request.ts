@@ -18,6 +18,8 @@ export const useGetReservationsAdminRequest = (id: string) => {
         ReservationRequestAdminResponse,
       );
     },
+    refetchInterval: 5 * 1000,
+    gcTime: 4 * 1000,
   });
 
   return {

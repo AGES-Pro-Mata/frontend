@@ -1,9 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -16,8 +11,9 @@ import { Button } from "@/components/button/defaultButton";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { type Person } from "@/types/person"
-
+import { type Person } from "@/types/person";
+import { digitsOnly, maskCpf, maskPhone } from "@/lib/utils";
+import { TextInput } from "../input";
 
 type PeopleModalProps = {
   open: boolean;
@@ -64,17 +60,19 @@ export function PeopleModal({
                   setDraftPeople(updated);
                 }}
               />
-              <Input
-                placeholder={t("peopleModal.phone")}
+              <TextInput
                 className="col-span-3 h-10"
-                value={person.phone}
+                placeholder={t("peopleModal.phone")}
+                value={maskPhone(person.phone || "")}
                 onChange={(e) => {
                   const updated = [...draftPeople];
+                  const digits = digitsOnly(e.target.value).slice(0, 11);
 
-                  updated[index].phone = e.target.value;
+                  updated[index].phone = digits;
                   setDraftPeople(updated);
                 }}
               />
+
               <Input
                 type="date"
                 className="col-span-3 h-10"
@@ -87,14 +85,16 @@ export function PeopleModal({
                   setDraftPeople(updated);
                 }}
               />
-              <Input
+              <TextInput
                 className="col-span-3 h-10"
                 placeholder={t("peopleModal.cpf")}
-                value={person.document}
+                value={maskCpf(person.document || "")}
                 onChange={(e) => {
                   const updated = [...draftPeople];
+                  const digits = digitsOnly(e.target.value).slice(0, 11);
+                  const masked = maskCpf(digits);
 
-                  updated[index].document = e.target.value;
+                  updated[index].document = masked;
                   setDraftPeople(updated);
                 }}
               />
@@ -111,15 +111,9 @@ export function PeopleModal({
                   <SelectValue placeholder={t("peopleModal.gender")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="masculino">
-                    {t("peopleModal.male")}
-                  </SelectItem>
-                  <SelectItem value="feminino">
-                    {t("peopleModal.female")}
-                  </SelectItem>
-                  <SelectItem value="outro">
-                    {t("peopleModal.other")}
-                  </SelectItem>
+                  <SelectItem value="masculino">{t("peopleModal.male")}</SelectItem>
+                  <SelectItem value="feminino">{t("peopleModal.female")}</SelectItem>
+                  <SelectItem value="outro">{t("peopleModal.other")}</SelectItem>
                 </SelectContent>
               </Select>
               <div className="col-span-1 flex justify-end">
@@ -152,9 +146,7 @@ export function PeopleModal({
               }
               className="bg-main-dark-green text-soft-white rounded-full w-[240px] h-[40px] text-sm shadow-md hover:opacity-90"
               label={
-                draftPeople.length > 0
-                  ? t("peopleModal.addPerson")
-                  : t("peopleModal.addOnePerson")
+                draftPeople.length > 0 ? t("peopleModal.addPerson") : t("peopleModal.addOnePerson")
               }
             />
           </div>
@@ -173,12 +165,7 @@ export function PeopleModal({
           <Button
             onClick={() => {
               const incompleteFields = draftPeople.some(
-                (p) =>
-                  !p.name ||
-                  !p.phone ||
-                  !p.birthDate ||
-                  !p.document ||
-                  !p.gender,
+                (p) => !p.name || !p.phone || !p.birthDate || !p.document || !p.gender,
               );
 
               if (incompleteFields) {

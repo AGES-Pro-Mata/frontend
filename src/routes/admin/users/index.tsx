@@ -13,9 +13,9 @@ import { useFilters } from "@/hooks/filters/filters";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { type ChangeEvent, useState } from "react";
+import React, { type ChangeEvent, useState } from "react";
 import { MoonLoader } from "react-spinners";
-import { useDeleteUser, useFetchAdminUsers } from "@/hooks";
+import { useDebounce, useDeleteUser, useFetchAdminUsers } from "@/hooks";
 import type { TUserAdminResponse } from "@/entities/user-admin-response";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
@@ -48,17 +48,23 @@ function RouteComponent() {
   const { items, meta, isLoading } = useFetchAdminUsers({ filters });
   const { handleDeleteUser } = useDeleteUser();
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
   const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
     setSearchTerm(value);
-    setFilter(selectedFilter, value);
   };
+
+  React.useEffect(() => {
+    if (filters[selectedFilter] !== debouncedSearchTerm) {
+      setFilter(selectedFilter, debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm, selectedFilter, setFilter, filters]);
 
   const onChangeFilter = (value: FilterKey) => {
     if (!value) return;
     resetFilters();
-    setSearchTerm("");
     setSelectedFilter(value);
   };
 

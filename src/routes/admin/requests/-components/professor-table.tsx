@@ -6,21 +6,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useFilters } from "@/hooks/filters/filters";
-import { Edit, MoreHorizontal } from "lucide-react";
+import { Edit, FilterXIcon, MoreHorizontal } from "lucide-react";
 import { MoonLoader } from "react-spinners";
 import { PROFESSOR_REQUESTS_LABEL } from "../../../../utils/consts/requests-consts";
 import { useNavigate } from "@tanstack/react-router";
 import type { TProfessorRequestsAdminFilters } from "@/entities/professor-requests-admin-filter";
 import { useFetchProfessorAdminRequest } from "@/hooks/requests/use-fetch-professor-request-admin";
 import type { TProfessorRequestAdminResponse } from "@/entities/professor-request-admin-response";
+import { Input } from "@/components/ui/input";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { ProfessorRequestsType } from "@/utils/enums/requests-enum";
+import React, { type ChangeEvent, useState } from "react";
+import { useDebounce } from "@/hooks";
+import { Button } from "@/components/ui/button";
+
+const PLACE_HOLDER_TRANSLATE_TEXT = {
+  ["name"]: "Nome",
+  ["email"]: "Email",
+} as const;
+
+type FilterKey = keyof typeof PLACE_HOLDER_TRANSLATE_TEXT;
 
 export default function ProfessorRequestsTable() {
   const navigate = useNavigate();
-  const { filters, setFilter } = useFilters<TProfessorRequestsAdminFilters>({
+  const [selectedFilter, setSelectedFilter] = useState<FilterKey>("name");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const {
+    filters,
+    setFilter,
+    reset: resetFilters,
+  } = useFilters<TProfessorRequestsAdminFilters>({
     key: "get-professor-requests-admin",
     initialFilters: {
       limit: 10,
       page: 0,
+      status: [],
     },
   });
   const { items, meta, isLoading } = useFetchProfessorAdminRequest({ filters });
@@ -28,6 +50,28 @@ export default function ProfessorRequestsTable() {
   const handleViewProfessorRequestClick = (id: string) => {
     void navigate({ to: `/admin/requests/professor/${id}` });
   };
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 200);
+
+  const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    setSearchTerm(value);
+  };
+
+  React.useEffect(() => {
+    if (filters[selectedFilter] !== debouncedSearchTerm) {
+      setFilter(selectedFilter, debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm, selectedFilter, setFilter, filters]);
+
+  const onChangeFilter = (value: FilterKey) => {
+    if (!value) return;
+    setFilter(selectedFilter, undefined);
+    setSelectedFilter(value);
+  };
+
+  const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
 
   const columns = [
     {
@@ -74,8 +118,63 @@ export default function ProfessorRequestsTable() {
     },
   ];
 
+  const selectOptions = Object.values(ProfessorRequestsType).map((request) => {
+    return { label: PROFESSOR_REQUESTS_LABEL[request], value: request };
+  });
+
+  const handleChangeStatusFilter = (status: string[]) => {
+    setFilter("status", status as ProfessorRequestsType[]);
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setSelectedFilter("name");
+    resetFilters();
+  };
+
   return (
     <div className="flex flex-col w-full h-full gap-6 overflow-hidden">
+      <div className="flex w-full justify-between">
+        <div className="w-full flex gap-4 items-center lex-shrink-0">
+          <Input
+            value={searchTerm}
+            className="w-1/3 h-12"
+            placeholder={searchInputPlaceholder}
+            onChange={onChangeSearch}
+          />
+          <ToggleGroup
+            type="single"
+            value={selectedFilter}
+            onValueChange={onChangeFilter}
+            className="gap-2 w-1/2"
+          >
+            <ToggleGroupItem
+              className="border-1 h-12 !rounded-full !w-auto data-[state=on]:bg-contrast-green data-[state=on]:text-white"
+              value="name"
+            >
+              Nome
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              className="border-1 h-12 !rounded-full !w-auto data-[state=on]:bg-contrast-green data-[state=on]:text-white"
+              value="email"
+            >
+              Email
+            </ToggleGroupItem>
+            <MultiSelect
+              onChange={handleChangeStatusFilter}
+              value={(filters.status as string[]) ?? []}
+              options={selectOptions}
+            />
+          </ToggleGroup>
+        </div>
+        <Button
+          onClick={handleClearFilters}
+          variant="outline"
+          className="w-12 h-12 rounded-full bg-red-500"
+        >
+          <FilterXIcon className="size-6 text-white" />
+        </Button>
+      </div>
       <div className="flex-1 relative overflow-auto rounded-md border">
         {isLoading && (
           <div className="absolute inset-0 flex justify-center items-center rounded-lg z-10">

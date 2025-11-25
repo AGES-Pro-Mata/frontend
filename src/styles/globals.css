@@ -106,6 +106,10 @@ code {
   }
 }
 
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
+}
+
 /* Força comportamento específico para rotas admin */
 .admin-route {
   height: 100vh !important;

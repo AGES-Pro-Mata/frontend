@@ -27,46 +27,46 @@ export interface CreateExperiencePayload {
 
 export async function createExperience(payload: CreateExperiencePayload) {
   const formData = new FormData();
-  
-  formData.append('experienceName', payload.experienceName);
-  formData.append('experienceDescription', payload.experienceDescription);
-  formData.append('experienceCategory', payload.experienceCategory);
-  formData.append('experienceCapacity', payload.experienceCapacity.toString());
-  formData.append('image', payload.experienceImage);
-  
+
+  formData.append("experienceName", payload.experienceName);
+  formData.append("experienceDescription", payload.experienceDescription);
+  formData.append("experienceCategory", payload.experienceCategory);
+  formData.append("experienceCapacity", payload.experienceCapacity.toString());
+  formData.append("image", payload.experienceImage);
+
   if (payload.experienceStartDate) {
-    formData.append('experienceStartDate', payload.experienceStartDate.toISOString());
-  }
-  
-  if (payload.experienceEndDate) {
-    formData.append('experienceEndDate', payload.experienceEndDate.toISOString());
-  }
-  
-  if (payload.experiencePrice !== undefined) {
-    formData.append('experiencePrice', payload.experiencePrice.toString());
-  }
-  
-  if (payload.experienceWeekDays && payload.experienceWeekDays.length > 0) {
-    payload.experienceWeekDays.forEach((day) => {
-      formData.append('experienceWeekDays', day);
-    });
-  }
-  
-  if (payload.trailDurationMinutes !== undefined) {
-    formData.append('trailDurationMinutes', payload.trailDurationMinutes.toString());
-  }
-  
-  if (payload.trailDifficulty) {
-    formData.append('trailDifficulty', payload.trailDifficulty);
-  }
-  
-  if (payload.trailLength) {
-    formData.append('trailLength', payload.trailLength);
+    formData.append("experienceStartDate", payload.experienceStartDate.toISOString());
   }
 
-  return await api.post('/experience', formData, {
+  if (payload.experienceEndDate) {
+    formData.append("experienceEndDate", payload.experienceEndDate.toISOString());
+  }
+
+  if (payload.experiencePrice !== undefined) {
+    formData.append("experiencePrice", payload.experiencePrice.toString());
+  }
+
+  if (payload.experienceWeekDays && payload.experienceWeekDays.length > 0) {
+    payload.experienceWeekDays.forEach((day) => {
+      formData.append("experienceWeekDays", day);
+    });
+  }
+
+  if (payload.trailDurationMinutes !== undefined) {
+    formData.append("trailDurationMinutes", payload.trailDurationMinutes.toString());
+  }
+
+  if (payload.trailDifficulty) {
+    formData.append("trailDifficulty", payload.trailDifficulty);
+  }
+
+  if (payload.trailLength) {
+    formData.append("trailLength", payload.trailLength);
+  }
+
+  return await api.post("/experience", formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
+      "Content-Type": "multipart/form-data",
     },
   });
 }
@@ -81,15 +81,10 @@ export interface SearchExperienceParams {
   limit?: number;
 }
 
-export async function getExperiences(
-  params: SearchExperienceParams
-): Promise<Experience[]> {
-  const res = await api.get<ExperienceApiResponse[]>(
-    `${BACKEND_URL}/experiences/search`,
-    {
-      params,
-    }
-  );
+export async function getExperiences(params: SearchExperienceParams): Promise<Experience[]> {
+  const res = await api.get<ExperienceApiResponse[]>(`${BACKEND_URL}/experiences/search`, {
+    params,
+  });
 
   return res.data.map(mapExperienceApiResponseToDTO);
 }
@@ -102,14 +97,21 @@ export interface FilterExperiencesParams {
 }
 
 export async function getExperiencesByFilter(
-  params: FilterExperiencesParams & { page?: number; limit?: number }
+  params: FilterExperiencesParams & { page?: number; limit?: number },
 ): Promise<TApiPaginationResult<Experience>> {
+  // Ensure page and limit are always sent
+  const queryParams = {
+    ...params,
+    page: params.page ?? 0,
+    limit: params.limit ?? 12,
+  };
+
   const res = await api.get<
     {
       items: ExperienceDTO[];
     } & { page: number; limit: number; total: number }
   >(`/experience/search`, {
-    params,
+    params: queryParams,
   });
 
   return {
@@ -143,54 +145,56 @@ export interface UpdateExperiencePayload {
 
 export async function updateExperience(experienceId: string, payload: UpdateExperiencePayload) {
   const formData = new FormData();
-  
-  formData.append('experienceName', payload.experienceName);
-  formData.append('experienceDescription', payload.experienceDescription);
-  formData.append('experienceCategory', payload.experienceCategory);
-  formData.append('experienceCapacity', payload.experienceCapacity);
-  formData.append('experiencePrice', payload.experiencePrice);
-  
+
+  formData.append("experienceName", payload.experienceName);
+  formData.append("experienceDescription", payload.experienceDescription);
+  formData.append("experienceCategory", payload.experienceCategory);
+  formData.append("experienceCapacity", payload.experienceCapacity);
+  formData.append("experiencePrice", payload.experiencePrice);
+
   if (payload.experienceImage instanceof File) {
-    formData.append('image', payload.experienceImage);
+    formData.append("image", payload.experienceImage);
   }
-  
+
   if (payload.experienceStartDate) {
-    const startDate = payload.experienceStartDate instanceof Date 
-      ? payload.experienceStartDate.toISOString() 
-      : payload.experienceStartDate;
+    const startDate =
+      payload.experienceStartDate instanceof Date
+        ? payload.experienceStartDate.toISOString()
+        : payload.experienceStartDate;
 
-    formData.append('experienceStartDate', startDate);
+    formData.append("experienceStartDate", startDate);
   }
-  
+
   if (payload.experienceEndDate) {
-    const endDate = payload.experienceEndDate instanceof Date 
-      ? payload.experienceEndDate.toISOString() 
-      : payload.experienceEndDate;
+    const endDate =
+      payload.experienceEndDate instanceof Date
+        ? payload.experienceEndDate.toISOString()
+        : payload.experienceEndDate;
 
-    formData.append('experienceEndDate', endDate);
+    formData.append("experienceEndDate", endDate);
   }
-  
+
   if (payload.experienceWeekDays && payload.experienceWeekDays.length > 0) {
     payload.experienceWeekDays.forEach((day) => {
-      formData.append('experienceWeekDays', day);
+      formData.append("experienceWeekDays", day);
     });
   }
-  
+
   if (payload.trailDurationMinutes) {
-    formData.append('trailDurationMinutes', payload.trailDurationMinutes);
+    formData.append("trailDurationMinutes", payload.trailDurationMinutes);
   }
-  
+
   if (payload.trailDifficulty) {
-    formData.append('trailDifficulty', payload.trailDifficulty);
+    formData.append("trailDifficulty", payload.trailDifficulty);
   }
-  
+
   if (payload.trailLength) {
-    formData.append('trailLength', payload.trailLength);
+    formData.append("trailLength", payload.trailLength);
   }
 
   return await api.patch(`/experience/${experienceId}`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
+      "Content-Type": "multipart/form-data",
     },
   });
 }

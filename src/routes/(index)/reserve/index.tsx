@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router";
 import { CardExperience } from "@/components/card/experienceCard";
 import { ExperienceFilter } from "@/components/filter/ExperienceFilter";
 import {
@@ -9,7 +9,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFilters } from "@/hooks/filters/filters";
 import type { TExperienceFilters } from "@/entities/experience-filter";
 import { ExperienceCategory } from "@/types/experience";
@@ -17,9 +17,8 @@ import { MoonLoader } from "react-spinners";
 import { t } from "i18next";
 import { useGetExperiences } from "@/hooks";
 
-function ReservePage() {
+export function ReservePage() {
   const PAGE_LIMIT = 12;
-  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const { filters, setFilter } = useFilters<TExperienceFilters>({
     key: "get-experiences",
@@ -33,32 +32,25 @@ function ReservePage() {
     },
   });
 
-  useEffect(() => {
-    const pageFromFilters = typeof filters.page === "number" ? filters.page : 0;
-
-    setCurrentPage(Math.max(1, pageFromFilters + 1));
-  }, [filters.page]);
-
-  const {
-    data: experiencesData,
-    isLoading,
-    isError,
-  } = useGetExperiences(filters, Math.max(0, currentPage - 1));
+  const { data: experiencesData, isLoading, isError } = useGetExperiences(filters);
 
   const fetchedExperiences = experiencesData?.items ?? [];
   const currentExperiences = fetchedExperiences.filter((experience) => experience.active !== false);
   const totalItems = experiencesData?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_LIMIT));
 
+  // Derive currentPage from filters.page (filters.page is 0-indexed, currentPage is 1-indexed)
+  const currentPage = Math.max(1, (filters.page ?? 0) + 1);
+
   const handlePageChange = (page: number): void => {
-    setCurrentPage(page);
     setFilter("page", page - 1);
   };
 
-  if (currentPage > totalPages && totalPages > 0) {
-    setCurrentPage(1);
-    setFilter("page", 0);
-  }
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setFilter("page", 0);
+    }
+  }, [currentPage, totalPages, setFilter]);
 
   return (
     <div className="min-h-screen">

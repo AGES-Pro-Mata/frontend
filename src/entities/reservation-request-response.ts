@@ -8,6 +8,7 @@ export const EventsReservationRequestAdminResponse = z.object({
   createdAt: z.string(),
   isSender: z.boolean(),
   isRequester: z.boolean(),
+  fileUrl: z.string().optional().nullable(),
   name: z.string().max(100),
   email: z.string().optional(),
 });

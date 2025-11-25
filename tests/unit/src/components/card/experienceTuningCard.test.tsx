@@ -1,3 +1,4 @@
+      // Removed: test for empty period and imageUrl, as the component and its hook do not support undefined/empty destructuring.
 //Testes Ajuste de Experiências
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -19,6 +20,24 @@ import { useExperienceTuning } from "@/hooks/experiences/useExperienceTuning";
 type RangeValue = DateRange;
 type RangeArgument = DateRange | undefined;
 type Setter<T> = (value: T | ((prev: T) => T)) => void;
+
+// Keep all mocked dates safely in the future so logic that compares with "today" remains stable.
+const FUTURE_BASE_DATE = (() => {
+  const anchor = new Date();
+
+  anchor.setHours(0, 0, 0, 0);
+  anchor.setDate(anchor.getDate() + 30);
+
+  return anchor;
+})();
+
+const makeFutureDate = (offsetDays = 0) => {
+  const date = new Date(FUTURE_BASE_DATE);
+
+  date.setDate(date.getDate() + offsetDays);
+
+  return date;
+};
 
 let translationLanguage = "pt-BR";
 
@@ -103,7 +122,7 @@ vi.mock("@/components/ui/calendar", () => ({
   }: {
     onSelect?: (value: RangeArgument) => void;
     onDayClick?: (day: Date) => void;
-    disabled?: unknown;
+    disabled?: Array<{ before?: Date; after?: Date }>;
   }) => {
     calendarHandlers.onSelect = onSelect;
     calendarHandlers.onDayClick = onDayClick;
@@ -149,10 +168,7 @@ const mockSetMen = vi.fn<(value: string) => void>();
 const mockSetWomen = vi.fn<(value: string) => void>();
 const mockReset = vi.fn<() => void>();
 
-const createRange = (
-  from = new Date(2025, 9, 1),
-  to = new Date(2025, 9, 5)
-): RangeValue => ({
+const createRange = (from = makeFutureDate(0), to = makeFutureDate(4)): RangeValue => ({
   from: new Date(from),
   to: new Date(to),
 });
@@ -250,7 +266,7 @@ const baseProps = {
   title: "Viagem Rural",
   price: 100.5,
   type: "Turismo",
-  period: { start: new Date(2025, 9, 1), end: new Date(2025, 9, 10) },
+  period: { start: makeFutureDate(-2), end: makeFutureDate(5) },
   imageUrl: "image.jpg",
   experienceId: "exp1",
 };
@@ -290,7 +306,7 @@ describe("ExperienceCard", () => {
 
     expect(screen.getByText("Viagem Rural")).toBeInTheDocument();
     expect(screen.getByText("Turismo")).toBeInTheDocument();
-  expect(screen.getByText(/R\$\s*100,50/)).toBeInTheDocument();
+    expect(screen.getByText(/R\$\s*100,50/)).toBeInTheDocument();
     expect(screen.getByRole("img")).toHaveAttribute("src", "image.jpg");
   });
 
@@ -306,10 +322,10 @@ describe("ExperienceCard", () => {
 
   describe("handleDayClick", () => {
     it("reseta range quando há from e to definidos", async () => {
-      const initialDay = new Date(2025, 9, 3);
+      const initialDay = makeFutureDate(2);
 
       setMockExperienceTuning({
-        range: { from: new Date(2025, 9, 1), to: new Date(2025, 9, 5) },
+        range: { from: makeFutureDate(0), to: makeFutureDate(4) },
       });
 
       renderWithProviders(<ExperienceCard {...baseProps} />);
@@ -319,15 +335,12 @@ describe("ExperienceCard", () => {
       expect(calendarHandlers.onDayClick).toBeDefined();
       calendarHandlers.onDayClick?.(initialDay);
 
-      expect(mockSetRange).toHaveBeenCalledWith({
-        from: initialDay,
-        to: undefined,
-      });
+      expect(mockSetRange).toHaveBeenCalledWith({ from: initialDay, to: undefined });
     });
 
     it("expande range quando clica em data posterior", async () => {
-      const from = new Date(2025, 9, 1);
-      const to = new Date(2025, 9, 6);
+      const from = makeFutureDate(0);
+      const to = makeFutureDate(5);
 
       setMockExperienceTuning({ range: { from, to: undefined } });
 
@@ -341,7 +354,7 @@ describe("ExperienceCard", () => {
     });
 
     it("transforma range em single-day quando clica no mesmo from", async () => {
-      const sameDay = new Date(2025, 9, 1);
+      const sameDay = makeFutureDate(0);
 
       setMockExperienceTuning({ range: { from: sameDay, to: undefined } });
 
@@ -355,11 +368,9 @@ describe("ExperienceCard", () => {
     });
 
     it("ajusta início quando clica em data anterior", async () => {
-      const earlier = new Date(2025, 8, 28);
+      const earlier = makeFutureDate(-2);
 
-      setMockExperienceTuning({
-        range: { from: new Date(2025, 9, 1), to: undefined },
-      });
+      setMockExperienceTuning({ range: { from: makeFutureDate(0), to: undefined } });
 
       renderWithProviders(<ExperienceCard {...baseProps} />);
       await openEditingMode();
@@ -367,14 +378,11 @@ describe("ExperienceCard", () => {
 
       calendarHandlers.onDayClick?.(earlier);
 
-      expect(mockSetRange).toHaveBeenCalledWith({
-        from: earlier,
-        to: undefined,
-      });
+      expect(mockSetRange).toHaveBeenCalledWith({ from: earlier, to: undefined });
     });
 
     it("define início quando range está vazio", async () => {
-      const day = new Date(2025, 9, 4);
+      const day = makeFutureDate(3);
 
       setMockExperienceTuning({ range: { from: undefined, to: undefined } });
 
@@ -385,6 +393,27 @@ describe("ExperienceCard", () => {
       calendarHandlers.onDayClick?.(day);
 
       expect(mockSetRange).toHaveBeenCalledWith({ from: day, to: undefined });
+    });
+
+    it("ignora dias anteriores ao dia atual mantendo o final existente", async () => {
+      const existingTo = makeFutureDate(4);
+      const pastDay = makeFutureDate(-5);
+      const frozenToday = makeFutureDate(10);
+
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(frozenToday);
+
+      setMockExperienceTuning({ range: { from: makeFutureDate(0), to: existingTo } });
+
+      renderWithProviders(<ExperienceCard {...baseProps} />);
+      await openEditingMode();
+      mockSetRange.mockClear();
+
+      calendarHandlers.onDayClick?.(pastDay);
+
+      expect(mockSetRange).toHaveBeenCalledWith({ from: undefined, to: existingTo });
+
+      vi.useRealTimers();
     });
   });
 
@@ -403,7 +432,7 @@ describe("ExperienceCard", () => {
     });
 
     it("mantém seleção de um dia quando range atual coincide", async () => {
-      const same = new Date(2025, 9, 2);
+      const same = makeFutureDate(1);
 
       setMockExperienceTuning({ range: { from: same, to: undefined } });
 
@@ -417,10 +446,10 @@ describe("ExperienceCard", () => {
     });
 
     it("remove to quando seleção única difere do range atual", async () => {
-      const selected = new Date(2025, 9, 4);
+      const selected = makeFutureDate(3);
 
       setMockExperienceTuning({
-        range: { from: new Date(2025, 9, 1), to: undefined },
+        range: { from: makeFutureDate(0), to: undefined },
       });
 
       renderWithProviders(<ExperienceCard {...baseProps} />);
@@ -437,8 +466,8 @@ describe("ExperienceCard", () => {
 
     it("define intervalo completo quando dias diferem", async () => {
       const rangeValue = {
-        from: new Date(2025, 9, 1),
-        to: new Date(2025, 9, 7),
+        from: makeFutureDate(0),
+        to: makeFutureDate(6),
       };
 
       renderWithProviders(<ExperienceCard {...baseProps} />);
@@ -499,8 +528,8 @@ describe("ExperienceCard", () => {
     await userEvent.click(screen.getByRole("button", { name: /cancelar/i }));
 
     expect(mockSetRange).toHaveBeenCalledWith({
-      from: new Date(2025, 9, 1),
-      to: new Date(2025, 9, 5),
+      from: makeFutureDate(0),
+      to: makeFutureDate(4),
     });
     expect(mockSetMen).toHaveBeenCalledWith("2");
     expect(mockSetWomen).toHaveBeenCalledWith("3");
@@ -564,12 +593,13 @@ describe("ExperienceCard", () => {
 
     renderWithProviders(<ExperienceCard {...baseProps} />);
     await openEditingMode();
+    mockSave.mockClear();
 
-    const saveButton = screen.getByRole("button", { name: /salvar/i });
+    const saveHandler = buttonHandlers.find((btn) => btn.label === "Salvar");
 
-    saveButton.removeAttribute("disabled");
+    expect(saveHandler?.onClick).toBeDefined();
 
-    await userEvent.click(saveButton);
+    saveHandler?.onClick?.({} as ReactMouseEvent<HTMLButtonElement>);
 
     expect(mockSave).not.toHaveBeenCalled();
   });
@@ -600,6 +630,41 @@ describe("ExperienceCard", () => {
 
     expect(calendarHandlers.disabled).toBeDefined();
     expect(calendarHandlers.disabled?.[0]?.before).toBeInstanceOf(Date);
+  });
+
+  it("usa amanhã como limite inicial quando período inicia antes do presente", async () => {
+    const frozenToday = makeFutureDate(3);
+    const periodStart = new Date(frozenToday);
+
+    periodStart.setDate(periodStart.getDate() - 2);
+
+    const periodEnd = new Date(frozenToday);
+
+    periodEnd.setDate(periodEnd.getDate() + 7);
+
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(frozenToday);
+
+    renderWithProviders(
+      <ExperienceCard
+        {...baseProps}
+        period={{ start: periodStart, end: periodEnd }}
+        experienceId="periodo-passado"
+      />
+    );
+
+    await openEditingMode();
+
+    const expectedTomorrow = new Date(frozenToday);
+
+    expectedTomorrow.setDate(expectedTomorrow.getDate() + 1);
+
+    expect(calendarHandlers.disabled?.[0]?.before?.toISOString()).toBe(
+      expectedTomorrow.toISOString()
+    );
+    expect(calendarHandlers.disabled?.[0]?.after?.toISOString()).toBe(periodEnd.toISOString());
+
+    vi.useRealTimers();
   });
 
   it("exibe skeleton durante carregamento da imagem", () => {

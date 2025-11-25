@@ -27,10 +27,10 @@ describe("Pagination", () => {
     renderWithProviders(
       <PaginationContent data-testid="content">
         <PaginationItem data-testid="item-1">
-          <PaginationLink data-testid="link-1" href="#" />
+          <PaginationLink data-testid="link-1" />
         </PaginationItem>
         <PaginationItem data-testid="item-2">
-          <PaginationLink data-testid="link-2" href="#" isActive />
+          <PaginationLink data-testid="link-2" isActive />
         </PaginationItem>
       </PaginationContent>
     );

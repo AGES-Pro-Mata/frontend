@@ -88,8 +88,8 @@ function ReserveParticipantInputs({
 
   const genderOptions = useMemo(
     () => ({
-      FEMALE: t("reserveFlow.peopleStep.genderOptions.female"),
       MALE: t("reserveFlow.peopleStep.genderOptions.male"),
+      FEMALE: t("reserveFlow.peopleStep.genderOptions.female"),
       OTHER: t("reserveFlow.peopleStep.genderOptions.other"),
     }),
     [t],
@@ -184,7 +184,7 @@ function ReserveParticipantInputs({
                 label={t("reserveFlow.peopleStep.fields.phone.label")}
                 required
                 placeholder={t("reserveFlow.peopleStep.fields.phone.placeholder")}
-                value={field.value}
+                value={maskPhone(field.value || "")}
                 onChange={(event) => {
                   const digits = digitsOnly(event.target.value).slice(0, 11);
                   const masked = maskPhone(digits);

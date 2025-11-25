@@ -148,6 +148,14 @@ describe("CardExperience", () => {
     expect(container.querySelector(".animate-pulse")).not.toBeNull();
   });
 
+  it("imagem não carregada nem carregando (opacity-0)", () => {
+    loadState.data = false;
+    loadState.isLoading = false;
+    const { container } = renderWithClient(<CardExperience experience={baseExperience} />);
+    const img = container.querySelector("img");
+    expect(img).toHaveClass("opacity-0");
+  });
+
   it("categoria CUSTOM usa fallback visível", () => {
     renderWithClient(
       <CardExperience experience={withUnsafeCategory("CUSTOM")} />,
@@ -328,6 +336,349 @@ describe("CardExperience", () => {
 
     renderWithClient(<CardEN experience={{ ...baseExperience }} />);
     expect(screen.getByText(/Trails/i)).toBeInTheDocument();
+  });
+
+  it("addToCartLabel fallback for unknown language", async () => {
+    vi.resetModules();
+    vi.doMock("react-i18next", () => ({
+      useTranslation: () => ({
+        t: (k: string) => k,
+        i18n: { language: "fr-FR" },
+      }),
+    }));
+    vi.doMock("@/hooks/shared/useLoadImage", () => ({
+      useLoadImage: (): LoadState => ({ data: true, isLoading: false }),
+    }));
+    vi.doMock("@/utils/resolveImageUrl", () => ({
+      resolveImageUrl: (url?: string | null) => url ?? "/placeholder.jpg",
+    }));
+    const addItemMockLocal = vi.fn();
+    const openCartMockLocal = vi.fn();
+
+    vi.doMock("@/store/cartStore", () => {
+      const useCartStore = (selector: CartStoreSelector<CartStoreSlice>) =>
+        selector({ addItem: addItemMockLocal, openCart: openCartMockLocal });
+
+      return { useCartStore };
+    });
+    vi.doMock("@/components/button/defaultButton", () => ({
+      Button: ({ label, onClick }: { label: string; onClick?: () => void }) => (
+        <button data-testid="add-to-cart" onClick={onClick}>
+          {label}
+        </button>
+      ),
+    }));
+    vi.doMock("@/components/typography", () => ({
+      Typography: ({ children }: any) => <span>{children}</span>,
+    }));
+
+    const { CardExperience: CardFallbackFR } = await import("@/components/card/experienceCard");
+
+    renderWithClient(<CardFallbackFR experience={{ ...baseExperience }} />);
+    expect(screen.getByTestId("add-to-cart")).toHaveTextContent("Add to cart");
+  });
+
+  it("uses category fallback when translateExperienceCategory returns a key-like string", async () => {
+    vi.resetModules();
+    vi.doMock("react-i18next", () => ({
+      useTranslation: () => ({
+        t: (k: string) => k,
+        i18n: { language: "pt-BR" },
+      }),
+    }));
+
+    // force translateExperienceCategory to return a key-like value so fallback map is used
+    vi.doMock("@/utils/translateExperienceCategory", () => ({
+      translateExperienceCategory: () => "Common.trail",
+    }));
+
+    vi.doMock("@/hooks/shared/useLoadImage", () => ({
+      useLoadImage: (): LoadState => ({ data: true, isLoading: false }),
+    }));
+    vi.doMock("@/utils/resolveImageUrl", () => ({
+      resolveImageUrl: (url?: string | null) => url ?? "/placeholder.jpg",
+    }));
+    const addItemMockLocal = vi.fn();
+    const openCartMockLocal = vi.fn();
+
+    vi.doMock("@/store/cartStore", () => {
+      const useCartStore = (selector: CartStoreSelector<CartStoreSlice>) =>
+        selector({ addItem: addItemMockLocal, openCart: openCartMockLocal });
+
+      return { useCartStore };
+    });
+    vi.doMock("@/components/button/defaultButton", () => ({
+      Button: ({ label, onClick }: { label: string; onClick?: () => void }) => (
+        <button data-testid="add-to-cart" onClick={onClick}>
+          {label}
+        </button>
+      ),
+    }));
+    vi.doMock("@/components/typography", () => ({
+      Typography: ({ children }: any) => <span>{children}</span>,
+    }));
+
+    const { CardExperience: CardWithTranslatedKey } = await import(
+      "@/components/card/experienceCard"
+    );
+
+    renderWithClient(
+      <CardWithTranslatedKey experience={{ ...baseExperience, category: ExperienceCategoryCard.TRAIL }} />,
+    );
+
+    // since translateExperienceCategory returned 'Common.trail', it should use fallback map for pt-BR
+    expect(screen.getByText(/Trilhas/i)).toBeInTheDocument();
+  });
+
+  it("falls back to en-US when i18n.language is undefined", async () => {
+    vi.resetModules();
+    vi.doMock("react-i18next", () => ({
+      useTranslation: () => ({
+        t: (k: string) => k,
+        i18n: {},
+      }),
+    }));
+
+    vi.doMock("@/hooks/shared/useLoadImage", () => ({
+      useLoadImage: (): LoadState => ({ data: true, isLoading: false }),
+    }));
+    vi.doMock("@/utils/resolveImageUrl", () => ({
+      resolveImageUrl: (url?: string | null) => url ?? "/placeholder.jpg",
+    }));
+    const addItemMockLocal = vi.fn();
+    const openCartMockLocal = vi.fn();
+
+    vi.doMock("@/store/cartStore", () => {
+      const useCartStore = (selector: CartStoreSelector<CartStoreSlice>) =>
+        selector({ addItem: addItemMockLocal, openCart: openCartMockLocal });
+
+      return { useCartStore };
+    });
+    vi.doMock("@/components/button/defaultButton", () => ({
+      Button: ({ label, onClick }: { label: string; onClick?: () => void }) => (
+        <button data-testid="add-to-cart" onClick={onClick}>
+          {label}
+        </button>
+      ),
+    }));
+    vi.doMock("@/components/typography", () => ({
+      Typography: ({ children }: any) => <span>{children}</span>,
+    }));
+
+    const { CardExperience: CardUndefinedLang } = await import(
+      "@/components/card/experienceCard"
+    );
+
+    renderWithClient(<CardUndefinedLang experience={{ ...baseExperience, capacity: 5 }} />);
+
+    // default should behave as en-US for capacity label
+    expect(screen.getByText(/5 people/)).toBeInTheDocument();
+  });
+
+  it("uses translated category when translateExperienceCategory returns safe string", async () => {
+    vi.resetModules();
+    vi.doMock("react-i18next", () => ({
+      useTranslation: () => ({
+        t: (k: string) => k,
+        i18n: { language: "pt-BR" },
+      }),
+    }));
+
+    // force translateExperienceCategory to return a safe translated string
+    vi.doMock("@/utils/translateExperienceCategory", () => ({
+      translateExperienceCategory: () => "EXTRA",
+    }));
+
+    vi.doMock("@/hooks/shared/useLoadImage", () => ({
+      useLoadImage: (): LoadState => ({ data: true, isLoading: false }),
+    }));
+    vi.doMock("@/utils/resolveImageUrl", () => ({
+      resolveImageUrl: (url?: string | null) => url ?? "/placeholder.jpg",
+    }));
+    const addItemMockLocal = vi.fn();
+    const openCartMockLocal = vi.fn();
+
+    vi.doMock("@/store/cartStore", () => {
+      const useCartStore = (selector: CartStoreSelector<CartStoreSlice>) =>
+        selector({ addItem: addItemMockLocal, openCart: openCartMockLocal });
+
+      return { useCartStore };
+    });
+    vi.doMock("@/components/button/defaultButton", () => ({
+      Button: ({ label, onClick }: { label: string; onClick?: () => void }) => (
+        <button data-testid="add-to-cart" onClick={onClick}>
+          {label}
+        </button>
+      ),
+    }));
+    vi.doMock("@/components/typography", () => ({
+      Typography: ({ children }: { children: ReactNode }) => <span>{children}</span>,
+    }));
+
+    const { CardExperience: CardTranslated } = await import(
+      "@/components/card/experienceCard"
+    );
+
+    renderWithClient(<CardTranslated experience={{ ...baseExperience, category: ExperienceCategoryCard.TRAIL }} />);
+
+    // 'EXTRA' should be normalized and displayed as 'Extra'
+    expect(screen.getByText(/Extra/i)).toBeInTheDocument();
+  });
+
+  it("falls back to formatted length and duration when translations are missing", async () => {
+    vi.resetModules();
+    vi.doMock("react-i18next", () => ({
+      useTranslation: () => ({
+        t: (k: string) => k, // return key so component falls back to formatted strings
+        i18n: { language: "en-US" },
+      }),
+    }));
+
+    vi.doMock("@/hooks/shared/useLoadImage", () => ({
+      useLoadImage: (): LoadState => ({ data: true, isLoading: false }),
+    }));
+    vi.doMock("@/utils/resolveImageUrl", () => ({
+      resolveImageUrl: (url?: string | null) => url ?? "/placeholder.jpg",
+    }));
+    const addItemMockLocal = vi.fn();
+    const openCartMockLocal = vi.fn();
+
+    vi.doMock("@/store/cartStore", () => {
+      const useCartStore = (selector: CartStoreSelector<CartStoreSlice>) =>
+        selector({ addItem: addItemMockLocal, openCart: openCartMockLocal });
+
+      return { useCartStore };
+    });
+    vi.doMock("@/components/button/defaultButton", () => ({
+      Button: ({ label, onClick }: { label: string; onClick?: () => void }) => (
+        <button data-testid="add-to-cart" onClick={onClick}>
+          {label}
+        </button>
+      ),
+    }));
+    vi.doMock("@/components/typography", () => ({
+      Typography: ({ children }: { children: ReactNode }) => <span>{children}</span>,
+    }));
+
+    const { CardExperience: CardFallbacks } = await import("@/components/card/experienceCard");
+
+    renderWithClient(
+      <CardFallbacks
+        experience={{ ...baseExperience, trailLength: 3, durationMinutes: 120 }}
+      />,
+    );
+
+    // fallback should render formatted units when translation keys are returned
+    expect(screen.getByText(/3\s?km|3\.0\s?km/i)).toBeInTheDocument();
+    expect(screen.getByText(/2\s?h/i)).toBeInTheDocument();
+  });
+
+  it("shows image with opacity-100 when loaded", async () => {
+    vi.resetModules();
+    vi.doMock("react-i18next", () => ({
+      useTranslation: () => ({
+        t: (k: string) => k,
+        i18n: { language: "pt-BR" },
+      }),
+    }));
+
+    vi.doMock("@/hooks/shared/useLoadImage", () => ({
+      useLoadImage: (): LoadState => ({ data: true, isLoading: false }),
+    }));
+    vi.doMock("@/utils/resolveImageUrl", () => ({
+      resolveImageUrl: (url?: string | null) => url ?? "/placeholder.jpg",
+    }));
+    const addItemMockLocal = vi.fn();
+    const openCartMockLocal = vi.fn();
+
+    vi.doMock("@/store/cartStore", () => {
+      const useCartStore = (selector: CartStoreSelector<CartStoreSlice>) =>
+        selector({ addItem: addItemMockLocal, openCart: openCartMockLocal });
+
+      return { useCartStore };
+    });
+    vi.doMock("@/components/button/defaultButton", () => ({
+      Button: ({ label, onClick }: { label: string; onClick?: () => void }) => (
+        <button data-testid="add-to-cart" onClick={onClick}>
+          {label}
+        </button>
+      ),
+    }));
+    vi.doMock("@/components/typography", () => ({
+      Typography: ({ children }: { children: ReactNode }) => <span>{children}</span>,
+    }));
+
+    const { CardExperience: CardImageLoaded } = await import("@/components/card/experienceCard");
+
+    const { container } = renderWithClient(<CardImageLoaded experience={baseExperience} />);
+    const img = container.querySelector("img");
+    expect(img).toHaveClass("opacity-100");
+  });
+
+  it("trail layout uses two columns when many labels are visible", () => {
+    // reuse existing default mocks at top of file
+    renderWithClient(<CardExperience experience={baseExperience} />);
+
+    const grid = document.querySelector(
+      ".grid.w-full.grid-cols-1.gap-x-3.gap-y-2.md\\:grid-cols-2",
+    );
+
+    expect(grid).not.toBeNull();
+  });
+
+  it("event layout forces stacked labels (md:grid-cols-1)", () => {
+    renderWithClient(
+      <CardExperience
+        experience={{ ...baseExperience, category: ExperienceCategoryCard.EVENT, trailLength: null, durationMinutes: null, trailDifficulty: null, startDate: "2024-06-01" }}
+      />,
+    );
+
+    const grid = document.querySelector(
+      ".grid.w-full.grid-cols-1.gap-x-3.gap-y-2.md\\:grid-cols-1",
+    );
+
+    expect(grid).not.toBeNull();
+  });
+
+  it("falls back to '0 people' when capacity is zero and translation missing (en-US)", async () => {
+    vi.resetModules();
+    vi.doMock("react-i18next", () => ({
+      useTranslation: () => ({
+        t: (k: string) => k,
+        i18n: { language: "en-US" },
+      }),
+    }));
+    vi.doMock("@/hooks/shared/useLoadImage", () => ({
+      useLoadImage: (): LoadState => ({ data: true, isLoading: false }),
+    }));
+    vi.doMock("@/utils/resolveImageUrl", () => ({
+      resolveImageUrl: (url?: string | null) => url ?? "/placeholder.jpg",
+    }));
+    const addItemMockLocal = vi.fn();
+    const openCartMockLocal = vi.fn();
+
+    vi.doMock("@/store/cartStore", () => {
+      const useCartStore = (selector: CartStoreSelector<CartStoreSlice>) =>
+        selector({ addItem: addItemMockLocal, openCart: openCartMockLocal });
+
+      return { useCartStore };
+    });
+    vi.doMock("@/components/button/defaultButton", () => ({
+      Button: ({ label, onClick }: { label: string; onClick?: () => void }) => (
+        <button data-testid="add-to-cart" onClick={onClick}>
+          {label}
+        </button>
+      ),
+    }));
+    vi.doMock("@/components/typography", () => ({
+      Typography: ({ children }: { children: ReactNode }) => <span>{children}</span>,
+    }));
+
+    const { CardExperience: CardZero } = await import("@/components/card/experienceCard");
+
+    renderWithClient(<CardZero experience={{ ...baseExperience, capacity: 0 }} />);
+
+    expect(screen.getByText(/0 people/)).toBeInTheDocument();
   });
 });
 
@@ -588,5 +939,17 @@ describe("MSW handlers", () => {
 
     expect(response.status).toBe(401);
     expect(payload).toEqual({ message: "Invalid credentials" });
+  });
+
+  it("returns a mocked professor request by id", async () => {
+    const resolveProfessor = getResolver<(args: { params: Record<string, string> }) => Response>(
+      handlers[3],
+    );
+
+    const response = await resolveProfessor({ params: { id: "prof-42" } } as any);
+    const payload = (await response.json()) as any;
+
+    expect(response.status).toBe(200);
+    expect(payload).toMatchObject({ id: "prof-42", fileUrl: expect.any(String) });
   });
 });
