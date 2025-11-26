@@ -112,7 +112,7 @@ export default function ProfessorRequestsTable() {
                 onClick={() => handleViewProfessorRequestClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
-                {t("requests.admin.actions.view")}
+                {t("requests.admin.view")}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>
             </DropdownMenuContent>
