@@ -1,5 +1,5 @@
 import { ProfessorRequestsType, RequestsType } from "@/utils/enums/requests-enum";
-import { Check, DollarSign, FileEdit, type LucideIcon, Users, X, XCircle } from "lucide-react";
+import { Check, DollarSign, FileCheck, FileEdit, type LucideIcon, Users, X, XCircle } from "lucide-react";
 export const REQUESTS_LABEL = {
   [RequestsType.APPROVED]: "requests.status.APPROVED",
   [RequestsType.CANCELED]: "requests.status.CANCELED",
@@ -83,6 +83,7 @@ export const REQUESTS_ICONS = {
   [RequestsType.PAYMENT_REQUESTED]: DollarSign,
   [RequestsType.PAYMENT_SENT]: DollarSign,
   [RequestsType.PAYMENT_REJECTED]: XCircle,
+  [RequestsType.PAYMENT_APPROVED]: FileCheck,
   [RequestsType.REJECTED]: X,
 } as Record<string | number, LucideIcon>;
 
