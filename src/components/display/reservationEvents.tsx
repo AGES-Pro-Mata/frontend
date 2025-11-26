@@ -15,6 +15,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { RequestsType } from "@/utils/enums/requests-enum";
 import { Button } from "../button/defaultButton";
+import { useTranslation } from "react-i18next";
 
 import { CreateRequestsRequest } from "@/entities/create-requests-request";
 import type z from "zod";
@@ -29,8 +30,9 @@ import ReceiptPreview from "../dialog/receiptPreview";
 export interface ReservationsLayoutProps {
   reservationGroupId: string;
 }
-//TODO: traduzir com i18n
+
 export function ReservationCard({ event }: { event: TEventsReservationRequestAdminResponse }) {
+  const { t } = useTranslation();
   const [openPdfModal, setOpenPdfModal] = React.useState(false);
   const isSelf = event.isSender;
   const date = dayjs(event.createdAt).format("DD/MM/YYYY");
@@ -53,11 +55,11 @@ export function ReservationCard({ event }: { event: TEventsReservationRequestAdm
           <span className="text-xs text-gray-500 ml-4">{date}</span>
         </div>
 
-        <p className="font-semibold text-lg">{REQUESTS_LABEL[event.status ?? ""]}</p>
+        <p className="font-semibold text-lg">{t(REQUESTS_LABEL[event.status ?? ""])}</p>
         {event.description && <p className="text-sm">{event.description}</p>}
         {event.fileUrl && (
           <Button
-            label="Visualizar Comprovante"
+            label={t("requests.admin.viewReceipt")}
             variant="outline"
             onClick={() => setOpenPdfModal(true)}
           />
@@ -66,7 +68,9 @@ export function ReservationCard({ event }: { event: TEventsReservationRequestAdm
           <div className="text-left text-xs text-gray-500">
             <span>{time}</span>
           </div>
-          {event.isRequester && <span className="text-red-500">{"(Solicitante)"}</span>}
+          {event.isRequester && (
+            <span className="text-red-500">{t("requests.admin.requesterTag")}</span>
+          )}
         </div>
       </div>
       <ReceiptPreview
@@ -103,6 +107,7 @@ export function ReservationEvents({
 }
 
 export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data } = useGetReservationsAdminRequest(reservationGroupId);
   const { mutateAsync, isPending } = useCreateAdminRequest();
@@ -137,14 +142,16 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
   return (
     <div className="rounded-2xl border-[0.5px] border-gray-300 shadow-lg w-full mx-auto">
       <div className="flex flex-row items-center justify-between border-b-[0.5px] border-gray-300 px-6 py-4">
-        <div className="text-xl font-bold text-gray-800">Ações da reserva</div>
+        <div className="text-xl font-bold text-gray-800">
+          {t("requests.admin.reservationHeader")}
+        </div>
         <div>
-          Status:{" "}
+          {t("requests.admin.statusLabel")}:{" "}
           <span className="text-lg font-bold text-gray-800">
-            {REQUESTS_LABEL[data.status ?? ""]}
+            {t(REQUESTS_LABEL[data.status ?? ""])}
           </span>
         </div>
-        <span className="text-sm text-gray-500">Data de criação: {date}</span>
+        <span className="text-sm text-gray-500">{t("requests.admin.createdAt", { date })}</span>
       </div>
 
       <div className="h-[450px] relative">
@@ -174,11 +181,11 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
                         >
                           {data.status === RequestsType.CANCELED_REQUESTED &&
                           action === RequestsType.CANCELED
-                            ? "APROVAR CANCELAMENTO"
+                            ? t("requests.actions.approveCancellation")
                             : data.status === RequestsType.CANCELED_REQUESTED &&
                                 action === RequestsType.CANCEL_REJECTED
-                              ? "REPROVAR CANCELAMENTO"
-                              : REQUESTS_ACTIONS_LABEL[action]}
+                              ? t("requests.actions.rejectCancellation")
+                              : t(REQUESTS_ACTIONS_LABEL[action])}
                         </ToggleGroupItem>
                       ),
                     )}
@@ -198,7 +205,7 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
                       disabled={isPending}
                       onChange={(value) => field.onChange(value)}
                       value={field.value ?? ""}
-                      placeholder="Digite para o usuário"
+                      placeholder={t("requests.admin.inputPlaceholder")}
                       className="flex-grow rounded-md border-gray-300 focus-visible:ring-offset-0 focus-visible:ring-2 focus-visible:ring-green-500 h-12"
                     />
                     <FormMessage />
@@ -207,7 +214,9 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
               />
               <Button
                 className="text-white font-semibold px-4 py-2 rounded-lg h-10 w-24"
-                label={isPending ? <MoonLoader size={22} color="#006324" /> : "ENVIAR"}
+                label={
+                  isPending ? <MoonLoader size={22} color="#006324" /> : t("requests.admin.send")
+                }
                 onClick={() => void handleSubmitForm()}
                 disabled={isPending}
               />

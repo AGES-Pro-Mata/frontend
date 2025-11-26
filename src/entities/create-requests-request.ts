@@ -1,4 +1,5 @@
 import { ProfessorRequestsType, RequestsType } from "@/utils/enums/requests-enum";
+import i18n from "@/i18n";
 import z from "zod";
 
 const validTypes = [
@@ -7,13 +8,12 @@ const validTypes = [
 ] as const;
 
 type AllTypes = RequestsType | ProfessorRequestsType;
-//TODO: traduzir com i18n
 export const CreateRequestsRequest = z.object({
   type: z
     .string()
     .optional()
     .refine((val) => val === undefined || validTypes.includes(val as AllTypes), {
-      message: "Tipo de solicitação inválido.",
+      message: i18n.t("requests.validation.invalidType"),
     }),
   description: z.string().optional().nullable(),
   professorId: z.string().optional().nullable(),

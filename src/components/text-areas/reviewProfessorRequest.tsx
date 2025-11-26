@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { PROFESSOR_REQUESTS_LABEL } from "@/utils/consts/requests-consts";
 import ReceiptPreview from "../dialog/receiptPreview";
 import { MoonLoader } from "react-spinners";
+import { useTranslation } from "react-i18next";
 
 type ProfessorStyle = {
   className: string;
@@ -41,6 +42,7 @@ interface ProfessorApprovalProps {
 }
 
 export default function ProfessorApproval({ professorId }: ProfessorApprovalProps) {
+  const { t } = useTranslation();
   const [openPdfModal, setOpenPdfModal] = useState(false);
   const { data } = useGetProfessorRequest(professorId);
   const { mutateAsync, isPending } = useCreateAdminRequest();
@@ -58,7 +60,7 @@ export default function ProfessorApproval({ professorId }: ProfessorApprovalProp
       await queryClient.refetchQueries({
         queryKey: [GET_PROFESSOR_REQUESTS_QUERY_KEY, professorId],
       });
-      appToast.success("Professor ACEITO com sucesso!");
+      appToast.success(t("requests.admin.professorApproved"));
     });
   };
 
@@ -71,7 +73,7 @@ export default function ProfessorApproval({ professorId }: ProfessorApprovalProp
       await queryClient.refetchQueries({
         queryKey: [GET_PROFESSOR_REQUESTS_QUERY_KEY, professorId],
       });
-      appToast.success("Professor RECUSADO com sucesso!");
+      appToast.success(t("requests.admin.professorRejected"));
     });
   };
 
@@ -91,25 +93,29 @@ export default function ProfessorApproval({ professorId }: ProfessorApprovalProp
           disabled={!canEdit || isPending}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Digite uma observação"
+          placeholder={t("requests.admin.commentPlaceholder")}
           className="min-h-32 resize-none rounded-2xl border border-dark-gray/60 bg-white px-4 py-5 shadow-none focus-visible:ring-0"
         />
         <CardStatus
           icon={icon}
-          label={PROFESSOR_REQUESTS_LABEL[data.type ?? ""]}
+          label={t(PROFESSOR_REQUESTS_LABEL[data.type ?? ""])}
           className={cn("absolute bottom-2 right-2", className)}
         />
       </div>
       {canEdit && (
         <div className="flex gap-4 flex-row">
           <Button
-            label={isPending ? <MoonLoader size={22} color="#000000" /> : "Aprovar"}
+            label={
+              isPending ? <MoonLoader size={22} color="#000000" /> : t("requests.admin.approve")
+            }
             className="flex-1"
             onClick={handleAprove}
             disabled={isPending}
           />
           <Button
-            label={isPending ? <MoonLoader size={22} color="#000000" /> : "Rejeitar"}
+            label={
+              isPending ? <MoonLoader size={22} color="#000000" /> : t("requests.admin.reject")
+            }
             variant="destructive"
             className="flex-1"
             onClick={handleReject}
@@ -117,7 +123,11 @@ export default function ProfessorApproval({ professorId }: ProfessorApprovalProp
           />
         </div>
       )}
-      <Button label={"Visualizar Comprovante"} variant="outline" onClick={handleViewPdf} />
+      <Button
+        label={t("requests.admin.viewProfessorReceipt")}
+        variant="outline"
+        onClick={handleViewPdf}
+      />
       <ReceiptPreview
         src={data.fileUrl ?? ""}
         open={openPdfModal}

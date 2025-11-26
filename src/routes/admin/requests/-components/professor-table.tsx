@@ -20,15 +20,17 @@ import { ProfessorRequestsType } from "@/utils/enums/requests-enum";
 import React, { type ChangeEvent, useState } from "react";
 import { useDebounce } from "@/hooks";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
-  ["name"]: "Nome",
-  ["email"]: "Email",
+  name: "requests.admin.filters.name",
+  email: "requests.admin.filters.email",
 } as const;
 
 type FilterKey = keyof typeof PLACE_HOLDER_TRANSLATE_TEXT;
 
 export default function ProfessorRequestsTable() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState<FilterKey>("name");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -71,26 +73,28 @@ export default function ProfessorRequestsTable() {
     setSelectedFilter(value);
   };
 
-  const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
+  const searchInputPlaceholder = t("requests.admin.filters.searchPlaceholder", {
+    field: t(PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]),
+  });
 
   const columns = [
     {
       accessorKey: "name",
-      header: "Nome",
+      header: t("requests.admin.filters.name"),
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: t("requests.admin.filters.email"),
       enableSorting: true,
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("requests.admin.statusLabel"),
       enableSorting: true,
       cell: ({ row }: { row: { original: TProfessorRequestAdminResponse } }) => {
         const status = row.original.status;
 
-        return PROFESSOR_REQUESTS_LABEL[status ?? ""];
+        return t(PROFESSOR_REQUESTS_LABEL[status ?? ""]);
       },
     },
     {
@@ -108,7 +112,7 @@ export default function ProfessorRequestsTable() {
                 onClick={() => void handleViewProfessorRequestClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
-                {"Visualizar"}
+                {t("requests.admin.actions.view")}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -119,7 +123,7 @@ export default function ProfessorRequestsTable() {
   ];
 
   const selectOptions = Object.values(ProfessorRequestsType).map((request) => {
-    return { label: PROFESSOR_REQUESTS_LABEL[request], value: request };
+    return { label: t(PROFESSOR_REQUESTS_LABEL[request]), value: request };
   });
 
   const handleChangeStatusFilter = (status: string[]) => {

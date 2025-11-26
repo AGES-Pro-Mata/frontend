@@ -25,7 +25,7 @@ export function MyReservationsFilterCompact({
 
   return (
     <div
-      className={`w-full grid grid-cols-4 text-center rounded-full p-0 bg-card-light-light ${className}`}
+      className={`w-full grid grid-cols-2 sm:grid-cols-4 text-center rounded-full bg-card-light-light p-1 overflow-hidden ${className}`}
     >
       {Object.entries(STATUS_MAP).map((e) => {
         const [entryStatus, text] = e;
@@ -33,7 +33,11 @@ export function MyReservationsFilterCompact({
         return (
           <button
             key={entryStatus}
-            className={`rounded-full ${entryStatus === status ? "bg-card-light-active" : ""} py-1 ${entryStatus === status ? "" : "hover:text-black/60 hover:cursor-pointer"}`}
+            className={`w-full h-full flex items-center justify-center rounded-full text-sm transition-colors ${
+              entryStatus === status
+                ? "bg-card-light-active shadow-sm"
+                : "hover:text-black/60 hover:cursor-pointer"
+            }`}
             onClick={() => handleStatusChange(entryStatus as ReservationGroupStatusFilter)}
           >
             {text}

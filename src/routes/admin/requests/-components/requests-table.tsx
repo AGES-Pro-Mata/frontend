@@ -20,15 +20,17 @@ import { useDebounce } from "@/hooks";
 import { RequestsType } from "@/utils/enums/requests-enum";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const PLACE_HOLDER_TRANSLATE_TEXT = {
-  ["experiences"]: "Experiências",
-  ["email"]: "Email",
+  experiences: "requests.admin.filters.experiences",
+  email: "requests.admin.filters.email",
 } as const;
 
 type FilterKey = keyof typeof PLACE_HOLDER_TRANSLATE_TEXT;
 
 export default function ReservationRequestsTable() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState<FilterKey>("experiences");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -71,12 +73,14 @@ export default function ReservationRequestsTable() {
     setSelectedFilter(value);
   };
 
-  const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
+  const searchInputPlaceholder = t("requests.admin.filters.searchPlaceholder", {
+    field: t(PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]),
+  });
 
   const columns = [
     {
       accessorKey: "experiences",
-      header: "Reservas",
+      header: t("reserve"),
       enableSorting: false,
       size: 300,
       cell: ({ row }: { row: { original: TRequestAdminResponse } }) => {
@@ -92,12 +96,12 @@ export default function ReservationRequestsTable() {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("requests.admin.statusLabel"),
       enableSorting: true,
       cell: ({ row }: { row: { original: TRequestAdminResponse } }) => {
         const status = row.original.status;
 
-        return REQUESTS_LABEL[status ?? ""];
+        return t(REQUESTS_LABEL[status ?? ""]);
       },
     },
     {
@@ -126,7 +130,7 @@ export default function ReservationRequestsTable() {
   ];
 
   const selectOptions = Object.values(RequestsType).map((request) => {
-    return { label: REQUESTS_LABEL[request], value: request };
+    return { label: t(REQUESTS_LABEL[request]), value: request };
   });
 
   const handleChangeStatusFilter = (status: string[]) => {
@@ -159,7 +163,7 @@ export default function ReservationRequestsTable() {
               className="border-1 h-12 !rounded-full !w-auto data-[state=on]:bg-contrast-green data-[state=on]:text-white"
               value="experiences"
             >
-              Experiências
+              {t("requests.admin.filters.experiences")}
             </ToggleGroupItem>
             <ToggleGroupItem
               className="border-1 h-12 !rounded-full !w-auto data-[state=on]:bg-contrast-green data-[state=on]:text-white"
