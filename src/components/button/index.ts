@@ -1,3 +1,3 @@
-export { default as CartButton } from "./cartButton";
-export { Button as DefaultButton } from "./defaultButton";
-export { HeaderButton } from "./headerButton";
+export { default as CartButton } from "@/components/button/cartButton";
+export { Button as DefaultButton } from "@/components/button/defaultButton";
+export { HeaderButton } from "@/components/button/headerButton";

@@ -1,1 +1,1 @@
-export { MarkdownTextArea } from "./markdownTextArea";
+export { MarkdownTextArea } from "@/components/text-areas/markdownTextArea";

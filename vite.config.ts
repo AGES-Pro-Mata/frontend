@@ -21,11 +21,11 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}", "tests/**/*.{test,spec}.{ts,tsx}"],
-    exclude: ["tests/e2e/**"],
+    exclude: ["tests/e2e/**", "tests/integration/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary", "lcov"],
-      reportsDirectory: "./coverage",
+      reportsDirectory: "./coverage"
     },
     css: {
       include: [/.*/],

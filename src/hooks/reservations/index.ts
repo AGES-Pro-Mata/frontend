@@ -1,8 +1,8 @@
-export { useMyReservations } from "./useMyReservations";
-export { useAddPeopleMyReservations } from "./useAddPeopleMyReservations";
-export { useCancelReservation } from "./useCancelReservation";
-export { useCreateGroupReservation } from "./useCreateGroupReservation";
-export { useAdminRequests } from "./useAdminRequests";
-export { useViewReservation } from "./useViewReservation";
-export { useSendPaymentProof } from "./useSendPaymentProof";
+export { useMyReservations } from "@/hooks/reservations/useMyReservations";
+export { useAddPeopleMyReservations } from "@/hooks/reservations/useAddPeopleMyReservations";
+export { useCancelReservation } from "@/hooks/reservations/useCancelReservation";
+export { useCreateGroupReservation } from "@/hooks/reservations/useCreateGroupReservation";
+export { useAdminRequests } from "@/hooks/reservations/useAdminRequests";
+export { useViewReservation } from "@/hooks/reservations/useViewReservation";
+export { useSendPaymentProof } from "@/hooks/reservations/useSendPaymentProof";
 

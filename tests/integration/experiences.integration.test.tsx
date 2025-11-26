@@ -42,7 +42,7 @@ const buildResponse = (
     config: {
       headers: {},
     },
-  } as AxiosResponse<ExperiencesResponse>);
+  }) as AxiosResponse<ExperiencesResponse>;
 
 function ExperiencesList(): JSX.Element {
   const { data, isLoading } = useQuery({

@@ -1,1 +1,1 @@
-export { AuthCard } from "./authcard";
+export { AuthCard } from "@/components/auth/authcard";

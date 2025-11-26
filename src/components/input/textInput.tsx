@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { Typography } from "@/components/typography/typography";
+import { Input } from "../ui/input";
+import { cn } from "../../lib/utils";
+import { Typography } from "../typography/typography";
 
-interface textInputProps extends React.ComponentProps<typeof Input> {
+interface textInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: React.ReactNode;
   required?: boolean;
   type?: string;
@@ -56,6 +56,7 @@ export function TextInput({
         aria-invalid={isInvalid}
         required={required}
         value={value}
+        {...Props}
         onChange={(e) => {
           setValue(e.target.value);
           Props.onChange?.(e);
@@ -64,7 +65,6 @@ export function TextInput({
           setTouched(true);
           Props.onBlur?.(e);
         }}
-        {...Props}
       />
     </div>
   );

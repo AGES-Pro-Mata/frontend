@@ -127,6 +127,7 @@ export default function ProfessorRequestsTable() {
   });
 
   const handleChangeStatusFilter = (status: string[]) => {
+    setFilter("page", 0);
     setFilter("status", status as ProfessorRequestsType[]);
   };
 

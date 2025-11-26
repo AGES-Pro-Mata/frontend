@@ -18,6 +18,5 @@ export async function safeApiCall<
     config
   );
 
-  console.warn(error);
   throw error;
 }

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable @typescript-eslint/no-floating-promises */
+ 
 import { Typography } from "@/components/typography/typography";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { type UseFormReturn, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { TextInput } from "@/components/input/textInput";
@@ -12,18 +12,38 @@ import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef } from "react";
+import { type MutableRefObject, useEffect, useRef } from "react";
 import { useLogin } from "@/hooks";
+
+export type LoginFormData = {
+  email: string;
+  password: string;
+};
+
+export const revalidateErrorsOnLanguageChange = (
+  form: Pick<UseFormReturn<LoginFormData>, "formState" | "trigger">,
+  didMountRef: MutableRefObject<boolean>,
+) => {
+  if (!didMountRef.current) {
+    didMountRef.current = true;
+
+    return;
+  }
+  const errorFields = Object.keys(form.formState.errors || {});
+
+  if (errorFields.length > 0) {
+    void form.trigger(errorFields as (keyof LoginFormData)[]);
+  }
+};
 
 export function LoginForm() {
   const { t, i18n } = useTranslation();
   const formSchema = z.object({
-    email: z.email(t("validation.email")),
+    email: z.string().email(t("validation.email")),
     password: z.string().min(1, t("validation.passwordMin")),
   });
 
-  type FormData = z.infer<typeof formSchema>;
-  const form = useForm<FormData>({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
@@ -35,7 +55,7 @@ export function LoginForm() {
 
   const mutation = useLogin();
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     const hashedPassword = await hashPassword(data.password);
 
     mutation.mutate({ ...data, password: hashedPassword });
@@ -44,16 +64,7 @@ export function LoginForm() {
   const didMountLang = useRef(false);
 
   useEffect(() => {
-    if (!didMountLang.current) {
-      didMountLang.current = true;
-
-      return;
-    }
-    const errorFields = Object.keys(form.formState.errors || {});
-
-    if (errorFields.length > 0) {
-      form.trigger(errorFields as (keyof FormData)[]);
-    }
+    revalidateErrorsOnLanguageChange(form, didMountLang);
   }, [form, i18n.language]);
 
   return (

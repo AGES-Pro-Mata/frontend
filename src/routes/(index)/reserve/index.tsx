@@ -17,7 +17,7 @@ import { MoonLoader } from "react-spinners";
 import { t } from "i18next";
 import { useGetExperiences } from "@/hooks";
 
-function ReservePage() {
+export function ReservePage() {
   const PAGE_LIMIT = 12;
 
   const { filters, setFilter } = useFilters<TExperienceFilters>({
@@ -47,7 +47,7 @@ function ReservePage() {
   };
 
   useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
+    if (currentPage > totalPages) {
       setFilter("page", 0);
     }
   }, [currentPage, totalPages, setFilter]);

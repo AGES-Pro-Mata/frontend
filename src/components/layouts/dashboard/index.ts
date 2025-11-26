@@ -1,8 +1,8 @@
 'use client'
-import { ContentLayout } from './content.layout'
-import { FooterLayout } from './footer.layout'
-import { HeaderLayout } from './header.layout'
-import { RootLayout } from './root.layout'
+import { ContentLayout } from '@/components/layouts/dashboard/content.layout'
+import { FooterLayout } from '@/components/layouts/dashboard/footer.layout'
+import { HeaderLayout } from '@/components/layouts/dashboard/header.layout'
+import { RootLayout } from '@/components/layouts/dashboard/root.layout'
 
 const Layout = Object.assign(RootLayout, {
   Header: HeaderLayout,

@@ -12,7 +12,7 @@ type CartStore = {
   toggleCart: () => void;
 };
 
-const noopStorage: Storage = {
+export const noopStorage: Storage = {
   get length() {
     return 0;
   },
@@ -23,6 +23,10 @@ const noopStorage: Storage = {
   setItem: () => undefined,
 };
 
+export function getDefaultStorage(): Storage {
+  return typeof window === "undefined" ? noopStorage : localStorage;
+}
+
 export const useCartStore = create<CartStore>()(
   persist(
     (set) => ({
@@ -30,9 +34,13 @@ export const useCartStore = create<CartStore>()(
       isOpen: false,
       addItem: (experience) =>
         set((state) => {
-          const alreadyExists = state.items.some((item) => item.id === experience.id);
+          const alreadyExists = state.items.some(
+            (item) => item.id === experience.id
+          );
           const items = alreadyExists
-            ? state.items.map((item) => (item.id === experience.id ? experience : item))
+            ? state.items.map((item) =>
+                item.id === experience.id ? experience : item
+              )
             : [...state.items, experience];
 
           return { items };
@@ -48,11 +56,11 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: "promata-cart",
-      storage: createJSONStorage(() => (typeof window === "undefined" ? noopStorage : localStorage)),
+      storage: createJSONStorage(getDefaultStorage),
       partialize: (state) => ({ items: state.items }),
       onRehydrateStorage: () => (state) => {
         state?.closeCart();
       },
-    },
-  ),
+    }
+  )
 );

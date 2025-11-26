@@ -148,11 +148,18 @@ export default function ExperienceCard({
       return;
     }
 
-    if (range?.from && range?.to) {
+    if (!range?.from) {
       setRange({ from: day, to: undefined });
 
       return;
     }
+
+    if (range?.to) {
+      setRange({ from: day, to: undefined });
+
+      return;
+    }
+
     if (range?.from && !range?.to) {
       if (day.getTime() === range.from.getTime()) {
         setRange({ from: day, to: day });
@@ -166,9 +173,6 @@ export default function ExperienceCard({
       }
 
       return;
-    }
-    if (!range?.from) {
-      setRange({ from: day, to: undefined });
     }
   };
 
