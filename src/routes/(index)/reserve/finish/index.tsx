@@ -217,9 +217,9 @@ function ReserveFlow() {
 
         const gender = (person.gender ?? "").toUpperCase();
 
-        if (gender === "FEMALE") {
+        if (gender === "Feminino") {
           acc.female += 1;
-        } else if (["MALE", "OTHER", "NOT_INFORMED"].includes(gender)) {
+        } else if (["Masculino", "Outro", "NOT_INFORMED"].includes(gender)) {
           acc.male += 1;
         }
 
