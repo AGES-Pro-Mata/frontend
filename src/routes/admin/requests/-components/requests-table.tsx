@@ -145,7 +145,7 @@ export default function ReservationRequestsTable() {
 
   return (
     <div className="flex flex-col w-full h-full gap-6 overflow-hidden">
-      <div className="flex w-full justify-between">
+      <div className="flex w-full justify-between gap-4">
         <div className="w-full flex gap-4 items-center lex-shrink-0">
           <Input
             value={searchTerm}
@@ -171,12 +171,13 @@ export default function ReservationRequestsTable() {
             >
               Email
             </ToggleGroupItem>
-            <MultiSelect
-              onChange={handleChangeStatusFilter}
-              value={(filters.status as string[]) ?? []}
-              options={selectOptions}
-            />
           </ToggleGroup>
+          <MultiSelect
+            onChange={handleChangeStatusFilter}
+            value={(filters.status as string[]) ?? []}
+            options={selectOptions}
+            placeholder="Selecionar Status..."
+          />
         </div>
         <Button
           onClick={handleClearFilters}

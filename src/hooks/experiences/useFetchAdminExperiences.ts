@@ -37,34 +37,8 @@ export const useFetchAdminExperiences = ({ filters }: useFetchAdminExperiencesPa
     limit: query.data?.limit ?? 10,
   };
 
-  const parsedItems = items.map((e) => {
-    if (!e.startDate || !e.endDate) {
-      return {
-        ...e,
-        date: "Sem intervalo de data",
-      };
-    }
-
-    const startDate = new Date(e.startDate).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-    });
-
-    const endDate = new Date(e.endDate).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-    });
-
-    const date = `${startDate}-${endDate}`;
-
-    return {
-      ...e,
-      date,
-    };
-  });
-
   return {
-    items: parsedItems,
+    items,
     meta,
     ...query,
   };

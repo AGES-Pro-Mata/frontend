@@ -22,7 +22,7 @@ export function MultiSelect({
   options,
   value,
   onChange,
-  placeholder = "Selecionar Status...",
+  placeholder = "...",
   className,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);

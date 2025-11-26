@@ -585,6 +585,12 @@
     "addPerson": "Adicionar mais uma pessoas",
     "fillAllFields": "Preencha todos os campos obrigatórios"
   },
+  "category": {
+    "event": "Evento",
+    "trail": "Trilha",
+    "hosting": "Quarto",
+    "laboratory": "Laboratório"
+  },
   "requests": {
     "status": {
       "APPROVED": "Aprovada",

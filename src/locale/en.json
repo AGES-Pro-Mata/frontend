@@ -532,6 +532,12 @@
     "emailLabel": "Email",
     "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
   },
+  "category": {
+    "event": "Event",
+    "trail": "Trail",
+    "hosting": "Hosting",
+    "laboratory": "Laboratory"
+  },
   "requests": {
     "status": {
       "APPROVED": "Approved",
