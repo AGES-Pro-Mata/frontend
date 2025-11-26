@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -88,9 +89,9 @@ function ReserveParticipantInputs({
 
   const genderOptions = useMemo(
     () => ({
-      MALE: t("reserveFlow.peopleStep.genderOptions.male"),
-      FEMALE: t("reserveFlow.peopleStep.genderOptions.female"),
-      OTHER: t("reserveFlow.peopleStep.genderOptions.other"),
+      Masculino: t("reserveFlow.peopleStep.genderOptions.male"),
+      Feminino: t("reserveFlow.peopleStep.genderOptions.female"),
+      Outro: t("reserveFlow.peopleStep.genderOptions.other"),
     }),
     [t],
   ) as Record<ReserveParticipantGender, string>;
@@ -140,7 +141,7 @@ function ReserveParticipantInputs({
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          void form.handleSubmit(() => undefined)(event);
+          form.handleSubmit(() => undefined)(event);
         }}
         className={cn("grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5", className)}
       >
@@ -160,7 +161,7 @@ function ReserveParticipantInputs({
                 }}
                 onBlur={() => {
                   field.onBlur();
-                  void form.trigger("name");
+                  form.trigger("name");
                 }}
                 disabled={disabled}
                 readOnly={isReadOnly}
@@ -194,7 +195,7 @@ function ReserveParticipantInputs({
                 }}
                 onBlur={() => {
                   field.onBlur();
-                  void form.trigger("phone");
+                  form.trigger("phone");
                 }}
                 disabled={disabled}
                 readOnly={isReadOnly}
@@ -239,7 +240,7 @@ function ReserveParticipantInputs({
                     if (iso) {
                       handleChange("birthDate", iso);
                     }
-                    void form.trigger("birthDate");
+                    form.trigger("birthDate");
                   }}
                   disabled={disabled}
                   readOnly={isReadOnly}
@@ -314,7 +315,7 @@ function ReserveParticipantInputs({
                 }}
                 onBlur={() => {
                   field.onBlur();
-                  void form.trigger("document");
+                  form.trigger("document");
                 }}
                 disabled={disabled}
                 readOnly={isReadOnly}

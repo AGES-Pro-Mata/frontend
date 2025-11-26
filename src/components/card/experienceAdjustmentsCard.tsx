@@ -30,13 +30,9 @@ function ExperienceAdjustmentsCard({
   const fallbackExperiences = useMemo<NormalizedExperienceAdjustment[]>(
     () => [
       {
-        title: t(
-          "reserveFlow.experienceStep.fallbackExperiences.sunriseTrail.title"
-        ),
+        title: t("reserveFlow.experienceStep.fallbackExperiences.sunriseTrail.title"),
         price: 420,
-        type: t(
-          "reserveFlow.experienceStep.fallbackExperiences.sunriseTrail.type"
-        ),
+        type: t("reserveFlow.experienceStep.fallbackExperiences.sunriseTrail.type"),
         period: {
           start: new Date(),
           end: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
@@ -44,13 +40,9 @@ function ExperienceAdjustmentsCard({
         imageUrl: "/mock/landscape-2.webp",
       },
       {
-        title: t(
-          "reserveFlow.experienceStep.fallbackExperiences.waterfallBath.title"
-        ),
+        title: t("reserveFlow.experienceStep.fallbackExperiences.waterfallBath.title"),
         price: 280,
-        type: t(
-          "reserveFlow.experienceStep.fallbackExperiences.waterfallBath.type"
-        ),
+        type: t("reserveFlow.experienceStep.fallbackExperiences.waterfallBath.type"),
         period: {
           start: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
           end: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
@@ -58,9 +50,7 @@ function ExperienceAdjustmentsCard({
         imageUrl: "/mock/landscape-4.webp",
       },
       {
-        title: t(
-          "reserveFlow.experienceStep.fallbackExperiences.nightSky.title"
-        ),
+        title: t("reserveFlow.experienceStep.fallbackExperiences.nightSky.title"),
         price: 360,
         type: t("reserveFlow.experienceStep.fallbackExperiences.nightSky.type"),
         period: {
@@ -70,7 +60,7 @@ function ExperienceAdjustmentsCard({
         imageUrl: "/mock/landscape-5.jpg",
       },
     ],
-    [t]
+    [t],
   );
 
   const experiencesToRender = useMemo<NormalizedExperienceAdjustment[]>(() => {
@@ -90,8 +80,7 @@ function ExperienceAdjustmentsCard({
 
     return rawExperiences.map((exp) => {
       const baseTitle = exp.title ?? exp.name;
-      const resolvedTitle =
-        baseTitle ?? t("reserveFlow.experienceStep.fallbackDefaults.title");
+      const resolvedTitle = baseTitle ?? t("reserveFlow.experienceStep.fallbackDefaults.title");
 
       const startInput = exp.period?.start ?? exp.periodStart;
       const endInput = exp.period?.end ?? exp.periodEnd;
@@ -120,18 +109,12 @@ function ExperienceAdjustmentsCard({
   }
 
   if (!hasExternalSource && error) {
-    return (
-      <div className="p-8 text-default-red">
-        {t("reserveFlow.experienceStep.error")}
-      </div>
-    );
+    return <div className="p-8 text-default-red">{t("reserveFlow.experienceStep.error")}</div>;
   }
 
   if (experiencesToRender.length === 0) {
     return (
-      <div className="p-8 text-foreground/70">
-        {t("reserveFlow.experienceStep.emptyCart")}
-      </div>
+      <div className="p-8 text-foreground/70">{t("reserveFlow.experienceStep.emptyCart")}</div>
     );
   }
 
@@ -140,9 +123,7 @@ function ExperienceAdjustmentsCard({
       return;
     }
 
-    const next = adjustments.filter(
-      (item) => item.experienceId !== adjustment.experienceId
-    );
+    const next = adjustments.filter((item) => item.experienceId !== adjustment.experienceId);
 
     onChange?.([...next, adjustment]);
   };
@@ -150,8 +131,8 @@ function ExperienceAdjustmentsCard({
   return (
     <div
       className={cn(
-        "border-2 border-dark-gray rounded-2xl bg-white p-2 sm:p-6 md:p-8",
-        className
+        "border border-dark-gray sm:border-2 rounded-2xl bg-white p-3 sm:p-6 md:p-8",
+        className,
       )}
     >
       <div className="flex flex-col gap-4 sm:gap-6 md:gap-8">
@@ -167,9 +148,7 @@ function ExperienceAdjustmentsCard({
             persist={false}
             initialData={
               exp.experienceId
-                ? (adjustments.find(
-                    (item) => item.experienceId === exp.experienceId
-                  ) ?? null)
+                ? (adjustments.find((item) => item.experienceId === exp.experienceId) ?? null)
                 : null
             }
             onSave={upsertAdjustment}

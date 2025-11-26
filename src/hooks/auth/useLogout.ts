@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useCartStore } from "@/store/cartStore";
@@ -22,7 +23,7 @@ export function useLogout() {
     queryClient.clear();
     
     // Redireciona para a página de login
-    void navigate({ to: "/auth/login" });
+    navigate({ to: "/auth/login" });
   };
 
   return { logout };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
@@ -12,9 +13,7 @@ import { injectUmamiAnalytics } from "@/lib/analytics";
 const queryClient = new QueryClient();
 
 if (import.meta.env.DEV && import.meta.env.VITE_USE_MSW === "true") {
-  void import("@/test/msw").then(({ startBrowserMocking }) =>
-    startBrowserMocking()
-  );
+  import("@/test/msw").then(({ startBrowserMocking }) => startBrowserMocking());
 }
 
 // Create a new router instance
@@ -46,7 +45,7 @@ if (rootElement && !rootElement.innerHTML) {
         <AppToast position="top-center" />
         <RouterProvider router={router} />
       </QueryClientProvider>
-    </StrictMode>
+    </StrictMode>,
   );
 }
 

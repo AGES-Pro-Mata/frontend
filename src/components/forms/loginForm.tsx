@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+ 
 import { Typography } from "@/components/typography/typography";
 import { z } from "zod";
-import { useForm, type UseFormReturn } from "react-hook-form";
+import { type UseFormReturn, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { TextInput } from "@/components/input/textInput";
@@ -10,7 +12,7 @@ import { AuthCard } from "@/components/auth/authcard";
 import { Button } from "@/components/button/defaultButton";
 import { hashPassword } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef, type MutableRefObject } from "react";
+import { type MutableRefObject, useEffect, useRef } from "react";
 import { useLogin } from "@/hooks";
 
 export type LoginFormData = {
@@ -74,7 +76,7 @@ export function LoginForm() {
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
       <Form {...form}>
-        <form onSubmit={(event) => void form.handleSubmit(onSubmit)(event)} className="space-y-4">
+        <form onSubmit={(event) => form.handleSubmit(onSubmit)(event)} className="space-y-4">
           <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs">
               <FormField

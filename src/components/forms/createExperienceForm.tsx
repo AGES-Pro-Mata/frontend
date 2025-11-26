@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { Button } from "@/components/button/defaultButton";
 import { TextInput } from "@/components/input/textInput";
 import { appToast } from "@/components/toast/toast";
@@ -255,7 +256,7 @@ export function CreateExperience() {
     mutate(payload, {
       onSuccess: () => {
         appToast.success("Experiência criada com sucesso");
-        void navigate({ to: "/admin/experiences" });
+        navigate({ to: "/admin/experiences" });
       },
       onError: () => {
         appToast.error("Erro ao criar experiência");
@@ -264,7 +265,7 @@ export function CreateExperience() {
   });
 
   const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    void submitForm(event);
+    submitForm(event);
   };
 
   return (

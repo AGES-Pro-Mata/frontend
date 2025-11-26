@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { type UseMutationOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
@@ -20,7 +21,7 @@ export function useCreateGroupReservation(
   return useMutation({
     mutationFn: createGroupReservation,
     onSuccess: () => {
-      void queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: [MY_RESERVATION_KEY],
       });
     },

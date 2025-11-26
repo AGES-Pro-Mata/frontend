@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginRequest } from "@/api/user";
 import { useNavigate } from "@tanstack/react-router";
@@ -8,7 +9,7 @@ export function useLogin() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const handleChangePassword = (token: string) => {
-    void navigate({ to: `/auth/redefine/${token}` });
+    navigate({ to: `/auth/redefine/${token}` });
   };
 
   return useMutation({
@@ -25,7 +26,7 @@ export function useLogin() {
           await queryClient.invalidateQueries({ queryKey: ["me"] });
           await queryClient.refetchQueries({ queryKey: ["me"] });
           appToast.success(t("auth.login.toastSuccess"));
-          void navigate({ to: "/" });
+          navigate({ to: "/" });
         }
       } else {
         appToast.error(response.message || t("auth.login.toastError"));

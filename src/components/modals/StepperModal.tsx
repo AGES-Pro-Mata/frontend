@@ -4,16 +4,20 @@ import type { RequestEventAdminHistoryResponse } from "@/hooks/reservations/useM
 import dayjs from "dayjs";
 import { REQUESTS_ICONS, REQUESTS_LABEL } from "@/utils/consts/requests-consts";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+
 export interface Step {
   type: RequestsType;
   description?: string;
   date?: string;
 }
+
 export type StepperProps = {
   steps: RequestEventAdminHistoryResponse[];
 };
 
 export default function Stepper({ steps = [] }: StepperProps) {
+  const { t } = useTranslation();
   const [descriptionToShow, setDescriptionToShow] = useState<number | null>(null);
 
   const handleShowDescription = (idx: number) => {
@@ -58,7 +62,7 @@ export default function Stepper({ steps = [] }: StepperProps) {
                 {Icon && <Icon />}
               </div>
 
-              <span className="mt-2 font-medium text-sm">{REQUESTS_LABEL[step.type]}</span>
+              <span className="mt-2 font-medium text-sm">{t(REQUESTS_LABEL[step.type ?? ""])}</span>
 
               {step.createdAt && (
                 <span className="text-xs text-gray-500">

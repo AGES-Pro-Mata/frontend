@@ -73,11 +73,11 @@ function RouteComponent() {
   };
 
   const handleEditUserClick = (userId: string) => {
-    void navigate({ to: "/admin/users/$userId", params: { userId } });
+    navigate({ to: "/admin/users/$userId", params: { userId } });
   };
 
   const navigateToCreateUser = () => {
-    void navigate({ to: "/admin/users/create" });
+    navigate({ to: "/admin/users/create" });
   };
 
   const searchInputPlaceholder = `Buscar por ${PLACE_HOLDER_TRANSLATE_TEXT[selectedFilter]}`;
@@ -114,14 +114,14 @@ function RouteComponent() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => void handleEditUserClick(row.original.id)}
+                onClick={() => handleEditUserClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
                 {"Editar"}
                 <Edit className="size-4 text-black" />
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => void handleDeleteUserClick(row.original.id)}
+                onClick={() => handleDeleteUserClick(row.original.id)}
                 className="cursor-pointer text-default-red gap-3"
               >
                 {"Excluir"}
@@ -189,6 +189,7 @@ function RouteComponent() {
           data={items}
           columns={columns}
           filters={filters}
+          isLoading={isLoading}
           meta={meta}
           setFilter={setFilter}
         />

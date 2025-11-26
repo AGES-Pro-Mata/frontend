@@ -33,7 +33,7 @@ function RouteComponent() {
 
   return (
     <div className="w-full min-h-screen flex justify-center items-start py-12 px-4 sm:px-0 bg-background">
-      <EditProfileCard onBack={() => void navigate({ to: "/user/profile" })} />
+      <EditProfileCard onBack={() => navigate({ to: "/user/profile" })} />
     </div>
   );
 }

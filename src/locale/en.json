@@ -28,7 +28,8 @@
     "trails": "Trails",
     "experience": "Experience",
     "experiences": "Experiences",
-    "to": "to"
+    "to": "to",
+    "previous": "Previous"
   },
   "cartDrawer": {
     "heading": {
@@ -530,6 +531,70 @@
     "phoneLabel": "Phone",
     "emailLabel": "Email",
     "copyright": "© {{year}} PRÓ-MATA. All rights reserved."
+  },
+  "category": {
+    "event": "Event",
+    "trail": "Trail",
+    "hosting": "Hosting",
+    "laboratory": "Laboratory"
+  },
+  "requests": {
+    "status": {
+      "APPROVED": "Approved",
+      "CANCELED": "Cancelled",
+      "CANCELED_REQUESTED": "Cancellation requested",
+      "CREATED": "New",
+      "EDITED": "Edit pending",
+      "PEOPLE_REQUESTED": "People requested",
+      "PEOPLE_SENT": "People sent",
+      "PAYMENT_REQUESTED": "Payment requested",
+      "PAYMENT_SENT": "Payment sent",
+      "PAYMENT_REJECTED": "Payment rejected",
+      "PAYMENT_APPROVED": "Payment approved",
+      "REJECTED": "Rejected",
+      "CANCEL_REJECTED": "Cancellation rejected"
+    },
+    "actions": {
+      "APPROVED": "Approve",
+      "CANCELED": "Cancel",
+      "CANCEL_REJECTED": "Reject cancellation",
+      "PAYMENT_REQUESTED": "Request payment",
+      "PEOPLE_REQUESTED": "Request participants",
+      "PAYMENT_APPROVED": "Confirm payment",
+      "PAYMENT_REJECTED": "Reject payment",
+      "approveCancellation": "Approve cancellation",
+      "rejectCancellation": "Reject cancellation"
+    },
+    "professorStatus": {
+      "DOCUMENT_APPROVED": "Document approved",
+      "DOCUMENT_REJECTED": "Document rejected",
+      "DOCUMENT_REQUESTED": "Document submitted"
+    },
+    "validation": {
+      "invalidType": "Invalid request type."
+    },
+    "admin": {
+      "reservationHeader": "Reservation actions",
+      "statusLabel": "Status",
+      "createdAt": "Created at: {{date}}",
+      "viewReceipt": "View receipt",
+      "requesterTag": "(Requester)",
+      "inputPlaceholder": "Type a message for the user",
+      "send": "Send",
+      "filters": {
+        "searchPlaceholder": "Search by {{field}}",
+        "experiences": "Experiences",
+        "email": "Email",
+        "name": "Name"
+      },
+      "view": "View",
+      "professorApproved": "Professor approved successfully!",
+      "professorRejected": "Professor rejected successfully!",
+      "commentPlaceholder": "Type a note",
+      "viewProfessorReceipt": "View receipt",
+      "approve": "Approve",
+      "reject": "Reject"
+    }
   }
 }
 

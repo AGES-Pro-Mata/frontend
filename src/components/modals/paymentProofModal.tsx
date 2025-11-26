@@ -97,7 +97,7 @@ export function PaymentProofModal({
 
           <Button
             onClick={() => {
-              void handleSubmit().catch(() => undefined);
+              handleSubmit().catch(() => undefined);
             }}
             disabled={!selectedFile || isSubmitting}
             className="w-full bg-contrast-green text-soft-white rounded-lg h-[40px] shadow-md disabled:opacity-50 disabled:cursor-not-allowed"

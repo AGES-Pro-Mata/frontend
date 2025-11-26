@@ -29,7 +29,8 @@
     "trails": "Trilhas",
     "experience": "Experiência",
     "experiences": "Experiências",
-    "to": "a"
+    "to": "a",
+    "previous": "Anterior"
   },
   "cartDrawer": {
     "heading": {
@@ -583,5 +584,69 @@
     "addOnePerson": "Adicionar pessoa",
     "addPerson": "Adicionar mais uma pessoas",
     "fillAllFields": "Preencha todos os campos obrigatórios"
+  },
+  "category": {
+    "event": "Evento",
+    "trail": "Trilha",
+    "hosting": "Quarto",
+    "laboratory": "Laboratório"
+  },
+  "requests": {
+    "status": {
+      "APPROVED": "Aprovada",
+      "CANCELED": "Cancelada",
+      "CANCELED_REQUESTED": "Cancelamento solicitado",
+      "CREATED": "Nova",
+      "EDITED": "Edição pendente",
+      "PEOPLE_REQUESTED": "Pessoas solicitadas",
+      "PEOPLE_SENT": "Pessoas enviadas",
+      "PAYMENT_REQUESTED": "Pagamento solicitado",
+      "PAYMENT_SENT": "Pagamento enviado",
+      "PAYMENT_REJECTED": "Pagamento rejeitado",
+      "PAYMENT_APPROVED": "Pagamento aprovado",
+      "REJECTED": "Rejeitada",
+      "CANCEL_REJECTED": "Cancelamento rejeitado"
+    },
+    "actions": {
+      "APPROVED": "Aprovar",
+      "CANCELED": "Cancelar",
+      "CANCEL_REJECTED": "Reprovar cancelamento",
+      "PAYMENT_REQUESTED": "Solicitar pagamento",
+      "PEOPLE_REQUESTED": "Solicitar pessoas",
+      "PAYMENT_APPROVED": "Confirmar pagamento",
+      "PAYMENT_REJECTED": "Rejeitar pagamento",
+      "approveCancellation": "Aprovar cancelamento",
+      "rejectCancellation": "Reprovar cancelamento"
+    },
+    "professorStatus": {
+      "DOCUMENT_APPROVED": "Documento aprovado",
+      "DOCUMENT_REJECTED": "Documento rejeitado",
+      "DOCUMENT_REQUESTED": "Documento enviado"
+    },
+    "validation": {
+      "invalidType": "Tipo de solicitação inválido."
+    },
+    "admin": {
+      "reservationHeader": "Ações da reserva",
+      "statusLabel": "Status",
+      "createdAt": "Data de criação: {{date}}",
+      "viewReceipt": "Visualizar comprovante",
+      "requesterTag": "(Solicitante)",
+      "inputPlaceholder": "Digite para o usuário",
+      "send": "Enviar",
+      "filters": {
+        "searchPlaceholder": "Buscar por {{field}}",
+        "experiences": "Experiências",
+        "email": "Email",
+        "name": "Nome"
+      },
+      "view": "Visualizar",
+      "professorApproved": "Professor aceito com sucesso!",
+      "professorRejected": "Professor recusado com sucesso!",
+      "commentPlaceholder": "Digite uma observação",
+      "viewProfessorReceipt": "Visualizar comprovante",
+      "approve": "Aprovar",
+      "reject": "Rejeitar"
+    }
   }
 }

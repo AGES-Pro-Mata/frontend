@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { createFileRoute } from "@tanstack/react-router";
 import { Typography } from "@/components/typography";
 import { Button } from "@/components/ui/button";
@@ -212,7 +213,7 @@ export function RouteComponent() {
           onSuccess: () => {
             appToast.success("Destaque atualizado com sucesso!");
             handleCloseDialog();
-            void refetch();
+            refetch();
           },
           onError: () => {
             appToast.error("Erro ao atualizar destaque");
@@ -233,7 +234,7 @@ export function RouteComponent() {
           onSuccess: () => {
             appToast.success("Destaque criado com sucesso!");
             handleCloseDialog();
-            void refetch();
+            refetch();
           },
           onError: () => {
             appToast.error("Erro ao criar destaque");
@@ -262,7 +263,7 @@ export function RouteComponent() {
       onSuccess: () => {
         appToast.success("Destaque excluído com sucesso!");
         handleCloseDeleteDialog();
-        void refetch();
+        refetch();
       },
       onError: () => {
         appToast.error("Erro ao excluir destaque");

@@ -6,6 +6,20 @@ export enum ExperienceCategory {
   LABORATORIO = "LABORATORY",
 }
 
+export const EXPERIENCE_CATEGORY_LABEL = {
+  [ExperienceCategory.EVENTO]: "category.event",
+  [ExperienceCategory.TRILHA]: "category.trail",
+  [ExperienceCategory.HOSPEDAGEM]: "category.hosting",
+  [ExperienceCategory.LABORATORIO]: "category.laboratory",
+} as Record<string | number, string>;
+
+export const EXPERIENCE_CATEGORY_STYLE_COLOR = {
+  [ExperienceCategory.EVENTO]: "bg-blue-100 text-blue-800",
+  [ExperienceCategory.TRILHA]: "bg-cyan-100 text-cyan-800",
+  [ExperienceCategory.HOSPEDAGEM]: "bg-yellow-100 text-yellow-800",
+  [ExperienceCategory.LABORATORIO]: "bg-purple-100 text-purple-800",
+} as Record<string | number, string>;
+
 export enum ExperienceCategoryCard {
   TRAIL = "TRAIL",
   EVENT = "EVENT",
@@ -161,15 +175,10 @@ const toBooleanOrNull = (value: unknown): boolean | null => {
   return null;
 };
 
-export const mapExperienceApiResponseToDTO = (
-  apiExperience: ExperienceApiResponse
-): Experience => {
+export const mapExperienceApiResponseToDTO = (apiExperience: ExperienceApiResponse): Experience => {
   // Prioriza campos sem prefixo (GET) e usa prefixo como fallback (POST/PATCH)
-  const rawCategory =
-    apiExperience.category ?? apiExperience.experienceCategory;
-  const category = rawCategory
-    ? CATEGORY_CARD_MAP[rawCategory]
-    : ExperienceCategoryCard.EVENT;
+  const rawCategory = apiExperience.category ?? apiExperience.experienceCategory;
+  const category = rawCategory ? CATEGORY_CARD_MAP[rawCategory] : ExperienceCategoryCard.EVENT;
 
   const id = apiExperience.id ?? apiExperience.experienceId ?? "unknown";
   const name = apiExperience.name ?? apiExperience.experienceName ?? "";
@@ -177,27 +186,20 @@ export const mapExperienceApiResponseToDTO = (
   return {
     id,
     name,
-    description:
-      apiExperience.description ?? apiExperience.experienceDescription ?? null,
+    description: apiExperience.description ?? apiExperience.experienceDescription ?? null,
     category,
-    capacity: toNumberOrNull(
-      apiExperience.capacity ?? apiExperience.experienceCapacity
-    ),
-    startDate:
-      apiExperience.startDate ?? apiExperience.experienceStartDate ?? null,
+    capacity: toNumberOrNull(apiExperience.capacity ?? apiExperience.experienceCapacity),
+    startDate: apiExperience.startDate ?? apiExperience.experienceStartDate ?? null,
     endDate: apiExperience.endDate ?? apiExperience.experienceEndDate ?? null,
     price: toNumberOrNull(apiExperience.price ?? apiExperience.experiencePrice),
-    weekDays:
-      apiExperience.weekDays ?? apiExperience.experienceWeekDays ?? null,
+    weekDays: apiExperience.weekDays ?? apiExperience.experienceWeekDays ?? null,
     durationMinutes: toNumberOrNull(
-      apiExperience.durationMinutes ?? apiExperience.trailDurationMinutes
+      apiExperience.durationMinutes ?? apiExperience.trailDurationMinutes,
     ),
     trailDifficulty: apiExperience.trailDifficulty ?? null,
     trailLength: toNumberOrNull(apiExperience.trailLength),
     image: mapImage(apiExperience.image ?? apiExperience.experienceImage),
     imageId: null,
-    active: toBooleanOrNull(
-      apiExperience.active ?? apiExperience.experienceActive ?? null
-    ),
+    active: toBooleanOrNull(apiExperience.active ?? apiExperience.experienceActive ?? null),
   };
 };

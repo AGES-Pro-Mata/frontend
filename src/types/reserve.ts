@@ -1,7 +1,7 @@
 export enum ReserveParticipantGender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-  OTHER = "OTHER",
+  Masculino = "Masculino",
+  Feminino = "Feminino",
+  Outro = "Outro",
 }
 
 type ReserveParticipantBase = {

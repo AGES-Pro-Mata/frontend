@@ -25,12 +25,22 @@ import type { DateRange } from "react-day-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import { MultiSelect } from "@/components/ui/multi-select";
+import {
+  EXPERIENCE_CATEGORY_LABEL,
+  EXPERIENCE_CATEGORY_STYLE_COLOR,
+  ExperienceCategory,
+} from "@/types/experience";
+import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
+import dayjs from "dayjs";
 
 export const Route = createFileRoute("/admin/experiences/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const { filters, setFilter } = useFilters<TExperienceAdminRequestFilters>({
@@ -101,33 +111,39 @@ function RouteComponent() {
       accessorKey: "date",
       header: "Data",
       enableSorting: true,
+      cell: ({ row }: { row: { original: TExperienceAdminResponse & { date?: string } } }) => {
+        if (!row.original.startDate || !row.original.endDate) {
+          return "Sem intervalo de datas";
+        }
+
+        return `${dayjs(row.original.startDate).format("DD/MM/YYYY")} - ${dayjs(row.original.endDate).format("DD/MM/YYYY")}`;
+      },
     },
     {
-      accessorKey: "type",
+      accessorKey: "category",
       header: "Tipo",
-      enableSorting: true,
+      enableSorting: false,
+      size: 80,
       cell: ({ row }: { row: { original: TExperienceAdminResponse } }) => {
-        const name = row.original.name?.toLowerCase() ?? "";
-
-        let experienceType = "evento";
-
-        if (name.includes("quarto")) experienceType = "quarto";
-        else if (name.includes("trilha")) experienceType = "trilha";
-        else if (name.includes("evento")) experienceType = "evento";
-        else if (name.includes("laboratório") || name.includes("laboratorio"))
-          experienceType = "laboratório";
-
         return (
-          <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
-            {experienceType}
-          </span>
+          <Typography
+            className={cn(
+              "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
+              EXPERIENCE_CATEGORY_STYLE_COLOR[row.original.category as ExperienceCategory],
+            )}
+          >
+            {t(
+              EXPERIENCE_CATEGORY_LABEL[row.original.category as ExperienceCategory],
+            ).toUpperCase()}
+          </Typography>
         );
       },
     },
     {
       accessorKey: "active",
       header: "Status",
-      enableSorting: true,
+      enableSorting: false,
+      size: 80,
       cell: ({ row }: { row: { original: TExperienceAdminResponse } }) => {
         const isActive = row.original.active ?? true;
 
@@ -161,7 +177,7 @@ function RouteComponent() {
               <DropdownMenuItem
                 className="cursor-pointer gap-4"
                 onClick={() =>
-                  void navigate({
+                  navigate({
                     to: "/admin/experiences/$experienceId",
                     params: { experienceId },
                   })
@@ -195,31 +211,17 @@ function RouteComponent() {
     },
   ];
 
-  const [filterType, setFilterType] = useState<string[]>([]);
-
-  const toggleType = (type: string) => {
-    setFilterType((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
-    );
-  };
-
-  const getType = (name?: string) => {
-    const lower = name?.toLowerCase() ?? "";
-
-    if (lower.includes("quarto")) return "quarto";
-    if (lower.includes("trilha")) return "trilha";
-    if (lower.includes("evento")) return "evento";
-    if (lower.includes("laboratório") || lower.includes("laboratorio")) return "laboratório";
-
-    return "evento";
-  };
-
   const navigateToCreateExperience = () => {
-    void navigate({ to: "/admin/experiences/create" });
+    navigate({ to: "/admin/experiences/create" });
   };
 
-  const filteredItems =
-    filterType.length > 0 ? items.filter((item) => filterType.includes(getType(item.name))) : items;
+  const handleChangeStatusFilter = (category: string[]) => {
+    setFilter("category", category as ExperienceCategory[]);
+  };
+
+  const selectOptions = Object.values(ExperienceCategory).map((experience) => {
+    return { label: t(EXPERIENCE_CATEGORY_LABEL[experience]), value: experience };
+  });
 
   return (
     <div className="flex flex-col w-full h-full p-4 gap-6 overflow-hidden">
@@ -230,27 +232,12 @@ function RouteComponent() {
           placeholder="Buscar por nome"
           onChange={onChangeSearch}
         />
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-12">
-              {filterType.length === 0 ? "Filtrar por Tipo" : `Tipos (${filterType.length})`}
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setFilterType([])}>Todos</DropdownMenuItem>
-
-            {["evento", "quarto", "trilha", "laboratório"].map((t) => (
-              <DropdownMenuItem
-                key={t}
-                onClick={() => toggleType(t)}
-                className={filterType.includes(t) ? "bg-gray-200" : ""}
-              >
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <MultiSelect
+          onChange={handleChangeStatusFilter}
+          value={(filters.category as string[]) ?? []}
+          options={selectOptions}
+          placeholder="Selecionar Tipos..."
+        />
 
         <Popover>
           <PopoverTrigger asChild>
@@ -288,9 +275,10 @@ function RouteComponent() {
           </div>
         )}
         <DataTable
-          data={filteredItems}
+          data={items}
           columns={columns}
           filters={filters}
+          isLoading={isLoading}
           meta={meta}
           setFilter={setFilter}
         />

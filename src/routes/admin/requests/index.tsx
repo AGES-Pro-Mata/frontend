@@ -29,7 +29,7 @@ function RouteComponent() {
             tab === "professor" ? "bg-contrast-green text-white" : "bg-soft-gray text-gray-700"
           }`}
           onClick={() => {
-            void navigate({ to: "/admin/requests", search: { tab: "professor" } });
+            navigate({ to: "/admin/requests", search: { tab: "professor" } });
           }}
         >
           <FaUser size={24} /> Solicitações de Professores
@@ -39,7 +39,7 @@ function RouteComponent() {
             tab === "reservation" ? "bg-contrast-green text-white" : "bg-soft-gray text-gray-700"
           }`}
           onClick={() => {
-            void navigate({ to: "/admin/requests", search: { tab: "reservation" } });
+            navigate({ to: "/admin/requests", search: { tab: "reservation" } });
           }}
         >
           <FaRegCalendarCheck size={24} /> Solicitações de Reservas

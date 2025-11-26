@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import {
   Drawer,
   DrawerClose,
@@ -52,14 +54,14 @@ export const CartDrawer = () => {
     if (!currentUser) {
       appToast.error(t("cartDrawer.toasts.loginRequired"));
       closeCart();
-      void navigate({ to: "/auth/login", search: { redirect: "/reserve/finish" } });
+      navigate({ to: "/auth/login", search: { redirect: "/reserve/finish" } });
 
       return;
     }
 
     // Se tudo estiver ok, navegar para a página de finalização
     closeCart();
-    void navigate({ to: "/reserve/finish" });
+    navigate({ to: "/reserve/finish" });
   };
 
   return (
@@ -123,7 +125,7 @@ export const CartDrawer = () => {
               className="w-full justify-center rounded-full py-3"
               disabled={itemCount === 0}
               label={<span>{t("cartDrawer.checkoutButton")}</span>}
-              onClick={() => void handleCheckoutClick()}
+              onClick={() => handleCheckoutClick()}
             />
             <Link
               className="text-center text-sm font-semibold text-main-dark-green transition-colors hover:text-main-dark-green/80 cursor-pointer"

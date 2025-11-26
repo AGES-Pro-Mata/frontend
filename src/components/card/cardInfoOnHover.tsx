@@ -169,7 +169,7 @@ const MobileNavigation = memo(function MobileNavigation({
         </Typography>
         <Button
           label={ctaLabel}
-          className="mt-3 h-[clamp(2.25rem,6vh,2.5rem)] w-[clamp(7rem,50vw,9rem)] rounded-full bg-[#4C9613] text-sm text-white"
+          className="mt-3 h-[clamp(2.25rem,6vh,2.5rem)] w-[clamp(7rem,50vw,9rem)] rounded-full bg-contrast-green text-sm text-white"
         />
       </div>
     </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { CanvasCard } from "@/components/card";
 import { Typography } from "@/components/typography/typography";
 import { TextInput } from "@/components/input/textInput";
@@ -203,7 +204,7 @@ export const EditProfileCard: FC<EditProfileLayoutProps> = ({ onBack }) => {
     <CanvasCard className="w-full max-w-[clamp(40rem,82vw,980px)] mx-auto p-8 sm:p-12 bg-card/20 shadow-md rounded-[20px]">
       <Form {...form}>
         <form
-          onSubmit={(event) => void form.handleSubmit((data) => submit(data))(event)}
+          onSubmit={(event) => form.handleSubmit((data) => submit(data))(event)}
           className="flex flex-col gap-8"
           noValidate
         >

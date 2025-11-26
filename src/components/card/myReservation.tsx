@@ -1,7 +1,3 @@
- 
- 
- 
- 
 import { useState } from "react";
 import { CalendarIcon, DollarSign } from "lucide-react";
 import { appToast } from "@/components/toast/toast";
@@ -136,9 +132,9 @@ export default function MyReservationCard({
 
   return (
     <>
-      <CanvasCard className="relative w-[921px] h-[445px] mx-auto bg-card shadow-lg rounded-xl overflow-hidden flex flex-col">
+      <CanvasCard className="relative w-full max-w-[921px] md:h-[445px] mx-auto bg-card shadow-lg rounded-xl overflow-hidden flex flex-col">
         <div
-          className={`relative w-[889px] h-[251px] mx-4 mt-4 rounded-t-[16px] overflow-hidden grid grid-cols-${Math.min(reservations.length, 3)} gap-1`}
+          className={`relative w-auto md:w-[889px] h-[220px] md:h-[251px] mx-4 mt-4 rounded-t-[16px] overflow-hidden grid grid-cols-${Math.min(reservations.length, 3)} gap-1`}
         >
           {reservations.slice(0, 3).map((r) => (
             <div key={r.experience.name} className="w-full h-full overflow-hidden">
@@ -161,12 +157,12 @@ export default function MyReservationCard({
                 {type}
               </span>
             )}
-            <div className="flex items-center gap-3 ml-auto">
+            <div className="flex flex-wrap items-center gap-3 ml-auto">
               <div className="flex items-center rounded-full bg-card-light shadow-sm gap-2 px-3 py-1">
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-soft-white">
                   <CalendarIcon className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-sm font-semibold text-main-dark-green whitespace-nowrap">
+                <span className="text-sm font-semibold text-main-dark-green whitespace-normal sm:whitespace-nowrap">
                   {fmt(period.startDate)} {t("common.to")} {fmt(period.endDate)}
                 </span>
               </div>
@@ -174,7 +170,7 @@ export default function MyReservationCard({
                 <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-soft-white">
                   <DollarSign className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-sm font-semibold text-main-dark-green whitespace-nowrap">
+                <span className="text-sm font-semibold text-main-dark-green whitespace-normal sm:whitespace-nowrap">
                   R$ {price.toFixed(2)}
                 </span>
               </div>
@@ -192,7 +188,7 @@ export default function MyReservationCard({
             accentClassName={statusAccent}
             className="mt-4"
           />
-          <div className="w-full mt-4 flex flex-row items-center justify-between gap-3">
+          <div className="w-full mt-4 flex flex-row flex-wrap items-center justify-between gap-3">
             <Button
               onClick={() => handleOpenHistoryModal()}
               className="text-soft-white rounded-full flex-1 w-full h-10 text-sm shadow-md hover:opacity-70"

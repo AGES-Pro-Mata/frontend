@@ -81,7 +81,7 @@ export default function ExperienceCard({
   );
   const fmt = (d: Date) => dateFormatter.format(d);
   const formattedPrice = currencyFormatter.format(Number.isFinite(price) ? price : 0);
-  const calendarStyles = { "--rdp-cell-size": "1.75rem" } as CSSProperties;
+  const calendarStyles = { "--rdp-cell-size": "1.5rem" } as CSSProperties;
 
   const disabledDates = useMemo(() => {
     const tomorrow = new Date();
@@ -192,7 +192,7 @@ export default function ExperienceCard({
 
       {/* header */}
       <div className="w-full px-5 pt-4 pb-5 text-main-dark-green flex flex-col gap-3">
-        <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-3">
+        <div className="flex flex-col md:flex-row md:flex-nowrap items-start md:items-center gap-2 md:gap-3">
           <h2 className="font-bold text-sm md:text-base w-full md:w-auto">{title}</h2>
           {translatedType && (
             <span className="inline-flex items-center justify-center text-xs text-main-dark-green bg-card rounded-full font-bold shadow-inner px-3 py-1 shrink-0">
@@ -209,7 +209,7 @@ export default function ExperienceCard({
               <div className="w-6 h-6 flex items-center justify-center rounded-full bg-main-dark-green text-white shrink-0">
                 <CalendarIcon className="w-3.5 h-3.5" />
               </div>
-              <span className="text-xs md:text-sm font-semibold text-main-dark-green whitespace-normal break-words leading-tight">
+              <span className="text-xs md:text-sm font-semibold text-main-dark-green whitespace-normal break-words leading-tight text-left">
                 {t("experienceCard.dateRange", {
                   from: fmt(period.start),
                   to: fmt(period.end),
@@ -219,10 +219,10 @@ export default function ExperienceCard({
           )}
         </div>
 
-        <div className="flex justify-end mt-2 mb-1">
+        <div className="flex w-full justify-center md:justify-end mt-2 mb-1">
           <Button
             onClick={handleToggle}
-            className="bg-main-dark-green text-white rounded-full px-4 py-1.5 text-sm shadow-md hover:bg-main-dark-green"
+            className="bg-main-dark-green text-white rounded-full px-4 py-1.5 text-sm shadow-md hover:bg-main-dark-green w-full md:w-auto text-center whitespace-normal break-words"
             label={
               open
                 ? t("common.cancel")
@@ -255,7 +255,7 @@ export default function ExperienceCard({
       </div>
 
       {open && (
-        <div className="p-3 md:p-4 bg-banner rounded-lg shadow-md flex flex-col gap-4 text-main-dark-green my-3 mx-2 md:mx-3 max-w-none">
+        <div className="px-2 py-1.5 sm:p-3 md:p-4 bg-banner rounded-lg shadow-md flex flex-col gap-2 sm:gap-4 text-main-dark-green my-1.5 sm:my-3 mx-0 sm:mx-2 md:mx-3 max-w-none">
           <h3 className="text-base font-bold">{t("experienceCard.chooseDate")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-10 items-start">
             <div className="flex flex-col items-start gap-3">
@@ -272,7 +272,7 @@ export default function ExperienceCard({
                     : t("experienceCard.selectPeriodOnCalendar")}
                 </span>
               </div>
-              <div className="bg-soft-white rounded-lg shadow-sm p-3 w-full md:max-w-xs">
+              <div className="bg-soft-white rounded-lg shadow-sm p-2 sm:p-3 w-full md:max-w-xs overflow-x-auto">
                 <Calendar
                   mode="range"
                   selected={range}
@@ -300,7 +300,7 @@ export default function ExperienceCard({
                   disabled={disabledDates}
                   style={calendarStyles}
                   classNames={{
-                    root: "m-0",
+                    root: "m-0 min-w-[260px]",
                     day_selected: "bg-main-dark-green text-white",
                     day_range_start: "bg-main-dark-green text-white rounded-l-full",
                     day_range_end: "bg-main-dark-green text-white rounded-r-full",
