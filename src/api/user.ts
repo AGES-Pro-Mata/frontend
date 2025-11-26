@@ -115,13 +115,8 @@ export interface UpdateUserAdminPayload {
   function?: string; // professional role
 }
 
-export async function getUserById(
-  userId?: string
-): Promise<TEditUserAdminResponse> {
-  const result = await safeApiCall(
-    api.get(`/user/${userId}`),
-    EditUserAdminResponse
-  );
+export async function getUserById(userId?: string): Promise<TEditUserAdminResponse> {
+  const result = await safeApiCall(api.get(`/user/${userId}`), EditUserAdminResponse);
 
   return result;
 }
@@ -147,29 +142,9 @@ export async function updateUserRequest(
   payload: UpdateUserAdminPayload,
   userId: string,
 ): Promise<HttpResponse> {
-  const formData = new FormData();
-
-  formData.append("name", payload.name);
-  formData.append("email", payload.email);
-  formData.append("phone", payload.phone);
-  formData.append("gender", mapGenderToApiValue(payload.gender) ?? "");
-  formData.append("country", payload.country);
-  formData.append("userType", payload.userType);
-  formData.append("isForeign", payload.isForeign.toString());
-  formData.append("zipCode", payload.zipCode);
-  formData.append("addressLine", payload.addressLine || "");
-  formData.append("institution", payload.institution || "");
-  formData.append("city", payload.city || "");
-
-  if (payload.document) formData.append("document", payload.document);
-  if (payload.number) formData.append("number", payload.number.toString());
-  if (payload.rg) formData.append("rg", payload.rg);
-  if (payload.teacherDocument) formData.append("teacherDocument", payload.teacherDocument);
-
-  const response = await api.patch(`/user/${userId}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+  const response = await api.patch(`/user/${userId}`, {
+    ...payload,
+    gender: mapGenderToApiValue(payload.gender),
   });
 
   return {
@@ -187,14 +162,20 @@ export async function registerUserRequest(payload: RegisterUserPayload): Promise
   formData.append("password", payload.password);
   formData.append("confirmPassword", payload.confirmPassword);
   formData.append("phone", payload.phone);
-  formData.append("gender", mapGenderToApiValue(payload.gender) ?? "");
+  formData.append("gender", mapGenderToApiValue(payload.gender) || "Outro");
   formData.append("country", payload.country);
   formData.append("userType", payload.userType);
   formData.append("isForeign", payload.isForeign.toString());
   formData.append("zipCode", payload.zipCode);
-  formData.append("addressLine", payload.addressLine || "");
-  formData.append("institution", payload.institution || "");
-  formData.append("city", payload.city || "");
+  if (payload.addressLine) {
+    formData.append("addressLine", payload.addressLine);
+  }
+  if (payload.institution) {
+    formData.append("institution", payload.institution);
+  }
+  if (payload.city) {
+    formData.append("city", payload.city);
+  }
 
   if (payload.document) formData.append("document", payload.document);
   if (payload.number) formData.append("number", payload.number.toString());
