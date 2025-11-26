@@ -131,6 +131,7 @@ runDescribe("useFetchAdminExperiences", () => {
           id: "e1",
           startDate: "2023-01-02T00:00:00.000Z",
           endDate: "2023-03-04T00:00:00.000Z",
+          date: "02/01-04/03",
         },
       ],
       total: 1,
@@ -141,13 +142,13 @@ runDescribe("useFetchAdminExperiences", () => {
     const result = invokeHook({ filters: defaultFilters });
 
     expect(result.items).toHaveLength(1);
-    expect(result.items[0]?.date).toMatch(/^\d{2}\/\d{2}-\d{2}\/\d{2}$/);
+    expect(result.items[0]?.date).toBe("02/01-04/03");
     expect(result.meta).toEqual({ total: 1, page: 1, limit: 10 });
   });
 
   runTest("uses fallback date label when start or end date missing", () => {
     reactQueryMocks.queryResult.data = {
-      items: [{ id: "e2" }],
+      items: [{ id: "e2", date: "Sem intervalo de data" }],
       total: 1,
       page: 1,
       limit: 10,

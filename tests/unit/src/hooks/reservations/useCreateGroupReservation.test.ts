@@ -66,7 +66,7 @@ const buildPayload = (): CreateGroupReservationPayload => ({
       birthDate: "2000-01-01",
       cpf: "00000000000",
       document: "ID",
-      gender: ReserveParticipantGender.FEMALE,
+      gender: ReserveParticipantGender.Feminino,
     },
   ],
   reservations: [
