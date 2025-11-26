@@ -291,6 +291,7 @@ function RouteComponent() {
           data={filteredItems}
           columns={columns}
           filters={filters}
+          isLoading={isLoading}
           meta={meta}
           setFilter={setFilter}
         />

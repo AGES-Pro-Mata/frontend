@@ -189,6 +189,7 @@ function RouteComponent() {
           data={items}
           columns={columns}
           filters={filters}
+          isLoading={isLoading}
           meta={meta}
           setFilter={setFilter}
         />
