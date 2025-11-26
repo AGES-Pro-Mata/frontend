@@ -134,6 +134,7 @@ export default function ReservationRequestsTable() {
   });
 
   const handleChangeStatusFilter = (status: string[]) => {
+    setFilter("page", 0);
     setFilter("status", status as RequestsType[]);
   };
 

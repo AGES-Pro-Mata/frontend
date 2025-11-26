@@ -216,6 +216,7 @@ function RouteComponent() {
   };
 
   const handleChangeStatusFilter = (category: string[]) => {
+    setFilter("page", 0);
     setFilter("category", category as ExperienceCategory[]);
   };
 
