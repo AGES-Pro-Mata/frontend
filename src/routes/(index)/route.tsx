@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { Outlet, createFileRoute } from "@tanstack/react-router"
 import Layout from "@/components/layouts/dashboard"
 import z from "zod"
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/(index)")({
         : undefined
 
     if (lang && i18n.language !== lang) {
-      void i18n.changeLanguage(lang)
+      i18n.changeLanguage(lang)
     }
   },
   component: RouteComponent,

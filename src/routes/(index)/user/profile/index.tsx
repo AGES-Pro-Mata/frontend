@@ -34,7 +34,7 @@ function RouteComponent() {
       <UserProfileCard
         user={mapped}
         documentStatus={documentStatus}
-        onEdit={() => void navigate({ to: "/user/profile/edit-profile" })}
+        onEdit={() => navigate({ to: "/user/profile/edit-profile" })}
         onSendDocument={() => console.log("send doc")}
       />
     </div>

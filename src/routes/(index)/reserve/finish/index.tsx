@@ -537,7 +537,7 @@ function ReserveFlow() {
       setExperienceAdjustments([]);
       setCurrentStep(1);
       clearCart();
-      void navigate({ to: "/reserve/finish/summary" });
+      navigate({ to: "/reserve/finish/summary" });
     } catch (error) {
       const message = extractErrorMessage(error);
 
@@ -569,7 +569,7 @@ function ReserveFlow() {
           label={t("common.back")}
           variant="ghost"
           onClick={() => {
-            void navigate({ to: "/" });
+            navigate({ to: "/" });
           }}
           className="sm:w-auto"
         />,
@@ -595,7 +595,7 @@ function ReserveFlow() {
         key="finish"
         label={t("common.finish")}
         onClick={() => {
-          void submitReservation();
+          submitReservation();
         }}
         disabled={isSubmitting || !hasExperiences || !experienceRequirementsMet}
         className="sm:w-auto"

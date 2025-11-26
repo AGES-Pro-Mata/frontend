@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
@@ -46,7 +47,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   useEffect(() => {
     form.clearErrors();
-    void form.trigger();
+    form.trigger();
 
     if (!didMountLang.current) {
       didMountLang.current = true;
@@ -57,7 +58,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
     const fields = Object.keys(form.formState.errors);
 
     if (fields.length > 0) {
-      void form.trigger(fields as (keyof FormData)[]);
+      form.trigger(fields as (keyof FormData)[]);
     }
   }, [i18n.language, form]);
 
@@ -83,7 +84,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
       {
         onSuccess: () => {
           appToast.success(t("auth.reset.toastSuccess"));
-          void navigate({ to: "/auth/login" });
+          navigate({ to: "/auth/login" });
         },
         onError: () => {
           appToast.error(t("auth.reset.toastError"));

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Typography } from "@/components/typography/typography";
 import { z } from "zod";
@@ -50,7 +51,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
     const errorFields = Object.keys(form.formState.errors || {});
 
     if (errorFields.length > 0) {
-      void form.trigger(errorFields as (keyof FormData)[]);
+      form.trigger(errorFields as (keyof FormData)[]);
     }
   }, [form, i18n.language]);
 

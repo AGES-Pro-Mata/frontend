@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import React from "react";
@@ -217,7 +218,7 @@ export function ReservationsLayout({ reservationGroupId }: ReservationsLayoutPro
                 label={
                   isPending ? <MoonLoader size={22} color="#006324" /> : t("requests.admin.send")
                 }
-                onClick={() => void handleSubmitForm()}
+                onClick={() => handleSubmitForm()}
                 disabled={isPending}
               />
             </div>

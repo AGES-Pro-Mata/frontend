@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { Button } from "@/components/button/defaultButton";
 import { TextInput } from "@/components/input/textInput";
 import { Typography } from "@/components/typography/typography";
@@ -217,7 +218,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
           if (response.statusCode >= 200 && response.statusCode < 300) {
             form.reset();
             appToast.success("Usuário editado com sucesso", {});
-            void navigate({ to: "/admin/users" });
+            navigate({ to: "/admin/users" });
             setAutoFilled({ addressLine: false, city: false });
           } else {
             appToast.error("Erro ao editar usuário", {});
@@ -372,11 +373,11 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
                           <SelectValue placeholder={t("register.fields.gender.select")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="female">
+                          <SelectItem value="Feminino">
                             {t("register.fields.gender.female")}
                           </SelectItem>
-                          <SelectItem value="male">{t("register.fields.gender.male")}</SelectItem>
-                          <SelectItem value="other">{t("register.fields.gender.other")}</SelectItem>
+                          <SelectItem value="Masculino">{t("register.fields.gender.male")}</SelectItem>
+                          <SelectItem value="Outros">{t("register.fields.gender.other")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -552,7 +553,7 @@ export function EditUserAdmin({ userId }: EditUserAdminProps) {
               <Button type="button" variant="ghost" label="Voltar" className="w-36" />
             </Link>
             <Button
-              onClick={void handleSubmit}
+              onClick={handleSubmit}
               variant="primary"
               className="w-36"
               label="Salvar"

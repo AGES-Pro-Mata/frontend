@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { Button } from "@/components/button/defaultButton";
 import { TextInput } from "@/components/input/textInput";
 import { appToast } from "@/components/toast/toast";
@@ -319,7 +321,7 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
     mutate(payload, {
       onSuccess: () => {
         appToast.success("Experiência atualizada com sucesso");
-        void navigate({ to: "/admin/experiences" });
+        navigate({ to: "/admin/experiences" });
       },
       onError: () => {
         appToast.error("Erro ao atualizar experiência");
@@ -764,13 +766,13 @@ export function EditExperience({ experienceId }: EditExperienceProps) {
               variant="ghost"
               label="Cancelar"
               className="w-36"
-              onClick={() => void navigate({ to: "/admin/experiences" })}
+              onClick={() => navigate({ to: "/admin/experiences" })}
             />
             <Button
               type="submit"
               variant="primary"
               className="w-36"
-              onClick={void onSubmit}
+              onClick={onSubmit}
               label="Salvar"
             />
           </div>

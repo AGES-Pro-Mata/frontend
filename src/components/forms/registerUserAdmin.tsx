@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { Button } from "@/components/button/defaultButton";
 import { TextInput } from "@/components/input/textInput";
 import { PasswordInput } from "@/components/input/passwordInput";
@@ -202,7 +203,7 @@ export function RegisterUserAdmin() {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           form.reset();
           appToast.success("Usuário cadastrado com sucesso");
-          void navigate({ to: "/admin/users" });
+          navigate({ to: "/admin/users" });
           setAutoFilled({ addressLine: false, city: false });
         } else {
           appToast.error("Erro ao cadastrar usuário");
@@ -220,7 +221,7 @@ export function RegisterUserAdmin() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={void form.handleSubmit(onSubmit)} className="mt-6 space-y-3">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-3">
           <div className="flex items-center justify-start gap-4">
             <Typography className="font-medium text-foreground text-lg">
               Informações pessoais

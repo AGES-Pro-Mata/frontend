@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import {
   type UseMutationResult,
   useMutation,
@@ -24,7 +25,7 @@ export function useSendPaymentProof(): UseMutationResult<
       await sendPaymentProof(reservationGroupId, file);
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [MY_RESERVATION_KEY] });
+      queryClient.invalidateQueries({ queryKey: [MY_RESERVATION_KEY] });
     },
   });
 }

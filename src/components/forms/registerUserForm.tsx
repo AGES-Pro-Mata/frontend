@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { z } from "zod";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -196,7 +197,7 @@ export function RegisterUser() {
 
     if (errorFields.length > 0) {
       // retrigger only errored fields to refresh message language
-      void form.trigger(errorFields as (keyof FormData)[]);
+      form.trigger(errorFields as (keyof FormData)[]);
     }
   }, [i18n.language]);
 
@@ -264,7 +265,7 @@ export function RegisterUser() {
           form.reset();
           appToast.success(t("register.toasts.success"));
           setAutoFilled({ addressLine: false, city: false });
-          void navigate({ to: "/auth/login" });
+          navigate({ to: "/auth/login" });
         } else {
           appToast.error(t("register.toasts.error"));
         }
@@ -288,7 +289,7 @@ export function RegisterUser() {
         <Form {...form}>
           <form
             onSubmit={(event) => {
-              void form.handleSubmit(onSubmit)(event);
+              form.handleSubmit(onSubmit)(event);
             }}
             className="mt-6 space-y-3"
           >
@@ -320,7 +321,7 @@ export function RegisterUser() {
                           // Re-run validation to clear/set field errors according to new mode
                           setTimeout(
                             () =>
-                              void form.trigger([
+                              form.trigger([
                                 "city",
                                 "number",
                                 "zipCode",

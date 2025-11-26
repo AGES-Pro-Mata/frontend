@@ -50,7 +50,7 @@ export default function ReservationRequestsTable() {
   const { items, meta, isLoading } = useFetchAdminRequest({ filters });
 
   const handleViewReservationClick = (id: string) => {
-    void navigate({ to: `/admin/requests/reservation/${id}` });
+    navigate({ to: `/admin/requests/reservation/${id}` });
   };
 
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
@@ -116,7 +116,7 @@ export default function ReservationRequestsTable() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => void handleViewReservationClick(row.original.id)}
+                onClick={() => handleViewReservationClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
                 {"Visualizar"}

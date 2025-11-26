@@ -29,7 +29,7 @@ function ReserveSummaryPage() {
 
   useEffect(() => {
     if (!hasExperiences) {
-      void navigate({ to: "/reserve" });
+      navigate({ to: "/reserve" });
     }
   }, [hasExperiences, navigate]);
 
@@ -88,7 +88,7 @@ function ReserveSummaryPage() {
             }
             onClick={() => {
               clearSummary();
-              void navigate({ to: "/" });
+              navigate({ to: "/" });
             }}
             className="text-main-dark-green hover:bg-main-dark-green/10"
           />

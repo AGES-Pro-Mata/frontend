@@ -50,7 +50,7 @@ export default function ProfessorRequestsTable() {
   const { items, meta, isLoading } = useFetchProfessorAdminRequest({ filters });
 
   const handleViewProfessorRequestClick = (id: string) => {
-    void navigate({ to: `/admin/requests/professor/${id}` });
+    navigate({ to: `/admin/requests/professor/${id}` });
   };
 
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
@@ -109,7 +109,7 @@ export default function ProfessorRequestsTable() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => void handleViewProfessorRequestClick(row.original.id)}
+                onClick={() => handleViewProfessorRequestClick(row.original.id)}
                 className="cursor-pointer gap-4"
               >
                 {t("requests.admin.actions.view")}

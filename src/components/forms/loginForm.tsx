@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { Typography } from "@/components/typography/typography";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -50,7 +52,7 @@ export function LoginForm() {
     const errorFields = Object.keys(form.formState.errors || {});
 
     if (errorFields.length > 0) {
-      void form.trigger(errorFields as (keyof FormData)[]);
+      form.trigger(errorFields as (keyof FormData)[]);
     }
   }, [form, i18n.language]);
 
@@ -63,7 +65,7 @@ export function LoginForm() {
         <div className="h-[1.5px] bg-on-banner-text" />
       </div>
       <Form {...form}>
-        <form onSubmit={(event) => void form.handleSubmit(onSubmit)(event)} className="space-y-4">
+        <form onSubmit={(event) => form.handleSubmit(onSubmit)(event)} className="space-y-4">
           <div className="flex flex-col gap-4 items-center w-full">
             <div className="w-full max-w-xs">
               <FormField

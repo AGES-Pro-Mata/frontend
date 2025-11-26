@@ -177,7 +177,7 @@ function RouteComponent() {
               <DropdownMenuItem
                 className="cursor-pointer gap-4"
                 onClick={() =>
-                  void navigate({
+                  navigate({
                     to: "/admin/experiences/$experienceId",
                     params: { experienceId },
                   })
@@ -212,7 +212,7 @@ function RouteComponent() {
   ];
 
   const navigateToCreateExperience = () => {
-    void navigate({ to: "/admin/experiences/create" });
+    navigate({ to: "/admin/experiences/create" });
   };
 
   const handleChangeStatusFilter = (category: string[]) => {
