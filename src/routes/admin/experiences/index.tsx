@@ -122,7 +122,7 @@ function RouteComponent() {
     {
       accessorKey: "category",
       header: "Tipo",
-      enableSorting: true,
+      enableSorting: false,
       size: 80,
       cell: ({ row }: { row: { original: TExperienceAdminResponse } }) => {
         return (
@@ -142,7 +142,7 @@ function RouteComponent() {
     {
       accessorKey: "active",
       header: "Status",
-      enableSorting: true,
+      enableSorting: false,
       size: 80,
       cell: ({ row }: { row: { original: TExperienceAdminResponse } }) => {
         const isActive = row.original.active ?? true;
